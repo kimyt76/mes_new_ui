@@ -1,11 +1,10 @@
 <template>
   <div>
-    <RouterView></RouterView>
+    이거슨 품목정보
   </div>
 </template>
 
 <script setup>
-
 
 </script>
 

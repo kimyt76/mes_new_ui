@@ -2,30 +2,19 @@
   <div class="mb-3">
     <v-breadcrumbs :items="['MES', '시스템관리', '사용자 관리']"></v-breadcrumbs>
     <hr/>
-    <v-card
-      >
-    <div>
-      <v-text-field
-      flex
-      >
+    <v-card class="pa-3">
+      <v-row>
+        <v-col class="pa-3" outlined>
 
 
-      </v-text-field>
-      <v-select>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-
-      </v-select>
+        </v-col>
+      </v-row>
       <v-btn
         depressed
         stateless
       >
         검색
       </v-btn>
-    </div>
-
     </v-card>
      <v-table>
       <thead>
