@@ -1,0 +1,29 @@
+.custom-table {
+  border: 1px solid #ccc;
+}
+.custom-header {
+  background-color: #BCAAA4; /* 원하는 색상 */
+  color: white;
+  text-align: center;
+  height: 10px;
+}
+.custom-th {
+  height: 4px;
+}
+.custom-th td {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.app-alert {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* 필요시 */
+  background: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
