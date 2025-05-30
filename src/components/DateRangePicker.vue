@@ -5,6 +5,7 @@
     <v-text-field
       v-model="formattedFromDate"
       label="시작일"
+      mask="date"
       density="compact"
       width="120px"
       height="40px"

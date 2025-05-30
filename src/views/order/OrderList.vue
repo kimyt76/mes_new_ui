@@ -34,13 +34,11 @@
               variant="underlined"
               />
               <v-btn
-                dense
                 color = "#EFEBE9"
                 class="mt-3"
                 type="submit"
               >조회</v-btn>
               <v-btn
-                dense
                 class="mt-3"
                 @click="reset"
               >초기화</v-btn>
@@ -59,7 +57,6 @@
         @click="goOrderNew"
         >신규</v-btn>
       <v-btn
-        dense
         class="mt-3 mr-3"
         @click="excel"
         >엑셀</v-btn>

@@ -2,82 +2,77 @@
   <v-row>
     <v-col>
       <div class="d-flex ga-2 mt-2">
-         <!-- 텍스트 필드 (메뉴 트리거 아님) -->
-    <v-text-field
-      v-model="formattedToDate"
-      :label= "props.title"
-      density="compact"
-      width="120px"
-      @click="onToTextFieldClick"
-      style="max-width: 200px;"
-    />
-    <!-- 메뉴 트리거는 아이콘만 -->
-    <v-menu
-      v-model="toMenu"
-      :close-on-content-click="false"
-      location="bottom start"
-    >
-      <template #activator="{ props }">
-        <v-btn
-          v-bind="props"
-          icon
-          variant="text"
-          class="calendar-icon-btn"
-        >
-          <v-icon>mdi-calendar</v-icon>
-        </v-btn>
-      </template>
+        <!-- 날짜 입력창 -->
+        <v-text-field
+          v-model="formattedDate"
+          :label="title"
+          density="compact"
+          style="max-width: 200px;"
+          @click="onTextFieldClick"
+        />
 
-      <v-date-picker
-        v-model="toDateVal"
-        :hide-header="true"
-        @update:model-value="onToDateSelected"
-      />
-    </v-menu>
+        <!-- 캘린더 아이콘 메뉴 -->
+        <v-menu
+          v-model="menu"
+          :close-on-content-click="false"
+          location="bottom start"
+        >
+          <template #activator="{ props }">
+            <v-btn v-bind="props" icon variant="text" class="calendar-icon-btn">
+              <v-icon>mdi-calendar</v-icon>
+            </v-btn>
+          </template>
+
+          <v-date-picker
+            v-model="modelValue"
+            :hide-header="true"
+            @update:model-value="onDateSelected"
+          />
+        </v-menu>
       </div>
     </v-col>
   </v-row>
 </template>
 
 <script setup>
-import { ref, watch, watchEffect } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { format } from 'date-fns'
 
+// Props
 const props = defineProps({
-  title: String,
+  title: String
 })
 
-const toDate = defineModel('toDate')
+// 오늘 날짜 (초기값)
+const today = new Date()
 
-// 종료일 관련
-const toDateVal = ref(toDate.value || '')
-const formattedToDate = ref(format(new Date(), 'yyyy-MM-dd'))
-const toMenu = ref(false)
+// defineModel로 부모와 양방향 바인딩
+const modelValue = defineModel()
 
-// 종료일 - 텍스트필드 클릭
-const onToTextFieldClick = () => {
-  formattedToDate.value = ''
+// 내부 상태
+const menu = ref(false)
+
+// 포맷된 날짜 (문자열)
+const formattedDate = computed(() =>
+  modelValue.value ? format(new Date(modelValue.value), 'yyyy-MM-dd') : ''
+)
+
+// 클릭 시 빈 문자열로 (선택)
+const onTextFieldClick = () => {
+  formattedDate.value = ''
 }
 
-// 종료일 - 날짜 선택
-const onToDateSelected = (value) => {
-  toDateVal.value = value
-  formattedToDate.value = format(new Date(value), 'yyyy-MM-dd')
-  toMenu.value = false
-  toDate.value = formattedToDate.value
+// 날짜 선택 시
+const onDateSelected = (value) => {
+  const formatted = format(new Date(value), 'yyyy-MM-dd')
+  modelValue.value = formatted
+  menu.value = false
 }
 
-watch(toDateVal, (newVal) => {
-  if (newVal) {
-    formattedToDate.value = format(new Date(newVal), 'yyyy-MM-dd')
-  }
-})
-
-watchEffect(() => {
-  if (toDate.value) {
-    toDateVal.value = toDate.value
-    formattedToDate.value = format(new Date(toDate.value), 'yyyy-MM-dd')
-    toDate.value = formattedToDate.value
+// 초기값이 없으면 오늘 날짜로
+onMounted(() => {
+  if (!modelValue.value) {
+    modelValue.value = today.toISOString().slice(0, 10) // yyyy-MM-dd 형식
   }
 })
 </script>

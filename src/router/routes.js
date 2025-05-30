@@ -87,7 +87,17 @@ const routes = [
         name: 'CommonMgmt',
         component: () => import('@/views/system/CommonMgmtList.vue')
       },
+      {
+        path: 'templateMgmt',
+        name: 'Template',
+        component: () => import('@/views/system/TemplateMgmtList.vue')
+      },
     ]
+  },
+  {
+    path: `/:pathmatch(.*)*`,
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue')
   },
 
 

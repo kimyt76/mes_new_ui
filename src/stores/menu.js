@@ -16,6 +16,7 @@ export const useMenuStore = defineStore('menu', {
       { title: '시스템관리', icon: 'mdi mdi-cog', items: [
           { title: '사용자관리', to: '/system/userMgmt' },
           { title: '공통코드관리', to: '/system/commonMgmt' },
+          { title: '템플릿관리', to: '/system/templateMgmt' },
         ]
       },
     ]

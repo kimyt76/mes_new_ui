@@ -41,8 +41,7 @@ export const ApiCommon = {
   deleteFile : async(fileId) => {
     try{
       const msg = await API_URL.delete(`/uploadFile/deleteFile/${fileId}`)
-
-      return msg
+      return msg.data
     }catch(err){
       throw err.response
     }

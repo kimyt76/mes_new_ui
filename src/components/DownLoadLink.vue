@@ -11,10 +11,12 @@ import { computed } from 'vue'
 const props = defineProps({
   filepath: {
     type: String,
+    default: '',
     required: true
   },
   fileName: {
     type: String,
+    default: '',
     required: true
   }
 })

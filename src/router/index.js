@@ -13,8 +13,8 @@ const router = createRouter({
  router.beforeEach(async (to, form) => {
   const auth = useAuthStore();
 
-  if ( !auth.isLoggedIn  ) {
-    await auth.fetchUser()
+  if (!auth.isLoggedIn && to.name !== 'LogIn') {
+    await auth.fetchUser();
   }
 
   if (!auth.isLoggedIn && to.name !== 'LogIn') {

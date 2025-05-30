@@ -36,7 +36,6 @@ export const ApiOrder = {
       return res.data
 
     }catch(err){
-      console.log('errerrerrerrerr', err.response)
       throw err.response
     }
   },
@@ -61,6 +60,14 @@ export const ApiOrder = {
     }
   },
 
+  updateInfo : async(params) => {
+    try{
+      const msg= await API_URL.post('/order/updateInfo', params)
 
+      return msg.data
+    }catch(err){
+      throw err.response
+    }
+  }
 
 }
