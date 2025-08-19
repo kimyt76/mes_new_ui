@@ -2,8 +2,7 @@
 <v-breadcrumbs
     :items="['MES', '관리', '관리']"
     class="custom-breadcrumbs"
-    >
-  </v-breadcrumbs>
+    />
   <v-card>
     <v-card-text >
       <v-row class="custom-height">
@@ -54,7 +53,7 @@
   </v-card>
   <v-spacer></v-spacer>
   <v-row>
-    <v-col class="d-flex justify-end align-center mr-2" style="gap: 8px; margin-top: 8px;">
+    <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
       <v-btn
         color="brown-lighten-4"
         text="신규"
@@ -75,7 +74,7 @@
         :items="list"
         density="compact"
         fixed-header
-        height="520px"
+        height="720px"
         class="custom-table"
         >
       </v-data-table>
