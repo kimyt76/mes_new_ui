@@ -213,7 +213,7 @@
         />
       </v-card-actions>
 
-<v-dialog  v-model="dialog" height="700" width="900px" persistent>
+<v-dialog  v-model="dialog" height="800" width="900px" persistent>
     <UserListPop
       @selected="handleSelected"
       @close-dialog="dialog = false"
