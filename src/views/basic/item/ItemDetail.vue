@@ -259,7 +259,7 @@ onMounted( async () => {
 })
 
 const handleSelect = (obj) =>{
-  console.log('obj', obj)
+  //console.log('obj', obj)
   form.customerCd = obj.customerCd
   form.customerName = obj.customerName
 }

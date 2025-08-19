@@ -170,7 +170,6 @@ const headers = ref([
  */
 const goNew = () => {
   if ( isEmpty(selected.value) ){
-    console.log('ItemNewCd')
     router.push({name: 'ItemNewCd' })
   }else{
     const asItemCd = selected.value[0].itemCd
