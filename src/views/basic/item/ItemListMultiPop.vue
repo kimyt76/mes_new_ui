@@ -13,7 +13,7 @@
       <v-form ref="srcForm" @submit.prevent="searchList">
       <v-col class="d-flex flex-row ga-3">
         <v-select
-          v-model="form.itemTypeName"
+          v-model="form.itemTypeCd"
           label="품목구분"
           :items="itemTypeCds"
           item-title="codeNm"
@@ -60,20 +60,18 @@
           fixed-header
           height="520px"
           show-select
-          class="custom-table"
           return-object
         >
-        <template #item.itemTypeName="{ item }">
-          <div class="wrap-cell">{{ item.itemTypeName }}</div>
-        </template>
-        <template #item.itemCd="{ item }">
-          <div class="wrap-cell">{{ item.itemCd }}</div>
-        </template>
-        <template #item.itemName="{ item }">
-          <div class="wrap-cell">{{ item.itemName }}</div>
-        </template>
-        <template #item.customerName="{ item }">
-          <div class="wrap-cell">{{ item.customerName }}</div>
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header pa-1"
+              >
+              {{ column.title }}
+            </th>
+          </tr>
         </template>
       </v-data-table>
       </div>
@@ -116,9 +114,9 @@ const form = reactive({
 
 const headers = [
   { title: '품목구분',  key: 'itemTypeName',  align: 'center',  width: '80px' },
-  { title: '품목코드',  key: 'itemCd', align: 'center', width: '110px' },
-  { title: '품목명',    key: 'itemName',   align: 'start', width: '210px' },
-  { title: '거래처',    key: 'customerName',   align: 'start', width: '150px' },
+  { title: '품목코드',  key: 'itemCd',        align: 'center', width: '100px' },
+  { title: '품목명',    key: 'itemName',      align: 'start', width: '250px' },
+  { title: '거래처',    key: 'customerName',   align: 'start', width: '200px' },
 ]
 
 const searchList = async () =>{
@@ -144,6 +142,7 @@ onMounted( async () => {
 </script>
 
 <style >
+@import '@/assets/css/main.css';
 .custom-table thead th {
   background-color: #BCAAA4 !important;
 }
