@@ -9,6 +9,7 @@ const router = createRouter({
   routes,
 })
 
+<<<<<<< HEAD
 
  router.beforeEach(async (to, form) => {
   const auth = useAuthStore();
@@ -27,5 +28,8 @@ const router = createRouter({
 
 })
 
+=======
+//router.beforeEach
+>>>>>>> 855cf22632ab5369ad12aea6ea3e9a6f7b152ca0
 
 export default router
