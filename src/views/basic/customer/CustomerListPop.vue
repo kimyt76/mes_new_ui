@@ -133,6 +133,7 @@ onMounted( async () => {
 </script>
 
 <style >
+@import '@/assets/css/main.css';
 .custom-table thead th {
   height: 32px !important;
   background-color: #BCAAA4 !important;
