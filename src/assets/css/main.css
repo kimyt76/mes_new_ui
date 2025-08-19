@@ -2,7 +2,7 @@
   border: 1px solid #ccc;
 }
 .custom-header {
-  background-color: #BCAAA4; /* 원하는 색상 */
+  background-color: #BCAAA4 !important; /* 원하는 색상 */
   color: white;
   text-align: center !important;
 }
