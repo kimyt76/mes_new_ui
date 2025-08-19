@@ -49,6 +49,15 @@ export const ApiBase = {
       throw err.response
     }
   },
+  getStorageInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/storage/getStorageInfo/${id}` )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
   saveStorageInfo: async(params) => {
     try{
       const msg = await API_URL.post(`/storage/saveStorageInfo`, params)
