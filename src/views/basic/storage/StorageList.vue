@@ -1,16 +1,20 @@
 <template>
-  <v-breadcrumbs :items="['MES', '기본관리', '창고관리']"></v-breadcrumbs>
-  <v-card class="pa-3" style="height: 80px;">
-    <v-row>
-      <v-col>
-        <v-form ref="srhForm" @submit.prevent ='srhStorageList'>
-          <div class="d-flex ga-3" > <!-- ga-4 는 Vuetify gap 클래스 -->
-            <v-text-field
+<v-breadcrumbs
+    :items="['MES', '기본관리', '창고관리']"
+    class="custom-breadcrumbs"
+    />
+  <v-card class="pa-1" style="height: 60px;">
+    <v-card-text >
+      <v-row>
+      <v-form ref="srhForm" @submit.prevent="srhStorageList">
+        <v-col class="d-flex ga-4">
+          <v-text-field
               v-model="form.storageName"
               density="compact"
               label="창고명"
               placeholder="창고명을 입력해주세요"
               variant="underlined"
+              style="width: 180px;"
               />
             <v-text-field
               v-model="form.outCustomerName"
@@ -18,6 +22,7 @@
               label="외주거래처명"
               placeholder="외주거래처명을 입력해주세요"
               variant="underlined"
+              style="width: 150px;"
               />
             <v-select
               v-model="form.storageType"
@@ -27,6 +32,7 @@
               item-value="code"
               variant="underlined"
               density="compact"
+              style="width: 150px;"
               />
             <v-select
               v-model="form.prodProcessCd"
@@ -36,85 +42,86 @@
               item-value="code"
               variant="underlined"
               density="compact"
+              style="width: 150px;"
               />
             <v-btn
-              color = "#EFEBE9"
-              text="조회"
+              color="#EFEBE9"
               type="submit"
+              text="조회"
               />
             <v-btn
               class="mr-2"
               text="초기화"
               @click="srhForm.reset()"
               />
-          </div>
-        </v-form>
-      </v-col>
+        </v-col>
+      </v-form>
     </v-row>
+    </v-card-text>
   </v-card>
-  <v-row class="mb-1">
-    <v-col>
-      <div class="d-flex ga-4 justify-end">
-    <v-btn
-        color = "brown-lighten-4"
-        class="mt-3"
+  <v-spacer></v-spacer>
+  <v-row >
+    <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
+      <v-btn
+        color="brown-lighten-4"
         text="신규"
-        @click="goDetail('N')"
+        @click="goDetail"
         />
       <v-btn
-        class="mt-3 mr-3 excel-btn"
+        class="excel-btn"
         text="엑셀"
         prepend-icon="mdi-microsoft-excel"
         @click="excel"
         />
-     </div>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col class="pa-0">
+      <v-data-table
+        :headers="headers"
+        :items="storageList"
+        :loading="loading"
+        :items-per-page="15"
+        density="compact"
+        fixed-header
+        height="650px"
+        return-object
+        >
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header pa-1"
+              >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
+        <template #item.storageName="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="goDetail(item, index)"
+          >
+            {{ item.storageName }}
+          </div>
+        </template>
+        <template #item.useYn ="{ item }">
+          {{ item.useYn === 'Y' ? '사용' : '미사용' }}
+        </template>
+      </v-data-table>
     </v-col>
   </v-row>
 
- <v-data-table
-  :headers="headers"
-  :items="storageList"
-  :loading="loading"
-  no-data-text="데이터가 없습니다."
-  loading-text="조회중입니다 잠시만 기다려주세요"
-  :items-per-page="25"
-  >
-  <template v-slot:headers="{ columns }">
-    <tr>
-      <th
-        v-for="column in columns"
-        :key="column.key"
-        class="custom-header"
-        style="height: 30px;"
-        :style="{textAlign: 'center'} "
-        >
-        {{ column.title }}
-      </th>
-    </tr>
-  </template>
-  <template #item="{ item }">
-    <tr style="height: 30px;">
-      <td style="width: 80px; height: 30px; text-align: center; text-decoration: underline;  cursor: pointer;" @click="goDetail(item.storageCd)">{{item.storageCd}}</td>
-      <td style="width: 200px; height: 30px;text-align: left;  text-decoration: underline;  cursor: pointer;" @click="goDetail(item.storageCd)">{{item.storageName}}</td>
-      <td style="width: 150px; height: 30px; text-align: center;">{{item.storageTypeName}}</td>
-      <td style="width: 100px; height: 30px; text-align: center;">{{item.prodProcessName}}</td>
-      <td style="width: 200px; height: 30px; text-align: center;">{{item.outCustomerName}}</td>
-      <td style="width: 40px; height: 30px; text-align: center;">{{item.useYn ==='Y' ? '사용' : '미사용'}}</td>
-      <td style="width: 100px; height: 30px; text-align: center;">{{item.companyName}}</td>
-    </tr>
-  </template>
- </v-data-table>
-
-<v-dialog  v-model="dialog" height="450" width="700" persistent>
-    <StorageRegPop
-      :id="id"
-      :mode="mode"
-      :title="title"
-      @saved="handleSaved"
-      @close-dialog="dialog = false"
-      />
-</v-dialog>
-
+  <v-dialog  v-model="dialog" height="450" width="700" persistent>
+      <StorageRegPop
+        :id="id"
+        :mode="mode"
+        :title="title"
+        @saved="handleSaved"
+        @close-dialog="dialog = false"
+        />
+  </v-dialog>
 </template>
 
 <script setup>
@@ -132,6 +139,10 @@ const { userId } = useAuthStore()
 const dialog = ref(false)
 const loading = ref(false)
 const srhForm = ref('')
+const mode = ref('N')
+const title = ref('')
+const id = ref('')
+
 const storageList = ref([])
 const storageTypes = ref([])
 const prodProcessCds = ref([])
@@ -146,29 +157,23 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '창고코드',    key: 'storageCd',         align: 'center' },
-  { title: '창고명',      key: 'storageName',       align: 'center' },
-  { title: '구분',        key: 'storageTypeName',   align: 'center' },
-  { title: '생산공정명',    key: 'prodProcessName',  align: 'center' },
-  { title: '외주거래처명',  key: 'outCustomerName',  align: 'center' },
-  { title: '사용',          key: 'useYn',           align: 'center' },
-  { title: '추가사업장명',  key: 'companyName',      align: 'center' },
+  { title: '창고코드',    key: 'storageCd',         align: 'center' , width: '60px' },
+  { title: '창고명',      key: 'storageName',       align: 'start' , width: '250px' },
+  { title: '구분',        key: 'storageTypeName',   align: 'center' , width: '120px' },
+  { title: '생산공정명',    key: 'prodProcessName',  align: 'center' , width: '150px' },
+  { title: '외주거래처명',  key: 'outCustomerName',  align: 'start' , width: '250px' },
+  { title: '사용',          key: 'useYn',           align: 'center' , width: '60px' },
+  { title: '추가사업장명',  key: 'companyName',      align: 'center' , width: '120px' },
 ])
-
-const mode = ref('N')
-const title = ref('')
-const id = ref('')
-
-
 const goDetail = (val) =>{
-
+console.log('val',val.storageCd)
   if (val === 'N') {
     title.value ="창고등록"
     id.value = ''
   }else{
     mode.value = 'U'
     title.value ="창고상세정보"
-    id.value = val
+    id.value = val.storageCd
   }
 
   dialog.value = true
@@ -191,7 +196,6 @@ const srhStorageList = async () => {
     }
 
     storageList.value = await ApiBase.getStorageList(params)
-
   }catch(err){
     vError(err)
   }finally{
@@ -210,12 +214,12 @@ const handleSaved = (msg) =>{
  * 엑셀 다운로드
  */
 const excel = () => {
-  exportToExcel(headers, storageList.value, '폼목정보_목록')
+  exportToExcel(headers, storageList.value, '창고정보_목록')
 }
+
 
 </script>
 
-<style  scoped>
+<style scoped>
 @import '@/assets/css/main.css';
-
 </style>
