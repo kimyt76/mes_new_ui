@@ -3,9 +3,9 @@
     :items="['MES', '관리', '관리']"
     class="custom-breadcrumbs"
     />
-  <v-card>
+  <v-card style="pa-1">
     <v-card-text >
-      <v-row class="custom-height">
+      <v-row>
       <v-form ref="srcForm" @submit.prevent="searchList">
         <v-col class="d-flex flex-row ga-3">
           <v-date-input
@@ -68,7 +68,7 @@
     </v-col>
   </v-row>
   <v-row>
-    <v-col>
+    <v-col class="pa-0">
       <v-data-table
         :headers="headers"
         :items="list"
@@ -133,7 +133,4 @@ const excel = () => {
 
 <style>
 @import '@/assets/css/main.css';
-.custom-height {
-  height: 60px;
-}
 </style>
