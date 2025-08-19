@@ -1,26 +1,29 @@
 <template>
 <div :id="$attrs.id"></div>
-<v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+<v-breadcrumbs
+    :items="['MES', '수주관리', '주문신규']"
+    class="custom-breadcrumbs"
+    ></v-breadcrumbs>
 <v-card>
   <v-card-item
       title="주문서입력"
       />
   <v-form ref="vform" @submit.prevent="saveInfo" >
   <v-card-text>
-    <v-row>
-        <v-col class="d-flex flex-row align-center">
+    <v-row dense>
+       <v-col class="d-flex flex-row" style="gap: 0">
           <DateSinglePicker
             v-model="form.contractDate"
             title="주문일자"
             density="compact"
-            width="120"
-            />
-            <v-text-field
+            style="width: 100px;"
+          />
+          <v-text-field
             v-model="form.seq"
             density="compact"
-            width="20"
+            style="width: 40px; max-width: 60px; min-width: 0;"
             readonly
-            />
+          />
         </v-col>
         <v-col>
         </v-col>
@@ -29,7 +32,6 @@
             v-model="form.expiryDate"
             title="유효기간"
             density="compact"
-            width="120"
             />
         </v-col>
         <v-col>
@@ -40,7 +42,7 @@
             />
         </v-col>
     </v-row>
-    <v-row>
+    <v-row dense>
       <v-col cols="6">
         <v-text-field
           v-model="form.customerName"
@@ -73,7 +75,7 @@
       </v-col>
 
     </v-row>
-    <v-row>
+    <v-row dense>
       <v-col>
         <v-select
             v-model="form.transactionType"
@@ -98,7 +100,7 @@
       </v-col>
       <v-col>
         <v-text-field
-          v-model="form.transactionType"
+          v-model="form.paymentCondition"
           label="결재조건"
           variant="underlined"
           density="compact"
@@ -113,7 +115,7 @@
         />
       </v-col>
     </v-row>
-    <v-row>
+    <v-row dense>
       <v-col cols="12">
         <MultiFileUpload
           v-model="attachFile"
@@ -121,10 +123,6 @@
       </v-col>
     </v-row>
   </v-card-text>
-  <v-card-item
-      title="품목목록"
-      style="height: 40px;"
-      />
     <v-card-text>
       <v-row>
         <v-col>
@@ -132,12 +130,7 @@
           <v-btn
             text="추가 +"
             density="compact"
-            @click="addRow"
-            />
-          <v-btn
-            text="제거 -"
-            density="compact"
-            @click="removeRow"
+            @click="itemPop"
             />
           </div>
         </v-col>
@@ -196,6 +189,7 @@
               type="number"
               style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
               class="custom-line"
+              @blur="onBlur(index)"
             />
           </template>
           <template #item.unitPrice="{ item, index }">
@@ -204,6 +198,7 @@
               type="number"
               style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
               class="custom-line"
+              @blur="onBlur(index)"
             />
           </template>
           <template #item.supplyPrice="{ item, index }">
@@ -230,6 +225,41 @@
               class="custom-line"
             />
           </template>
+          <template #item.actions="{ item }">
+            <!-- <v-btn size="small" text="삭제-" @click="removeRow(item)"/> -->
+            <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="removeRow(item)"></v-icon>
+          </template>
+
+          <!-- 총합 -->
+          <template v-slot:body.append>
+            <tr class="summary-row">
+              <!-- itemCd -->
+              <td style="width: 100px; height: 40px;" />
+              <!-- itemName -->
+              <td style="width: 250px; height: 40px" />
+              <!-- unit -->
+              <td style="width: 80px; height: 40px" />
+              <!-- qty 합계 -->
+              <td style="width: 110px; text-align: right; font-weight: bold;  height: 40px">
+                {{ totalQty.toLocaleString() }}
+              </td>
+              <!-- unitPrice (비움) -->
+              <td style="width: 110px;  height: 40px" />
+              <!-- supplyPrice 합계 -->
+              <td style="width: 110px; text-align: right; font-weight: bold;  height: 40px">
+                {{ totalSupplyPrice.toLocaleString() }}
+              </td>
+              <!-- vatPrice 합계 -->
+              <td style="width: 100px; text-align: right; font-weight: bold; height: 40px">
+                {{ totalVatPrice.toLocaleString() }}
+              </td>
+              <!-- etc = supplyPrice + vatPrice -->
+              <td style="width: 150px; text-align: right; font-weight: bold; height: 40px">
+                {{ totalAmount.toLocaleString() }}
+              </td>
+              <td></td>
+            </tr>
+          </template>
           </v-data-table-virtual>
         </v-col>
       </v-row>
@@ -255,7 +285,12 @@
     </v-form>
 </v-card>
 
-<v-dialog  v-model="dialog" width="800px" height="800px" persistent>
+<v-dialog
+    v-model="dialog"
+    :width="dialogWidth"
+    :height="dialogHeight"
+    persistent
+    >
     <component
       :is="currentComponent"
       :id="id"
@@ -264,22 +299,55 @@
     />
 </v-dialog>
 
+<v-dialog v-model="itemDialog" width="800" height="800" persistent>
+    <ItemListMultiPop
+      @selected="handleRow"
+      @close-dialog="itemDialog = false"
+    />
+</v-dialog>
+
 </template>
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders';
 import { isEmpty } from '@/util/common';
-import { onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { onMounted, reactive, ref, shallowRef, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAlertStore } from '@/stores/alert';
 import { ApiCommon } from '@/api/apiCommon';
 import { useAuthStore } from '@/stores/auth';
 import MultiFileUpload from '@/components/MultiFileUpload.vue';
-import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import StorageListPop from '@/views/basic/storage/StorageListPop.vue';
 import DateSinglePicker from '@/components/DateSinglePicker.vue';
+import { calculateVAT } from '@/util/common';
+import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
+
+let dialogWidth = ref('')
+let dialogHeight = ref('')
+
+// 1. 수량 합계
+const totalQty = computed(() => {
+  // .value로 실제 배열에 접근합니다.
+  return itemList.value.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+});
+
+// 2. 공급가액 합계
+const totalSupplyPrice = computed(() => {
+  return itemList.value.reduce((sum, item) => sum + Number(item.supplyPrice || 0), 0);
+});
+
+// 3. 부가세 합계
+const totalVatPrice = computed(() => {
+  return itemList.value.reduce((sum, item) => sum + Number(item.vatPrice || 0), 0);
+});
+
+// 4. 총 금액 (다른 computed 속성을 참조)
+const totalAmount = computed(() => {
+  // 다른 computed 속성의 값에 접근할 때도 .value를 사용합니다.
+  return totalSupplyPrice.value + totalVatPrice.value;
+});
 
 const { userId} = useAuthStore()
 const { vError, vSuccess } = useAlertStore()
@@ -287,11 +355,7 @@ const { vError, vSuccess } = useAlertStore()
 const router = useRouter()
 const currentComponent = shallowRef(null)
 const dialog = ref(false)
-// const breadcrumbs = computed(() => {
-//   return contractId
-//     ? ['MES', '수주관리', '주문상세']
-//     : ['MES', '수주관리', '주문신규'];
-// });
+const itemDialog = ref(false)
 
 let nextId = 1
 
@@ -310,6 +374,7 @@ const form = reactive({
   managerId : '',
   descStorageName: '',
   descStorageCd: '',
+  paymentCondition: '',
   transactionType: '',
   expiryDate: '',
   tradingMethod: '',
@@ -320,37 +385,41 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : 100 },
-  { title: '품목명',      key: 'itemName',   align: 'center',width : 250},
-  { title: '규격',        key: 'unit',       align: 'center' ,width : 80 },
-  { title: '수량',        key: 'qty',        align: 'center' ,width : 110},
-  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : 110},
-  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : 110},
-  { title: '부가세',      key: 'vatPrice',    align: 'center',width : 100},
-  { title: '적용',        key: 'etc',         align: 'center' ,width : 150},
+  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : '100px' },
+  { title: '품목명',      key: 'itemName',   align: 'center', width : '250px'},
+  { title: '규격',        key: 'unit',       align: 'center' ,width : '80px' },
+  { title: '수량',        key: 'qty',        align: 'center' ,width : '110px'},
+  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : '110px'},
+  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : '110px'},
+  { title: '부가세',      key: 'vatPrice',    align: 'center',width : '100px'},
+  { title: '적용',        key: 'etc',         align: 'center' ,width : '150px'},
+  { title: '-',          key: 'actions',        align: 'center' ,width : 10},
 ])
 
-const handleSaved = ( cd, nm) => {
+const handleSaved = ( obj ) => {
   switch (popType.value){
     case 'C':
-      form.customerName = nm
-      form.customerCd = cd
+      form.customerName = obj.customerName
+      form.customerCd = obj.customerCd
+      form.managerName = obj.memberCd
+      form.managerId = obj.memberCd
+      form.tradingMethod = obj.tradingMethod
       break
     case 'U':
-      form.managerName = nm
-      form.managerId = cd
+      form.managerName = obj.memberNm
+      form.managerId = obj.userId
       break
     case 'S':
-      form.descStorageName = nm
-      form.descStorageCd = cd
+      form.descStorageName = obj.storageName
+      form.descStorageCd = obj.storageCd
       break
-    case 'I':
-     if (selectedRowIndex.value !== null) {
-       const target = itemList.value[selectedRowIndex.value]
-        target.itemCd = cd
-        target.itemName = nm
-      }
-      break
+    //case 'I':
+    //  if (selectedRowIndex.value !== null) {
+    //    const target = itemList.value[selectedRowIndex.value]
+    //     target.itemCd = cd
+    //     target.itemName = nm
+    //   }
+    //  break
   }
   popType.value = ''
   dialog.value = false
@@ -368,7 +437,10 @@ const saveInfo = async () => {
       formData.append('itemList', JSON.stringify(itemList.value))
 
       attachFile.value.forEach(file => {
-        formData.append('attachFile', file)
+        //console.log('파일 객체 여부:',  file.file instanceof File)
+        if (file.file instanceof File) {
+          formData.append('attachFile', file.file)
+        }
       })
 
       const msg = await ApiOrder.saveContractInfo(formData)
@@ -387,20 +459,77 @@ watch(() => form.contractDate, async (newVal, oldVal) => {
   }
 })
 
-// 행 추가
-const addRow = () =>{
-  itemList.value.push({
-    id: nextId++,
-    itemCd: '',
-    itemName:'',
-    unit: '',
-    qty: 0,
-    unitPrice : 0,
-    supplyPrice : 0,
-    vatPrice : 0,
-    etc:'',
-  })
+const onBlur = (index) => {
+  const qty = Number(itemList.value[index].qty);
+  const unitPrice = Number(itemList.value[index].unitPrice);
+
+  if (!isNaN(qty) && !isNaN(unitPrice)) {
+    itemList.value[index].supplyPrice = qty * unitPrice;
+  } else {
+    itemList.value[index].supplyPrice = 0;
+  }
+
+  if (!isNaN(itemList.value[index].supplyPrice) ) {
+    itemList.value[index].vatPrice = calculateVAT(itemList.value[index].supplyPrice)
+  } else {
+    itemList.value[index].vatPrice = 0;
+  }
+};
+
+watch(() => form.transactionType, async (newVal) => {
+  if ( form.transactionType === 'VRN' ){
+    itemList.value.map(o => {
+      o.vatPrice = 0
+    })
+  }else{
+    itemList.value.map(o => {
+      o.vatPrice = calculateVAT(o.supplyPrice)
+    })
+  }
+})
+
+
+const itemPop = () =>{
+  itemDialog.value = true
 }
+const handleRow = (obj) =>{
+  if (!Array.isArray(obj)) return;
+
+  const baseSeq = itemList.value.length;
+
+  const selectItem = obj.map((o, index) => ({
+      itemCd: o.itemCd,
+      itemName: o.itemName,
+      unit: o.unit,
+      qty: o.qty,
+      unitPrice: o.unitPrice,
+      supplyPrice: o.supplyPrice,
+      vatPrice: o.vatPrice,
+      etc: o.etc,
+      orderDist: baseSeq + index + 1,
+  }));
+
+  console.log('selectItem', selectItem)
+  if (itemList.value.length > 0) {
+    itemList.value.push(...selectItem);
+  } else {
+    itemList.value = [...selectItem];
+  }
+}
+// // 행 추가
+// const addRow = () =>{
+//   itemList.value.push({
+//     id: nextId++,
+//     itemCd: '',
+//     itemName:'',
+//     unit: '',
+//     qty: 0,
+//     unitPrice : 0,
+//     supplyPrice : 0,
+//     vatPrice : 0,
+//     etc:'',
+//   })
+// }
 
 // 행 삭제
 const removeRow = (index) => {
@@ -411,7 +540,7 @@ onMounted( async () => {
   currencyTypes.value= await ApiCommon.getCodeList('currency_type')
   transactionTypes.value= await ApiCommon.getCodeList('vat_rate')
 
-  form.seq = await ApiOrder.getNextSeq(form.contractDate)
+  form.seq = await ApiCommon.getNextSeq('tb_contract_mst', 'contract_date',  form.contractDate)
 })
 
 const openPop = (type) => {
@@ -420,18 +549,26 @@ const openPop = (type) => {
   switch (type) {
     case 'C':
       currentComponent.value = CustomerListPop
+      dialogWidth.value = '800px'
+      dialogWidth.value = '900px'
       break
     case 'U':
       currentComponent.value = UserListPop
+      dialogWidth.value = '800px'
+      dialogWidth.value = '900px'
       break
     case 'S':
       currentComponent.value = StorageListPop
+      dialogWidth.value = '800px'
+      dialogWidth.value = '900px'
       break
-    default:
-      popType.value = 'I'
-      selectedRowIndex.value = type
-      currentComponent.value = ItemListSinglePop
-      break
+    // default:
+    //   popType.value = 'I'
+    //   selectedRowIndex.value = type
+    //   currentComponent.value = ItemListMultiPop
+    //   dialogWidth.value = '1100px'
+    //   dialogWidth.value = '800px'
+    //   break
   }
   dialog.value = true
 }
@@ -455,5 +592,9 @@ const goList = () => {
   border: 0.5px solid;
   background: #f1f3f4;
   padding: 2px;
+}
+.summary-row {
+  background-color: #f4f4f4;
+  height: 40px;
 }
 </style>

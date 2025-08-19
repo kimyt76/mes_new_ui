@@ -5,10 +5,6 @@
   background-color: #BCAAA4; /* 원하는 색상 */
   color: white;
   text-align: center !important;
-  height: 30px !important;
-}
-.custom-th {
-  height: 4px;
 }
 .custom-th td {
   padding-top: 2px;
@@ -40,5 +36,5 @@
 .excel-btn {
   background-color: #1D6F42;
   color: white;
-  width: 40px;
+  width: 50px;
 }

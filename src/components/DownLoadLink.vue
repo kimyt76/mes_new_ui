@@ -7,6 +7,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { download } from '@/util/filedownLoad';
 
 const props = defineProps({
   filepath: {
@@ -18,13 +19,25 @@ const props = defineProps({
     type: String,
     default: '',
     required: true
+  },
+  attachFileId: {
+    type: String,
+    default: '',
+    required: true
+  },
+  seq: {
+    type: Number,
+    default: 1,
+    required: true
   }
 })
 
+download(props.attachFileId, props.seq)
 // 다운로드 URL 생성
-const downloadUrl = computed(() => {
-  return `/files/download?filepath=${encodeURIComponent(props.filepath)}`
-})
+// const downloadUrl = computed(() => {
+//   //return `/files/download?filepath=${encodeURIComponent(props.filepath)}`
+
+// })
 </script>
 
 <style scoped>

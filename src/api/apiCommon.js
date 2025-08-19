@@ -43,9 +43,23 @@ export const ApiCommon = {
     }
   },
 
-  uploadFile : async(formData) => {
+  download : async(attachFileId, seq) => {
     try{
-      const res = await API_URL.post(`/uploadFile/saveFile`, formData, {
+      const res = await API_URL.get('/files/download', {
+      params: { attachFileId, seq },
+      responseType: 'blob' // 중요한 설정!
+    });
+
+      console.log('res',res)
+      return res
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  saveFileInfo : async(formData) => {
+    try{
+      const res = await API_URL.post(`/files/saveFileInfo`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -58,9 +72,13 @@ export const ApiCommon = {
     }
   },
 
-  deleteFile : async(fileId) => {
+  deleteFile : async(fileId, seq) => {
     try{
-      const msg = await API_URL.delete(`/uploadFile/deleteFile/${fileId}`)
+      const msg = await API_URL.delete(`/files/deleteFile`, {
+        params: {
+          fileId: fileId,
+          seq: seq,
+      }})
       return msg.data
     }catch(err){
       throw err.response
@@ -83,5 +101,19 @@ export const ApiCommon = {
     }
   },
 
+  getNextSeq : async(tb, cd, date) => {
+    try{
+      const seq = await API_URL.get(`/common/getNextSeq`, {
+        params: {
+          tb: tb,
+          cd: cd,
+          date: date,
+        }
+      })
+      return seq.data
+    }catch(err){
+      throw err.response
+    }
+  },
 
 }

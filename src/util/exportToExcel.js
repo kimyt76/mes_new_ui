@@ -4,9 +4,12 @@ import { saveAs } from 'file-saver';
 
 // export function exportToExcel(data: any[], filename: string) {
 export function exportToExcel(headers, data, filename) {
+  //console.log('data', data)
+  console.log('headers', typeof headers)
   const headerTitles = headers.value.map(h => h.title)
+  console.log('headerTitles', headerTitles)
   const headerKeys = headers.value.map(h => h.key)
-
+  console.log('headerKeys', headerKeys)
   const formattedData = data.map(item => {
     const row = {}
     headerKeys.forEach((key, idx) => {

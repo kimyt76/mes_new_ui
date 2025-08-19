@@ -53,6 +53,26 @@ export function firstDateDay(){
 
 
 /**
+ *  KST 날짜 시간
+ */
+export function todayKST () {
+  const date = new Date()
+  // UTC → KST (UTC+9)
+  date.setHours(date.getHours() + 9)
+  return date.toISOString().split('T')[0] // YYYY-MM-DD 형식
+}
+
+export function formatDate (value) {
+  if (!value) return ''
+  const d = new Date(value)
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  //console.log('yyyy', `${yyyy}-${mm}-${dd}`)
+  return `${yyyy}-${mm}-${dd}`
+}
+
+/**
  *   빈 값 체크
  */
 export function isEmpty(input){
@@ -209,4 +229,15 @@ export const incrementNumber = (cd) => {
 
   // 기존 문자열 앞부분 + 새 접미사
   return cd.slice(0, -2) + newSuffix;
+}
+
+
+/**
+ * 부가세
+ * @param {*} supplyPrice
+ * @returns
+ */
+export const calculateVAT = (supplyPrice) =>{
+  let val = supplyPrice * 0.1
+  return Math.round(val);
 }

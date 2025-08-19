@@ -1,14 +1,13 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '기본관리', '품목상세목록']"
+    :items="['MES', '영업관리', '수주관리']"
     class="custom-breadcrumbs"
     >
   </v-breadcrumbs>
   <v-card class="pa-1" style="height: 60px;">
     <v-row>
-        <v-col>
-        <v-form ref="srhForm" @submit.prevent ='srhContractList'>
-          <div class="d-flex ga-3" > <!-- ga-4 는 Vuetify gap 클래스 -->
+      <v-form ref="srhForm" @submit.prevent ='srhContractList'>
+        <v-col class="d-flex flex-row ga-3 ml-2 mr-2">
             <v-text-field
               v-model="form.itemName"
               dense
@@ -16,6 +15,7 @@
               label="품목명"
               placeholder="품목명을 입력해주세요"
               variant="underlined"
+              style="width: 150px;"
               />
           <v-text-field
               v-model="form.managerName"
@@ -24,6 +24,7 @@
               label="담당자명"
               placeholder="담당자명을 입력해주세요"
               variant="underlined"
+              style="width: 150px;"
               />
           <v-text-field
               v-model="form.customerName"
@@ -32,6 +33,7 @@
               label="거래처명"
               placeholder="거래처명을 입력해주세요"
               variant="underlined"
+              style="width: 150px;"
               />
           <v-select
             v-model="form.statusType"
@@ -41,6 +43,7 @@
             item-value="code"
             variant="underlined"
             density="compact"
+            style="width: 90px;"
             />
           <v-btn
             color = "#EFEBE9"
@@ -51,75 +54,76 @@
             text="초기화"
             @click=srhForm.reset()
             />
-        </div>
+          </v-col>
         </v-form>
-      </v-col>
     </v-row>
   </v-card>
-    <v-row class="mb-1" style="height: 70px;">
-      <v-col>
-        <div class="d-flex ga-4 justify-end">
+    <v-row style="height: 70px;">
+      <v-col class="d-flex justify-end align-center mr-2" style="gap: 8px; margin-top: 8px;">
         <v-btn
             dense
-            color = "brown-lighten-4"
-            class="mt-3"
+            color="brown-lighten-4"
             text="신규"
             @click="goContract()"
             />
           <v-btn
-            class="mt-3 mr-3 excel-btn"
+            class="mr-3 excel-btn"
             text="엑셀"
             prepend-icon="mdi-microsoft-excel"
             @click="excel"
             />
-        </div>
       </v-col>
     </v-row>
-  <v-data-table
-    :headers="headers"
-    :items="contractList"
-    :loading="loading"
-    no-data-text="데이터가 없습니다."
-    loading-text="조회중입니다 잠시만 기다려주세요"
-    :items-per-page="25"
-    >
-      <template v-slot:headers="{ columns }">
-        <tr>
-          <th
-            v-for="column in columns"
-            :key="column.key"
-            class="custom-header"
-            style="height: 30px;"
-            :style="{textAlign: 'center'} "
-            >
-            {{ column.title }}
-          </th>
-        </tr>
-    </template>
-    <!-- 리스트 영역 커스터마이징 -->
-    <template #item="{ item }">
-      <tr style="height: 30px;">
-        <td style="width: 100px; height: 30px; text-align: center; text-decoration: underline; cursor: pointer;" @click="goContract(item.contractId)">{{ item.contractDateSeq }}</td>
-        <td style="width: 200px; height: 30px; text-decoration: underline;  cursor: pointer;" @click="goContract(item.contractId)">{{item.itemName}}</td>
-        <td style="width: 90px; height: 30px; text-align: center;">{{item.dueDate}}</td>
-        <td style="width: 90px; height: 30px; text-align: center;">{{item.managerName}}</td>
-        <td style="width: 200px; height: 30px; text-align: center;">{{item.customerName}}</td>
-        <td style="width: 100px; height: 30px; text-align: right;">{{ formatComma(item.totQty) }}</td>
-        <td style="width: 100px; height: 30px; text-align: right;">{{ formatComma(item.totSupplyPrice) }}</td>
-        <td style="width: 60px; height: 30px; text-align: center;">{{item.orderStatus === 'ING'?  '진행중' : '종료'}}</td>
-        <td style="width: 50px; height: 30px; text-align: center;">
-          <v-chip
-            :color="item.printYn === 'Y' ? undefined : red"
-            text-color="black"
-            size="small"
-            variant="elevated"
+    <v-row>
+      <v-col>
+        <v-data-table
+          :headers="headers"
+          :items="contractList"
+          :loading="loading"
+          no-data-text="데이터가 없습니다."
+          loading-text="조회중입니다 잠시만 기다려주세요"
+          :items-per-page="25"
           >
-            인쇄
-          </v-chip>
-        </td>
-      </tr>
-    </template>
-  </v-data-table>
+            <template v-slot:headers="{ columns }">
+              <tr>
+                <th
+                  v-for="column in columns"
+                  :key="column.key"
+                  class="custom-header"
+                  style="height: 30px;"
+                  :style="{textAlign: 'center'} "
+                  >
+                  {{ column.title }}
+                </th>
+              </tr>
+          </template>
+          <!-- 리스트 영역 커스터마이징 -->
+          <template #item="{ item }">
+            <tr style="height: 30px;">
+              <td style="width: 100px; height: 30px; text-align: center; text-decoration: underline; cursor: pointer;" @click="goContract(item.contractId)">{{ item.contractDateSeq }}</td>
+              <td style="width: 200px; height: 30px; text-decoration: underline;  cursor: pointer;" @click="goContract(item.contractId)">{{item.itemName}}</td>
+              <td style="width: 90px; height: 30px; text-align: center;">{{item.dueDate}}</td>
+              <td style="width: 90px; height: 30px; text-align: center;">{{item.managerName}}</td>
+              <td style="width: 200px; height: 30px; text-align: left;">{{item.customerName}}</td>
+              <td style="width: 100px; height: 30px; text-align: right;">{{ formatComma(item.totQty) }}</td>
+              <td style="width: 100px; height: 30px; text-align: right;">{{ formatComma(item.totSupplyPrice) }}</td>
+              <td style="width: 60px; height: 30px; text-align: center;">{{item.statusType === 'ING' ?  '진행중' : '종료'}}</td>
+              <td style="width: 40px; height: 30px; text-align: center;">
+                <p
+                  style="padding: 4px; text-align: center; cursor: pointer;"
+                  :style="{
+                    backgroundColor: item.printYn === 'Y' ? '#FFAB91' : 'transparent'
+                  }"
+                  @click="onPrint"
+                >
+                  인쇄
+                </p>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
 </template>
 
 <script setup>
@@ -144,17 +148,17 @@ const form = reactive({
   statusType: '',
 })
 
-const headers =ref([
-  { title: '일자-No.',          key: 'contractDateSeq',    align: 'center' },
+const headers =[
+  { title: '일자-No.',          key: 'contractDateSeq',   align: 'center' },
   { title: '품목명',            key: 'itemName',          align: 'center'},
-  { title: '납기일자',          key: 'dueDate',       align: 'center' },
+  { title: '납기일자',          key: 'dueDate',           align: 'center' },
   { title: '담당자명',          key: 'managerName',       align: 'center' },
   { title: '거래처명',          key: 'customerName',      align: 'center' },
-  { title: '주문수량합계',       key: 'totQty',            align: 'center'},
+  { title: '주문수량합계',       key: 'totQty',           align: 'center'},
   { title: '주문공급가액합계',   key: 'totUnitPrice',      align: 'center'},
-  { title: '진행상태',          key: 'orderStatusName',   align: 'center' },
+  { title: '진행상태',          key: 'statusType',        align: 'center' },
   { title: '인쇄',              key: 'printYn',           align: 'center' },
-])
+]
 
 
 onMounted( async () =>{
@@ -163,7 +167,6 @@ onMounted( async () =>{
 })
 
 const goContract = (id) => {
-
   if ( isEmpty(id)) {
     router.push({ name: 'ContractReg' })
   }else{
@@ -186,6 +189,10 @@ const srhContractList = async () => {
   }finally{
     loading.value = false
   }
+}
+
+const onPrint = () => {
+
 }
 
 const excel = () => {

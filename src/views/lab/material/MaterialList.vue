@@ -7,7 +7,7 @@
         <v-col>
           <div class="d-flex ga-4 ml-2">
             <v-text-field
-              v-model="form.itemNm"
+              v-model="form.itemName"
               label="품목명"
               placeholder="품목명을 입력해주세요"
               variant="underlined"
@@ -111,7 +111,7 @@ const itemList = ref([])
 
 const headers = [
     { title: '품목코드',  key: 'itemCd', width: 100},
-    { title: '품목명',    key: 'itemnm', width: 250},
+    { title: '품목명',    key: 'itemName', width: 250},
     { title: '구매처',    key: 'customerNm', width: 150},
     { title: '제조원',    key: 'cnIngredientName', width: 150},
     { title: '입고단가',  key: 'inPrice', width: 80},
@@ -132,7 +132,7 @@ const srhList = () =>{
 }
 
 const form = reactive({
-  itemNm: '',
+  itemName: '',
   itemCd: '',
   ingredientNm: '',
   customerNm: '',

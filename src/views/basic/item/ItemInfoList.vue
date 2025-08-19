@@ -19,7 +19,7 @@
             density="compact"
             />
           <v-text-field
-            v-model="form.itemNm"
+            v-model="form.itemName"
             density="compact"
             label="품목명"
             placeholder="품목명을 입력해주세요"
@@ -155,7 +155,7 @@ const itemTypeCds = ref([])
 
 const form = reactive({
   itemTypeCd : '',
-  itemNm: null,
+  itemName: null,
   itemCd: null,
   customerName: null,
   useYn : 'Y',
@@ -175,7 +175,7 @@ const items = [
  *  테이블 헤더
  */
  const headers = ref([
-    { title: '품목코드',    key: 'itemCd',      align: 'center' },
+    { title: '품목코드',    key: 'itemCd',      align: 'center' , sortable: true},
     { title: '품목명',      key: 'itemName',    align: 'center' },
     { title: '품목구분',    key: 'itemTypeCd',  align: 'center' },
     { title: '단위',        key: 'unit',        align: 'center' },

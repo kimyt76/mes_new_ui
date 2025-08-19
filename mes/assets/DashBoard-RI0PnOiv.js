@@ -1,0 +1,1 @@
+import"./filedownLoad-DSISiZ_u.js";import{_ as a,c as o,o as r}from"./index-BNL3Tgw5.js";import"./apiCommon-LY9rUrf-.js";const t={__name:"DashBoard",setup(e){return(s,_)=>(r(),o("div",null," 이거슨 dashboard "))}},n=a(t,[["__scopeId","data-v-933554d2"]]);export{n as default};

@@ -160,7 +160,15 @@
                 density="compact"
                 />
               </v-col>
-              <v-col cols="9">
+              <v-col cols="3">
+                <v-text-field
+                v-model="form.tradingMethod"
+                label="거래방법"
+                variant="underlined"
+                density="compact"
+                />
+              </v-col>
+              <v-col cols="6">
                 <v-text-field
                   v-model="form.address"
                   label="주소"
@@ -226,7 +234,7 @@ import { onMounted, reactive, ref } from 'vue';
 const dialog = ref(false)
 const { userId, memberNm} = useAuthStore()
 const { vError, vInfo, vWarning } = useAlertStore()
-const emit = defineEmits('saved','close-dialog')
+const emit = defineEmits(['saved','close-dialog'])
 
 const props = defineProps({
   title: {
@@ -246,12 +254,27 @@ const customerGrp2s = ref([])
 
 const form = reactive({
   customerType: '',
-  customerName: '',
   customerCd: '',
+  customerName: '',
   memberCd: '',
   memberName: '',
+  businessItem: '',
+  businessType: '',
+  president: '',
+  tel: '',
+  fax: '',
+  presidentTel: '',
+  email: '',
+  customerManager: '',
+  customerManagerTel: '',
+  zipCode: '',
+  address: '',
+  tradingMethod: '',
   customerGrp1: '',
   customerGrp2: '',
+
+  searchText: '',
+  memo: '',
 
   userId: userId,
 })
@@ -281,13 +304,13 @@ onMounted( async () => {
     Object.assign(form, res)
   }else{
     form.memberName = memberNm
+    form.memberCd = userId
   }
 })
 
-
-const handleSelected = (cd, nm) => {
-  form.memberCd = cd
-  form.memberName = nm
+const handleSelected = (obj) => {
+  form.memberCd = obj.userId
+  form.memberName = obj.memberNm
 }
 
 const checkCustomerCd = async () =>{

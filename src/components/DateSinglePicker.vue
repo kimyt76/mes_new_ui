@@ -7,7 +7,7 @@
           v-model="formattedDate"
           :label="title"
           density="compact"
-          style="max-width: 200px;"
+          style="max-width: 150px;"
           @click="onTextFieldClick"
         />
         <!-- 캘린더 아이콘 메뉴 -->
@@ -43,8 +43,7 @@ const props = defineProps({
 })
 
 // 오늘 날짜 (초기값)
-const today = new Date()
-
+const today = new Date(format(new Date(), 'yyyy-MM-dd'))
 // defineModel로 부모와 양방향 바인딩
 const modelValue = defineModel()
 

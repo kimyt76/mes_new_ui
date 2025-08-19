@@ -96,6 +96,15 @@ const routes = [
         name: 'OrderNew',
         component: () => import('@/views/order/order/OrderNew.vue')
       },
+
+      //기안서관리
+      {
+        path: 'draftList',
+        name: 'DraftList',
+        component: () => import('@/views/order/draft/DratfList.vue')
+      },
+
+      // 수주관리
       {
         path: 'contractList',
         name: 'ContractList',
@@ -111,6 +120,47 @@ const routes = [
         path: 'contractReg',
         name: 'ContractReg',
         component: () => import('@/views/order/contract/ContractReg.vue'),
+      },
+      //판매관리
+      {
+        path: 'saleList',
+        name: 'SaleList',
+        component: () => import('@/views/order/sale/SaleList.vue')
+      },
+      {
+        path: 'saleReg',
+        name: 'SaleReg',
+        component: () => import('@/views/order/sale/SaleReg.vue')
+      },
+      {
+        path: 'saleDetail/:id?',
+        name: 'SaleDetail',
+        component: () => import('@/views/order/sale/SaleDetail.vue'),
+        props: true,
+      },
+      //출하지시서관리
+      {
+        path: 'shipmentList',
+        name: 'ShipmentList',
+        component: () => import('@/views/order/shipment/ShipmentList.vue')
+      },
+      {
+        path: 'shipmentReg',
+        name: 'ShipmentReg',
+        component: () => import('@/views/order/shipment/ShipmentReg.vue')
+      },
+      {
+        path: 'shipmentDetail/:id?',
+        name: 'ShipmentDetail',
+        component: () => import('@/views/order/shipment/ShipmentDetail.vue'),
+        props: true,
+      },
+      //진행현황
+      {
+        path: 'progressList',
+        name: 'ProgressList',
+        component: () => import('@/views/order/mgmt/ProgressList.vue'),
+        props: true,
       },
     ]
   },

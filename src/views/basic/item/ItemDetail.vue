@@ -52,7 +52,6 @@
                 item-value="code"
                 variant="underlined"
                 density="compact"
-                readonly
               />
            </v-col>
            <v-col style="height: 60px;">
@@ -64,7 +63,6 @@
                 item-value="code"
                 variant="underlined"
                 density="compact"
-                readonly
               />
             </v-col>
         </v-row>
@@ -191,12 +189,11 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { formatComma, parseCommaInput } from '@/util/common';
 import { useAlertStore } from '@/stores/alert';
 import CustomerListPop from '../customer/CustomerListPop.vue';
-
 
 const { vError, vSuccess } =useAlertStore()
 
@@ -281,6 +278,10 @@ const saveInfo = async () => {
     vError('저장에 실패했습니다.')
   }
 }
+
+watch(() => form.itemCategory1, async (newVal) => {
+  itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
+})
 
 const customerPop = () =>{
   dialog.value = true

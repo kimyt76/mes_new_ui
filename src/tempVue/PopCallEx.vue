@@ -266,9 +266,9 @@ const openItemPop = () => {
   itemDialog.value = true
 }
 
-const itemHandler = (itemCd, itemNm) => {
+const itemHandler = (itemCd, itemName) => {
   form.itemCd = itemCd
-  itemName.value = itemNm
+  itemName.value = itemName
 }
 
 

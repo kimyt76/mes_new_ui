@@ -17,7 +17,7 @@
               variant="underlined"
               />
             <v-text-field
-              v-model="form.itemNm"
+              v-model="form.itemName"
               density="compact"
               label="품목명"
               placeholder="품목명을 입력해주세요"
@@ -106,7 +106,7 @@ const form = reactive({
   fromDate : '',
   toDate : '',
   customerNm : null,
-  itemNm: null,
+  itemName: null,
   draftNm: null,
 })
 
@@ -142,7 +142,7 @@ const srhOrderList = async () => {
     { title: '기안일자',  key: 'draftDate',   align: 'center'},
     { title: '문서번호',  key: 'orderNm',     align: 'center'},
     { title: '고객사명',  key: 'customerNm',  align: 'center'},
-    { title: '품목명',    key: 'itemNm',      align: 'center'},
+    { title: '품목명',    key: 'itemName',      align: 'center'},
     { title: '기안자',    key: 'draftNm',     align: 'center'},
 ])
 
@@ -151,7 +151,7 @@ const srhOrderList = async () => {
 // );
 
 const goOrderNew = ()=>{
-  router.push('/order/orderNew')
+  router.push({ name: 'OrderNew'})
 }
 
 const handleRowClick = (event, item) => {

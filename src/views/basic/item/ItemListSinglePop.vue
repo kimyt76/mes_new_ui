@@ -1,186 +1,150 @@
 <template>
-<v-card class="pa-3">
-  <v-card-item title="품목코드 조회"></v-card-item>
-  <v-row>
-    <v-col style="height: 20px; padding: 3px;">
-      <v-form ref="srhForm" @submit.prevent="srhItemList">
-      <div class="d-flex ga-4 ml-4">
+<v-card style="width: 900px;">
+  <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+    <v-toolbar-title>품목코드조회</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon @click="emit('close-dialog')">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </v-toolbar>
+  <v-spacer></v-spacer>
+  <v-card-text >
+    <v-row>
+      <v-form ref="srcForm" @submit.prevent="searchList">
+      <v-col class="d-flex flex-row ga-3">
         <v-select
-          v-model="form.itemTypeCd"
+          v-model="form.itemTypeName"
           label="품목구분"
           :items="itemTypeCds"
           item-title="codeNm"
           item-value="code"
           variant="underlined"
+          style="width: 200px;"
+          density="compact"
           />
         <v-text-field
-          v-model="form.itemNm"
-          density="compact"
+          v-model="form.itemName"
           label="품목명"
+          density="compact"
           placeholder="품목명을 입력해주세요"
-          variant="underlined"
-          />
+          style="width: 200px;"
+        />
         <v-text-field
           v-model="form.itemCd"
-          density="compact"
           label="품목코드"
+          density="compact"
+          style="width: 150px;"
           placeholder="품목코드를 입력해주세요"
-          variant="underlined"
-          />
+        />
         <v-btn
-          color = "#EFEBE9"
           text="조회"
-          class="mt-3"
+          color = "brown-lighten-4"
           type="submit"
           />
         <v-btn
-          class="mt-3 mr-3"
           text="초기화"
-          @click="srhForm.reset()"
+          @click="srcForm.reset()"
           />
-      </div>
+      </v-col>
       </v-form>
-    </v-col>
-  </v-row>
-  <v-row>
-    <v-col
-      style="height: 500px;"
-      >
-      <v-radio-group v-model="selectedItem" color="primary">
-      <v-data-table
-        :headers="headers"
-        :items="itemList"
-        :loading="loading"
-        select-strategy="single"
-        show-select
-        no-data-text="데이터가 없습니다."
-        loading-text="조회중입니다 잠시만 기다려주세요"
-        :items-per-page="15"
-        v-model:selected="itemSelected"
-        style="height: 550px;"
+    </v-row>
+      <!-- 스크롤 가능한 테이블 컨테이너 -->
+      <div style="overflow-y: auto; height: calc(100% - 40px);">
+        <v-data-table
+          :headers="headers"
+          :items="itemList"
+          :loading="loading"
+          item-value ="itemCd"
+          density="compact"
+          fixed-header
+          height="520px"
+          class="custom-table"
+          return-object
+          @click:row="itemRow"
         >
-        <template v-slot:headers="{ columns }">
-        <tr>
-          <th
-            v-for="column in columns"
-            :key="column.key"
-            style="background-color: #BCAAA4; height: 40px;"
-          >
-            {{ column.title }}
-          </th>
-        </tr>
-      </template>
-      <template v-slot:item="{ item }">
-      <tr
-        @click="selectRow(item)"
-        :class="{ 'selected-row': itemSelected[0] === item }"
-        style="cursor: pointer;"
-        >
-        <td>
-          <v-radio :value="item" />
-        </td>
-        <td>{{ item.itemTypeNm }}</td>
-        <td>{{ item.itemCd }}</td>
-        <td>{{ item.itemName }}</td>
-        <td>{{ item.spec }}</td>
-        <td>{{ item.customerNm }}</td>
-      </tr>
-    </template>
-    </v-data-table>
-    </v-radio-group>
-    </v-col>
-  </v-row>
-  <v-row class="mt-10" style="height: 70px;">
-    <v-col>
-      <div class="d-flex ga-4 justify-end">
-        <v-btn
-          dense
-          text="선택"
-          color = "brown-lighten-4"
-          />
-        <v-btn
-          text="닫기"
-          variant="tonal"
-          @click="emit('close-dialog')"
-          />
+        <template #item.itemTypeName="{ item }">
+          <div class="wrap-cell">{{ item.itemTypeName }}</div>
+        </template>
+        <template #item.itemCd="{ item }">
+          <div class="wrap-cell">{{ item.itemCd }}</div>
+        </template>
+        <template #item.itemName="{ item }">
+          <div class="wrap-cell">{{ item.itemName }}</div>
+        </template>
+        <template #item.customerName="{ item }">
+          <div class="wrap-cell">{{ item.customerName }}</div>
+        </template>
+      </v-data-table>
       </div>
-    </v-col>
-  </v-row>
+  </v-card-text>
+  <v-card-actions>
+    <v-btn
+      text="닫기"
+      variant="tonal"
+      class="mb-4 mr-3"
+      @click="emit('close-dialog')"
+      />
+  </v-card-actions>
 </v-card>
-
-
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
-import { useAlertStore } from '@/stores/alert';
-import { reactive, ref, onMounted } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 
-const selectedItem = ref(null)
-const { vError } = useAlertStore()
+const emit = defineEmits('selected','close-dialog')
+
 const loading = ref(false)
-const form = reactive ({
+const srcForm = ref('')
+const itemTypeCds = ref([])
+const itemList = ref([])
+const form = reactive({
   itemTypeCd: '',
+  itemName: '',
   itemCd: '',
-  itemNm: '',
 })
-const emit = defineEmits(['selected', 'close-dialog'])
+
 const headers = [
-  { title: '품목구분',  key: 'itemTypeNm',  align: 'center', style: 'width: 50px;' },
-  { title: '품목번호',  key: 'itemCd',      align: 'center', style: 'width: 100px'  },
-  { title: '품목명',    key: 'itemName',      align: 'center', style: 'width: 200px;align:center;' },
-  { title: '규격',      key: 'spec',        align: 'center', style: 'width: 80px'},
-  { title: '거래처',    key: 'customerNm', align: 'center', style: 'width: 100px'},
+  { title: '품목구분',  key: 'itemTypeName',  align: 'center',  width: '80px' },
+  { title: '품목코드',  key: 'itemCd', align: 'center', width: '110px' },
+  { title: '품목명',    key: 'itemName',   align: 'start', width: '210px' },
+  { title: '거래처',    key: 'customerName',   align: 'start', width: '150px' },
 ]
 
-const itemList = ref([])
-const srhItemList = async () =>{
+const searchList = async () =>{
   loading.value = true
 
-  try{
-    const params = {
-      ...form,
-    }
-    itemList.value = await ApiItem.getItemList(params)
-  }catch(err){
-    vError(err)
-  }finally{
-    loading.value = false
+  const params = {
+    ...form
   }
+  itemList.value = await ApiItem.getItemList(params)
+
+  loading.value =false
 }
 
-/**
- * 품목타입 select
- */
-const itemTypeCds = ref([])
-onMounted(async () => {
-    itemTypeCds.value =  await ApiCommon.getCodeList('item_Type_Cd')
+const itemRow = (event, item) =>{
+  console.log('item', item.item)
+  emit('selected', item.item)
+}
+
+onMounted( async () => {
+  itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
 })
-
-/**
- *  리스트 선택
- */
-const itemSelected = () => {
-
-}
-
-const selectRow = (item) => {
-  itemSelected.value = [item]
-  emit('selected', item.itemCd, item.itemName )
-  emit('close-dialog')
-}
-
-/**
- * 조회조건 초기화
- */
-const srhForm = ref('')
-const reset = () => {
-  srhForm.value.reset()
-}
 
 </script>
 
-<style scoped>
-@import '@/assets/css/main.css';
+<style >
+.custom-table thead th {
+  background-color: #BCAAA4 !important;
+}
+.wrap-cell {
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
+}
+.toolbar-Head {
+  color: white;
+  background-color:#546E7A;
+}
 </style>

@@ -129,12 +129,12 @@
           <tr>
             <th>제목</th>
             <td colspan="3">
-              {{ orderInfo.customerNm }}&nbsp;&nbsp; {{orderInfo.itemNm}} &nbsp;&nbsp;&nbsp;발주서 및 제품 사양서 검토 요청의 건
+              {{ orderInfo.customerNm }}&nbsp;&nbsp; {{orderInfo.itemName}} &nbsp;&nbsp;&nbsp;발주서 및 제품 사양서 검토 요청의 건
             </td>
           </tr>
           <tr>
             <td colspan="4" style="height: 120px; text-align: center;">
-              {{orderInfo.customerNm}} &nbsp;&nbsp;  {{orderInfo.itemNm}} &nbsp;&nbsp; 발주서 및 제품 사양서 기안하오니 검토하여 주시기 바랍니다.<br/><br/>
+              {{orderInfo.customerNm}} &nbsp;&nbsp;  {{orderInfo.itemName}} &nbsp;&nbsp; 발주서 및 제품 사양서 기안하오니 검토하여 주시기 바랍니다.<br/><br/>
                 - 아 래-
             </td>
           </tr>
@@ -145,7 +145,7 @@
             </td>
             <th>품목</th>
             <td>
-              {{orderInfo.itemNm}}
+              {{orderInfo.itemName}}
             </td>
           </tr>
           <tr>
@@ -164,6 +164,8 @@
               <DownLoadLink
                 :filepath=  "attachInfo.orderFilePath|| ''"
                 :fileName=  "attachInfo.orderFileName|| ''"
+                :attachFileId=  "attachInfo.orderAttachFileId|| ''"
+                :seq=  "attachInfo.orderSeq|| ''"
                 />
             </td>
             <th>제품사양서 </th>
@@ -171,6 +173,8 @@
               <DownLoadLink
                 :filepath= "attachInfo.prodFilePath|| ''"
                 :fileName= "attachInfo.prodFileName|| ''"
+                :attachFileId=  "attachInfo.prodAttachFileId|| ''"
+                :seq=  "attachInfo.prodSeq|| ''"
                 />
             </td>
           </tr>
@@ -250,7 +254,7 @@ const orderInfo = ref({
   orderDate : '',
   seq : '',
   customerNm : '',
-  itemNm : '',
+  itemName : '',
   orderQty : 0,
   dueDate : '',
   draftNm : '',
@@ -280,8 +284,12 @@ const boardInfo = ref([])
 const attachInfo = ref({
   orderFileName : '',
   orderFilePath : '',
+  orderFileAttachFileId : '',
+  orderSeq : '',
   prodFileName : '',
   prodFilePath : '',
+  prodFileAttachFileId : '',
+  prodSeq : '',
 })
 
 const approvalDate = ref(null)
@@ -435,10 +443,14 @@ const attachInit = result => {
   if ( result.orderAttachFileInfo !== null ) {
     attachInfo.value.orderFileName = result.orderAttachFileInfo.fileName
     attachInfo.value.orderFilePath = result.orderAttachFileInfo.filePath
+    attachInfo.value.orderFileAttachFileId = result.orderAttachFileInfo.attachFileId
+    attachInfo.value.orderSeq = result.orderAttachFileInfo.seq
   }
   if ( result.prodAttachFileInfo !== null ){
     attachInfo.value.prodFileName = result.prodAttachFileInfo.fileName
     attachInfo.value.prodFilePath = result.prodAttachFileInfo.filepath
+    attachInfo.value.prodFileAttachFileId = result.prodAttachFileInfo.attachFileId
+    attachInfo.value.prodSeq = result.prodAttachFileInfo.seq
   }
 }
 

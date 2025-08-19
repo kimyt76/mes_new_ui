@@ -1,25 +1,25 @@
 <template>
 <div :id="$attrs.id"></div>
-<v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+<v-breadcrumbs :items="['MES', '수주관리', '주문상세']"></v-breadcrumbs>
 <v-card>
-  <v-card-item
-      title="주문서상세"
-      />
+  <v-card-item title="주문서상세"/>
   <v-form ref="vform" @submit.prevent="saveInfo" >
   <v-card-text>
     <v-row>
-        <v-col class="d-flex flex-row align-center">
+        <v-col class="d-flex flex-row align-center" style="gap: 4px">
           <DateSinglePicker
             v-model="form.contractDate"
             title="주문일자"
             density="compact"
             width="120"
+            style="width: 100px"
             readonly
             />
             <v-text-field
             v-model="form.seq"
             density="compact"
-            width="20"
+            style="width: 40px; max-width: 60px; min-width: 0"
+            class="mr-10"
             readonly
             />
         </v-col>
@@ -99,7 +99,7 @@
       </v-col>
       <v-col>
         <v-text-field
-          v-model="form.transactionType"
+          v-model="form.paymentCondition"
           label="결재조건"
           variant="underlined"
           density="compact"
@@ -133,7 +133,7 @@
           <v-btn
             text="추가 +"
             density="compact"
-            @click="addRow"
+            @click="itemPop"
             />
           </div>
         </v-col>
@@ -192,6 +192,7 @@
               type="number"
               style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
               class="custom-line"
+              @blur="onBlur(index)"
             />
           </template>
           <template #item.unitPrice="{ item, index }">
@@ -200,6 +201,7 @@
               type="number"
               style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
               class="custom-line"
+              @blur="onBlur(index)"
             />
           </template>
           <template #item.supplyPrice="{ item, index }">
@@ -230,6 +232,37 @@
             <!-- <v-btn size="small" text="삭제-" @click="removeRow(item)"/> -->
             <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="removeRow(item)"></v-icon>
           </template>
+
+          <!-- 총합 -->
+          <template v-slot:body.append>
+            <tr class="summary-row">
+              <!-- itemCd -->
+              <td style="width: 100px; height: 30px;"></td>
+              <!-- itemName -->
+              <td style="width: 250px; height: 30px;"></td>
+              <!-- unit -->
+              <td style="width: 80px; height: 30px;"></td>
+              <!-- qty 합계 -->
+              <td style="width: 110px;  height: 30px; text-align: right; font-weight: bold;">
+                {{ totalQty.toLocaleString() }}
+              </td>
+              <!-- unitPrice (비움) -->
+              <td style="width: 110px;"></td>
+              <!-- supplyPrice 합계 -->
+              <td style="width: 110px;  height: 30px; text-align: right; font-weight: bold;">
+                {{ totalSupplyPrice.toLocaleString() }}
+              </td>
+              <!-- vatPrice 합계 -->
+              <td style="width: 100px;  height: 30px; text-align: right; font-weight: bold;">
+                {{ totalVatPrice.toLocaleString() }}
+              </td>
+              <!-- etc = supplyPrice + vatPrice -->
+              <td style="width: 150px;  height: 30px; text-align: right; font-weight: bold;">
+                {{ totalAmount.toLocaleString() }}
+              </td>
+              <td style="height: 30px;"></td>
+            </tr>
+          </template>
           </v-data-table-virtual>
         </v-col>
       </v-row>
@@ -255,7 +288,6 @@
     </v-form>
 </v-card>
 
-
 <v-dialog  v-model="dialog" width="800px" height="800px" persistent>
     <component
       :is="currentComponent"
@@ -265,12 +297,19 @@
     />
 </v-dialog>
 
+<v-dialog v-model="dialog" width="800" height="800" persistent>
+    <ItemListMultiPop
+      @selected="handleRow"
+      @close-dialog="dialog = false"
+    />
+</v-dialog>
+
 </template>
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders';
 import DateSinglePicker from '@/components/DateSinglePicker.vue';
-import { computed, onMounted, reactive, ref, shallowRef } from 'vue';
+import {  onMounted, reactive, ref, shallowRef, computed, watch  } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
@@ -280,7 +319,8 @@ import { useAlertStore } from '@/stores/alert';
 import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import { ApiCommon } from '@/api/apiCommon';
 import { useAuthStore } from '@/stores/auth';
-import DownLoadLink from '@/components/DownLoadLink.vue';
+import { calculateVAT } from '@/util/common';
+import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 
 const { userId} = useAuthStore()
 const { vError, vSuccess, vWarning } = useAlertStore()
@@ -288,13 +328,9 @@ const { vError, vSuccess, vWarning } = useAlertStore()
 const router = useRouter()
 const currentComponent = shallowRef(null)
 const dialog = ref(false)
+const itemDialog = ref(false)
 const route = useRoute()
 const contractId = route.params.id
-const breadcrumbs = computed(() => {
-  return contractId
-    ? ['MES', '수주관리', '주문상세']
-    : ['MES', '수주관리', '주문신규'];
-});
 
 let nextId = 0
 
@@ -314,53 +350,135 @@ const form = reactive({
   descStorageName: '',
   descStorageCd: '',
   transactionType: '',
+  paymentCondition: '',
   expiryDate: '',
   tradingMethod: '',
   currencyType : '',
   dueDate: '',
 
+  contractId: '',
   attachFileId : '',
   userId: userId,
 })
 
-const attachInfo= ref({
-  fileName : '',
-  filePath : '',
-})
-
 const headers = ref([
-  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : 90 },
-  { title: '품목명',      key: 'itemName',   align: 'center',width : 300},
-  { title: '규격',        key: 'unit',       align: 'center' ,width : 70 },
-  { title: '수량',        key: 'qty',        align: 'center' ,width : 110},
-  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : 110},
-  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : 110},
-  { title: '부가세',      key: 'vatPrice',    align: 'center',width : 100},
-  { title: '적용',        key: 'etc',         align: 'center' ,width : 150},
-  { title: '-',          key: 'actions',        align: 'center' ,width : 10},
+  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : '100px' },
+  { title: '품목명',      key: 'itemName',   align: 'start',width : '250px'},
+  { title: '규격',        key: 'unit',       align: 'center' ,width : '80px' },
+  { title: '수량',        key: 'qty',        align: 'center' ,width : '110px'},
+  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : '110px'},
+  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : '110px'},
+  { title: '부가세',      key: 'vatPrice',    align: 'center',width : '100px'},
+  { title: '적용',        key: 'etc',         align: 'center' ,width : '150px'},
+  { title: '-',          key: 'actions',        align: 'center' ,width : '10px'},
 ])
 
-const handleSaved = ( cd, nm) => {
+
+// 1. 수량 합계
+const totalQty = computed(() => {
+  // .value로 실제 배열에 접근합니다.
+  return itemList.value.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+});
+
+// 2. 공급가액 합계
+const totalSupplyPrice = computed(() => {
+  return itemList.value.reduce((sum, item) => sum + Number(item.supplyPrice || 0), 0);
+});
+
+// 3. 부가세 합계
+const totalVatPrice = computed(() => {
+  return itemList.value.reduce((sum, item) => sum + Number(item.vatPrice || 0), 0);
+});
+
+// 4. 총 금액 (다른 computed 속성을 참조)
+const totalAmount = computed(() => {
+  // 다른 computed 속성의 값에 접근할 때도 .value를 사용합니다.
+  return totalSupplyPrice.value + totalVatPrice.value;
+});
+
+const onBlur = (index) => {
+  let qty = Number(itemList.value[index].qty);
+  let unitPrice = Number(itemList.value[index].unitPrice);
+
+  if (!isNaN(qty) && !isNaN(unitPrice)) {
+    itemList.value[index].supplyPrice = qty * unitPrice;
+  } else {
+    itemList.value[index].supplyPrice = 0;
+  }
+
+  if (!isNaN(itemList.value[index].supplyPrice) ) {
+    itemList.value[index].vatPrice = calculateVAT(itemList.value[index].supplyPrice)
+  } else {
+    itemList.value[index].vatPrice = 0;
+  }
+};
+
+watch(() => form.transactionType, async (newVal) => {
+  if ( form.transactionType === 'VRN' ){
+    itemList.value.map(o => {
+      o.vatPrice = 0
+    })
+  }else{
+    itemList.value.map(o => {
+      o.vatPrice = calculateVAT(o.supplyPrice)
+    })
+  }
+})
+
+const itemPop = () =>{
+  dialog.value = true
+}
+
+const handleRow = (obj) =>{
+  if (!Array.isArray(obj)) return;
+
+  const baseSeq = itemList.value.length;
+
+  const selectItem = obj.map((o, index) => ({
+      itemCd: o.itemCd,
+      itemName: o.itemName,
+      unit: o.unit,
+      qty: o.qty,
+      unitPrice: o.unitPrice,
+      supplyPrice: o.supplyPrice,
+      vatPrice: o.vatPrice,
+      etc: o.etc,
+      orderDist: baseSeq + index + 1,
+  }));
+
+  //console.log('selectItem', selectItem)
+  if (itemList.value.length > 0) {
+    itemList.value.push(...selectItem);
+  } else {
+    itemList.value = [...selectItem];
+  }
+
+}
+
+const handleSaved = ( obj ) => {
   switch (popType.value){
     case 'C':
-      form.customerName = nm
-      form.customerCd = cd
+      form.customerName = obj.customerName
+      form.customerCd = obj.customerCd
+      form.managerName = obj.memberCd
+      form.managerId = obj.memberCd
+      form.tradingMethod = obj.tradingMethod
       break
     case 'U':
-      form.managerName = nm
-      form.managerId = cd
+      form.managerName = obj.memberNm
+      form.managerId = obj.userId
       break
     case 'S':
-      form.descStorageName = nm
-      form.descStorageCd = cd
+      form.descStorageName = obj.storageName
+      form.descStorageCd = obj.storageCd
       break
-    case 'I':
-     if (selectedRowIndex.value !== null) {
-       const target = itemList.value[selectedRowIndex.value]
-        target.itemCd = cd
-        target.itemName = nm
-      }
-      break
+    // case 'I':
+    //  if (selectedRowIndex.value !== null) {
+    //    const target = itemList.value[selectedRowIndex.value]
+    //     target.itemCd = cd
+    //     target.itemName = nm
+    //   }
+    //   break
   }
   popType.value = ''
   dialog.value = false
@@ -377,12 +495,30 @@ const saveInfo = async () => {
       formData.append('contractInfo', JSON.stringify(params))
       formData.append('itemList', JSON.stringify(itemList.value))
 
+      const deleteFiles = []
+
       attachFile.value.forEach(file => {
-        formData.append('attachFile', file)
+        if (file.flag === 'N') {
+          formData.append('newFiles', file.file)
+        } else if (file.flag === 'D') {
+          deleteFiles.push({
+            attachFileId: file.attachFileId,
+            seq: file.seq
+          });
+        }
       })
 
-      const msg = await ApiOrder.saveContractInfo(formData)
+      formData.append('keptFiles', JSON.stringify(attachFile.value.filter(f => f.flag === 'S')))
+      if (deleteFiles.length > 0) {
+        formData.append('deleteFiles', new Blob(
+          [JSON.stringify(deleteFiles)],
+          { type: 'application/json' }
+        ));
+      }
+
+      const msg = await ApiOrder.updateContractInfo(formData)
       vSuccess(msg)
+      init()
   }catch(err){
      vError(err.message)
   }
@@ -413,20 +549,26 @@ const removeRow = (item) => {
   }
 }
 
-onMounted( async () => {
-  currencyTypes.value= await ApiCommon.getCodeList('currency_type')
-  transactionTypes.value= await ApiCommon.getCodeList('vat_rate')
+const init = async () => {
+  currencyTypes.value = await ApiCommon.getCodeList('currency_type');
+  transactionTypes.value = await ApiCommon.getCodeList('vat_rate');
 
-  const res = await ApiOrder.getContractInfo(contractId)
-  Object.assign(form, res.contractInfo)
+  const res = await ApiOrder.getContractInfo(contractId);
+  Object.assign(form, res.contractInfo);
 
-  itemList.value = res.itemList
+  itemList.value = res.itemList;
 
-  if ( res.attachFileInfo !== null ) {
-    attachFile.value = res.attachFileInfo
+  if (res.attachFileInfo !== null) {
+    attachFile.value = res.attachFileInfo;
+  } else {
+    attachFile.value = [];  // 없을 경우 초기화도 필요할 수 있음
   }
 
-  nextId = itemList.value.length
+  nextId = itemList.value.length;
+};
+
+onMounted( async () => {
+  init()
 })
 
 const openPop = (type) => {
@@ -470,5 +612,10 @@ const goList = () => {
   border: 0.5px solid;
   background: #f1f3f4;
   padding: 2px;
+}
+
+.summary-row {
+  background-color: #f4f4f4;
+  height: 30px;
 }
 </style>

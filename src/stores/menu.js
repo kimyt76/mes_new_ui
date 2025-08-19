@@ -12,8 +12,11 @@ export const useMenuStore = defineStore('menu', {
         ]
       },
       { title: '수주관리', icon: 'mdi-table-settings', items: [
-          { title: '발주관리', to: '/order/orderList' },
+          { title: '기안서관리', to: '/order/draftList' },
           { title: '수주관리', to: '/order/contractList' },
+          { title: '판매관리', to: '/order/saleList' },
+          { title: '출하관리', to: '/order/shipmentList' },
+          { title: '진행현황', to: '/order/progressList' },
         ]
       },
       { title: '연구관리', icon: 'mdi-microscope', items: [

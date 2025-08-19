@@ -116,12 +116,12 @@
         <tr>
           <th>제목</th>
           <td colspan="3">
-            {{ orderInfo.customerNm }}&nbsp;&nbsp; {{orderInfo.itemNm}} &nbsp;&nbsp;&nbsp;발주서 및 제품 사양서 검토 요청의 건
+            {{ orderInfo.customerNm }}&nbsp;&nbsp; {{orderInfo.itemName}} &nbsp;&nbsp;&nbsp;발주서 및 제품 사양서 검토 요청의 건
           </td>
         </tr>
         <tr>
           <td colspan="4" style="height: 120px; text-align: center;">
-            {{orderInfo.customerNm}} &nbsp;&nbsp;  {{orderInfo.itemNm}} &nbsp;&nbsp; 발주서 및 제품 사양서 기안하오니 검토하여 주시기 바랍니다.<br/><br/>
+            {{orderInfo.customerNm}} &nbsp;&nbsp;  {{orderInfo.itemName}} &nbsp;&nbsp; 발주서 및 제품 사양서 기안하오니 검토하여 주시기 바랍니다.<br/><br/>
               - 아 래-
           </td>
         </tr>
@@ -138,7 +138,7 @@
           <th>품목</th>
           <td>
             <v-text-field
-              v-model="orderInfo.itemNm"
+              v-model="orderInfo.itemName"
               style="width: 500px; height: 20px; vertical-align: center; "
               density="compact"
               class="mb-4"
@@ -278,7 +278,7 @@ const prodFile = ref(null)
 
 const orderInfo = ref({
   customerNm : '',
-  itemNm : '',
+  itemName : '',
   orderQty : '',
   dueDate : '',
 
@@ -371,7 +371,6 @@ const attachInit = result => {
   }
 }
 
-
 const deleteFile = async gb => {
   let id = ''
   if ( gb === 'o') {
@@ -382,8 +381,9 @@ const deleteFile = async gb => {
     orderInfo.value.prodAttachFileId = null
   }
 
+  const seq = 1
   try{
-    const msg = await ApiCommon.deleteFile(id)
+    const msg = await ApiCommon.deleteFile(id, seq)
     vSuccess(msg)
     router.push({ name: 'OrderDetail', params: { id: route.params.id } })
   }catch(err) {
