@@ -24,9 +24,8 @@
             </v-col>
           </v-row>
           <v-row >
-            <v-col>
-              <div class="d-flex align-center gap-4">
-                <div class="font-weight-medium text-grey-darken-1">구분 &nbsp;&nbsp;&nbsp;</div>
+            <v-col class="d-flex align-center gap-4">
+                <div class="font-weight-medium text-grey-darken-1">구분 : &nbsp;&nbsp;&nbsp;</div>
                 <v-radio-group
                   v-model="form.storageType"
                   inline
@@ -40,7 +39,6 @@
                       class="me-4"
                     />
                 </v-radio-group>
-                </div>
             </v-col>
           </v-row>
           <v-row>
@@ -71,7 +69,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col >
+            <v-col class="d-flex justify-end align-center mr-2">
               <v-card-actions>
                 <v-btn
                   color="indigo-darken-4"
@@ -92,7 +90,7 @@
       </v-card-text>
 
 
-      <v-dialog  v-model="dialog" max-width="800px" height="700px" persistent>
+      <v-dialog  v-model="dialog" max-width="800px" height="800px" persistent>
         <CustomerListPop
           @selected="handleSelect"
           @close-dialog="dialog = false"/>
@@ -141,24 +139,27 @@ const form = reactive({
   userId: userId,
 })
 
-watch(() => form.storageType, (newVal) => {
+watch(() => form.storageType, (newVal, oldVal) => {
+
+
   if (  newVal === 'S'  ){
     isDisabed1.value = true
     isDisabed2.value = true
   }else if ( newVal === 'F' ) {
     isDisabed1.value = false
     isDisabed2.value = true
-  }else if ( newVal === 'O' ) {
-    vInfo("공장(외주비관리)는 외주비 증빙 수령 시 사용합니다. \n 생산입고에서 외주비 관리를 하지 않을 경우 공장을 선택해 등록하시기 바랍니다.")
+  }else if ( newVal === 'O') {
 
     isDisabed1.value = false
     isDisabed2.value = false
+    if (oldVal === undefined) return
+    vInfo("공장(외주비관리)는 외주비 증빙 수령 시 사용합니다. \n 생산입고에서 외주비 관리를 하지 않을 경우 공장을 선택해 등록하시기 바랍니다.")
   }
 })
 
-const handleSelect = (cd, nm) =>{
-  form.outCustomerCd = cd
-  form.outCustomerName = nm
+const handleSelect = (obj) =>{
+  form.outCustomerCd = obj.customerCd
+  form.outCustomerName = obj.customerName
 }
 
 const saveInfo = async () => {
