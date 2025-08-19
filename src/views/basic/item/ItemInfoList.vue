@@ -1,122 +1,111 @@
 <template>
-  <v-breadcrumbs
+<v-breadcrumbs
     :items="['MES', '기본관리', '품목상세목록']"
     class="custom-breadcrumbs"
-    >
-  </v-breadcrumbs>
+    />
   <v-card class="pa-1" style="height: 60px;">
-    <v-row>
-      <v-col>
-        <v-form ref="srhForm" @submit.prevent ='srhItemList'>
-        <div class="d-flex ga-4"> <!-- ga-4 는 Vuetify gap 클래스 -->
+    <v-card-text >
+      <v-row>
+      <v-form ref="srhForm" @submit.prevent="srhItemList">
+        <v-col class="d-flex ga-4">
           <v-select
             v-model="form.itemTypeCd"
             label="품목구분"
+            density="compact"
             :items="itemTypeCds"
             item-title="codeNm"
             item-value="code"
             variant="underlined"
-            density="compact"
-            />
+            style="width: 120px;"
+          />
           <v-text-field
             v-model="form.itemName"
-            density="compact"
             label="품목명"
             placeholder="품목명을 입력해주세요"
             variant="underlined"
-            />
-          <v-text-field
-            v-model="form.itemCd"
             density="compact"
-            label="품목코드"
-            placeholder="품목코드를 입력해주세요"
-            variant="underlined"
+            style="width: 180px;"
             />
           <v-text-field
             v-model="form.customerName"
-            density="compact"
             label="거래처명"
             placeholder="거래처명을 입력해주세요"
             variant="underlined"
+            density="compact"
+            style="width: 180px;"
             />
           <v-select
             v-model="form.useYn"
             label="사용여부"
-            :items="items"
-            item-title="text"
-            item-value="value"
-            variant="underlined"
             density="compact"
-            />
+            :items="useYns"
+            item-title="codeNm"
+            item-value="code"
+            variant="underlined"
+            style="width: 90px;"
+          />
           <v-btn
-            color = "#EFEBE9"
             text="조회"
+            color="brown-lighten-4"
             type="submit"
             />
           <v-btn
-            class="mr-2"
             text="초기화"
-            @click="reset"
+            @click="srhForm.reset()"
             />
-          </div>
-        </v-form>
         </v-col>
+      </v-form>
     </v-row>
+    </v-card-text>
   </v-card>
-  <v-row class="mb-1">
-    <v-col>
-      <div class="d-flex ga-4 justify-end">
+  <v-spacer></v-spacer>
+  <v-row >
+    <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
       <v-btn
-        class="mt-3 mr-3 excel-btn"
+        class="excel-btn"
         text="엑셀"
         prepend-icon="mdi-microsoft-excel"
         @click="excel"
         />
-     </div>
-  </v-col>
-</v-row>
-<v-data-table
-  :headers="headers"
-  :items="itemList"
-  :loading="loading"
-  no-data-text="데이터가 없습니다."
-  loading-text="조회중입니다 잠시만 기다려주세요"
-  :items-per-page="25"
-  style="height: 700px"
-  >
-
-  <template v-slot:headers="{ columns }">
-    <tr>
-      <th
-        v-for="column in columns"
-        :key="column.key"
-        class="custom-header"
-        style="height: 30px;"
-        :style="{textAlign: 'center'} "
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col class="pa-0">
+      <v-data-table
+        :headers="headers"
+        :items="itemList"
+        :loading="loading"
+        :items-per-page="15"
+        no-data-text="데이터가 없습니다."
+        loading-text="조회중입니다 잠시만 기다려주세요"
+        density="compact"
+        style="height: 730px"
+        return-object
         >
-        {{ column.title }}
-      </th>
-    </tr>
-  </template>
-  <!-- 리스트 영역 커스터마이징 -->
-  <template #item="{ item }">
-    <tr style="height: 30px;">
-      <td style="width: 70px; height: 30px; text-align: center; ">{{ item.itemCd }}</td>
-      <td style="width: 300px; height: 30px; text-decoration: underline;  cursor: pointer;" @click="goDetail(item.itemCd, item.itemTypeCd)">{{item.itemName}}</td>
-      <td style="width: 70px; height: 30px; text-align: center;">{{item.itemTypeName}}</td>
-      <td style="width: 90px; height: 30px; text-align: center;">{{item.unit}}</td>
-      <td style="width: 90px; height: 30px; text-align: center;">{{item.spec}}</td>
-      <td style="width: 180px; height: 30px; text-align: left;">{{item.customerName}}</td>
-      <td style="width: 80px; height: 30px; text-align: center;">{{item.chargeSalesman}}</td>
-      <td style="width: 80px; height: 30px; text-align: center;">{{ item.chargeResearcher }}</td>
-      <td style="width: 150px; height: 30px; text-align: center;">{{ item.itemCategory1Name }}</td>
-      <td style="width: 100px; height: 30px; text-align: center;">{{item.itemCategory2Name}}</td>
-    </tr>
-  </template>
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header"
+              >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
+        <template #item.itemName="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="selectRowClick(item.itemCd, item.itemTypeCd)"
+          >
+            {{ item.itemName }}
+          </div>
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-row>
 
-</v-data-table>
-
-<v-dialog  v-model="dialog" max-width="900px" max-height="800px" persistent>
+  <v-dialog  v-model="dialog" max-width="900px" max-height="800px" persistent>
       <component
         :is="currentComponent"
         :id="id"
@@ -143,53 +132,45 @@ import ItemInfoM5Pop from './ItemInfoM5Pop.vue';
 import ItemInfoM6Pop from './ItemInfoM6Pop.vue';
 import ItemInfoM7Pop from './ItemInfoM7Pop.vue';
 
-const { vError, vSuccess } = useAlertStore()
+const { vError, vSuccess, vInfo } = useAlertStore()
 const { userId } = useAuthStore()
 
 const currentComponent = shallowRef(null)
 const dialog = ref(false)
 const srhForm = ref(null)
-const itemList = ref([])
 const loading = ref(false)
+const id = ref('')
 const itemTypeCds = ref([])
+const itemList = ref([])
+const useYns = ref([])
 
 const form = reactive({
   itemTypeCd : '',
   itemName: null,
   itemCd: null,
   customerName: null,
-  useYn : 'Y',
+  useYn : '',
+
   userId: userId,
 })
 
-
-/**
- *  사용 유무 초기화
- */
-const items = [
-  { text: '사용', value: 'Y' },
-  { text: '미사용', value: 'N' },
-]
-
-/**
- *  테이블 헤더
- */
- const headers = ref([
-    { title: '품목코드',    key: 'itemCd',      align: 'center' , sortable: true},
-    { title: '품목명',      key: 'itemName',    align: 'center' },
-    { title: '품목구분',    key: 'itemTypeCd',  align: 'center' },
-    { title: '단위',        key: 'unit',        align: 'center' },
-    { title: '규격',        key: 'spec',        align: 'center'},
-    { title: '구매처',      key: 'customerName',        align: 'center'},
-    { title: '영업담당자',  key: 'chargeSalesman',  align: 'center'},
-    { title: '담당연구원',  key: 'chargeResearcher',     align: 'center' },
-    { title: '품목분류(대)',  key: 'prodLgType',    align: 'center' },
-    { title: '품목분류(중)',  key: 'prodMlType',    align: 'center' },
+const headers = ref([
+    { title: '품목구분',    key: 'itemTypeName',  align: 'center', width: '80px' },
+    { title: '품목코드',    key: 'itemCd',        align: 'center', width: '120px'},
+    { title: '품목명',      key: 'itemName',      align: 'start' , width: '250px'},
+    { title: '단위',        key: 'unit',          align: 'center', width: '60px' },
+    { title: '규격',        key: 'spec',           align: 'center', width: '80px'},
+    { title: '구매처',      key: 'customerName',    align: 'start', width: '200px'},
+    { title: '영업담당자',  key: 'chargeSalesman',  align: 'center', width: '90px'},
+    { title: '담당연구원',  key: 'chargeResearcher',  align: 'center', width: '90px'},
+    { title: '품목분류(대)',  key: 'prodLgType',    align: 'center' , width: '100px'},
+    { title: '품목분류(중)',  key: 'prodMlType',    align: 'center' , width: '100px'},
 ])
 
-const id = ref('')
-const goDetail = (cd, type) => {
-
+/**
+ * 팝업창 호출
+ */
+const selectRowClick = (cd, type) => {
   id.value = cd
 
   switch (type) {
@@ -217,16 +198,17 @@ const goDetail = (cd, type) => {
     case 'M7':
       currentComponent.value = ItemInfoM7Pop
       break
+    default :
+      vInfo("품목구분이 없는 품목정보입니다.")
+      return false
   }
+
   dialog.value = true
 }
 
-
-onMounted(async () => {
-  itemTypeCds.value =  await ApiCommon.getCodeList('ITEM_TYPE_CD')
-  srhItemList()
-})
-
+/**
+ *  품목 조회
+ */
 const srhItemList = async () =>{
   loading.value = true
   try{
@@ -235,13 +217,22 @@ const srhItemList = async () =>{
     }
 
     itemList.value = await ApiItem.getItemList(params)
-
   }catch(err){
     vError(err)
   }finally{
     loading.value = false
   }
 }
+
+/**
+ * 초기화
+ */
+onMounted( async() => {
+  itemTypeCds.value =  await ApiCommon.getCodeList('ITEM_TYPE_CD')
+  useYns.value = await ApiCommon.getCodeList('use_yn')
+
+  srhItemList()
+})
 
 const handleSaved = (msg) =>{
   vSuccess(msg)
@@ -252,18 +243,18 @@ const handleSaved = (msg) =>{
  * 엑셀 다운로드
  */
 const excel = () => {
-  exportToExcel(headers, itemList.value, '폼목정보_목록')
-}
-
-/**
- *  검색창 초기화
- */
- const reset = () =>{
-  srhForm.value.reset()
+  exportToExcel(headers, itemList.value, '품목정보_목록')
 }
 
 </script>
 
 <style scoped>
 @import '@/assets/css/main.css';
+.my-table .v-data-table__td--select {
+  width: 30px !important;   /* 원하는 값으로 변경 */
+  min-width: 30px !important;
+  max-width: 30px !important;
+  text-align: center;       /* 정렬도 변경 가능 */
+  padding: 0;               /* 여백 줄이기 */
+}
 </style>
