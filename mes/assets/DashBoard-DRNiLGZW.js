@@ -1,0 +1,1 @@
+import{_ as a,c as o,o as e}from"./index-B3k6qWTO.js";const s={__name:"DashBoard",setup(r){return(t,_)=>(e(),o("div",null," 이거슨 dashboard "))}},d=a(s,[["__scopeId","data-v-933554d2"]]);export{d as default};

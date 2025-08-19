@@ -26,9 +26,6 @@ export const useAlertStore = defineStore('alert', {
     vError(msg){
       this.show(msg, 'error')
     },
-    vError(msg){
-      this.show(msg, 'error')
-    },
     vWarning(msg){
       this.show(msg, 'warning')
     },
@@ -38,45 +35,3 @@ export const useAlertStore = defineStore('alert', {
   }
 })
 
-
-const msgDetail = code => {
-  const cd = code
-  const msg = ''
-  switch (cd) {
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "401":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    case "500":
-      msg = "서버 오류입니다."
-      break
-    default:
-       msg = "서버 오류입니다."
-       break
-  }
-
-  return msg
-}

@@ -7,7 +7,8 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     userId : null,
     deptNm : null,
-    memberNm : null
+    memberNm : null,
+    sessionChecked: false,
   }),
   getters: {
     isLoggedIn: (state) => !!state.user,
@@ -23,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
         this.deptNm = data.deptNm;
         this.memberNm = data.memberNm;
 
-        localStorage.setItem('user', data)
+        //localStorage.setItem('user', data)
       }catch(err){
         throw err;
       }
@@ -32,6 +33,7 @@ export const useAuthStore = defineStore('auth', {
 
     async logoutUser() {
       logout();
+      this.user = null
     },
 
     async fetchUser() {
@@ -46,6 +48,8 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('user', data)
       } catch {
         this.user = null
+      }finally{
+        this.sessionChecked = true;
       }
     }
   }

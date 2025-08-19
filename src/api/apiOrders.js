@@ -21,7 +21,7 @@ export const ApiOrder = {
       return res.data
 
     }catch(err){
-      throw err.response
+      throw new Error(err.response?.data);
     }
   },
 
@@ -36,7 +36,7 @@ export const ApiOrder = {
       return res.data
 
     }catch(err){
-      throw err.response
+      throw new Error(err.response?.data);
     }
   },
 
@@ -66,7 +66,54 @@ export const ApiOrder = {
 
       return msg.data
     }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+
+  getContractList: async(params) => {
+    try{
+      const res = await API_URL.post('/contract/getContractList', params)
+
+      return res.data
+
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+
+  getContractInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/contract/getContractInfo/${id}`)
+
+      return res.data
+
+    }catch(err){
       throw err.response
+    }
+  },
+
+  getNextSeq : async(date) => {
+    try{
+      const seq = await API_URL.get(`/contract/getNextSeq/${date}`)
+
+      return seq.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  saveContractInfo : async(formData) => {
+    try{
+      const msg =  await API_URL.post('/contract/saveContractInfo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      return msg.data
+
+    }catch(err) {
+      throw new Error(err.response?.data);
     }
   }
 

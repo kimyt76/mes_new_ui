@@ -27,19 +27,45 @@ const routes = [
     component: IndexView,
     children: [
       {
-        path: 'itemDetail',
+        path: 'itemDetail/:id',
         name: 'ItemDetail',
-        component: () => import('@/views/basic/ItemDetail.vue')
+        component: () => import('@/views/basic/item/ItemDetail.vue'),
+        props: true,
+      },
+      {
+        path: 'itemNewCd',
+        name: 'ItemNewCd',
+        component: () => import('@/views/basic/item/ItemNewCd.vue'),
+      },
+      {
+        path: 'itemSubCd',
+        name: 'ItemSubCd',
+        component: () => import('@/views/basic/item/ItemSubCd.vue'),
+      },
+      {
+        path: 'itemThird',
+        name: 'ItemThird',
+        component: () => import('@/views/basic/item/ItemThird.vue'),
       },
       {
         path: 'itemList',
         name: 'ItemList',
-        component: () => import('@/views/basic/ItemList.vue')
+        component: () => import('@/views/basic/item/ItemList.vue')
       },
       {
         path: 'itemDetailList',
         name: 'ItemDetailList',
-        component: () => import('@/views/basic/ItemDetailList.vue')
+        component: () => import('@/views/basic/item/ItemInfoList.vue')
+      },
+      {
+        path: 'customerList',
+        name: 'CustomerList',
+        component: () => import('@/views/basic/customer/CustomerList.vue')
+      },
+      {
+        path: 'storageList',
+        name: 'StorageList',
+        component: () => import('@/views/basic/storage/StorageList.vue')
       },
     ]
   },
@@ -51,27 +77,72 @@ const routes = [
       {
         path: 'orderList',
         name: 'OrderList',
-        component: () => import('@/views/order/OrderList.vue')
+        component: () => import('@/views/order/order/OrderList.vue')
       },
       {
         path: 'orderDetail/:id',
         name: 'OrderDetail',
-        component: () => import('@/views/order/OrderDetail.vue'),
+        component: () => import('@/views/order/order/OrderDetail.vue'),
         props: true,
       },
       {
         path: 'orderEdit/:id',
         name: 'OrderEdit',
-        component: () => import('@/views/order/OrderEdit.vue'),
+        component: () => import('@/views/order/order/OrderEdit.vue'),
         props: true,
       },
       {
         path: 'orderNew',
         name: 'OrderNew',
-        component: () => import('@/views/order/OrderNew.vue')
+        component: () => import('@/views/order/order/OrderNew.vue')
+      },
+      {
+        path: 'contractList',
+        name: 'ContractList',
+        component: () => import('@/views/order/contract/ContractList.vue')
+      },
+      {
+        path: 'contractDetail/:id?',
+        name: 'ContractDetail',
+        component: () => import('@/views/order/contract/ContractDetail.vue'),
+        props: true,
+      },
+      {
+        path: 'contractReg',
+        name: 'ContractReg',
+        component: () => import('@/views/order/contract/ContractReg.vue'),
       },
     ]
   },
+  {
+    path:'/lab',
+    component: IndexView,
+    children: [
+      {
+        path:'ingredient',
+        name:'Ingredient',
+        component: () => import('@/views/lab/ingredient/IngredientList.vue')
+      },
+      {
+        path:'material',
+        name:'Material',
+        component: () => import('@/views/lab/material/MaterialList.vue')
+      },
+      {
+        path:'materialDeail/:id',
+        name:'MaterialDetail',
+        component: () => import('@/views/lab/material/MaterialDetail.vue'),
+        props: true,
+      },
+      {
+        path:'research',
+        name:'Research',
+        component: () => import('@/views/lab/ResearchList.vue')
+      },
+    ]
+  },
+
+
   /** 시스템 관리 */
   {
     path: '/system',
@@ -80,12 +151,12 @@ const routes = [
       {
         path: 'userMgmt',
         name: 'UserMgmt',
-        component: () => import('@/views/system/UserMgmtList.vue')
+        component: () => import('@/views/system/user/UserMgmtList.vue')
       },
       {
         path: 'commonMgmt',
         name: 'CommonMgmt',
-        component: () => import('@/views/system/CommonMgmtList.vue')
+        component: () => import('@/views/system/common/CommonMgmtList.vue')
       },
       {
         path: 'templateMgmt',

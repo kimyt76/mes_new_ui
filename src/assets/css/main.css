@@ -4,8 +4,8 @@
 .custom-header {
   background-color: #BCAAA4; /* 원하는 색상 */
   color: white;
-  text-align: center;
-  height: 10px;
+  text-align: center !important;
+  height: 30px !important;
 }
 .custom-th {
   height: 4px;
@@ -27,3 +27,18 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.custom-breadcrumbs {
+  height: 40px;
+}
+.card-height{
+  height: 60px;
+}
+.custom-row {
+  height: 30px !important;
+  text-align: center;
+}
+.excel-btn {
+  background-color: #1D6F42;
+  color: white;
+  width: 40px;
+}

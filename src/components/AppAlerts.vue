@@ -4,6 +4,7 @@
       class="app-alert"
       :type="alert.type"
       :text = "alert.message"
+      :style="{ zIndex: 10000 }"
     ></v-alert>
 </template>
 

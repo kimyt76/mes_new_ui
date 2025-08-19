@@ -1,13 +1,14 @@
 <template>
 <v-breadcrumbs :items="['MES', '시스템관리', 'template목록']"></v-breadcrumbs>
-<v-row>
+<v-card>
+  <v-row>
     <v-col>
-      <v-form ref="srcForm" >
+      <div>
 
-      </v-form>
+      </div>
     </v-col>
-</v-row>
-
+  </v-row>
+</v-card>
 </template>
 
 <script setup>

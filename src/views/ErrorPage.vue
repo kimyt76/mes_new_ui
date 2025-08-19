@@ -1,10 +1,8 @@
 <template>
   <div>
-    <v-card>
-
-      서버오류가 발생했습니다.
-
-    </v-card>
+    <h1>
+      500 (Internal Server Error)  오류가 발생했습니다. 관리자에게 문의해주세요!!!!
+    </h1>
   </div>
 </template>
 

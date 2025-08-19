@@ -65,13 +65,15 @@
         dense
         color = "brown-lighten-4"
         class="mt-3"
-
-        >신규</v-btn>
+        text="신규"
+        />
       <v-btn
-        dense
-        class="mt-3 mr-3"
-
-        >엑셀</v-btn>
+        class="mt-3 mr-3 excel-btn"
+        text="엑셀"
+        density="compact"
+        prepend-icon="mdi-microsoft-excel"
+        @click="excel"
+        />
      </div>
   </v-col>
 </v-row>
@@ -123,6 +125,6 @@
 
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+@import '@/assets/css/main.css';
 </style>

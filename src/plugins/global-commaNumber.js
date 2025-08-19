@@ -1,53 +1,46 @@
 export default {
-  mounted(el) {
-    const format = (value) => {
-      const isNegative = value.startsWith('-')
-      const digits = value.replace(/[^0-9]/g, '')
-      const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      return isNegative ? `-${formatted}` : formatted
+  mounted(el, binding, vnode) {
+    function format(value) {
+      if (value === '' || value === null || value === undefined) {
+        return '';
+      }
+      const numeric = value.toString().replace(/,/g, '');
+      if (isNaN(numeric)) {
+        return '';
+      }
+      return Number(numeric).toLocaleString();
     }
 
-    const onKeyDown = (e) => {
-      const allowedKeys = [
-        'Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete',
-        '-', // allow minus
-      ]
-      if (
-        !/[0-9]/.test(e.key) &&
-        !allowedKeys.includes(e.key)
-      ) {
-        e.preventDefault()
+    // input 이벤트 처리
+    el.addEventListener('input', (e) => {
+      const rawValue = e.target.value.replace(/,/g, '');
+      if (/^\d*$/.test(rawValue)) {
+        // 업데이트 v-model 값
+        vnode.props['onUpdate:modelValue']?.(rawValue);
+        // 표시값 콤마포맷
+        e.target.value = format(rawValue);
+      } else {
+        // 숫자가 아닌 입력 거부
+        e.target.value = format(binding.value);
       }
+    });
 
-      if (e.key === '-' && e.target.selectionStart !== 0) {
-        e.preventDefault()
-      }
-    }
-
-    const onInput = (e) => {
-      let raw = e.target.value
-      raw = raw.replace(/[^0-9\-]/g, '')
-      if ((raw.match(/-/g) || []).length > 1) {
-        raw = raw.replace(/-+/g, '-')
-      }
-      if (raw.includes('-') && !raw.startsWith('-')) {
-        raw = raw.replace(/-/g, '')
-      }
-      e.target.value = format(raw)
-      el.dispatchEvent(new Event('input')) // v-model 연동 유지
-    }
-
-    el.addEventListener('keydown', onKeyDown)
-    el.addEventListener('input', onInput)
-
-    el._cleanup = () => {
-      el.removeEventListener('keydown', onKeyDown)
-      el.removeEventListener('input', onInput)
-    }
+    // 초기 렌더링 시 값 포맷
+    el.value = format(binding.value);
   },
+  updated(el, binding) {
+    // 외부에서 값이 바뀌면 표시 업데이트
+    function format(value) {
+      if (value === '' || value === null || value === undefined) {
+        return '';
+      }
+      const numeric = value.toString().replace(/,/g, '');
+      if (isNaN(numeric)) {
+        return '';
+      }
+      return Number(numeric).toLocaleString();
+    }
 
-
-  unmounted(el) {
-    el._cleanup?.()
-  }
-}
+    el.value = format(binding.value);
+  },
+};

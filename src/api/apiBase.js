@@ -2,15 +2,63 @@ import { API_URL} from '.'
 
 export const ApiBase = {
 
-  getItemList : async(params) =>{
+  getCustomerList : async(params) =>{
     try{
-      const res = await API_URL.post('/base/getItemList', params )
+      const res = await API_URL.post('/customer/getCustomerList', params )
 
       return res.data
     }catch(err){
       throw err.response
     }
   },
+  getCustomerInfo : async(id) => {
+    try{
+      const res = await API_URL.get(`/customer/getCustomerInfo/${id}` )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  getCheckCustomerCd : async(id) => {
+    try{
+      const chk = await API_URL.get(`/customer/getCheckCustomerCd/${id}` )
+
+      return chk.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  saveCustomerInfo: async(params) => {
+    try{
+      const msg = await API_URL.post('/customer/saveCustomerInfo' , params)
+
+      return msg.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  getStorageList: async(params) =>{
+    try{
+      const res = await API_URL.post('/storage/getStorageList', params )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  saveStorageInfo: async(params) => {
+    try{
+      const msg = await API_URL.post(`/storage/saveStorageInfo`, params)
+
+      return msg.data
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  }
+
 
 
 }

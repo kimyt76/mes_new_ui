@@ -15,14 +15,15 @@
               class="mb-2"
               label="사용자 ID"
               prepend-inner-icon="mdi-account"
-              v-model="userId"
+              v-model.lazy="userId"
+              :rules="validUserId"
             ></v-text-field>
             <v-text-field
               class="mb-2"
               label="PASSWORD"
-              v-model="password"
+              v-model.lazy="password"
               prepend-inner-icon="mdi-lock"
-
+              :rules="validPassword"
               type="password"
             ></v-text-field>
             <v-btn
@@ -49,23 +50,38 @@ import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import { useAlertStore } from '@/stores/alert';
 
-const {vError} = useAlertStore()
+const { vError} = useAlertStore()
 
 const loading = ref(false)
-const userId = ref('김연태');
-const password = ref('1234');
+const userId = ref('');
+const password = ref('');
 
 const appStore = useAuthStore();
 const router = useRouter()
+const loginForm = ref('')
+
+const validUserId = [
+  v => !!v || '사용자 ID는 필수입니다.',
+  v => v.length >= 2 || '사용자 ID는 최소 2자 이상이어야 합니다.',
+]
+const validPassword = [
+  v => !!v || '패스워드는 필수입니다.',
+  v => v.length >= 4 || '패스워드는 최소 4자 이상이어야 합니다.',
+]
 
 const handleLogin = async () => {
+  const success = await loginForm.value.validate()
+
+  if (!success.valid) {
+    return true
+  }
+
   loading.value = true
+
   try{
     await appStore.loginUser(userId.value, password.value);
     router.push({name:'DashBoard'})
   }catch(err){
-    console.log('err', err)
-    console.log('state', err.response.status)
     vError(err)
   }finally{
     loading.value = false

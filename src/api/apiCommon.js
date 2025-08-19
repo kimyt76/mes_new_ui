@@ -23,6 +23,26 @@ export const ApiCommon = {
     }
   },
 
+  saveCommonInfo : async(params) => {
+    try{
+      const msg = await API_URL.post(`/common/saveCommonInfo`, params )
+
+      return msg.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  getCommonInfo : async(id) => {
+    try{
+      const res = await API_URL.get(`/common/getCommonInfo/${id}` )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
   uploadFile : async(formData) => {
     try{
       const res = await API_URL.post(`/uploadFile/saveFile`, formData, {
@@ -45,7 +65,23 @@ export const ApiCommon = {
     }catch(err){
       throw err.response
     }
-  }
+  },
+
+  newSeq : async(itemTypeCd, cd, seqLen) => {
+    try{
+      const code = await API_URL.get(`/common/newSeq`, {
+        params: {
+          itemTypeCd: itemTypeCd,
+          cd: cd,
+          seqLen: seqLen,
+        }
+      })
+
+      return code.data
+    }catch(err){
+      throw err.response
+    }
+  },
 
 
 }

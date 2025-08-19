@@ -10,6 +10,10 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  build: {
+    outDir: 'mes', // 빌드 결과물이 저장될 폴더
+    emptyOutDir: true,  //빌드전에 폴더 비우기
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

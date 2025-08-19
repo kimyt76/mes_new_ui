@@ -25,30 +25,6 @@ export function appendFiles(formData, files) {
 }
 
 
-export function getField(id){
-  let field = "";
-
-  switch(id) {
-    case '박승훈' :
-      field = 'product_approval_date'
-      break
-    case '원신호' :
-      field = 'business_approval_date'
-      break
-    case '김승남' :
-      field = 'purchase_approval_date'
-      break
-    case '김상훈' :
-      field = 'qc_approval_date'
-      break
-    default :
-      field = 'lab_approval_date'
-  }
-
-  return field;
-}
-
-
 // export function getField(id) {
 //   const fieldMap = {
 //     '박승훈': 'product_approval_date',

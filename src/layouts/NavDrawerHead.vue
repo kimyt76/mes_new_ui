@@ -2,7 +2,14 @@
   <v-list-item>
     <template #prepend>
       <v-avatar>
-        <v-img img :src="logo" alt="Logo"/>
+        <a href="http://jincostech.com/" target="_blank" rel="noopener">
+          <img :src="logo" alt="Logo" style="width: 40px; height: auto;" />
+        </a>
+<!--
+        <v-img img :src="logo" alt="Logo"
+          target="_blank"
+          href="http://jincostech.com/"
+        /> -->
       </v-avatar>
     </template>
     <v-list-item-title>Jincotech</v-list-item-title>
@@ -14,6 +21,6 @@
 import logo from '@/assets/icon/logo_jincostech.jpg'
 </script>
 
-<style lang="scss" scoped>
+<style 1coped>
 
 </style>

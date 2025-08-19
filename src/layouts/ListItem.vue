@@ -5,6 +5,8 @@
     :to="item.to"
     :prepend-icon="item.icon"
     selected-class="bg-primary"
+    density="compact"
+    style="min-height: 25px"
     >
   </v-list-item>
 </template>

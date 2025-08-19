@@ -6,7 +6,6 @@
       <v-btn
         text="Home으로"
         class="btn btn-primary mt-4"
-
         />
     </RouterLink>
   </div>

@@ -34,6 +34,11 @@ defineProps({
   default:() => {},
 })
 
+// const availableMenuItems = computed(() =>
+//   allMenuItems.filter(item =>
+//     item.roles.some(role => user.roles.includes(role))
+//   )
+// );
 </script>
 
 <style lang="scss" scoped>

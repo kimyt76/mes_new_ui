@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col>
-      <div class="d-flex ga-2 mt-2">
+      <div class="d-flex ga-2">
         <!-- 날짜 입력창 -->
         <v-text-field
           v-model="formattedDate"
@@ -10,7 +10,6 @@
           style="max-width: 200px;"
           @click="onTextFieldClick"
         />
-
         <!-- 캘린더 아이콘 메뉴 -->
         <v-menu
           v-model="menu"
@@ -18,7 +17,7 @@
           location="bottom start"
         >
           <template #activator="{ props }">
-            <v-btn v-bind="props" icon variant="text" class="calendar-icon-btn">
+            <v-btn v-bind="props" icon variant="text" class="calendar-icon-btn" >
               <v-icon>mdi-calendar</v-icon>
             </v-btn>
           </template>

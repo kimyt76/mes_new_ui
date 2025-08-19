@@ -3,6 +3,7 @@
     v-model="drawer"
     v-bind="$attrs"
     dark
+    :width="255"
     app
     >
 
@@ -18,11 +19,10 @@
           class="font-weight-black"
           color="red"
           rounded
-          large
           target="_blank"
-          href="http://jincostech.com/"
+          href="https://chatgpt.com/"
         >
-          Jincostech
+          chatgpt
         </v-btn>
       </div>
     </template>
@@ -35,6 +35,7 @@ import NavDrawerHead from './NavDrawerHead.vue';
 import { useAppStore } from '@/stores/app';
 import { storeToRefs } from 'pinia';
 import ListMain from './ListMain.vue';
+import { proxyRefs } from 'vue';
 
 /**
  *  toggle기능 drawer 기능
@@ -48,6 +49,6 @@ const { drawer } = storeToRefs(appStore)
 const { items } = useMenuStore()
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
 </style>
