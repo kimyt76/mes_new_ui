@@ -1,11 +1,13 @@
 <template>
-<v-breadcrumbs :items="['MES', '기본관리', '거래처 관리']"></v-breadcrumbs>
-
-<v-card class="pa-1" style="height: 60px;">
-    <v-row>
-      <v-col>
-        <v-form ref="srhForm" @submit.prevent ='srhCustomerList'>
-        <div class="d-flex ga-4"> <!-- ga-4 는 Vuetify gap 클래스 -->
+<v-breadcrumbs
+    :items="['MES', '기본관리', '거래처관리']"
+    class="custom-breadcrumbs"
+    />
+  <v-card class="pa-1" style="height: 60px;">
+    <v-card-text >
+      <v-row>
+      <v-form ref="srhForm" @submit.prevent="srhCustomerList">
+        <v-col class="d-flex ga-4">
           <v-select
             v-model="form.customerType"
             label="거래처구분"
@@ -14,6 +16,7 @@
             item-value="code"
             variant="underlined"
             density="compact"
+            style="width: 130px;"
             />
           <v-text-field
             v-model="form.customerName"
@@ -21,6 +24,7 @@
             label="거래처명"
             placeholder="거래처명 입력해주세요"
             variant="underlined"
+            style="width: 180px;"
             />
           <v-text-field
             v-model="form.customerCd"
@@ -28,6 +32,7 @@
             label="거래처코드"
             placeholder="거래처코드를 입력해주세요"
             variant="underlined"
+            style="width: 150px;"
             />
           <v-text-field
             v-model="form.customerManager"
@@ -35,6 +40,7 @@
             label="거래처담당자"
             placeholder="거래처담당자를 입력해주세요"
             variant="underlined"
+            style="width: 120px;"
             />
             <v-btn
               color = "#EFEBE9"
@@ -44,72 +50,65 @@
             <v-btn
               class="mr-2"
               text="초기화"
-              @click="reset"
+              @click="srhForm.reset()"
               />
-          </div>
-        </v-form>
         </v-col>
+      </v-form>
     </v-row>
+    </v-card-text>
   </v-card>
-  <v-row class="mb-1">
-    <v-col>
-    <div class="d-flex ga-4 justify-end">
+  <v-spacer></v-spacer>
+  <v-row >
+    <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
       <v-btn
-          color = "brown-lighten-4"
-          class="mt-3"
-          text="신규"
-          @click="goCustomerPop()"
-          />
+        color="brown-lighten-4"
+        text="신규"
+        @click="goCustomerPop"
+        />
       <v-btn
-        class="mt-3 mr-3 excel-btn"
+        class="excel-btn"
         text="엑셀"
         prepend-icon="mdi-microsoft-excel"
         @click="excel"
         />
-    </div>
     </v-col>
   </v-row>
-  <v-data-table
-      :headers="headers"
-      :items="customerList"
-      :loading="loading"
-      no-data-text="데이터가 없습니다."
-      loading-text="조회중입니다 잠시만 기다려주세요"
-      :items-per-page="15"
-      style="height: 700px"
-    >
-    <template v-slot:headers="{ columns }">
-      <tr>
-        <th
-          v-for="column in columns"
-          :key="column.key"
-          class="custom-header"
-          style="height: 30px;"
-          :style="{textAlign: 'center'} "
+  <v-row>
+    <v-col class="pa-0">
+      <v-data-table
+        :headers="headers"
+        :items="customerList"
+        :loading="loading"
+        :items-per-page="15"
+        density="compact"
+        fixed-header
+        height="650px"
+        return-object
+        >
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header pa-1"
+              >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
+        <template #item.customerName="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="goCustomerPop(item, index)"
           >
-          {{ column.title }}
-        </th>
-      </tr>
-    </template>
-    <template #item="{ item }">
-    <tr style="height: 30px;">
-      <td style="width: 50px; height: 30px; text-align: center; cursor: pointer;">{{ item.customerTypeName }}</td>
-      <td style="width: 80px; height: 30px; text-align: center;">{{item.businessNo}}</td>
-      <td style="width: 200px; height: 30px; text-decoration: underline;  cursor: pointer;" @click="goCustomerPop(item.customerCd)" >{{item.customerName}}</td>
-      <td style="width: 210px; height: 30px; text-align: left;">{{item.address}}</td>
-      <td style="width: 70px; height: 30px; text-align: center;">{{item.president}}</td>
-      <td style="width: 110px; height: 30px; text-align: center;">{{item.tel}}</td>
-      <td style="width: 110px; height: 30px; text-align: center;">{{ item.fax }}</td>
-      <td style="width: 90px; height: 30px; text-align: center;">{{ item.customerManager }}</td>
-      <td style="width: 120px; height: 30px; text-align: center;">{{item.email}}</td>
-      <td style="width: 110px; height: 30px; text-align: center;">{{item.customerManagerTel}}</td>
-      <td style="width: 80px; height: 30px; text-align: center;">{{item.memberName}}</td>
-    </tr>
-  </template>
-  </v-data-table>
+            {{ item.customerName }}
+          </div>
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-row>
 
-
-<v-dialog  v-model="dialog" max-width="900px" max-height="800px" persistent>
+  <v-dialog  v-model="dialog" max-width="900px" max-height="800px" persistent>
     <CustomerDetailPop
       :id="id"
       :mode="mode"
@@ -118,7 +117,6 @@
       @close-dialog="dialog = false"
       />
 </v-dialog>
-
 </template>
 
 <script setup>
@@ -130,13 +128,17 @@ import { exportToExcel } from '@/util/exportToExcel';
 import CustomerDetailPop from './CustomerDetailPop.vue';
 import { isEmpty } from 'lodash';
 
-const dialog = ref(false)
 const { vError, vSuccess } = useAlertStore()
 
+const dialog = ref(false)
 const loading = ref(false)
 const customerList = ref([])
 const custormTypes = ref([])
 const srhForm = ref('')
+const mode = ref('')
+const id = ref('')
+const title = ref('')
+
 const form = reactive({
   customerType : '',
   customerCd: '',
@@ -145,17 +147,16 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '구분',          key: 'customerTypeName',    align: 'center' },
-  { title: '사업자번호',    key: 'businessNo',          align: 'center' },
-  { title: '거래처명',      key: 'customerName',        align: 'center' },
-  { title: '주소',          key: 'address',             align: 'center' },
-  { title: '대표자명',      key: 'president',           align: 'center' },
-  { title: '전화번호',      key: 'tel',                 align: 'center' },
-  { title: 'FAX',           key: 'fax',                 align: 'center' },
-  { title: '거래처담당자',  key: 'customerManager',      align: 'center' },
-  { title: '이메일',        key: 'email',               align: 'center' },
-  { title: '핸드폰번호',    key: 'customerManagerTel',   align: 'center' },
-  { title: '담당자명',      key: 'memberName',          align: 'center' }
+  { title: '구분',          key: 'customerTypeName',    align: 'center', width: '60px' },
+  { title: '거래처명',      key: 'customerName',        align: 'left' , width: '280px'},
+  { title: '주소',          key: 'address',             align: 'left' , width: '250px'},
+  { title: '대표자명',      key: 'president',           align: 'center' , width: '70px'},
+  { title: '사업자번호',    key: 'businessNo',          align: 'center' , width: '120px'},
+  { title: '전화번호',      key: 'tel',                 align: 'center' , width: '120px'},
+  { title: '거래처담당자',  key: 'customerManager',      align: 'center' , width: '90px'},
+  { title: '이메일',        key: 'email',               align: 'center' , width: '90px'},
+  { title: '핸드폰번호',    key: 'customerManagerTel',   align: 'center', width: '120px'},
+  { title: '담당자명',      key: 'memberName',          align: 'center' , width: '70px'}
 ])
 
 onMounted(async () => {
@@ -177,10 +178,6 @@ const srhCustomerList = async () =>{
   }
 }
 
-const mode = ref('')
-const id = ref('')
-const title = ref('')
-
 const goCustomerPop = (val) =>{
     if ( isEmpty(val) ) {
       title.value = '거래처 신규'
@@ -189,9 +186,8 @@ const goCustomerPop = (val) =>{
     }else{
       title.value = '거래처 상세'
       mode.value ='U'
-      id.value = val
+      id.value = val.customerCd
     }
-
     dialog.value =true
 }
 
@@ -202,10 +198,6 @@ const handleSaved = (msg) => {
 
 const excel = () => {
   exportToExcel(headers, customerList.value, '거래처_목록')
-}
-
-const reset = () => {
-  srhForm.value.reset()
 }
 
 </script>
