@@ -178,7 +178,7 @@
       </v-card-text>
     </v-card>
 
-<v-dialog  v-model="dialog" max-width="800px" height="700px" persistent>
+<v-dialog  v-model="dialog" max-width="800px" height="900px" persistent>
     <CustomerListPop
       @selected="handleSelect"
       @close-dialog="dialog = false"/>
@@ -258,11 +258,11 @@ onMounted( async () => {
   Object.assign( form, res)
 })
 
-const handleSelect = (cd, nm) =>{
-  form.customerCd = cd
-  form.customerName = nm
+const handleSelect = (obj) =>{
+  console.log('obj', obj)
+  form.customerCd = obj.customerCd
+  form.customerName = obj.customerName
 }
-
 
 const saveInfo = async () => {
   try{

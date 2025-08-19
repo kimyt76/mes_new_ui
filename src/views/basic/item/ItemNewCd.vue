@@ -296,9 +296,9 @@ const customerPop = () => {
   dialog.value = true
 }
 
-const handleSelect = (cd, nm) =>{
-  form.customerCd = cd
-  form.customerName = nm
+const handleSelect = (obj) =>{
+  form.customerCd = obj.customerCd
+  form.customerName = obj.customerName
 }
 
 const saveInfo = async () =>{

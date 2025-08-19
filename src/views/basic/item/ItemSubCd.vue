@@ -297,11 +297,10 @@ const itemCdCheck = async () =>{
   }
 }
 
-const handleSelect = (cd, nm) =>{
-  form.customerCd = cd
-  form.customerName = nm
+const handleSelect = (obj) =>{
+  form.customerCd = obj.customerCd
+  form.customerName = obj.customerName
 }
-
 
 const goList = () =>{
   router.push({name:'ItemList'})
