@@ -186,7 +186,7 @@
 
   </v-card>
 
-<v-dialog  v-model="dialog" max-width="800px" height="700px" persistent>
+<v-dialog  v-model="dialog" max-width="800px" height="800px" persistent>
     <CustomerListPop
       @selected="handleSelect"
       @close-dialog="dialog = false"/>
