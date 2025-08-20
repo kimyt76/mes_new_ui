@@ -12,7 +12,7 @@
         <v-col class="d-flex ga-2 pa-1">
           <v-date-input
             v-model="form.contractDate"
-            label="수주일자"
+            label="주문일자"
             density="compact"
             :display-format="formatDate"
             variant="underlined"
