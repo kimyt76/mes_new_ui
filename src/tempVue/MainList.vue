@@ -1,16 +1,16 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '관리', '관리']"
+    :items="['MES', '영업관리', '수주관리']"
     class="custom-breadcrumbs"
     />
-  <v-card style="pa-1">
+  <v-card class="pa-1">
     <v-card-text >
       <v-row>
       <v-form ref="srcForm" @submit.prevent="searchList">
         <v-col class="d-flex flex-row ga-3">
           <v-date-input
             v-model="form.strDate"
-            label="날짜"
+            label="수주일자"
             :display-format="formatDate"
             density="compact"
             variant="underlined"
