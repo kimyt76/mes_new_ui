@@ -3,7 +3,7 @@
     :items="['MES', '관리', '관리']"
     class="custom-breadcrumbs"
     />
-  <v-card class="pa-1">
+  <v-card class="pa-1" style="height: 60px;">
     <v-card-text >
       <v-row>
       <v-form ref="srhForm" @submit.prevent="srhContractList">
@@ -103,7 +103,7 @@
 
         <template #item.contractDateSeq="{ item, index }">
           <div
-            style="cursor: pointer; text-decoration: underline;"
+            style="cursor: pointer; text-decoration: underline; "
             @click="selectRowClick(item, index)"
           >
             {{ item.contractDateSeq }}
