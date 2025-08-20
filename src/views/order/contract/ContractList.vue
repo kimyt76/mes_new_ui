@@ -220,7 +220,6 @@ const srhContractList = async () => {
  */
 onMounted( async () =>{
   statusTypes.value = await ApiCommon.getCodeList('status_type')
-  form.contractDate = todayKST()
   srhContractList()
 })
 
