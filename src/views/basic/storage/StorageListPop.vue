@@ -85,7 +85,7 @@ const form = reactive({
 })
 
 const headers = [
-  { title: '창고번호',  key: 'storageCd',     align: 'right', width: '100px' },
+  { title: '창고번호',  key: 'storageCd',     align: 'center', width: '150px' },
   { title: '창고명',    key: 'storageName',   align: 'right', width: '220px' },
   { title: '구분',      key: 'storageTypeName',    align: 'right',  width: '150px' },
   { title: '고객사명',  key: 'outCustomerName',    align: 'right',  width: '220px' },
