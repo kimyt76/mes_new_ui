@@ -11,7 +11,7 @@ export const useMenuStore = defineStore('menu', {
           { title: '창고관리', to: '/basic/storageList'},
         ]
       },
-      { title: '수주관리', icon: 'mdi-table-settings', items: [
+      { title: '영업관리', icon: 'mdi-table-settings', items: [
           { title: '기안서관리', to: '/order/draftList' },
           { title: '수주관리', to: '/order/contractList' },
           { title: '판매관리', to: '/order/saleList' },
