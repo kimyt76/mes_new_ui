@@ -11,29 +11,31 @@
   <v-form ref="vform" @submit.prevent="saveInfo" >
   <v-card-text>
     <v-row dense>
-        <v-col class="d-flex flex-row align-center" style="gap: 0">
-          <DateSinglePicker
-            v-model="form.saleDate"
-            title="판매일자"
-            density="compact"
-            style="width: 200px"
-            />
-            <v-text-field
-              v-model="form.seq"
-              density="compact"
-              style="width: 40px; max-width: 60px; min-width: 0"
-              class="mr-10"
-              readonly
-              />
-        </v-col>
-        <v-col>
-        </v-col>
-        <v-col>
-        </v-col>
-        <v-col>
-        </v-col>
-        <v-col>
-        </v-col>
+      <v-col class="d-flex pa-1 ga-3">
+        <v-date-input
+          v-model="form.saleDate"
+          title="판매일자"
+          density="compact"
+          :display-format="formatDate"
+          variant="underlined"
+          style="width: 150px;"
+          />
+        <v-text-field
+          v-model="form.seq"
+          density="compact"
+          style="width: 40px; max-width: 60px; min-width: 0;"
+          class="mr-10"
+          readonly
+          />
+      </v-col>
+      <v-col>
+      </v-col>
+      <v-col>
+      </v-col>
+      <v-col>
+      </v-col>
+      <v-col>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col>
@@ -141,7 +143,7 @@
           <template #item.itemCd="{ item, index }">
             <input
               v-model="itemList[index].itemCd"
-              style="text-align: center; width: 100px; min-width: 100px; max-width: 100px;"
+              style="text-align: center; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-input"
               @dblclick="openPop(index)"
             />
@@ -149,7 +151,7 @@
           <template #item.itemName="{ item, index }">
             <input
               v-model="itemList[index].itemName"
-              style="text-align: left; width: 250px; min-width: 250px; max-width: 250px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-input"
               readonly
             />
@@ -157,7 +159,7 @@
           <template #item.unit="{ item, index }">
             <input
               v-model="itemList[index].unit"
-              style="text-align: center; width: 80px; min-width: 80px; max-width: 80px;"
+              style="text-align: center; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -165,7 +167,7 @@
             <input
               v-model="itemList[index].qty"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
               @blur="onBlur(index)"
             />
@@ -174,7 +176,7 @@
             <input
               v-model="itemList[index].unitPrice"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
               @blur="onBlur(index)"
             />
@@ -183,7 +185,7 @@
             <input
               v-model="itemList[index].supplyPrice"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -191,7 +193,7 @@
             <input
               v-model.number="itemList[index].vatPrice"
               type="number"
-              style="text-align: right; width: 100px; min-width: 100px; max-width: 100px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -199,7 +201,7 @@
             <input
               v-model="itemList[index].etc"
               type="text"
-              style="text-align: left; width: 150px; min-width: 150px; max-width: 150px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -207,7 +209,7 @@
             <input
               v-model="itemList[index].serialLot"
               type="text"
-              style="text-align: left; width: 150px; min-width: 150px; max-width: 150px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -292,13 +294,13 @@
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders';
-import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref, shallowRef, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAlertStore } from '@/stores/alert';
 import { ApiCommon } from '@/api/apiCommon';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT } from '@/util/common';
+import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
@@ -306,7 +308,6 @@ import StorageListPop from '@/views/basic/storage/StorageListPop.vue';
 import DateSinglePicker from '@/components/DateSinglePicker.vue';
 import ContractListPop from '../contract/ContractListPop.vue';
 import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
-
 
 // 1. 수량 합계
 const totalQty = computed(() => {
@@ -364,16 +365,16 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : 100 },
-  { title: '품목명',      key: 'itemName',   align: 'center',width : 250},
-  { title: '규격',        key: 'unit',       align: 'center' ,width : 80 },
-  { title: '수량',        key: 'qty',        align: 'center' ,width : 110},
-  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : 110},
-  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : 110},
-  { title: '부가세',      key: 'vatPrice',    align: 'center',width : 100},
-  { title: '적용',        key: 'etc',         align: 'center' ,width : 150},
-  { title: '시리얼/로트',  key: 'serialLot',   align: 'center' ,width : 150},
-  { title: '-',          key: 'actions',        align: 'center' ,width : 10},
+  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : '100px' },
+  { title: '품목명',      key: 'itemName',   align: 'center', width : '450px'},
+  { title: '규격',        key: 'unit',       align: 'center' ,width : '80px' },
+  { title: '수량',        key: 'qty',        align: 'center' ,width : '80px'},
+  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : '80px'},
+  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : '110px'},
+  { title: '부가세',      key: 'vatPrice',    align: 'center',width : '100px'},
+  { title: '적용',        key: 'etc',         align: 'center' ,width : '120px'},
+  { title: '시리얼/로트',  key: 'serialLot',   align: 'center' ,width : '120px'},
+  { title: '-',          key: 'actions',        align: 'center' ,width : '10px'},
 ])
 
 const handleSeleted = ( obj ) => {
@@ -487,7 +488,6 @@ const handleRow = (obj) =>{
       orderDist: baseSeq + index + 1,
   }));
 
-  console.log('selectItem', selectItem)
   if (itemList.value.length > 0) {
     itemList.value.push(...selectItem);
   } else {
@@ -536,7 +536,7 @@ const onBlur = (index) => {
 onMounted( async () => {
   currencyTypes.value= await ApiCommon.getCodeList('currency_type')
   transactionTypes.value= await ApiCommon.getCodeList('vat_rate')
-
+  form.saleDate = todayKST()
   form.seq = await ApiCommon.getNextSeq('tb_sale_mst','sale_date', form.saleDate)
 })
 
@@ -586,4 +586,9 @@ const goList = () => {
   background-color: #f4f4f4;
   height: 40px;
 }
+.custom-cell-input {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 </style>
