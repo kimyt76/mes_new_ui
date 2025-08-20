@@ -7,19 +7,19 @@
   <v-card-text>
     <v-row>
         <v-col class="d-flex flex-row align-center" style="gap: 4px">
-          <DateSinglePicker
+          <v-date-input
             v-model="form.contractDate"
-            title="주문일자"
+            label="주문일자"
             density="compact"
-            width="120"
-            style="width: 100px"
-            readonly
-            />
-            <v-text-field
+            :display-format="formatDate"
+            variant="underlined"
+            style="width: 200px;"
+          />
+          <v-text-field
             v-model="form.seq"
             density="compact"
             style="width: 40px; max-width: 60px; min-width: 0"
-            class="mr-10"
+            class="mr-10 mb-2"
             readonly
             />
         </v-col>
@@ -41,7 +41,7 @@
             />
         </v-col>
     </v-row>
-    <v-row>
+    <v-row density>
       <v-col cols="6">
         <v-text-field
           v-model="form.customerName"
@@ -72,9 +72,8 @@
           @click:append-inner="openPop('S')"
         />
       </v-col>
-
     </v-row>
-    <v-row>
+    <v-row density>
       <v-col>
         <v-select
             v-model="form.transactionType"
@@ -122,12 +121,8 @@
       </v-col>
     </v-row>
   </v-card-text>
-  <v-card-item
-      title="품목목록"
-      style="height: 40px;"
-      />
     <v-card-text>
-      <v-row>
+      <v-row density>
         <v-col>
           <div class="d-flex ga-4 justify-end">
           <v-btn
@@ -166,7 +161,7 @@
           <template #item.itemCd="{ item, index }">
             <input
               v-model="itemList[index].itemCd"
-              style="text-align: center; width: 100px; min-width: 100px; max-width: 100px;"
+              style="text-align: center; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-input"
               @dblclick="openPop(index)"
             />
@@ -174,7 +169,7 @@
           <template #item.itemName="{ item, index }">
             <input
               v-model="itemList[index].itemName"
-              style="text-align: left; width: 250px; min-width: 250px; max-width: 250px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-input"
               readonly
             />
@@ -182,7 +177,7 @@
           <template #item.unit="{ item, index }">
             <input
               v-model="itemList[index].unit"
-              style="text-align: center; width: 80px; min-width: 80px; max-width: 80px;"
+              style="text-align: center; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -190,7 +185,7 @@
             <input
               v-model="itemList[index].qty"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
               @blur="onBlur(index)"
             />
@@ -199,7 +194,7 @@
             <input
               v-model="itemList[index].unitPrice"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
               @blur="onBlur(index)"
             />
@@ -208,7 +203,7 @@
             <input
               v-model="itemList[index].supplyPrice"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -216,7 +211,7 @@
             <input
               v-model.number="itemList[index].vatPrice"
               type="number"
-              style="text-align: right; width: 100px; min-width: 100px; max-width: 100px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -224,7 +219,7 @@
             <input
               v-model="itemList[index].etc"
               type="text"
-              style="text-align: left; width: 150px; min-width: 150px; max-width: 150px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -321,6 +316,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT } from '@/util/common';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
+import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 
 const { userId} = useAuthStore()
 const { vError, vSuccess, vWarning } = useAlertStore()
@@ -363,14 +359,14 @@ const form = reactive({
 
 const headers = ref([
   { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : '100px' },
-  { title: '품목명',      key: 'itemName',   align: 'start',width : '250px'},
+  { title: '품목명',      key: 'itemName',   align: 'center', width : '450px'},
   { title: '규격',        key: 'unit',       align: 'center' ,width : '80px' },
-  { title: '수량',        key: 'qty',        align: 'center' ,width : '110px'},
-  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : '110px'},
+  { title: '수량',        key: 'qty',        align: 'center' ,width : '80px'},
+  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : '80px'},
   { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : '110px'},
   { title: '부가세',      key: 'vatPrice',    align: 'center',width : '100px'},
-  { title: '적용',        key: 'etc',         align: 'center' ,width : '150px'},
-  { title: '-',          key: 'actions',        align: 'center' ,width : '10px'},
+  { title: '적용',        key: 'etc',         align: 'center' ,width : '120px'},
+  { title: '-',          key: 'actions',        align: 'center' ,width : 10},
 ])
 
 
