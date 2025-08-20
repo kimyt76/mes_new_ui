@@ -79,7 +79,7 @@
     <v-col class="pa-0">
       <v-data-table
         :headers="headers"
-        :items="contractList"
+        :items="saleList"
         :loading="loading"
         :items-per-page="15"
         no-data-text="데이터가 없습니다."
@@ -87,6 +87,7 @@
         density="compact"
         fixed-header
         height="720px"
+        return-object
         >
         <template v-slot:headers="{ columns }">
           <tr>
@@ -118,6 +119,10 @@
             {{ item.itemName }}
           </div>
         </template>
+        <template #item.totPrice ="{ item }">
+          {{ formatComma(item.totPrice) }}
+        </template>
+
         <template #item.statusType="{ item, index }">
             {{ item.statusType === 'ING' ?  '진행중' : '종료'}}
         </template>
@@ -129,6 +134,14 @@
               @click="onPrint"
             >인쇄
           </p>
+        </template>
+        <template #item.saleId="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="goSaleItem(item, index)"
+          >
+            주문서
+          </div>
         </template>
       </v-data-table>
     </v-col>
@@ -151,6 +164,7 @@ import { isEmpty, formatComma } from '@/util/common';
 import { ApiOrder } from '@/api/apiOrders';
 import SalePop from './SalePop.vue';
 
+let srhForm = ref('')
 let saleDateSeq = ref('')
 let saleId = ref('')
 const dialog = ref(false)
@@ -166,7 +180,7 @@ const form = reactive({
 
 
 const headers = ref([
-  { title: '일자-No.',          key: 'saleDateSeq',   align: 'center' , width: '90px'},
+  { title: '일자-No.',          key: 'saleDateSeq',   align: 'center' , width: '120px'},
   { title: '품목명',            key: 'itemName',      align: 'start', width: '280px'},
   { title: '담당자명',          key: 'managerName',   align: 'center' , width: '90px'},
   { title: '거래처명',          key: 'customerName',  align: 'start' , width: '200px'},
@@ -202,9 +216,9 @@ const srhSaleList = async () =>{
 
 }
 
-const goSaleItem = (id, no) =>{
-  saleId.value = id
-  saleDateSeq.value = no
+const goSaleItem = (item, index) =>{
+  saleId.value = item.saleId
+  saleDateSeq.value = item.saleDateSeq
   dialog.value = true
 }
 
