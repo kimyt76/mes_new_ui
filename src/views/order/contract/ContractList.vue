@@ -1,22 +1,21 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '영업관리', '수주관리']"
+    :items="['MES', '관리', '관리']"
     class="custom-breadcrumbs"
-    >
-  </v-breadcrumbs>
-  <v-card class="pa-1" style="height: 60px;">
-    <v-row>
-      <v-form ref="srhForm" @submit.prevent ='srhContractList'>
-        <v-col class="d-flex flex-row ga-3 ml-2 mr-2">
-            <v-text-field
-              v-model="form.itemName"
-              dense
-              density="compact"
-              label="품목명"
-              placeholder="품목명을 입력해주세요"
-              variant="underlined"
-              style="width: 150px;"
-              />
+    />
+  <v-card class="pa-1">
+    <v-card-text >
+      <v-row>
+      <v-form ref="srhForm" @submit.prevent="srhContractList">
+        <v-col class="d-flex flex-row ga-3">
+          <v-date-input
+            v-model="form.contractDate"
+            label="수주일자"
+            :display-format="formatDate"
+            density="compact"
+            variant="underlined"
+            style="width: 200px;"
+          />
           <v-text-field
               v-model="form.managerName"
               dense
@@ -46,94 +45,110 @@
             style="width: 90px;"
             />
           <v-btn
-            color = "#EFEBE9"
             text="조회"
+            color="brown-lighten-4"
             type="submit"
             />
           <v-btn
             text="초기화"
-            @click=srhForm.reset()
+            @click="srhForm.reset()"
             />
-          </v-col>
-        </v-form>
+        </v-col>
+      </v-form>
     </v-row>
+    </v-card-text>
   </v-card>
-    <v-row style="height: 70px;">
-      <v-col class="d-flex justify-end align-center mr-2" style="gap: 8px; margin-top: 8px;">
-        <v-btn
-            dense
-            color="brown-lighten-4"
-            text="신규"
-            @click="goContract()"
-            />
-          <v-btn
-            class="mr-3 excel-btn"
-            text="엑셀"
-            prepend-icon="mdi-microsoft-excel"
-            @click="excel"
-            />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-data-table
-          :headers="headers"
-          :items="contractList"
-          :loading="loading"
-          no-data-text="데이터가 없습니다."
-          loading-text="조회중입니다 잠시만 기다려주세요"
-          :items-per-page="25"
+  <v-spacer></v-spacer>
+  <v-row>
+    <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
+      <v-btn
+        color="brown-lighten-4"
+        text="신규"
+        @click="selectRowClick"
+        />
+      <v-btn
+        class="excel-btn"
+        text="엑셀"
+        prepend-icon="mdi-microsoft-excel"
+        @click="excel"
+        />
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col class="pa-0">
+      <v-data-table
+        :headers="headers"
+        :items="contractList"
+        :loading="loading"
+        :items-per-page="15"
+        no-data-text="데이터가 없습니다."
+        loading-text="조회중입니다 잠시만 기다려주세요"
+        density="compact"
+        fixed-header
+        height="720px"
+        >
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header"
+              style="height: 40px;"
+              :style="{textAlign: 'center'} "
+              >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
+
+        <template #item.contractDateSeq="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="selectRowClick(item, index)"
           >
-            <template v-slot:headers="{ columns }">
-              <tr>
-                <th
-                  v-for="column in columns"
-                  :key="column.key"
-                  class="custom-header"
-                  style="height: 30px;"
-                  :style="{textAlign: 'center'} "
-                  >
-                  {{ column.title }}
-                </th>
-              </tr>
-          </template>
-          <!-- 리스트 영역 커스터마이징 -->
-          <template #item="{ item }">
-            <tr style="height: 30px;">
-              <td style="width: 100px; height: 30px; text-align: center; text-decoration: underline; cursor: pointer;" @click="goContract(item.contractId)">{{ item.contractDateSeq }}</td>
-              <td style="width: 200px; height: 30px; text-decoration: underline;  cursor: pointer;" @click="goContract(item.contractId)">{{item.itemName}}</td>
-              <td style="width: 90px; height: 30px; text-align: center;">{{item.dueDate}}</td>
-              <td style="width: 90px; height: 30px; text-align: center;">{{item.managerName}}</td>
-              <td style="width: 200px; height: 30px; text-align: left;">{{item.customerName}}</td>
-              <td style="width: 100px; height: 30px; text-align: right;">{{ formatComma(item.totQty) }}</td>
-              <td style="width: 100px; height: 30px; text-align: right;">{{ formatComma(item.totSupplyPrice) }}</td>
-              <td style="width: 60px; height: 30px; text-align: center;">{{item.statusType === 'ING' ?  '진행중' : '종료'}}</td>
-              <td style="width: 40px; height: 30px; text-align: center;">
-                <p
-                  style="padding: 4px; text-align: center; cursor: pointer;"
-                  :style="{
-                    backgroundColor: item.printYn === 'Y' ? '#FFAB91' : 'transparent'
-                  }"
-                  @click="onPrint"
-                >
-                  인쇄
-                </p>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
+            {{ item.contractDateSeq }}
+          </div>
+        </template>
+        <template #item.itemName="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="selectRowClick(item, index)"
+          >
+            {{ item.itemName }}
+          </div>
+        </template>
+        <template #item.totQty ="{ item }">
+          {{ formatComma(item.totQty) }}
+        </template>
+        <template #item.totSupplyPrice ="{ item }">
+          {{ formatComma(item.totSupplyPrice)}}
+        </template>
+        <template #item.statusType="{ item, index }">
+            {{ item.statusType === 'ING' ?  '진행중' : '종료'}}
+        </template>
+        <template #item.printYn="{ item, index }">
+           <p style="padding: 4px;
+              text-align: center;
+              cursor: pointer;"
+              :style="{backgroundColor: item.printYn === 'Y' ? '#FFAB91' : 'transparent'}"
+              @click="onPrint"
+            >인쇄
+          </p>
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-row>
 </template>
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders';
-import { useAlertStore } from '@/stores/alert';
-import { onMounted, reactive, ref } from 'vue';
-import { exportToExcel } from '@/util/exportToExcel';
 import { ApiCommon } from '@/api/apiCommon';
+import { useAlertStore } from '@/stores/alert';
 import { useRouter } from 'vue-router';
-import { isEmpty, formatComma } from '@/util/common';
+import { reactive, ref, onMounted, computed } from 'vue';
+import { exportToExcel } from '@/util/exportToExcel';
+import { VDateInput } from 'vuetify/labs/VDateInput'
+import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 
 const router = useRouter()
 const { vError } = useAlertStore()
@@ -141,71 +156,75 @@ const loading = ref(false)
 const contractList = ref([])
 const statusTypes = ref([])
 const srhForm = ref('')
+
 const form = reactive({
+  contractDate: '',
   itemName: '',
   managerName: '',
   customerName: '',
   statusType: '',
 })
 
-const headers =[
-  { title: '일자-No.',          key: 'contractDateSeq',   align: 'center' },
-  { title: '품목명',            key: 'itemName',          align: 'center'},
-  { title: '납기일자',          key: 'dueDate',           align: 'center' },
-  { title: '담당자명',          key: 'managerName',       align: 'center' },
-  { title: '거래처명',          key: 'customerName',      align: 'center' },
-  { title: '주문수량합계',       key: 'totQty',           align: 'center'},
-  { title: '주문공급가액합계',   key: 'totUnitPrice',      align: 'center'},
-  { title: '진행상태',          key: 'statusType',        align: 'center' },
-  { title: '인쇄',              key: 'printYn',           align: 'center' },
+const headers = [
+  { title: '일자-No.',          key: 'contractDateSeq',   align: 'center' , width: '90px'},
+  { title: '품목명',            key: 'itemName',          align: 'start',   width: '280px'},
+  { title: '납기일자',          key: 'dueDate',           align: 'center' , width: '100px'},
+  { title: '담당자명',          key: 'managerName',       align: 'center' , width: '100px'},
+  { title: '거래처명',          key: 'customerName',      align: 'start',   width: '200px'},
+  { title: '주문수량합계',       key: 'totQty',           align: 'end',     width: '100px'},
+  { title: '주문공급가액합계',   key: 'totSupplyPrice',      align: 'end',    width: '120px'},
+  { title: '진행상태',          key: 'statusType',        align: 'center' , width: '60px'},
+  { title: '인쇄',              key: 'printYn',           align: 'center',  width: '40px'},
 ]
 
-
-onMounted( async () =>{
-  statusTypes.value = await ApiCommon.getCodeList('status_type')
-  srhContractList()
-})
-
-const goContract = (id) => {
-  if ( isEmpty(id)) {
+const selectRowClick = (item, index) => {
+  if ( isEmpty(item.contractId)) {
     router.push({ name: 'ContractReg' })
   }else{
-    router.push({ name: 'ContractDetail', params: { id } })
+    router.push({ name: 'ContractDetail', params: { id:item.contractId } })
   }
-
 }
 
+/**
+ * 리스트 조회
+ */
 const srhContractList = async () => {
-  loading.value = true
+  //loading.value = true
 
   try{
     const params = {
       ...form
     }
-    contractList.value = await ApiOrder.getContractList(params)
+    params.contractDate = formatDate(params.contractDate)
 
+    contractList.value = await ApiOrder.getContractList(params)
   }catch(err){
     vError(err.message)
   }finally{
-    loading.value = false
+   // loading.value = false
   }
 }
 
-const onPrint = () => {
 
-}
+/**
+ * 초기화
+ */
+onMounted( async () =>{
+  statusTypes.value = await ApiCommon.getCodeList('status_type')
+  form.contractDate = todayKST()
+  srhContractList()
+})
 
+/**
+ * 엑셀 다운로드
+ */
 const excel = () => {
   exportToExcel(headers, contractList.value, '수주_목록')
 }
 
+
 </script>
 
-<style scoped>
+<style>
 @import '@/assets/css/main.css';
-.highlight {
-  background-color: yellow;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
 </style>
