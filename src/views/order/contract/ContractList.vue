@@ -1,6 +1,6 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '관리', '관리']"
+    :items="['MES', '영업관리', '수주관리']"
     class="custom-breadcrumbs"
     />
   <v-card class="pa-1" style="height: 60px;">
@@ -8,14 +8,23 @@
       <v-row>
       <v-form ref="srhForm" @submit.prevent="srhContractList">
         <v-col class="d-flex flex-row ga-3">
-          <v-date-input
+          <!-- <v-date-input
             v-model="form.contractDate"
             label="수주일자"
             :display-format="formatDate"
             density="compact"
             variant="underlined"
             style="width: 200px;"
-          />
+          /> -->
+          <v-text-field
+              v-model="form.itemName"
+              dense
+              density="compact"
+              label="품목명"
+              placeholder="품목명을 입력해주세요"
+              variant="underlined"
+              style="width: 180px;"
+              />
           <v-text-field
               v-model="form.managerName"
               dense
@@ -23,7 +32,7 @@
               label="담당자명"
               placeholder="담당자명을 입력해주세요"
               variant="underlined"
-              style="width: 150px;"
+              style="width: 180px;"
               />
           <v-text-field
               v-model="form.customerName"
@@ -42,7 +51,7 @@
             item-value="code"
             variant="underlined"
             density="compact"
-            style="width: 90px;"
+            style="width: 100px;"
             />
           <v-btn
             text="조회"
@@ -158,7 +167,7 @@ const statusTypes = ref([])
 const srhForm = ref('')
 
 const form = reactive({
-  contractDate: '',
+  //contractDate: '',
   itemName: '',
   managerName: '',
   customerName: '',
@@ -195,7 +204,7 @@ const srhContractList = async () => {
     const params = {
       ...form
     }
-    params.contractDate = formatDate(params.contractDate)
+    //params.contractDate = formatDate(params.contractDate)
 
     contractList.value = await ApiOrder.getContractList(params)
   }catch(err){
