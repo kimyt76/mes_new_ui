@@ -226,7 +226,6 @@
               />
             </template>
             <template #item.actions="{ item }">
-              <!-- <v-btn size="small" text="삭제-" @click="removeRow(item)"/> -->
               <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="removeRow(item)"></v-icon>
             </template>
 
@@ -315,7 +314,6 @@ import MultiFileUpload from '@/components/MultiFileUpload.vue';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import StorageListPop from '@/views/basic/storage/StorageListPop.vue';
-import DateSinglePicker from '@/components/DateSinglePicker.vue';
 import { calculateVAT } from '@/util/common';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 
