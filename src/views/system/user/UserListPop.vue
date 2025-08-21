@@ -10,7 +10,7 @@
   <v-spacer></v-spacer>
   <v-card-text >
     <v-row>
-      <v-form ref="srcForm" @submit.prevent="searchList">
+      <v-form ref="srhForm" @submit.prevent="searchList">
       <v-col class="d-flex flex-row ga-3">
         <v-text-field
           v-model="form.memberNm"
@@ -40,7 +40,7 @@
           />
         <v-btn
           text="초기화"
-          @click="srcForm.reset()"
+          @click="srhForm.reset()"
           />
       </v-col>
       </v-form>
@@ -78,7 +78,7 @@ const emit = defineEmits(['selected','close-dialog'])
 
 const loading = ref(false)
 const userList = ref([])
-const srcForm = ref('null')
+const srhForm = ref('null')
 const form = reactive({
   userId : '',
   memberNm : '',

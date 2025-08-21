@@ -47,7 +47,7 @@
             />
           <v-btn
             text="초기화"
-            @click="srcForm.reset()"
+            @click="srhForm.reset()"
             />
         </v-col>
       </v-form>

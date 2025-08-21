@@ -6,7 +6,7 @@
   <v-card class="pa-1">
     <v-card-text >
       <v-row>
-      <v-form ref="srcForm" @submit.prevent="searchList">
+      <v-form ref="srhForm" @submit.prevent="searchList">
         <v-col class="d-flex flex-row ga-3">
           <v-date-input
             v-model="form.strDate"
@@ -44,7 +44,7 @@
             />
           <v-btn
             text="초기화"
-            @click="srcForm.reset()"
+            @click="srhForm.reset()"
             />
         </v-col>
       </v-form>
@@ -89,7 +89,7 @@ import { VDateInput } from 'vuetify/labs/VDateInput'
 import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 
 
-const srcForm = ref(null)
+const srhForm = ref(null)
 const list = ref([])
 
 const form = reactive({

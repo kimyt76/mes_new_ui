@@ -1,106 +1,155 @@
 <template>
-  <v-dialog v-model="dialog" width="1000px">
-    <v-card class="pa-4">
-      <!-- 제목 + 닫기 아이콘 -->
-      <v-card-title class="d-flex justify-space-between align-center">
-        <span class="text-h6">판매 조회</span>
-        <!-- <v-btn icon @click="dialog = false" variant="text">
-          <v-icon>mdi-close</v-icon>
-        </v-btn> -->
-      </v-card-title>
-
-      <!-- 조회 영역 -->
-      <v-row dense class="mb-4">
-        <v-col>
-            <div class="d-flex ga-4 justify-end">
-            <v-text-field v-model="form.itemName" label="품목명" density="compact" />
-            <v-text-field v-model="form.managerName" label="담당자명" density="compact" />
-            <v-text-field v-model="form.customerName" label="거래처명" density="compact" />
-            <v-btn color="primary" @click="doSearch">조회</v-btn>
-          </div>
-          </v-col>
-      </v-row>
-
-      <!-- 리스트 -->
-      <v-data-table
-        v-model="selected"
-        :headers="headers"
-        :items="saleList"
-        item-value="saleId"
-        show-select
-        class="my-data-table mb-4"
-        :loading="loading"
-        no-data-text="데이터가 없습니다."
-        loading-text="조회 중입니다..."
-        density="compact"
-        fixed-header
-        height="400px"
-        return-object
+<v-card style="width: 900px;">
+  <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+    <v-toolbar-title>판매 조회</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon @click="emit('close-dialog')">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </v-toolbar>
+  <v-spacer></v-spacer>
+  <v-card-text >
+    <v-row>
+      <v-form ref="srhForm" @submit.prevent="searchList">
+      <v-col class="d-flex flex-row ga-3">
+        <v-text-field
+          v-model="form.itemName"
+          label="품목명"
+          density="compact"
+          placeholder="품목명을 입력해주세요"
+          style="width: 200px;"
+        />
+        <v-text-field
+          v-model="form.itemCd"
+          label="담당자명"
+          density="compact"
+          style="width: 150px;"
+          placeholder="담당자명을 입력해주세요"
+        />
+        <v-text-field
+          v-model="form.customerName"
+          label="거래처명"
+          density="compact"
+          style="width: 150px;"
+          placeholder="담당자명을 입력해주세요"
+        />
+        <v-btn
+          text="조회"
+          color = "brown-lighten-4"
+          type="submit"
+          />
+        <v-btn
+          text="초기화"
+          @click="srhForm.reset()"
+          />
+      </v-col>
+      </v-form>
+    </v-row>
+      <!-- 스크롤 가능한 테이블 컨테이너 -->
+      <div style="overflow-y: auto; height: calc(100% - 40px);">
+        <v-data-table
+          v-model="selectedItem"
+          :headers="headers"
+          :items="itemList"
+          :loading="loading"
+          item-value ="itemCd"
+          density="compact"
+          fixed-header
+          height="520px"
+          show-select
+          return-object
+        >
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header pa-1"
+              >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
+      </v-data-table>
+      </div>
+  </v-card-text>
+  <v-card-actions>
+    <v-btn
+      text="선택"
+      variant="flat"
+      class="mb-4"
+      color="indigo-darken-3"
+      @click="itemRow"
       />
-
-      <!-- 하단 버튼 -->
-      <v-card-actions class="justify-end">
-        <v-btn color="indigo-darken-4" variant="tonal" @click="selectRows">선택</v-btn>
-        <v-btn variant="tonal" @click="emit('close-saleDialog')">닫기</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-btn
+      text="닫기"
+      variant="tonal"
+      class="mb-4 mr-3"
+      @click="emit('close-dialog')"
+      />
+  </v-card-actions>
+</v-card>
 </template>
 
 <script setup>
-import { ApiOrder } from '@/api/apiOrders'
-import { reactive, ref } from 'vue'
+import { ApiCommon } from '@/api/apiCommon';
+import { ApiItem } from '@/api/apiItem';
+import { onMounted, reactive, ref } from 'vue';
 
-const emit = defineEmits(['selected', 'close-contractDialog'])
-
-const dialog = ref(true)
-
-const form = reactive({
-  itemName: '',
-  managerName: '',
-  customerName: ''
-})
+const emit = defineEmits('selected','close-dialog')
 
 const loading = ref(false)
-const selected = ref([])
-const saleList = ref([])
+const srhForm = ref('')
+const itemTypeCds = ref([])
+const itemList = ref([])
+const selectedItem = ref(null)
+const form = reactive({
+  itemTypeCd: '',
+  itemName: '',
+  itemCd: '',
+})
 
 const headers = [
-  { title: '일자-No.',         key: 'saleDateSeq',      align: 'center', width: 110 },
-  { title: '품목명',           key: 'itemName',          align: 'center', width: 200 },
-  { title: '거래처명',         key: 'customerName',      align: 'center', width: 150 },
-  { title: '담당자명',         key: 'managerName',       align: 'center', width: 90 },
-  { title: '거래유형',         key: 'transactionTypeName',       align: 'center', width: 90 },
-  { title: '금액합계',         key: 'totPrice',           align: 'center', width: 90 },
-  { title: '진행상태',         key: 'statusType',        align: 'center', width: 70 }
+  { title: '품목구분',  key: 'itemTypeName',  align: 'center',  width: '80px' },
+  { title: '품목코드',  key: 'itemCd',        align: 'center', width: '100px' },
+  { title: '품목명',    key: 'itemName',      align: 'start', width: '250px' },
+  { title: '거래처',    key: 'customerName',   align: 'start', width: '200px' },
 ]
 
-const doSearch = async () => {
+const searchList = async () =>{
   loading.value = true
 
-  const param = {
+  const params = {
     ...form
   }
+  itemList.value = await ApiItem.getItemList(params)
 
-  saleList.value = await ApiOrder.getSaleList(param);
-
-  loading.value = false
-  setTimeout(() => {
-    loading.value = false
-    // 실제 검색 로직 넣으면 됨
-  }, 1000)
+  loading.value =false
 }
 
-const selectRows = () => {
-  console.log('선택된 행:', selected.value)
-  emit('selected', selected.value)
-  emit('close-saleDialog')
+const itemRow = () =>{
+  console.log('selectedItem', selectedItem.value)
+  emit('selected', selectedItem.value)
 }
+
+onMounted( async () => {
+  itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
+})
+
 </script>
-<style>
-::v-deep(.my-data-table thead th) {
-  height: 32px !important;
+
+<style >
+@import '@/assets/css/main.css';
+.custom-table thead th {
   background-color: #BCAAA4 !important;
 }
-
+.wrap-cell {
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
+}
+.toolbar-Head {
+  color: white;
+  background-color:#546E7A;
+}
 </style>

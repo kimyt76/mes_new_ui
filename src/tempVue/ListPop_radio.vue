@@ -10,7 +10,7 @@
   <v-spacer></v-spacer>
   <v-card-text >
     <v-row>
-      <v-form ref="srcForm" @submit.prevent="searchList">
+      <v-form ref="srhForm" @submit.prevent="searchList">
       <v-col class="d-flex flex-row ga-3">
         <v-text-field
           v-model="form.test"
@@ -31,7 +31,7 @@
           />
         <v-btn
           text="초기화"
-          @click="srcForm.reset()"
+          @click="srhForm.reset()"
           />
       </v-col>
       </v-form>

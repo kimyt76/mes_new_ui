@@ -7,7 +7,7 @@
   <v-card>
     <v-card-text >
       <v-row class="custom-height">
-      <v-form ref="srcForm" @submit.prevent="searchList">
+      <v-form ref="srhForm" @submit.prevent="searchList">
         <v-col class="d-flex flex-row ga-3">
           <v-select
             v-model="form.select"
@@ -37,7 +37,7 @@
             />
           <v-btn
             text="초기화"
-            @click="srcForm.reset()"
+            @click="srhForm.reset()"
             />
         </v-col>
       </v-form>
@@ -83,7 +83,7 @@
 import { reactive, ref, onMounted } from 'vue';
 import { exportToExcel } from '@/util/exportToExcel';
 
-const srcForm = ref(null)
+const srhForm = ref(null)
 const list = ref([])
 const lists = ref([])
 const selected = ref([])

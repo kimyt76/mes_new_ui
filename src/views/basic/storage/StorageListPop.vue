@@ -10,7 +10,7 @@
   <v-spacer></v-spacer>
   <v-card-text >
     <v-row>
-      <v-form ref="srcForm" @submit.prevent="searchList">
+      <v-form ref="srhForm" @submit.prevent="searchList">
       <v-col class="d-flex flex-row ga-3">
         <v-select
           v-model="form.storageType"
@@ -35,7 +35,7 @@
           />
         <v-btn
           text="초기화"
-          @click="srcForm.reset()"
+          @click="srhForm.reset()"
           />
       </v-col>
       </v-form>
@@ -75,7 +75,7 @@ import { reactive, ref, onMounted } from 'vue';
 const emit = defineEmits(['selected', 'close-dialog'])
 
 const loding = ref(false)
-const srcForm = ref(null)
+const srhForm = ref(null)
 const storageList = ref([])
 const storageTypes = ref([])
 

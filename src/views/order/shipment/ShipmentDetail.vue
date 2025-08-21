@@ -56,7 +56,7 @@
           </v-col>
           <v-col>
             <v-text-field
-              v-model="form.releaseUserName"
+              v-model="form.managerName"
               label="출고요청자"
               variant="underlined"
               density="compact"
@@ -301,8 +301,8 @@ const form = reactive({
   seq:'',
   customerName:'',
   customerCd:'',
-  releaseUserId: '',
-  releaseUserName: '',
+  managerId: '',
+  managerName: '',
   descStorageCd:'',
   descStorageName:'',
 
@@ -370,13 +370,13 @@ const handleSeleted = ( obj ) => {
     case 'C':
       form.customerName = obj.customerName
       form.customerCd = obj.customerCd
-      form.releaseUserId = obj.memberCd
-      form.releaseUserName = obj.memberCd
+      form.managerId = obj.memberCd
+      form.managerName = obj.memberCd
       form.tradingMethod = obj.tradingMethod
       break
     case 'U':
-      form.releaseUserName = obj.memberNm
-      form.releaseUserId = obj.userId
+      form.managerName = obj.memberNm
+      form.managerId = obj.userId
       break
     case 'S':
       form.descStorageName = obj.storageName
@@ -398,8 +398,8 @@ const selectSaleInfo = async (obj) =>{
 //console.log('selectRow.value ', selectRow.value )
   form.customerCd = obj[0].customerCd
   form.customerName = obj[0].customerName
-  form.releaseUserId = obj[0].managerId
-  form.releaseUserName = obj[0].managerName
+  form.managerId = obj[0].managerId
+  form.managerName = obj[0].managerName
   form.descStorageCd = obj[0].descStorageCd
   form.descStorageName = obj[0].descStorageName
   form.tradingMethod = obj[0].tradingMethod  //거래유형

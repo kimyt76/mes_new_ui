@@ -118,6 +118,7 @@ const headers = [
   { title: '판매일',    key: 'saleDate',      align: 'center', width: '100px' },
   { title: '출하일',    key: 'shipmentDate',  align: 'center', width: '100px' },
   { title: '수량',      key: 'qty',           align: 'end',   width: '100px' },
+  { title: '단가',  key: 'unitPrice',   align: 'end',   width: '100px' },
   { title: '공급가액',  key: 'supplyPrice',   align: 'end',   width: '100px' },
   { title: '부가세',    key: 'vatPrice',      align: 'end',   width: '100px' },
   { title: '합계금액',   key: 'totPrice',    align: 'end',   width: '100px' },
