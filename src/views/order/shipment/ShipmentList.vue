@@ -115,6 +115,7 @@
         <template #item.statusType="{ item, index }">
             {{ item.statusType === 'ING' ?  '진행중' : '종료'}}
         </template>
+
         <template #item.printYn="{ item, index }">
            <p style="padding: 4px;
               text-align: center;
@@ -124,6 +125,7 @@
             >인쇄
           </p>
         </template>
+
         <template #item.shipmentId="{ item, index }">
           <div
             style="cursor: pointer; text-decoration: underline; width: 95%;"
@@ -170,19 +172,18 @@ const form =reactive({
   customerCd: '',
 })
 
-
-const headers = [
+const headers = ref([
   { title: '일자-No.',      key: 'shipmentDateSeq',   align: 'center' , width: '100px'},
-  { title: '품목명',        key: 'itemName',          align: 'center', width: '100px'},
-  { title: '거래처명',      key: 'customerName',      align: 'center' , width: '100px'},
-  { title: '담당자명',      key: 'managerName',       align: 'center' , width: '100px'},
-  { title: '수량합계',      key: 'totQty',            align: 'center', width: '100px'},
+  { title: '품목명',        key: 'itemName',          align: 'start', width: '350px'},
+  { title: '거래처명',      key: 'customerName',      align: 'start' , width: '200px'},
+  { title: '담당자명',      key: 'managerName',       align: 'center' , width: '90px'},
+  { title: '수량합계',      key: 'totQty',            align: 'end', width: '100px'},
   { title: '출하예정일',    key: 'dueDate',           align: 'center', width: '100px'},
-  { title: '출고시간',      key: 'releaseTime',       align: 'center' , width: '100px'},
+  { title: '출고시간',      key: 'releaseTiem',       align: 'center' , width: '100px'},
   { title: '창고명',        key: 'descStorageName',   align: 'center' , width: '100px'},
   { title: '인쇄',          key: 'printYn',           align: 'center' , width: '100px'},
   { title: '판매',          key: 'shipmentId',        align: 'center' , width: '100px'},
-]
+])
 
 const goShipmentItem = (item, index) => {
   shipmentId.value = item.shipmentId
