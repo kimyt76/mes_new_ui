@@ -112,7 +112,7 @@
 
         <template #item.contractDateSeq="{ item, index }">
           <div
-            style="cursor: pointer; text-decoration: underline; "
+            style="cursor: pointer; text-decoration: underline; width: 95%;"
             @click="selectRowClick(item, index)"
           >
             {{ item.contractDateSeq }}
@@ -120,7 +120,7 @@
         </template>
         <template #item.itemName="{ item, index }">
           <div
-            style="cursor: pointer; text-decoration: underline;"
+            style="cursor: pointer; text-decoration: underline; width: 95%;"
             @click="selectRowClick(item, index)"
           >
             {{ item.itemName }}
@@ -175,8 +175,8 @@ const form = reactive({
 })
 
 const headers = [
-  { title: '일자-No.',          key: 'contractDateSeq',   align: 'center' , width: '90px'},
-  { title: '품목명',            key: 'itemName',          align: 'start',   width: '280px'},
+  { title: '일자-No.',          key: 'contractDateSeq',   align: 'center' , width: '100px'},
+  { title: '품목명',            key: 'itemName',          align: 'start',   width: '380px'},
   { title: '납기일자',          key: 'dueDate',           align: 'center' , width: '100px'},
   { title: '담당자명',          key: 'managerName',       align: 'center' , width: '100px'},
   { title: '거래처명',          key: 'customerName',      align: 'start',   width: '200px'},
