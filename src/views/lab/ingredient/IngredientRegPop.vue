@@ -1,8 +1,12 @@
 <template>
-  <v-card>
-    <v-card-item
-      :title="props.title"
-      ></v-card-item>
+  <v-card  class="no-scroll">
+    <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+      <v-toolbar-title>거래처 조회</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="emit('close-dialog')">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      </v-toolbar>
     <v-card-text>
       <v-form ref="vform">
         <v-row>
@@ -78,9 +82,10 @@
               />
             </v-col>
         </v-row>
-        <v-row class="mr-1">
-            <v-col class="ml-3" style="padding: 0px;">
-            <v-card-text><div>한도 국가</div></v-card-text>
+         <v-card-text style="height: 60px;">
+          <v-row>
+            <v-col>
+              <v-card-subtitle> -한도 국가</v-card-subtitle>
               <div class="d-flex flex-wrap">
                 <v-checkbox
                   v-for="country in countries"
@@ -93,10 +98,8 @@
                 />
               </div>
             </v-col>
-        </v-row>
-        <v-row class="mr-1">
-            <v-col class="ml-3" style="padding: 0px;">
-            <v-card-text><div>금지 국가</div></v-card-text>
+            <v-col>
+              <v-card-subtitle> -금지 국가</v-card-subtitle>
               <div class="d-flex flex-wrap">
                 <v-checkbox
                   v-for="country in countries"
@@ -109,24 +112,27 @@
                 />
               </div>
             </v-col>
-        </v-row>
+          </v-row>
+          <v-row>
+            <v-col class="d-flex justify-end align-center" style="gap: 5px;">
+              <v-btn
+                color="indigo-darken-4"
+                text="저장"
+                variant="tonal"
+                depressed
+                @click="saveInfo"
+                />
+              <v-btn
+                text="닫기"
+                variant="tonal"
+                @click="emit('close-dialog')"
+              />
+            </v-col>
+          </v-row>
+         </v-card-text>
       </v-form>
     </v-card-text>
 
-    <v-card-actions>
-      <v-btn
-        color="indigo-darken-4"
-        text="저장"
-        variant="tonal"
-        depressed
-        @click="saveInfo"
-        />
-      <v-btn
-        text="닫기"
-        variant="tonal"
-        @click="emit('close-dialog')"
-      />
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -207,6 +213,11 @@ onMounted(async () => {
 .v-card-item  {
   background-color:#BCAAA4;
   height: 40px;
+}
+.toolbar-Head {
+  color: white;
+  background-color:#546E7A;
+
 }
 
 </style>
