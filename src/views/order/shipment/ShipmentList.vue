@@ -167,7 +167,7 @@ const headers = [
   { title: '일자-No.',      key: 'shipmentDateSeq',   align: 'center' , width: '100px'},
   { title: '품목명',        key: 'itemName',          align: 'center', width: '100px'},
   { title: '거래처명',      key: 'customerName',      align: 'center' , width: '100px'},
-  { title: '담당자명',      key: 'releaseUserName',   align: 'center' , width: '100px'},
+  { title: '담당자명',      key: 'managerName',       align: 'center' , width: '100px'},
   { title: '수량합계',      key: 'totQty',            align: 'center', width: '100px'},
   { title: '출하예정일',    key: 'dueDate',           align: 'center', width: '100px'},
   { title: '출고시간',      key: 'releaseTime',       align: 'center' , width: '100px'},
@@ -183,8 +183,6 @@ const goShipmentItem = (id, no) => {
 }
 
 const selectRowClick = (item, index) =>{
-
-
   if ( isEmpty(item.shipmentId)) {
     router.push({ name: 'ShipmentReg' })
   }else{
