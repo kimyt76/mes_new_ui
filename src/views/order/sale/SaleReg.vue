@@ -395,13 +395,13 @@ const handleSeleted = ( obj ) => {
       form.descStorageCd = obj.storageCd
       break
     case 'I':
-      console.log('obj',obj)
+      //console.log('obj',obj)
       if (selectedRowIndex.value !== null) {
         const target = itemList.value[selectedRowIndex.value]
-        console.log('itemCd',obj.itemCd )
-        console.log('itemName',obj.itemName )
+
         target.itemCd = obj.itemCd
         target.itemName = obj.itemName
+        target.unit = obj.unit
       }
       break
   }
