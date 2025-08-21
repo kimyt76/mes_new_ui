@@ -9,7 +9,7 @@
     <v-form ref="vform" @submit.prevent="saveInfo" >
     <v-card-text>
       <v-row>
-        <v-col class="d-flex ga-2">
+        <v-col class="d-flex">
           <v-date-input
             v-model="form.shipmentDate"
             label="주문일자"
@@ -17,15 +17,17 @@
             :display-format="formatDate"
             variant="underlined"
             style="width: 200px;"
+            class="mb-2"
           />
           <v-text-field
             v-model="form.seq"
             density="compact"
             style="width: 20px;"
+            class="mb-2"
             readonly
           />
         </v-col>
-        <v-col class="d-flex ga-4 justify-end">
+        <v-col>
           <v-date-input
             v-model="form.dueDate"
             label="출하예정일"
@@ -35,9 +37,6 @@
             style="width: 200px;"
           />
         </v-col>
-        <v-col></v-col>
-      </v-row>
-      <v-row>
         <v-col cols="6">
           <v-text-field
             v-model="form.customerName"
@@ -48,6 +47,8 @@
             @click:append-inner="openPop('C')"
           />
         </v-col>
+      </v-row>
+      <v-row>
         <v-col>
           <v-text-field
             v-model="form.managerName"
@@ -68,8 +69,6 @@
             @click:append-inner="openPop('S')"
           />
         </v-col>
-      </v-row>
-      <v-row>
         <v-col>
           <v-text-field
             v-model="form.deliveryTelno"
@@ -86,6 +85,16 @@
             density="compact"
           />
         </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-text-field
+            v-model="form.releaseTiem"
+            label="출하시간"
+            variant="underlined"
+            density="compact"
+          />
+        </v-col>
         <v-col>
           <v-text-field
             v-model="form.releaseType"
@@ -98,6 +107,14 @@
           <v-text-field
             v-model="form.accountStatement"
             label="거래명세서"
+            variant="underlined"
+            density="compact"
+          />
+        </v-col>
+        <v-col>
+          <v-text-field
+            v-model="form.tradingMethod"
+            label="거래방법"
             variant="underlined"
             density="compact"
           />
@@ -300,8 +317,9 @@ const form = reactive({
   deliveryTelno: '',
   deliveryManagerName : '',
 
+  tradingMethod: '',
   dueDate: '',
-  releaseTime:'',
+  releaseTiem:'',
   releaseType: '',
   accountStatement: '',
   address: '',
