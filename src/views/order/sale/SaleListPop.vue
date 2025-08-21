@@ -3,7 +3,7 @@
   <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
     <v-toolbar-title>판매 조회</v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn icon @click="emit('close-dialog')">
+    <v-btn icon @click="emit('close-saleDialog')">
       <v-icon>mdi-close</v-icon>
     </v-btn>
   </v-toolbar>
@@ -48,9 +48,9 @@
       <!-- 스크롤 가능한 테이블 컨테이너 -->
       <div style="overflow-y: auto; height: calc(100% - 40px);">
         <v-data-table
-          v-model="selectedItem"
+          v-model="selected"
           :headers="headers"
-          :items="itemList"
+          :items="saleList"
           :loading="loading"
           item-value ="itemCd"
           density="compact"
@@ -79,62 +79,63 @@
       variant="flat"
       class="mb-4"
       color="indigo-darken-3"
-      @click="itemRow"
+      @click="selectRows"
       />
     <v-btn
       text="닫기"
       variant="tonal"
       class="mb-4 mr-3"
-      @click="emit('close-dialog')"
+      @click="emit('close-saleDialog')"
       />
   </v-card-actions>
 </v-card>
 </template>
 
 <script setup>
-import { ApiCommon } from '@/api/apiCommon';
-import { ApiItem } from '@/api/apiItem';
-import { onMounted, reactive, ref } from 'vue';
+import { ApiOrder } from '@/api/apiOrders'
+import { reactive, ref } from 'vue'
 
-const emit = defineEmits('selected','close-dialog')
+const emit = defineEmits(['selected','close-saleDialog'])
 
 const loading = ref(false)
 const srhForm = ref('')
-const itemTypeCds = ref([])
-const itemList = ref([])
-const selectedItem = ref(null)
+const saleList = ref([])
+const selected = ref(null)
+
 const form = reactive({
-  itemTypeCd: '',
   itemName: '',
-  itemCd: '',
+  managerName: '',
+  customerName: ''
 })
 
 const headers = [
-  { title: '품목구분',  key: 'itemTypeName',  align: 'center',  width: '80px' },
-  { title: '품목코드',  key: 'itemCd',        align: 'center', width: '100px' },
-  { title: '품목명',    key: 'itemName',      align: 'start', width: '250px' },
-  { title: '거래처',    key: 'customerName',   align: 'start', width: '200px' },
+  { title: '일자-No.',         key: 'saleDateSeq',      align: 'center', width: 110 },
+  { title: '품목명',           key: 'itemName',          align: 'center', width: 200 },
+  { title: '거래처명',         key: 'customerName',      align: 'center', width: 150 },
+  { title: '담당자명',         key: 'managerName',       align: 'center', width: 90 },
+  { title: '거래유형',         key: 'transactionTypeName',       align: 'center', width: 90 },
+  { title: '금액합계',         key: 'totPrice',           align: 'center', width: 90 },
+  { title: '진행상태',         key: 'statusType',        align: 'center', width: 70 }
 ]
 
-const searchList = async () =>{
+const searchList =  () =>{
   loading.value = true
 
-  const params = {
+  const param = {
     ...form
   }
-  itemList.value = await ApiItem.getItemList(params)
 
-  loading.value =false
+  setTimeout( async () => {
+    loading.value = false
+    saleList.value = await ApiOrder.getSaleList(param);
+  }, 1000)
 }
 
-const itemRow = () =>{
-  console.log('selectedItem', selectedItem.value)
-  emit('selected', selectedItem.value)
+const selectRows = () =>{
+  console.log('selected', selected.value)
+  emit('selected', selected.value)
 }
 
-onMounted( async () => {
-  itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
-})
 
 </script>
 
