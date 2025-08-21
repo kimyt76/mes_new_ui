@@ -263,7 +263,6 @@ import { useRouter } from 'vue-router';
 import { useAlertStore } from '@/stores/alert';
 import { ApiCommon } from '@/api/apiCommon';
 import { useAuthStore } from '@/stores/auth';
-import { calculateVAT } from '@/util/common';
 import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 import MultiFileUpload from '@/components/MultiFileUpload.vue';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
@@ -404,8 +403,8 @@ const selectSaleInfo = async (obj) =>{
 //console.log('selectRow.value ', selectRow.value )
   form.customerCd = obj[0].customerCd
   form.customerName = obj[0].customerName
-  form.releaseUserId = obj[0].managerId
-  form.releaseUserName = obj[0].managerName
+  form.managerId = obj[0].managerId
+  form.managerName = obj[0].managerName
   form.descStorageCd = obj[0].descStorageCd
   form.descStorageName = obj[0].descStorageName
   form.tradingMethod = obj[0].tradingMethod  //거래유형
@@ -415,16 +414,14 @@ const selectSaleInfo = async (obj) =>{
   //console.log('itemList', itemList.value)
 }
 
-
 watch(() => form.shipmentDate, async (newVal, oldVal) => {
-  if ( !isEmpty(oldVal)) {
-    if ( oldVal !==  newVal ){
-    form.seq = await ApiOrder.getNextSeq(newVal)
+
+  if ( !isEmpty(formatDate(oldVal))) {
+    if ( oldVal !==  formatDate(newVal) ){
+    form.seq = await ApiCommon.getNextSeq('tb_shipment_mst','shipment_Date', formatDate(newVal))
     }
   }
 })
-
-
 
 // 행 삭제
 const removeRow = (index) => {
@@ -436,6 +433,7 @@ const salePop = () => {
 }
 
 onMounted( async () => {
+  form.shipmentDate = todayKST()
   form.seq = await ApiCommon.getNextSeq('tb_shipment_mst', 'shipment_date',  form.shipmentDate)
 })
 
