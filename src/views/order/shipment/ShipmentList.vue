@@ -124,6 +124,14 @@
             >인쇄
           </p>
         </template>
+        <template #item.shipmentId="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline; width: 95%;"
+            @click="goShipmentItem"
+          >
+           판매
+          </div>
+        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -176,9 +184,10 @@ const headers = [
   { title: '판매',          key: 'shipmentId',        align: 'center' , width: '100px'},
 ]
 
-const goShipmentItem = (id, no) => {
-  shipmentId.value = id
-  shipmenDateSeq.value = no
+const goShipmentItem = (item, index) => {
+  shipmentId.value = item.shipmentId
+  shipmenDateSeq.value = item.shipmentDateSeq
+
   dialog.value =true
 }
 
@@ -194,14 +203,21 @@ const selectRowClick = (item, index) =>{
  * 리스트 조회
  */
 const srhShipmentList = async () =>{
-  loading.value =true
 
-  const params = {
-    ...form
+  try{
+    loading.value =true
+
+    const params = {
+      ...form
+    }
+
+    shipmentList.value = await ApiOrder.getShipmentList(params)
+  }catch(err){
+    loading.value = false
   }
 
-  shipmentList.value = await ApiOrder.getShipmentList(params)
-  loading.value = false
+
+
 }
 
 /**
