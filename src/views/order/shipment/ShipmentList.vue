@@ -203,7 +203,6 @@ const selectRowClick = (item, index) =>{
  * 리스트 조회
  */
 const srhShipmentList = async () =>{
-
   try{
     loading.value =true
 
@@ -213,11 +212,10 @@ const srhShipmentList = async () =>{
 
     shipmentList.value = await ApiOrder.getShipmentList(params)
   }catch(err){
+
+  }finally{
     loading.value = false
   }
-
-
-
 }
 
 /**
