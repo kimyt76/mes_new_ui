@@ -1,6 +1,6 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '수주관리', '판매관리']"
+    :items="['MES', '영업관리', '판매관리']"
     class="custom-breadcrumbs"
     />
   <v-card class="pa-1" style="height: 60px;">
@@ -163,13 +163,15 @@ import { exportToExcel } from '@/util/exportToExcel';
 import { isEmpty, formatComma } from '@/util/common';
 import { ApiOrder } from '@/api/apiOrders';
 import SalePop from './SalePop.vue';
+import { ApiCommon } from '@/api/apiCommon';
 
 let srhForm = ref('')
 let saleDateSeq = ref('')
 let saleId = ref('')
 const dialog = ref(false)
-const saleList = ref([])
 const router = useRouter()
+const statusTypes = ref([])
+const saleList = ref([])
 const loading = ref(false)
 const form = reactive({
   itemName: '',
@@ -178,7 +180,6 @@ const form = reactive({
   customerCd: '',
 })
 
-
 const headers = ref([
   { title: '일자-No.',          key: 'saleDateSeq',   align: 'center' , width: '100px'},
   { title: '품목명',            key: 'itemName',      align: 'start', width: '370px'},
@@ -186,12 +187,13 @@ const headers = ref([
   { title: '거래처명',          key: 'customerName',  align: 'start' , width: '220px'},
   { title: '금액 합계',         key: 'totPrice',      align: 'end', width: '100px'},
   { title: '거래유형명',        key: 'totUnitPrice',  align: 'center', width: '100px'},
-  { title: '창고명',            key: 'statusType',    align: 'center', width: '150px' },
+  { title: '창고명',            key: 'descStorageName',    align: 'center', width: '150px' },
   { title: '인쇄',              key: 'printYn',       align: 'center', width: '40px' },
   { title: '주문서',            key: 'saleId',        align: 'center', width: '80px' },
 ])
 
 onMounted( async () => {
+  statusTypes.value = await ApiCommon.getCodeList('status_type')
   srhSaleList()
 })
 
