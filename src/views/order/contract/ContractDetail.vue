@@ -1,6 +1,6 @@
 <template>
 <div :id="$attrs.id"></div>
-<v-breadcrumbs :items="['MES', '수주관리', '주문상세']"></v-breadcrumbs>
+<v-breadcrumbs :items="['MES', '영업관리', '주문상세']"></v-breadcrumbs>
 <v-card>
   <v-card-item title="주문서상세"/>
   <v-form ref="vform" @submit.prevent="saveInfo" >
