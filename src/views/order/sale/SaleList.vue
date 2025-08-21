@@ -105,7 +105,7 @@
 
         <template #item.saleDateSeq="{ item, index }">
           <div
-            style="cursor: pointer; text-decoration: underline; "
+            style="cursor: pointer; text-decoration: underline;  width: 95%;"
             @click="selectRowClick(item, index)"
           >
             {{ item.saleDateSeq }}
@@ -113,7 +113,7 @@
         </template>
         <template #item.itemName="{ item, index }">
           <div
-            style="cursor: pointer; text-decoration: underline;"
+            style="cursor: pointer; text-decoration: underline; width: 95%;"
             @click="selectRowClick(item, index)"
           >
             {{ item.itemName }}
@@ -180,10 +180,10 @@ const form = reactive({
 
 
 const headers = ref([
-  { title: '일자-No.',          key: 'saleDateSeq',   align: 'center' , width: '120px'},
-  { title: '품목명',            key: 'itemName',      align: 'start', width: '280px'},
+  { title: '일자-No.',          key: 'saleDateSeq',   align: 'center' , width: '100px'},
+  { title: '품목명',            key: 'itemName',      align: 'start', width: '370px'},
   { title: '담당자명',          key: 'managerName',   align: 'center' , width: '90px'},
-  { title: '거래처명',          key: 'customerName',  align: 'start' , width: '200px'},
+  { title: '거래처명',          key: 'customerName',  align: 'start' , width: '220px'},
   { title: '금액 합계',         key: 'totPrice',      align: 'end', width: '100px'},
   { title: '거래유형명',        key: 'totUnitPrice',  align: 'center', width: '100px'},
   { title: '창고명',            key: 'statusType',    align: 'center', width: '150px' },
