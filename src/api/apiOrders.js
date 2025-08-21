@@ -3,6 +3,26 @@ import { API_URL} from '.'
 
 export const ApiOrder = {
 
+  getDraftList: async(params) => {
+    try{
+      const res = await API_URL.post('/draft/getDraftList', params)
+
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  getDraftInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/draft/getDraftInfo/${id}`)
+
+      return res.data
+
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
   getOrderList: async(params) => {
     try{
       const res = await API_URL.post('/order/getOrderList', params)

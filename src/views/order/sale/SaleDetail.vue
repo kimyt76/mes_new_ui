@@ -1,40 +1,41 @@
 <template>
 <div :id="$attrs.id"></div>
 <v-breadcrumbs
-    :items="['MES', '수주관리', '판매상세']"
+    :items="['MES', '영업관리', '판매상세']"
     class="custom-breadcrumbs"
     ></v-breadcrumbs>
 <v-card>
   <v-card-item
-      title="판매상세"
+      title="판매입력"
       />
   <v-form ref="vform" @submit.prevent="saveInfo" >
   <v-card-text>
     <v-row dense>
-        <v-col class="d-flex flex-row align-center" style="gap: 4px">
-          <DateSinglePicker
-            v-model="form.saleDate"
-            title="판매일자"
-            density="compact"
-            style="width: 100px"
-            readonly
-            />
-            <v-text-field
-              v-model="form.seq"
-              density="compact"
-              style="width: 40px; max-width: 60px; min-width: 0"
-              class="mr-10"
-              readonly
-              />
-        </v-col>
-        <v-col>
-        </v-col>
-        <v-col>
-        </v-col>
-        <v-col>
-        </v-col>
-        <v-col>
-        </v-col>
+      <v-col class="d-flex pa-1 ga-3">
+        <v-date-input
+          v-model="form.saleDate"
+          title="판매일자"
+          density="compact"
+          :display-format="formatDate"
+          variant="underlined"
+          style="width: 150px;"
+          />
+        <v-text-field
+          v-model="form.seq"
+          density="compact"
+          style="width: 40px; max-width: 60px; min-width: 0;"
+          class="mr-10"
+          readonly
+          />
+      </v-col>
+      <v-col>
+      </v-col>
+      <v-col>
+      </v-col>
+      <v-col>
+      </v-col>
+      <v-col>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col>
@@ -67,7 +68,6 @@
           @click:append-inner="openPop('S')"
         />
       </v-col>
-
     </v-row>
     <v-row dense>
       <v-col>
@@ -107,6 +107,11 @@
         <v-col>
           <div class="d-flex ga-4 justify-end">
           <v-btn
+            text="추가+"
+            density="compact"
+            @click="addRow"
+            />
+          <v-btn
             text="주문서"
             density="compact"
             @click="contractPop"
@@ -128,9 +133,7 @@
                 :key="column.key"
                 class="custom-header"
                 style="height: 30px;"
-                :style="{
-                  width: column.width + 'px',
-                  } "
+                :style="{width: column.width + 'px',} "
                 >
                 {{ column.title }}
               </th>
@@ -140,7 +143,7 @@
           <template #item.itemCd="{ item, index }">
             <input
               v-model="itemList[index].itemCd"
-              style="text-align: center; width: 100px; min-width: 100px; max-width: 100px;"
+              style="text-align: center; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-input"
               @dblclick="openPop(index)"
             />
@@ -148,7 +151,7 @@
           <template #item.itemName="{ item, index }">
             <input
               v-model="itemList[index].itemName"
-              style="text-align: left; width: 250px; min-width: 250px; max-width: 250px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-input"
               readonly
             />
@@ -156,7 +159,7 @@
           <template #item.unit="{ item, index }">
             <input
               v-model="itemList[index].unit"
-              style="text-align: center; width: 80px; min-width: 80px; max-width: 80px;"
+              style="text-align: center; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -164,7 +167,7 @@
             <input
               v-model="itemList[index].qty"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
               @blur="onBlur(index)"
             />
@@ -173,7 +176,7 @@
             <input
               v-model="itemList[index].unitPrice"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
               @blur="onBlur(index)"
             />
@@ -182,7 +185,7 @@
             <input
               v-model="itemList[index].supplyPrice"
               type="number"
-              style="text-align: right; width: 110px; min-width: 110px; max-width: 110px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -190,7 +193,7 @@
             <input
               v-model.number="itemList[index].vatPrice"
               type="number"
-              style="text-align: right; width: 100px; min-width: 100px; max-width: 100px;"
+              style="text-align: right; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -198,7 +201,7 @@
             <input
               v-model="itemList[index].etc"
               type="text"
-              style="text-align: left; width: 150px; min-width: 150px; max-width: 150px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -206,7 +209,7 @@
             <input
               v-model="itemList[index].serialLot"
               type="text"
-              style="text-align: left; width: 150px; min-width: 150px; max-width: 150px;"
+              style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
             />
           </template>
@@ -275,7 +278,7 @@
     <component
       :is="currentComponent"
       :id="id"
-      @selected="handleSaved"
+      @selected="handleSeleted"
       @close-dialog="dialog = false"
     />
 </v-dialog>
@@ -286,24 +289,25 @@
       @close-contractDialog="contractDialog = false"
     />
 </v-dialog>
+
 </template>
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders';
-import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref, shallowRef, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAlertStore } from '@/stores/alert';
 import { ApiCommon } from '@/api/apiCommon';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT } from '@/util/common';
+import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 
-import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import StorageListPop from '@/views/basic/storage/StorageListPop.vue';
 import DateSinglePicker from '@/components/DateSinglePicker.vue';
 import ContractListPop from '../contract/ContractListPop.vue';
+import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 
 // 1. 수량 합계
 const totalQty = computed(() => {
@@ -326,17 +330,17 @@ const totalAmount = computed(() => {
   // 다른 computed 속성의 값에 접근할 때도 .value를 사용합니다.
   return totalSupplyPrice.value + totalVatPrice.value;
 });
-const route = useRoute()
-const saleId = route.params.id
 
 const { userId} = useAuthStore()
 const { vError, vSuccess } = useAlertStore()
-
+const route = useRoute()
 const router = useRouter()
+const saleId = route.params.id
 const currentComponent = shallowRef(null)
 const dialog = ref(false)
 const contractDialog = ref(false)
 const selectedRowIndex = ref(null)
+let nextId = 1
 
 const selectRow = ref([])
 let popType = ref('')
@@ -362,19 +366,19 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : 100 },
-  { title: '품목명',      key: 'itemName',   align: 'center',width : 250},
-  { title: '규격',        key: 'unit',       align: 'center' ,width : 80 },
-  { title: '수량',        key: 'qty',        align: 'center' ,width : 110},
-  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : 110},
-  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : 110},
-  { title: '부가세',      key: 'vatPrice',    align: 'center',width : 100},
-  { title: '적용',        key: 'etc',         align: 'center' ,width : 150},
-  { title: '시리얼/로트',  key: 'serialLot',   align: 'center' ,width : 150},
-  { title: '-',          key: 'actions',        align: 'center' ,width : 10},
+  { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : '100px' },
+  { title: '품목명',      key: 'itemName',   align: 'center', width : '450px'},
+  { title: '규격',        key: 'unit',       align: 'center' ,width : '80px' },
+  { title: '수량',        key: 'qty',        align: 'center' ,width : '80px'},
+  { title: '단가',        key: 'unitPrice',  align: 'center' ,width : '80px'},
+  { title: '공급가액',    key: 'supplyPrice',  align: 'center',width : '110px'},
+  { title: '부가세',      key: 'vatPrice',    align: 'center',width : '100px'},
+  { title: '적용',        key: 'etc',         align: 'center' ,width : '120px'},
+  { title: '시리얼/로트',  key: 'serialLot',   align: 'center' ,width : '120px'},
+  { title: '-',          key: 'actions',        align: 'center' ,width : '10px'},
 ])
 
-const handleSaved = ( obj ) => {
+const handleSeleted = ( obj ) => {
   switch (popType.value){
     case 'C':
       form.customerName = obj.customerName
@@ -392,22 +396,19 @@ const handleSaved = ( obj ) => {
       form.descStorageCd = obj.storageCd
       break
     case 'I':
-     if (selectedRowIndex.value !== null) {
-       const target = itemList.value[selectedRowIndex.value]
-        target.itemCd = cd
-        target.itemName = nm
+      //console.log('obj',obj)
+      if (selectedRowIndex.value !== null) {
+        const target = itemList.value[selectedRowIndex.value]
+
+        target.itemCd = obj.itemCd
+        target.itemName = obj.itemName
+        target.unit = obj.unit
       }
       break
   }
   popType.value = ''
   dialog.value = false
 }
-
-// 행 삭제
-const removeRow = (index) => {
-  itemList.value.splice(index, 1)
-}
-
 
 const contractPop = () => {
   contractDialog.value = true
@@ -423,7 +424,7 @@ const selectContractInfo = async (obj) => {
   form.descStorageCd = obj[0].descStorageCd
   form.descStorageName = obj[0].descStorageName
   form.currencyType = obj[0].currencyType      //통화
-  form.transactionType = obj[0].transactionType  //거래유형
+  form.transactionType = obj[0].transactionType  //
   form.tradingMethod = obj[0].tradingMethod  //거래유형
   form.contractIds = selectRow.value.map(item => item.contractId).join(',')  // 'CT001,CT002,CT003' 형식
 
@@ -449,6 +450,60 @@ const saveInfo = async () => {
   }
 }
 
+
+// 행 추가
+const addRow = () =>{
+  itemList.value.push({
+    id: nextId++,
+    itemCd: '',
+    itemName:'',
+    unit: '',
+    qty: 0,
+    unitPrice : 0,
+    supplyPrice : 0,
+    vatPrice : 0,
+    etc:'',
+    serialLot:'',
+  })
+}
+
+// 행 삭제
+const removeRow = (index) => {
+  itemList.value.splice(index, 1)
+}
+
+const handleRow = (obj) =>{
+  if (!Array.isArray(obj)) return;
+
+  const baseSeq = itemList.value.length;
+
+  const selectItem = obj.map((o, index) => ({
+      itemCd: o.itemCd,
+      itemName: o.itemName,
+      unit: o.unit,
+      qty: o.qty,
+      unitPrice: o.unitPrice,
+      supplyPrice: o.supplyPrice,
+      vatPrice: o.vatPrice,
+      etc: o.etc,
+      orderDist: baseSeq + index + 1,
+  }));
+
+  if (itemList.value.length > 0) {
+    itemList.value.push(...selectItem);
+  } else {
+    itemList.value = [...selectItem];
+  }
+}
+
+watch(() => form.contractDate, async (newVal, oldVal) => {
+  if ( !isEmpty(oldVal)) {
+    if ( oldVal !==  newVal ){
+    form.seq = await ApiCommon.getNextSeq('tb_sale_mst','sale_date', newVal)
+    }
+  }
+})
+
 watch(() => form.transactionType, async (newVal) => {
   if ( form.transactionType === 'VRN' ){
     itemList.value.map(o => {
@@ -462,7 +517,6 @@ watch(() => form.transactionType, async (newVal) => {
 })
 
 const onBlur = (index) => {
-  console.log('index',index)
   const qty = Number(itemList.value[index].qty);
   const unitPrice = Number(itemList.value[index].unitPrice);
 
@@ -477,6 +531,7 @@ const onBlur = (index) => {
   } else {
     itemList.value[index].vatPrice = 0;
   }
+
 };
 
 onMounted( async () => {
@@ -534,4 +589,9 @@ const goList = () => {
   background-color: #f4f4f4;
   height: 40px;
 }
+.custom-cell-input {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 </style>
