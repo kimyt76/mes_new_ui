@@ -101,7 +101,7 @@
     </v-col>
   </v-row>
 
-  <v-dialog  v-model="dialog" width="800px" height="750px" persistent>
+  <v-dialog  v-model="dialog" width="800px" height="630px" persistent>
     <IngredientDetailPop
       :title="title"
       :mode="mode"
