@@ -89,7 +89,7 @@
       <v-row>
         <v-col>
           <v-text-field
-            v-model="form.releaseTiem"
+            v-model="form.releaseTime"
             label="출하시간"
             variant="underlined"
             density="compact"
@@ -319,7 +319,7 @@ const form = reactive({
 
   tradingMethod: '',
   dueDate: '',
-  releaseTiem:'',
+  releaseTime:'',
   releaseType: '',
   accountStatement: '',
   address: '',
