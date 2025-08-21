@@ -99,7 +99,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { onMounted, reactive, ref } from 'vue';
 
-const emit = defineEmits('selected','close-dialog')
+const emit = defineEmits(['selected','close-dialog'])
 
 const loading = ref(false)
 const srhForm = ref('')
