@@ -9,7 +9,13 @@ export function unformatNumber (value) {
   return value.replace(/[^\d]/g, '')
 }
 
+// 숫자 → 콤마
+function formatNumber(value) {
+  if (value == null || value === '') return ''
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
+//숫자콤마 제거
 export function deleteComma (value){
   if (typeof value !== 'string') {
     value = String(value ?? '');

@@ -94,7 +94,7 @@
         loading-text="조회중입니다 잠시만 기다려주세요"
         density="compact"
         fixed-header
-        height="720px"
+        height="690px"
         >
         <template v-slot:headers="{ columns }">
           <tr>
