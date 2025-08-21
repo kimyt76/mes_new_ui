@@ -496,9 +496,9 @@ const handleRow = (obj) =>{
 }
 
 watch(() => form.contractDate, async (newVal, oldVal) => {
-  if ( !isEmpty(oldVal)) {
-    if ( oldVal !==  newVal ){
-    form.seq = await ApiCommon.getNextSeq('tb_sale_mst','sale_date', newVal)
+  if ( !isEmpty(formatDate(oldVal))) {
+    if ( oldVal !==  formatDate(newVal) ){
+    form.seq = await ApiCommon.getNextSeq('tb_sale_mst','sale_date', formatDate(newVal))
     }
   }
 })
