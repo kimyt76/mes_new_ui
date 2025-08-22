@@ -6,16 +6,16 @@
   <v-card class="pa-1" style="height: 60px;">
     <v-card-text >
       <v-row>
-      <v-form ref="srhForm" @submit.prevent="searchList">
+      <v-form ref="srhForm" @submit.prevent="srhDraftList">
         <v-col class="d-flex ga-4">
-          <v-date-input
+          <!-- <v-date-input
             v-model="form.draftDate"
             label="기안일자"
             :display-format="formatDate"
             density="compact"
             variant="underlined"
             style="width: 150px;"
-          />
+          /> -->
           <v-text-field
             v-model="form.itemName"
             label="품목명"
@@ -60,7 +60,7 @@
       <v-btn
         color="brown-lighten-4"
         text="신규"
-        @click="go"
+        @click="handleRowClick"
         />
       <v-btn
         class="excel-btn"
@@ -75,11 +75,27 @@
       <v-data-table
         :headers="headers"
         :items="draftList"
+        :items-per-page="15"
+        no-data-text="데이터가 없습니다."
+        loading-text="조회중입니다 잠시만 기다려주세요"
         density="compact"
         fixed-header
-        height="720px"
-        class="custom-table"
+        height="690px"
+        @click:row="handleRowClick"
         >
+        <template v-slot:headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="custom-header"
+              style="height: 40px;"
+              :style="{textAlign: 'center'} "
+              >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -90,32 +106,39 @@ import { VDateInput } from 'vuetify/labs/VDateInput'
 import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 import { ApiOrder } from '@/api/apiOrders';
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter()
 
 const loading = ref(false)
 const draftList = ref([])
 const form = reactive({
-  draftDate: '',
+  //draftDate: '',
   itemName: '',
   customerName: '',
   draftNaem: '',
 })
 
  const headers = ref([
-    { title: '기안일자',  key: 'draftDate',   align: 'center'},
-    { title: '문서번호',  key: 'orderName',     align: 'center'},
-    { title: '고객사명',  key: 'customerName',  align: 'center'},
-    { title: '품목명',    key: 'itemName',    align: 'center'},
-    { title: '기안자',    key: 'draftName',     align: 'center'},
+   { title: '문서번호',  key: 'orderName',     align: 'center', width: '120px'},
+   { title: '품목명',    key: 'itemName',    align: 'start', width: '400px'},
+   { title: '고객사명',  key: 'customerName',  align: 'start', width: '250px'},
+   { title: '기안일자',  key: 'draftDate',   align: 'center', width: '110px'},
+   { title: '기안자',   key: 'draftName',     align: 'center', width: '100px'},
 ])
 
-onMounted( () => {
-  form.draftDate = todayKST()
-  searchList()
+const handleRowClick = (item, index ) => {
+  console.log('item',item)
+  console.log('draftId',item.draftId)
+  if ( isEmpty(item.draftId)) {
+    router.push({ name: 'DraftNew'})
+   }
 
+  // router.push({ name: 'DraftDetail', params: { id: item.item.draftId } })
+}
 
-})
-
-const searchList = async () => {
+const srhDraftList = async () => {
   loading.value = true
 
   const params = {
@@ -126,6 +149,16 @@ const searchList = async () => {
 
   loading.value = false
 }
+
+onMounted( () => {
+  srhDraftList()
+})
+
+
+const excel = () => {
+  exportToExcel(headers, draftList.value, '기안서_목록')
+}
+
 
 </script>
 
