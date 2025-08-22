@@ -96,6 +96,12 @@
             </th>
           </tr>
         </template>
+        <template #item.draftDateSeq ="{ item, index }">
+          <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick"> {{ item.draftDateSeq }}</div>
+        </template>
+        <template #item.itemName ="{ item, index }">
+          <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick"> {{ item.itemName }}</div>
+        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -121,21 +127,19 @@ const form = reactive({
 })
 
  const headers = ref([
-   { title: '문서번호',  key: 'orderName',     align: 'center', width: '120px'},
-   { title: '품목명',    key: 'itemName',    align: 'start', width: '400px'},
-   { title: '고객사명',  key: 'customerName',  align: 'start', width: '250px'},
-   { title: '기안일자',  key: 'draftDate',   align: 'center', width: '110px'},
-   { title: '기안자',   key: 'draftName',     align: 'center', width: '100px'},
+   { title: '문서번호',  key: 'draftDateSeq',   align: 'center', width: '120px'},
+   { title: '품목명',    key: 'itemName',       align: 'start', width: '400px'},
+   { title: '고객사명',  key: 'customerName',   align: 'start', width: '250px'},
+   { title: '기안일자',  key: 'draftDate',      align: 'center', width: '110px'},
+   { title: '기안자',    key: 'draftUserName',  align: 'center', width: '100px'},
 ])
 
 const handleRowClick = (item, index ) => {
-  console.log('item',item)
-  console.log('draftId',item.draftId)
   if ( isEmpty(item.draftId)) {
     router.push({ name: 'DraftNew'})
+   }else{
+    router.push({ name: 'DraftDetail', params: { id: item.item.draftId } })
    }
-
-  // router.push({ name: 'DraftDetail', params: { id: item.item.draftId } })
 }
 
 const srhDraftList = async () => {
