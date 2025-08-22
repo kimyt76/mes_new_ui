@@ -103,6 +103,11 @@ const routes = [
         name: 'DraftList',
         component: () => import('@/views/order/draft/DratfList.vue')
       },
+      {
+        path: 'draftNew',
+        name: 'DraftNew',
+        component: () => import('@/views/order/draft/DraftNew.vue')
+      },
 
       // 수주관리
       {
