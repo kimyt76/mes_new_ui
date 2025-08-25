@@ -101,7 +101,7 @@
     </v-col>
   </v-row>
 
-  <v-dialog  v-model="dialog" width="800px" height="630px" persistent>
+  <v-dialog  v-model="dialog" width="800px" height="600px" persistent>
     <IngredientDetailPop
       :title="title"
       :mode="mode"
@@ -149,7 +149,6 @@ const headers = ref([
 
 
 const selectRowClick = (item, index) => {
-  console.log('item',item.ingredientCode)
   if ( isEmpty(item.ingredientCode)) {
     mode.value = 'N'
     title.value = '성분 등록'
