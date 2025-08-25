@@ -173,7 +173,7 @@ const form =reactive({
 })
 
 const headers = ref([
-  { title: '일자-No.',      key: 'shipmentDateSeq',   align: 'center' , width: '100px'},
+  { title: '일자-No.',      key: 'shipmentDateSeq',   align: 'center' , width: '120px'},
   { title: '품목명',        key: 'itemName',          align: 'start', width: '350px'},
   { title: '거래처명',      key: 'customerName',      align: 'start' , width: '200px'},
   { title: '담당자명',      key: 'managerName',       align: 'center' , width: '90px'},
