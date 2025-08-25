@@ -21,7 +21,7 @@
           <v-text-field
             v-model="form.seq"
             density="compact"
-            style="width: 20px;"
+            style="width: 40px; max-width: 60px; min-width: 0"
             readonly
           />
         </v-col>
@@ -233,7 +233,7 @@
             <template v-slot:body.append>
               <tr class="summary-row">
                 <!-- itemCd -->
-                <td style="width: 100px; height: 30px;" />
+                <td style="width: 100px; height: 30px; text-align: center;">합계</td>
                 <!-- itemName -->
                 <td style="width: 300px; height: 30px" />
                 <!-- unit -->

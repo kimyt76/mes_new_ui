@@ -218,7 +218,7 @@
             <template v-slot:body.append>
               <tr class="summary-row">
                 <!-- itemCd -->
-                <td style="width: 200px; height: 30px;" />
+                <td style="width: 200px; height: 30px;  text-align: center;">합계</td>
                 <!-- itemName -->
                 <td style="width: 650px; height: 30px" />
                 <!-- qty 합계 -->
@@ -351,6 +351,8 @@ const saveInfo = async () => {
     const params = {
         ...form
     }
+
+    params.dueDate = formatDate(params.dueDate)
 
     formData.append('shipmentInfo', JSON.stringify(params))
     formData.append('itemList', JSON.stringify(itemList.value))

@@ -222,7 +222,7 @@
           <template v-slot:body.append>
             <tr class="summary-row">
               <!-- itemCd -->
-              <td style="width: 100px; height: 30px;" ></td>
+              <td style="width: 100px; height: 30px; text-align: center;" >합계 : </td>
               <!-- itemName -->
               <td style="width: 250px; height: 30px;"></td>
               <!-- unit -->
