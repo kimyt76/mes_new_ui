@@ -31,7 +31,7 @@
             title="유효기간"
             :display-format="formatDate"
             variant="underlined"
-            width="150"
+            style="width: 200px;"
             />
         </v-col>
         <v-col>
@@ -41,7 +41,7 @@
             :display-format="formatDate"
             variant="underlined"
             density="compact"
-            width="150"
+            style="width: 200px;"
             />
         </v-col>
     </v-row>
