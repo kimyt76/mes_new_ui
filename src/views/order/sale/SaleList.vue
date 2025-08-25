@@ -186,7 +186,7 @@ const headers = ref([
   { title: '담당자명',          key: 'managerName',   align: 'center' , width: '90px'},
   { title: '거래처명',          key: 'customerName',  align: 'start' , width: '220px'},
   { title: '금액 합계',         key: 'totPrice',      align: 'end', width: '100px'},
-  { title: '거래유형명',        key: 'totUnitPrice',  align: 'center', width: '100px'},
+  { title: '거래유형',          key: 'transactionTypeName',  align: 'center', width: '100px'},
   { title: '창고명',            key: 'descStorageName',    align: 'center', width: '150px' },
   { title: '인쇄',              key: 'printYn',       align: 'center', width: '40px' },
   { title: '주문서',            key: 'saleId',        align: 'center', width: '80px' },
