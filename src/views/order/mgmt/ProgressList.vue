@@ -59,6 +59,7 @@
   </v-row>
   <v-row>
     <v-col class="pa-0">
+      <div class="table-container">
       <v-data-table
         :headers="headers"
         :items="progressList"
@@ -67,18 +68,17 @@
         no-data-text="데이터가 없습니다."
         loading-text="조회중입니다 잠시만 기다려주세요"
         density="compact"
-        fixed-header
         height="690px"
-        class="table-wrapper"
         >
+
+        <!-- <template v-slot:item.firstColumn="{ columns }"> -->
         <template v-slot:headers="{ columns }">
           <tr>
             <th
               v-for="column in columns"
               :key="column.key"
-              class="custom-header"
               style="height: 40px;"
-              :style="{textAlign: 'center'} "
+              :style="{textAlign: 'center', width: column.width || 'auto'} "
               >
               {{ column.title }}
             </th>
@@ -86,20 +86,10 @@
         </template>
 
         <template #item.contractDateSeq="{ item, index }">
-          <div
-            style="cursor: pointer; text-decoration: underline; width: 95%;"
-            @click="selectRowClick(item, index)"
-          >
             {{ item.contractDateSeq }}
-          </div>
         </template>
         <template #item.itemName="{ item, index }">
-          <div
-            style="cursor: pointer; text-decoration: underline; width: 95%;"
-            @click="selectRowClick(item, index)"
-          >
             {{ item.itemName }}
-          </div>
         </template>
         <template #item.totQty ="{ item }">
           {{ formatComma(item.totQty) }}
@@ -132,6 +122,7 @@
           </p>
         </template>
       </v-data-table>
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -146,6 +137,7 @@ const { userId } = useAuthStore()
 
 const progressList = ref([])
 const loading = ref(false)
+const srhForm = ref('')
 const form = reactive({
   itemName: '',
   managerName: '',
@@ -155,19 +147,20 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '품목코드',  key: 'itemCd',        align: 'center', width: '110px' },
-  { title: '품목명',    key: 'itemName',      align: 'start',   width: '400px' },
-  { title: '고객사',    key: 'customerName',  align: 'start',   width: '200px' },
-  { title: '수주일',    key: 'contractDate',  align: 'center', width: '120px' },
-  { title: '판매일',    key: 'saleDate',      align: 'center', width: '120px' },
-  { title: '출하일',    key: 'shipmentDate',  align: 'center', width: '120px' },
-  { title: '총수량',    key: 'totQty',        align: 'end',   width: '120px' },
-  { title: '수량',      key: 'qty',           align: 'end',   width: '120px' },
-  { title: '단가',      key: 'unitPrice',     align: 'end',   width: '120px' },
-  { title: '공급가액',  key: 'supplyPrice',   align: 'end',   width: '120px' },
-  { title: '부가세',    key: 'vatPrice',      align: 'end',   width: '120px' },
-  { title: '합계금액',   key: 'totPrice',     align: 'end',   width: '120px' },
-  { title: '담당자',    key: 'managerName',   align: 'center', width: '90px' },
+  { title: '품목코드',  key: 'itemCd',        align: 'center', width: '110px'   },
+  { title: '품목명',    key: 'itemName',      align: 'start',   width: '500px'  },
+  { title: '고객사',    key: 'customerName',  align: 'start',   width: '300px' },
+  { title: '수주일',    key: 'contractDate',  align: 'center', width: '120px'  },
+  { title: '판매일',    key: 'saleDate',      align: 'center', width: '120px'  },
+  { title: '출하일',    key: 'shipmentDate',  align: 'center', width: '120px'  },
+  { title: '총수량',    key: 'totQty',        align: 'end',   width: '120px'     },
+  { title: '담당자',    key: 'managerName',   align: 'center', width: '100px'},
+  { title: '수량',      key: 'qty',           align: 'end',   width: '120px'     },
+  { title: '단가',      key: 'unitPrice',     align: 'end',   width: '120px'    },
+  { title: '공급가액',  key: 'supplyPrice',   align: 'end',   width: '120px'    },
+  { title: '부가세',    key: 'vatPrice',      align: 'end',   width: '120px'    },
+  { title: '합계금액',  key: 'totPrice',      align: 'end',   width: '120px'    },
+  { title: '거래방법',  key: 'tradingMethod', align: 'center', width: '180px'    },
 ])
 
 /**
@@ -201,12 +194,59 @@ const excel = () => {
   exportToExcel(headers, progressList.value, '수주진행현황_목록')
 }
 
-
 </script>
 
 <style>
 @import '@/assets/css/main.css';
-.table-wrapper {
-  overflow-x: auto;
+.table-container {
+  overflow: auto; /* 가로 + 세로 스크롤 둘 다 허용 */
+}
+
+.table-container table {
+  min-width: 2000px;   /* header width 합보다 크게 */
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+/* 헤더를 위에 고정*/
+.table-container thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #BCAAA4;
+  text-align: center;
+}
+
+/*
+.table-container td {
+  white-space: nowrap;
+} */
+ .table-container th:nth-child(1){
+    position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #BCAAA4;
+ }
+.table-container td:nth-child(1) {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #fff;
+}
+
+/* 두 번째 컬럼 (품목명) 고정 */
+.table-container th:nth-child(2){
+  position: sticky;
+  left: 100px; /* 첫 번째 컬럼 width만큼 밀어줘야 겹치지 않음 */
+  z-index: 3;
+  background: #BCAAA4;
+}
+
+
+.table-container td:nth-child(2) {
+  position: sticky;
+  left: 120px; /* 첫 번째 컬럼 width만큼 밀어줘야 겹치지 않음 */
+  z-index: 3;
+  background: #fff;
 }
 </style>
