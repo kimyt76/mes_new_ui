@@ -1,5 +1,5 @@
 <template>
-  <v-breadcrumbs :items="['MES', '원료관리', '원료정보']"></v-breadcrumbs>
+  <v-breadcrumbs :items="['MES', '연구관리', '원료정보']"></v-breadcrumbs>
 
   <v-card>
     <v-form ref="srhForm" @submit.prevent="srhList">
