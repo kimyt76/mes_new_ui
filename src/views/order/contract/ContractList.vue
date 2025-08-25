@@ -182,7 +182,7 @@ const headers = [
   { title: '거래처명',          key: 'customerName',      align: 'start',   width: '200px'},
   { title: '주문수량합계',       key: 'totQty',           align: 'end',     width: '100px'},
   { title: '주문공급가액합계',   key: 'totSupplyPrice',      align: 'end',    width: '120px'},
-  { title: '진행상태',          key: 'statusType',        align: 'center' , width: '60px'},
+  { title: '진행상태',          key: 'statusType',        align: 'center' , width: '70px'},
   { title: '인쇄',              key: 'printYn',           align: 'center',  width: '40px'},
 ]
 
