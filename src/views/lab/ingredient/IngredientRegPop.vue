@@ -99,7 +99,7 @@
               </div>
             </v-col>
             <v-col>
-              <v-card-subtitle> -금지 국가</v-card-subtitle>
+              <v-card-subtitle>-금지 국가</v-card-subtitle>
               <div class="d-flex flex-wrap">
                 <v-checkbox
                   v-for="country in countries"
@@ -113,23 +113,26 @@
               </div>
             </v-col>
           </v-row>
-          <v-row>
-            <v-col class="d-flex justify-end align-center" style="gap: 5px;">
-              <v-btn
-                color="indigo-darken-4"
-                text="저장"
-                variant="tonal"
-                depressed
-                @click="saveInfo"
+          </v-card-text>
+          <v-spacer></v-spacer>
+          <v-card-actions>
+            <v-row>
+              <v-col class="d-flex justify-end align-center mt-8" style="gap: 5px;">
+                <v-btn
+                  color="indigo-darken-4"
+                  text="저장"
+                  variant="tonal"
+                  depressed
+                  @click="saveInfo"
+                  />
+                <v-btn
+                  text="닫기"
+                  variant="tonal"
+                  @click="emit('close-dialog')"
                 />
-              <v-btn
-                text="닫기"
-                variant="tonal"
-                @click="emit('close-dialog')"
-              />
-            </v-col>
-          </v-row>
-         </v-card-text>
+              </v-col>
+            </v-row>
+          </v-card-actions>
       </v-form>
     </v-card-text>
 
