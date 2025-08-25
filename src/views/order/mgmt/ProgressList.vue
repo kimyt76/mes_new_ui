@@ -214,6 +214,7 @@ const excel = () => {
   top: 0;
   z-index: 2;
   background: #BCAAA4;
+  color: white;
   text-align: center;
 }
 
