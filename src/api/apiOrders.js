@@ -23,6 +23,22 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
+  saveDraftInfo: async(formData) => {
+    try{
+      const msg =  await API_URL.post('/draft/saveDraftInfo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      //console.log('msg',msg.data)
+      return msg.data
+
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+
   getOrderList: async(params) => {
     try{
       const res = await API_URL.post('/order/getOrderList', params)
@@ -59,20 +75,20 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
+  // 사용하지 않음
+  // getSeq : async() => {
+  //   try{
+  //     const seq = await API_URL.get('/order/getSeq')
 
-  getSeq : async() => {
-    try{
-      const seq = await API_URL.get('/order/getSeq')
-
-      return seq.data
-    }catch(err){
-      throw err.response
-    }
-  },
+  //     return seq.data
+  //   }catch(err){
+  //     throw err.response
+  //   }
+  // },
 
   getApprovalInfo : async() => {
     try{
-      const res = await API_URL.get('/order/getApprovalInfo')
+      const res = await API_URL.get('/draft/getApprovalInfo')
 
       return res.data
     }catch(err){
@@ -82,7 +98,7 @@ export const ApiOrder = {
 
   updateInfo : async(params) => {
     try{
-      const msg= await API_URL.post('/order/updateInfo', params)
+      const msg= await API_URL.post('/draft/updateInfo', params)
 
       return msg.data
     }catch(err){
@@ -120,8 +136,8 @@ export const ApiOrder = {
       //   },
       // })
       const msg =  await API_URL.post('/contract/saveContractInfo', formData)
-      return msg.data
 
+      return msg.data
     }catch(err) {
       throw new Error(err.response?.data);
     }
@@ -242,10 +258,24 @@ export const ApiOrder = {
       throw err.response
     }
   },
+  updateShipmentInfo : async(formData) => {
+    try{
+      const msg =  await API_URL.post('/shipment/updateShipmentInfo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
 
+      return msg.data
+
+    }catch(err) {
+      throw new Error(err.response?.data);
+    }
+  },
+
+  // 진행상태
   getProgressList: async(prams) => {
     try{
-      console.log('prams',prams )
       const res = await API_URL.post('/progress/getProgressList', prams)
 
       return res.data
