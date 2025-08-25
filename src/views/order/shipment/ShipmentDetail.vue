@@ -218,7 +218,7 @@
             <template v-slot:body.append>
               <tr class="summary-row">
                 <!-- itemCd -->
-                <td style="width: 200px; height: 30px;" />
+                <td style="width: 200px; height: 30px;  text-align: center;">합계</td>
                 <!-- itemName -->
                 <td style="width: 650px; height: 30px" />
                 <!-- qty 합계 -->
@@ -353,18 +353,34 @@ const saveInfo = async () => {
     const params = {
         ...form
     }
+    params.dueDate = formatDate(form.dueDate)
 
     formData.append('shipmentInfo', JSON.stringify(params))
     formData.append('itemList', JSON.stringify(itemList.value))
 
-    attachFile.value.forEach(file => {
-      //console.log('파일 객체 여부:',  file.file instanceof File)
-      if (file.file instanceof File) {
-        formData.append('attachFile', file.file)
-      }
-    })
+    const deleteFiles = []
 
-    const msg = await ApiOrder.saveShipmentInfo(formData)
+    attachFile.value.forEach(file => {
+        if (file.flag === 'N') {
+          formData.append('newFiles', file.file)
+        } else if (file.flag === 'D') {
+          deleteFiles.push({
+            attachFileId: file.attachFileId,
+            seq: file.seq
+          });
+        }
+      })
+
+    if (deleteFiles.length > 0) {
+        formData.append('deleteFiles', new Blob(
+          [JSON.stringify(deleteFiles)],
+          { type: 'application/json' }
+        ));
+      }
+
+    formData.append('keptFiles', JSON.stringify(attachFile.value.filter(f => f.flag === 'S')))
+
+    const msg = await ApiOrder.updateShipmentInfo(formData)
     vSuccess(msg)
     router.push({name:'ShipmentList'})
   }catch(err){
