@@ -32,19 +32,11 @@ const props = defineProps({
   }
 })
 
-console.log('attachFileId', props.attachFileId)
-console.log('fileName', props.fileName)
-console.log('seq', props.seq)
-
 const downloadUrl = () =>{
   console.log('props.attachFileId', props.attachFileId)
   console.log('props.seq', props.seq)
   download(props.attachFileId, props.seq)
 }
-// 다운로드 URL 생성
-//  const downloadUrl = computed(() => {
-//    return `/files/download?filepath=${encodeURIComponent(props.filepath)}`
-//  })
 </script>
 
 <style scoped>
