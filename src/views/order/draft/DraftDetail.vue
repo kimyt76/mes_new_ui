@@ -327,14 +327,14 @@ const saveInfo = async () => {
     draftId : draftId,
   }
 
-  console.log('param',params)
+  //console.log('param',params)
   try{
     const msg = await ApiOrder.updateInfo(params)
-    console.log('msg', msg)
+    //console.log('msg', msg)
     vSuccess(msg)
     router.push({name: 'DraftList'})
   }catch(err){
-    console.log('err', err.msg)
+    //console.log('err', err.msg)
     vError(err)
   }
 }
