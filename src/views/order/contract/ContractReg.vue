@@ -556,7 +556,6 @@ const goList = () => {
   background: transparent;
   padding: 1px;
 }
-
 .custom-line {
   border: 0.5px solid;
   background: #f1f3f4;
@@ -566,7 +565,6 @@ const goList = () => {
   background-color: #f4f4f4;
   height: 30px;
 }
-
 .custom-cell-input {
   padding: 0 !important;
   margin: 0 !important;
