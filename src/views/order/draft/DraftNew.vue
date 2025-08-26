@@ -1,5 +1,5 @@
 <template>
-  <v-breadcrumbs :items="['MES', '발주관리', '발주 등록']"></v-breadcrumbs>
+  <v-breadcrumbs :items="['MES', '영업관리', '기안서 등록']"></v-breadcrumbs>
 
   <v-card>
     <v-card-text class="overflow-y-hidden">
