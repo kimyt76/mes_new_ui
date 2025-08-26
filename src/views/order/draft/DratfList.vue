@@ -81,7 +81,6 @@
         density="compact"
         fixed-header
         height="690px"
-        @click:row="handleRowClick"
         >
         <template v-slot:headers="{ columns }">
           <tr>
@@ -97,10 +96,10 @@
           </tr>
         </template>
         <template #item.draftDateSeq ="{ item, index }">
-          <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick"> {{ item.draftDateSeq }}</div>
+          <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick(item, index)"> {{ item.draftDateSeq }}</div>
         </template>
         <template #item.itemName ="{ item, index }">
-          <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick"> {{ item.itemName }}</div>
+          <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick(item, index)"> {{ item.itemName }}</div>
         </template>
       </v-data-table>
     </v-col>
@@ -137,9 +136,9 @@ const form = reactive({
 const handleRowClick = (item, index ) => {
   if ( isEmpty(item.draftId)) {
     router.push({ name: 'DraftNew'})
-   }else{
-    router.push({ name: 'DraftDetail', params: { id: item.item.draftId } })
-   }
+  }else{
+    router.push({ name: 'DraftDetail', params: { id: item.draftId } })
+  }
 }
 
 const srhDraftList = async () => {
