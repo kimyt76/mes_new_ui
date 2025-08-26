@@ -41,7 +41,6 @@
         </v-col>
       </v-row>
     </v-card-text>
-
     <v-card-text class="overflow-y-hidden">
       <v-row>
         <v-col>
