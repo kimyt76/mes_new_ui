@@ -3,11 +3,11 @@
     :items="['MES', '영업관리', '수주관리']"
     class="custom-breadcrumbs"
     />
-  <v-card class="pa-1">
+  <v-card class="pa-1" style="height: 60px;">
     <v-card-text >
       <v-row>
       <v-form ref="srhForm" @submit.prevent="searchList">
-        <v-col class="d-flex flex-row ga-3">
+        <v-col class="d-flex ga-4">
           <v-date-input
             v-model="form.strDate"
             label="수주일자"
