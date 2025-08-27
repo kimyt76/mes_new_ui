@@ -109,18 +109,6 @@
         <template #item.totPrice ="{ item }">
           {{ formatComma(item.totPrice)}}
         </template>
-        <template #item.statusType="{ item, index }">
-            {{ item.statusType === 'ING' ?  '진행중' : '종료'}}
-        </template>
-        <template #item.printYn="{ item, index }">
-           <p style="padding: 4px;
-              text-align: center;
-              cursor: pointer;"
-              :style="{backgroundColor: item.printYn === 'Y' ? '#FFAB91' : 'transparent'}"
-              @click="onPrint"
-            >인쇄
-          </p>
-        </template>
       </v-data-table>
       </div>
     </v-col>
@@ -147,20 +135,20 @@ const form = reactive({
 })
 
 const headers = ref([
-  { title: '품목코드',  key: 'itemCd',        align: 'center', width: '110px'   },
-  { title: '품목명',    key: 'itemName',      align: 'start',   width: '500px'  },
+  { title: '품목코드',  key: 'itemCd',        align: 'center',  width: '110px' },
+  { title: '품목명',    key: 'itemName',      align: 'start',   width: '500px' },
   { title: '고객사',    key: 'customerName',  align: 'start',   width: '300px' },
-  { title: '수주일',    key: 'contractDate',  align: 'center', width: '120px'  },
-  { title: '판매일',    key: 'saleDate',      align: 'center', width: '120px'  },
-  { title: '출하일',    key: 'shipmentDate',  align: 'center', width: '120px'  },
-  { title: '총수량',    key: 'totQty',        align: 'end',   width: '120px'     },
-  { title: '담당자',    key: 'managerName',   align: 'center', width: '100px'},
-  { title: '수량',      key: 'qty',           align: 'end',   width: '120px'     },
-  { title: '단가',      key: 'unitPrice',     align: 'end',   width: '120px'    },
-  { title: '공급가액',  key: 'supplyPrice',   align: 'end',   width: '120px'    },
-  { title: '부가세',    key: 'vatPrice',      align: 'end',   width: '120px'    },
-  { title: '합계금액',  key: 'totPrice',      align: 'end',   width: '120px'    },
-  { title: '거래방법',  key: 'tradingMethod', align: 'center', width: '180px'    },
+  { title: '수주일',    key: 'contractDate',  align: 'center',  width: '120px' },
+  { title: '판매일',    key: 'saleDate',      align: 'center',  width: '120px' },
+  { title: '출하일',    key: 'shipmentDate',  align: 'center',  width: '120px' },
+  { title: '총수량',    key: 'totQty',        align: 'end',     width: '120px' },
+  { title: '담당자',    key: 'managerName',   align: 'center',  width: '100px' },
+  { title: '수량',      key: 'qty',           align: 'end',     width: '150px' },
+  { title: '단가',      key: 'unitPrice',     align: 'end',     width: '150px' },
+  { title: '공급가액',  key: 'supplyPrice',   align: 'end',     width: '150px'  },
+  { title: '부가세',    key: 'vatPrice',      align: 'end',     width: '150px' },
+  { title: '합계금액',  key: 'totPrice',      align: 'end',     width: '180px'  },
+  { title: '거래방법',  key: 'tradingMethod', align: 'center',  width: '150px'  },
 ])
 
 /**
@@ -203,7 +191,7 @@ const excel = () => {
 }
 
 .table-container table {
-  min-width: 2000px;   /* header width 합보다 크게 */
+  min-width: 2500px;   /* header width 합보다 크게 */
   border-collapse: collapse;
   table-layout: auto;
 }
