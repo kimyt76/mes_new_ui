@@ -2,6 +2,13 @@
   border: 1px solid #ccc;
 }
 
+.custom-table th{
+  background-color: #BCAAA4 !important; /* 원하는 색상 */
+  color: white;
+  text-align: center !important;
+}
+
+
 .custom-table td {
   padding-left: 0 !important;
   padding-right: 0 !important;
