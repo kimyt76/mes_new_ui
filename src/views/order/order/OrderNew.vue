@@ -33,7 +33,6 @@
                 <v-btn
                   width="20px"
                   text="결재자"
-                  v-model="approvalUserNm"
                   @click= "userDialog = true"
                 />
               </td>
