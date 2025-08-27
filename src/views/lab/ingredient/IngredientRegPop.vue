@@ -1,7 +1,7 @@
 <template>
   <v-card  class="no-scroll">
     <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
-      <v-toolbar-title>거래처 조회</v-toolbar-title>
+      <v-toolbar-title>{{ props.title}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="emit('close-dialog')">
         <v-icon>mdi-close</v-icon>
