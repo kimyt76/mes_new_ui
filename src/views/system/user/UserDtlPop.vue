@@ -1,8 +1,12 @@
 <template>
   <v-card>
-      <v-card-item
-        :title="props.title"
-        />
+    <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+      <v-toolbar-title>{{ props.title}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="emit('close-dialog')">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      </v-toolbar>
         <v-card-text>
           <v-form ref="vform">
           <v-row dense
@@ -116,7 +120,8 @@
                 item-title="text"
                 item-value="value"
                 variant="underlined"
-              />
+                style="width: 200px;"
+                />
             </v-col>
             <v-col
               cols="12"
@@ -192,6 +197,7 @@
 
 <script setup>
 import { ApiSystems } from '@/api/apiSystem'
+import { ApiCommon } from '@/api/apiCommon';
 import { useAlertStore } from '@/stores/alert'
 import { onMounted, reactive, ref } from 'vue'
 
@@ -200,6 +206,8 @@ const emit = defineEmits(['saved', 'close-dialog'])
 
 const vform = ref()
 const isReadOnly = ref(false)
+const useYns = ref([])
+
 const props = defineProps({
   title: {
     type: String,
@@ -211,6 +219,13 @@ const props = defineProps({
     type: String,
   },
 })
+/**
+ *  재직 유무 초기화
+ */
+const items = [
+      { text: '재직', value: 'Y' },
+      { text: '퇴직', value: 'N' },
+]
 
 const form = reactive ({
   userId: null,
@@ -221,23 +236,14 @@ const form = reactive ({
   email:null,
   password: null,
   confirmPassword: null,
-  useYn: props.mode === 'N' ? 'Y' : 'N'
+  useYn: '',
 })
-
-/**
- *  재직 유무 초기화
- */
-const items = [
-  { text: '재직', value: 'Y' },
-  { text: '퇴직', value: 'N' },
-]
 
 /**
  * 화면 호출 시 userId값이 있을 경우 사용자 자동 조회
  */
-onMounted(() => {
-  console.log('mode', props.mode)
-  console.log('id', props.id)
+onMounted( async () => {
+  useYns.value = await ApiCommon.getCodeList('use_yn')
   if ( props.mode === 'U' ) {
     getUserInfo(props.id);
     isReadOnly.value = true;
@@ -248,11 +254,10 @@ onMounted(() => {
  * 사용자 조회
  * @param id : userId값이 있을 경우
  */
-const getUserInfo = (id) => {
-  ApiSystems.getUserInfo(id).then(res => {
-    const result = res.data  // ✅ PromiseResult 값
-    Object.assign(form, result);
-  })
+const getUserInfo = async (id) => {
+   const result = await ApiSystems.getUserInfo(id)
+console.log('result',result)
+   Object.assign(form, result);
 }
 
 const validUserId = [

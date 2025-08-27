@@ -1,5 +1,5 @@
 <template>
-<v-card style="h">
+<v-card>
   <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
     <v-toolbar-title>사용자 조회</v-toolbar-title>
     <v-spacer></v-spacer>
