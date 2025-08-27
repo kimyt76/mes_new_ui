@@ -1,199 +1,175 @@
 <template>
-  <v-breadcrumbs :items="['MES', '시스템관리', '공통코드 관리']"></v-breadcrumbs>
-
-  <v-card
-    class="pa-3"
-    color="blue-grey-lighten-5"
-    style="height: 60px;"
-    >
-    <v-form ref="srhForm" @submit.prevent="srhCommonList">
+<v-breadcrumbs
+    :items="['MES', '시스템관리', '공통코드 관리']"
+    class="custom-breadcrumbs"
+    />
+  <v-card class="pa-1" style="height: 60px;">
+    <v-card-text >
       <v-row>
-        <v-col
-          style="background-color: #ECEFF1"
-          >
-          <div class="d-flex ga-4"> <!-- ga-4 는 Vuetify gap 클래스 -->
-            <v-text-field
-              v-model="form.comTypeCd"
-              density="compact"
-              label="코드구분"
-              placeholder="코드구분명을 입력해주세요"
-              variant="underlined"
-                />
-            <v-text-field
-              v-model="form.codeNm"
-              density="compact"
-              label="코드명"
-              placeholder="직급을 입력해주세요"
-              variant="underlined"
+      <v-form ref="srhForm" @submit.prevent="srhCommonList">
+        <v-col class="d-flex ga-4">
+          <v-text-field
+            v-model="form.comTypeCd"
+            label="코드구분"
+            placeholder="코드구분명을 입력해주세요"
+            variant="underlined"
+            density="compact"
+            style="width: 200px;"
               />
-            <v-select
-              v-model="form.useYn"
-              label="사용여부"
-              :items="items"
-              item-title="text"
-              item-value="value"
-              variant="underlined"
-              density="compact"
+          <v-text-field
+            v-model="form.codeNm"
+            label="코드명"
+            placeholder="코드명을 입력해주세요"
+            variant="underlined"
+            density="compact"
+            style="width: 200px;"
+            />
+          <v-select
+            v-model="form.useYn"
+            label="사용여부"
+            :items="useYns"
+            item-title="codeNm"
+            item-value="code"
+            variant="underlined"
+            density="compact"
+            style="width: 150px;"
             />
           <v-btn
-            dense
-            color = "#EFEBE9"
-            class="mt-2"
+            text="조회"
+            color="brown-lighten-4"
             type="submit"
-            density="compact"
-            >조회</v-btn>
+            />
           <v-btn
-            dense
-            class="mt-2"
-            density="compact"
-            @click="reset"
-            >초기화</v-btn>
-          </div>
+            text="초기화"
+            @click="srhForm.reset()"
+            />
         </v-col>
-      </v-row>
-    </v-form>
+      </v-form>
+    </v-row>
+    </v-card-text>
   </v-card>
-    <v-row
-      class="mb-1"
-      >
-    <v-col>
-      <div class="d-flex ga-4 justify-end">
+  <v-spacer></v-spacer>
+  <v-row>
+    <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
       <v-btn
-          density="compact"
-          color = "brown-lighten-4"
-          class="mt-3"
-          @click="openPop('N')"
-          >신규</v-btn>
-        <v-btn
-          density="compact"
-          class="mt-3 mr-3"
-          @click="excel"
-          >엑셀</v-btn>
-       </div>
+        color="brown-lighten-4"
+        text="신규"
+        @click="selectRowClick"
+        />
+      <v-btn
+        class="excel-btn"
+        text="엑셀"
+        prepend-icon="mdi-microsoft-excel"
+        @click="excel"
+        />
     </v-col>
   </v-row>
-
-  <v-data-table
-    :headers="headers"
-    :items="commonList"
-    :loading="loading"
-    no-data-text="데이터가 없습니다."
-    loading-text="조회중입니다 잠시만 기다려주세요"
-    :items-per-page="25"
-
-    >
-    <template v-slot:headers="{ columns }">
-    <tr>
-      <th
-        v-for="column in columns"
-        :key="column.key"
-        class="custom-header"
-      >
-        {{ column.title }}
-      </th>
-    </tr>
-  </template>
-  <template v-slot:item="{ item }">
-    <tr class="custom-list" style="height: 30px;">
-      <td style="width: 200px; height: 30px; cursor: pointer;"  @click="handleRowClick(item.comId)">{{ item.comTypeCd}}</td>
-      <td class="custom-row" style="width: 150px; height: 30px;">{{ item.comTypeNm}}</td>
-      <td class="custom-row" style="width: 150px; height: 30px;">{{ item.code}}</td>
-      <td style="width: 550px; height: 30px;">{{ item.codeNm}}</td>
-      <td class="custom-row" style="width: 80px; height: 30px;">{{ item.useYn === 'Y' ? '사용' : '미사용'}}</td>
-      <td style="height: 30px; width: 200px;">{{ item.descrition}}</td>
-    </tr>
-  </template>
-  </v-data-table>
+  <v-row>
+    <v-col class="pa-0">
+      <v-data-table
+        :headers="headers"
+        :items="commonList"
+        :items-per-page="15"
+        density="compact"
+        fixed-header
+        height="700px"
+        class="custom-table"
+        return-object
+        >
+        <template #item.comTypeCd="{ item, index }">
+          <div
+            style="cursor: pointer; text-decoration: underline;"
+            @click="selectRowClick(item, index)"
+          >
+            {{ item.comTypeCd }}
+          </div>
+        </template>
+        <template #item.useYn="{ item, index }">
+            {{ item.useYn === 'Y' ? '사용': '미사용' }}
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-row>
 
   <v-dialog  v-model="dialog" max-width="600px" persistent>
     <CommonDetailPop
       :title="title"
       :mode="mode"
-      :id="comId"
+      :id="id"
       @saved="handleSaved"
       @close-dialog="dialog = false"/>
   </v-dialog>
-
-  </template>
-
+</template>
 
 <script setup>
-import { ApiCommon } from '@/api/apiCommon';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { exportToExcel } from '@/util/exportToExcel';
-import { onMounted, reactive, ref } from 'vue';
-import CommonDetailPop from './CommonDetailPop.vue';
+import { ApiSystems } from '@/api/apiSystem';
+import { ApiCommon } from '@/api/apiCommon';
 import { useAlertStore } from '@/stores/alert';
+import CommonDetailPop from './CommonDetailPop.vue';
+import { isEmpty, formatComma } from '@/util/common';
 
-const { vSuccess} = useAlertStore()
+const { vError, vSuccess } = useAlertStore()
 
-const title = ref('')
-const srhForm = ref(null)
-const loading = ref(false)
-const mode = ref('N')
 const dialog = ref(false)
+const loading = ref(false)
+const srhForm = ref(null)
 const commonList = ref([])
+const useYns = ref([])
 
-/**
- *  사용 유무 초기화
- */
- const items = [
-      { text: '사용', value: 'Y' },
-      { text: '미사용', value: 'N' },
-]
+const id = ref('')
+const mode = ref('N')
+const title = ref('')
+const form = reactive ({
+  userId: '',
+  deptNm: '',
+  jobPosition: '',
+  useYn: ''
+
+})
+
+const selectRowClick = (item, index) => {
+  if (isEmpty(item.comId)) {
+    title.value = '공통코드 등록'
+    id.value = null
+  }else{
+    mode.value= 'U'
+    id.value = item.comId
+    title.value = '공통코드 수정'
+  }
+
+  dialog.value = true
+}
 
 /**
  *  테이블 헤더
  */
- const headers = ref([
-    { title: '코드구분',  key: 'comTypeCd',   align: 'center' },
-    { title: '구분명',    key: 'comTypeNm',   align: 'center' },
-    { title: '코드',      key: 'code',        align: 'center' },
-    { title: '코드명',    key: 'codeNm',      align: 'center'},
-    { title: '사용여부',  key: 'useYn',       align: 'center' },
-    { title: '비고',      key: 'descrition',  align: 'center' },
+const headers = ref([
+    { title: '코드구분',  key: 'comTypeCd',   align: 'center' ,      align: 'center', width: '180px'},
+    { title: '구분명',    key: 'comTypeNm',   align: 'center' ,      align: 'center', width: '120px'},
+    { title: '코드',      key: 'code',        align: 'center' ,      align: 'center', width: '120px'},
+    { title: '코드명',    key: 'codeNm',      align: 'center',      align: 'start', width: '180px'},
+    { title: '사용여부',  key: 'useYn',       align: 'center' ,      align: 'center', width: '100px'},
+    { title: '비고',      key: 'descrition',  align: 'center',      align: 'center', width: '150px' },
 ])
 
-const form = reactive({
-  comTypeCd : null,
-  codeNm : null,
-  useYn : 'Y'
-})
-
-const srhCommonList = async () => {
-  loading.value = true
-
-  const params = {
-    ...form
-  }
+/**
+ * 사용자 정보 조회
+ */
+const srhCommonList= async () => {
+  loading.value =true
 
   try{
-
+    const params = {
+      ...form,
+    }
     commonList.value = await ApiCommon.getCommonList(params)
-
   }catch(err){
-    alert(err.massage)
+    vError(err)
   }finally{
-    loading.value = false
+    loading.value =false
   }
-}
-
-const comId = ref('')
-
-const handleRowClick = (item)=> {
-  comId.value = item
-  openPop('U')
-}
-
-const openPop = (gb) =>{
-
-  if (gb === 'N') {
-    title.value = '공통코드 등록'
-    comId.value = null
-  }else{
-    title.value = '공통코드 수정'
-    mode.value = gb
-  }
-  dialog.value = true
 }
 
 const handleSaved = (msg) => {
@@ -201,20 +177,21 @@ const handleSaved = (msg) => {
   srhCommonList()
 }
 
-onMounted(srhCommonList)
+onMounted( async () => {
+  useYns.value = await ApiCommon.getCodeList('use_yn')
+  srhCommonList()
+})
 
-const reset = () =>{
-  srhForm.value.reset()
-  form.useYn = 'Y'
-}
-
-const excel = () =>{
+/**
+ * 엑셀 다운로드
+ */
+const excel = () => {
   exportToExcel(headers, commonList.value, '공통코드_목록')
 }
 
 </script>
 
-<style scoped>
+<style>
 @import '@/assets/css/main.css';
 
 

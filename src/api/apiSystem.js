@@ -25,7 +25,7 @@ export const  ApiSystems = {
     try{
       const res =  await API_URL.get(`/systemMgmt/getUserInfo/${id}`)
       //console.log('res', res)
-      return res
+      return res.data
     }catch(err){
       throw err.response
     }

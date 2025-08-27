@@ -196,7 +196,6 @@ const openPop = (gb) => {
   dialog.value = true
 }
 
-
 /**
  * 초기화
  */
@@ -210,7 +209,6 @@ onMounted( async () =>{
 const excel = () => {
   exportToExcel(headers, ingredientList.value, '성분_목록')
 }
-
 
 </script>
 
