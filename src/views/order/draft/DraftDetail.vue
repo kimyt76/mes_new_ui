@@ -276,9 +276,23 @@ const form = reactive({
   draftUserName: '',
   draftDept: '',
   draftUserId: '',
+  statusType: '',
 
   userId: userId,
 })
+
+
+const isComplete = ref('')
+
+const approvalComplete = () =>{
+  if ( !isEmpty(approvalInfo.businessApprovalDate) ){
+    isComplete.value = 'END'
+  }else{
+    isComplete.value = 'ING'
+  }
+}
+
+
 const approvalInfo = ref({
   businessUserId : '',
   productUserId: '',
@@ -324,8 +338,8 @@ const saveInfo = async () => {
     boardTxt : myBoardTxt.value,
     appDate: approvalDate.value,
     draftId : draftId,
+    statusType : isComplete.value
   }
-
   //console.log('param',params)
   try{
     const msg = await ApiOrder.updateInfo(params)

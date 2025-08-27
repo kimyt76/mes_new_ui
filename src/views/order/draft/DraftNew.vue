@@ -204,6 +204,7 @@ const form = reactive({
   draftUserName: memberNm,
   draftDept: deptNm,
   draftUserId: userId,
+  statusType: 'ING',
 
   userId: userId,
 })
@@ -240,6 +241,7 @@ const saveInfo = async () => {
   }
   params.dueDate = formatDate(form.dueDate)
   params.orderQty = deleteComma(form.orderQty)
+
   //  console.log('params', params)
   //  console.log('approval', approvalInfo.value)
   //  console.log('orderFile', orderFile.value)
