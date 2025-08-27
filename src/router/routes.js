@@ -108,6 +108,16 @@ const routes = [
         name: 'DraftNew',
         component: () => import('@/views/order/draft/DraftNew.vue')
       },
+      {
+        path: 'draftDetail/:id',
+        name: 'DraftDetail',
+        component: () => import('@/views/order/draft/DraftDetail.vue')
+      },
+      {
+        path: 'draftEdit/:id',
+        name: 'DraftEdit',
+        component: () => import('@/views/order/draft/DraftEdit.vue')
+      },
 
       // 수주관리
       {
