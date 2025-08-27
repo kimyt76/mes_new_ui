@@ -1,8 +1,8 @@
 <template>
-  <v-breadcrumbs :items="['MES', '영업관리', '사양서 상세']"></v-breadcrumbs>
+  <v-breadcrumbs :items="['MES', '영업관리', '사양서 수정']"></v-breadcrumbs>
 
   <v-card>
-    <v-card-text>
+    <v-card-text class="overflow-y-hidden">
       <v-row>
         <v-col class="d-flex justify-end pa-1">
           <v-table style="border: 0.1px solid #ccc;">
@@ -52,22 +52,11 @@
         </v-col>
       </v-row>
     </v-card-text>
-    <v-row v-if="isApproval">
-      <v-col>
-        <div class="d-flex  ga-4 justify-end">
-          <v-btn
-            color="brown-lighten-4"
-            class="mt-1 mr-3"
-            text="승인"
-            @click="approvalOk"
-            />
-        </div>
-      </v-col>
-    </v-row>
-    <v-card-text>
+
+    <v-card-text class="overflow-y-hidden">
       <v-row>
         <v-col>
-          <v-table class="compact-table" >
+          <v-table class="compact-table" style="height: 590px;">
             <tbody>
               <tr>
                 <th>문서번호</th>
@@ -83,9 +72,9 @@
               </tr>
               <tr>
                 <th>기안부서</th>
-                <td>{{ form.draftDept }}</td>
+                <td>{{ deptNm }}</td>
                 <th>기안자</th>
-                <td>{{ form.draftUserName }}</td>
+                <td>{{ memberNm }}</td>
               </tr>
               <tr>
                 <th>제목</th>
@@ -108,7 +97,6 @@
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
                     class="cell-input"
                   />
                 </td>
@@ -119,7 +107,6 @@
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
                     class="cell-input"
                   />
                 </td>
@@ -133,7 +120,6 @@
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
                     style="text-align: right;"
                     class="cell-input"
                   />
@@ -146,69 +132,64 @@
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
                     class="cell-input"
                   />
                 </td>
               </tr>
               <tr>
-                <th>발주서 첨부파일</th>
+                <th>발주서첨부</th>
                 <td colspan="3">
-                  <DownLoadLink
-                    :fileName="attachInfo.orderFileName|| ''"
-                    :attachFileId="attachInfo.orderFileAttachFileId|| ''"
-                    :seq="attachInfo.orderSeq|| ''"
-                    />
+                  <SingleFileUpload
+                    v-if="isOrderFile"
+                    v-model="orderFile"
+                    style="height: 20px; width: 1100px;"
+                    class="mb-4"
+                  />
+                  <div v-else >
+                    <DownLoadLink
+                      :fileName="attachInfo.orderFileName|| ''"
+                      :attachFileId="attachInfo.orderFileAttachFileId|| ''"
+                      :seq="attachInfo.orderSeq|| ''"
+                      />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <v-btn
+                          text="삭제"
+                          density="compact"
+                          @click="deleteFile('p')"
+                          />
+                  </div>
                 </td>
               </tr>
               <tr>
-                <th>제품사양서 첨부</th>
-                <td colspan="3" style="border-bottom: 1px solid #ccc;">
+                <th>제품사양서첨부</th>
+                <td colspan="3">
+                  <SingleFileUpload
+                    v-if="isProdFile"
+                    v-model="prodFile"
+                    style="height: 20px; width: 1100px;"
+                    class="mb-4"
+                  />
+                  <div v-else >
                   <DownLoadLink
                     :fileName= "attachInfo.prodFileName|| ''"
                     :attachFileId= "attachInfo.prodFileAttachFileId|| ''"
                     :seq= "attachInfo.prodSeq|| ''"
-                    />
-                </td>
-              </tr>
-              <tr v-if="isApprovalUser">
-                <th>{{ memberNm }}</th>
-                <td colspan="3">
-                  <v-text-field
-                    v-model="myBoardTxt"
-                    :readonly="false"
-                    density="compact"
-                    style="height: 20px"
-                    class="mb-4"
-                  />
-                </td>
-              </tr>
-              <tr v-for="(item, index) in otherBoards" :key="item.boardId || index">
-                <th>{{ item.boardUserId }}</th>
-                <td colspan="3">
-                  <v-text-field
-                    v-model="item.boardTxt"
-                    :readonly="true"
-                    density="compact"
-                    style="height: 20px"
-                    class="mb-4"
-                  />
+                    />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      <v-btn
+                        text="삭제"
+                        density="compact"
+                        @click="deleteFile('p')"
+                        />
+                </div>
                 </td>
               </tr>
             </tbody>
           </v-table>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col class="d-flex ga-4 justify-end mb-3">
           <v-btn
-            v-if="isEditBtn"
-            color="brown-lighten-4"
-            text="수정"
-            @click="goEdit"
-            />
-          <v-btn
-            v-if="isSaveBtn"
             text="저장"
             class="gt-2"
             color="brown-lighten-4"
@@ -234,40 +215,30 @@
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders'
+import { ApiCommon } from '@/api/apiCommon'
 import { useAuthStore } from '@/stores/auth'
 import { useAlertStore } from '@/stores/alert';
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, reactive, ref, computed } from 'vue'
-import DownLoadLink from '@/components/DownLoadLink.vue'
+import { onMounted, reactive, ref } from 'vue'
+import { toDate, deleteComma} from '@/util/common'
+import SingleFileUpload from '@/components/SingleFileUpload.vue'
 import UserListPop from '@/views/system/user/UserListPop.vue'
-import { isEmpty, toDate, formatComma, todayKST, formatDate, deleteComma } from '@/util/common';
+import DownLoadLink from '@/components/DownLoadLink.vue';
+import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 
 const route = useRoute()
 const router = useRouter()
-const draftId = route.params.id
 const { userId, memberNm, deptNm} = useAuthStore()
-const { vError, vSuccess, vInfo} = useAlertStore()
+const { vError, vSuccess} = useAlertStore()
 
+const draftId = route.params.id
 const orderFile =ref([])
 const prodFile =ref([])
-const boardInfo = ref([])
-
-const otherBoards = computed(() =>
-  boardInfo.value.filter( item => item.boardUserId !== userId)
-)
-
-const dialog = ref(false)         //사용자팝업
-const isApprovalUser = ref(false)   // 의견
-const isApproval = ref(false)   //
-const isEditBtn = ref(false)    //수정버튼
-const isSaveBtn = ref(false)    //저장버튼
-
-let getField = ref('')
-const myBoardTxt = ref('')
-let approvalDate = ref(null)
-
+const dialog = ref(false)
+const isOrderFile = ref(false)
+const isProdFile = ref(false)
 const form = reactive({
-  draftDate: toDate(),
+  draftDate: '',
   seq: '',
   customerName: '',
   itemName: '',
@@ -277,6 +248,7 @@ const form = reactive({
   draftDept: '',
   draftUserId: '',
 
+  draftId: draftId,
   userId: userId,
 })
 const approvalInfo = ref({
@@ -316,163 +288,90 @@ const userHandler = (obj) =>{
 }
 
 const saveInfo = async () => {
+  const formData = new FormData();
+
   const params = {
-    userId: userId,
-    field : getField.value,
-    boardId : form.boardId,
-    approvalId : form.approvalId,
-    boardTxt : myBoardTxt.value,
-    appDate: approvalDate.value,
-    draftId : draftId,
+    ...form
+  }
+  params.dueDate = formatDate(form.dueDate)
+  params.orderQty = deleteComma(form.orderQty)
+    console.log('params', params)
+    console.log('approval', approvalInfo.value)
+  //  console.log('orderFile', orderFile.value)
+  //  console.log('prodFile', prodFile.value)
+  formData.append("draftInfo", JSON.stringify(params))
+  formData.append("approval", JSON.stringify(approvalInfo.value))
+
+    // 유무 로그 확인
+  const hasOrderFile = orderFile.value instanceof File;
+  const hasProdFile = prodFile.value instanceof File;
+
+  if (hasOrderFile) {
+    formData.append("orderFile", orderFile.value);
+  }else{
+    formData.append("orderAttachFileId", attachInfo.value.orderFileAttachFileId)
   }
 
-  //console.log('param',params)
+  if (hasProdFile) {
+    formData.append("prodFile", prodFile.value);
+  }else{
+    formData.append("prodAttachFileId", attachInfo.value.prodFileAttachFileId);
+  }
   try{
-    const msg = await ApiOrder.updateInfo(params)
+    const msg = await ApiOrder.saveDraftInfo(formData)
     //console.log('msg', msg)
     vSuccess(msg)
-    router.push({name: 'DraftList'})
+    router.push({name: 'DraftDetail',  params: { id: draftId }})
   }catch(err){
-    //console.log('err', err.msg)
-    vError(err)
+    vError(err.response)
   }
 }
-
-const  draftCheck = () =>{
-  // 기안자 이면 수정버튼 생성
-  if (form.draftUserId === userId ) {
-    //버튼 숨김 해제
-    isEditBtn.value =true
-  }
-
-  const userList = Object.values(approvalInfo.value);
-  const isUserExist = userList.includes(userId);
-
-  const { businessCheckYn, productCheckYn, purchaseCheckYn, qcCheckYn, labCheckYn, businessUserId, productUserId, purchaseUserId, qcUserId, labUserId } = approvalInfo.value
-  //console.log('findUserKeyById', findUserKeyById(userId))
-  if (!isEmpty(findUserKeyById(userId))) {
-    isSaveBtn.value =true
-  }
-
-  if ( form.draftUserId !== userId ){
-    isApprovalUser.value = true
-  }
-
-  const isDateCheck = ref(false)
-
-  if( userId === businessUserId && businessCheckYn === "N" ){
-    isDateCheck.value = true
-  }else if ( userId === productUserId && productCheckYn === "N"){
-    isDateCheck.value = true
-  }else if ( userId === purchaseUserId && purchaseCheckYn === "N"){
-    isDateCheck.value = true
-  }else if ( userId === qcUserId && qcCheckYn === "N"){
-    isDateCheck.value = true
-  }else if ( userId === labUserId && labCheckYn === "N"){
-    isDateCheck.value = true
-  }
-
-  if ( isUserExist && isDateCheck.value){
-    isApproval.value = true
-  }
-}
-
-const findUserKeyById = (targetUserId) => {
-  // approvalInfo.value 의 key:value 쌍을 순회
-  for (const [key, value] of Object.entries(approvalInfo.value)) {
-    // userId 와 관련된 key만 검사
-    if (key.endsWith("UserId") && value === targetUserId) {
-      return key; // 예: "businessUserId"
-    }
-  }
-  return null; // 못 찾으면 null
-};
-
-onMounted( async () => {
-  const result = await ApiOrder.getDraftInfo(draftId)
-
-  Object.assign( form, result.draftInfo)
-  Object.assign( approvalInfo.value, result.approvalInfo)
-  boardInfo.value = result.boardInfo || []; // fallback 방지
-
-  draftCheck()
-  const matched = boardInfo.value.find(item => item.boardUserId === userId);
-  myBoardTxt.value = matched ? matched.boardTxt : ''
-  attachInit(result)
-})
 
 const attachInit = result => {
-  if ( result.orderAttachFileInfo !== null ) {
+  if ( result.orderAttachFileInfo === null ) {
+    isOrderFile.value =true
+  }else{
     attachInfo.value.orderFileName = result.orderAttachFileInfo.fileName
-    attachInfo.value.orderFilePath = result.orderAttachFileInfo.filePath
     attachInfo.value.orderFileAttachFileId = result.orderAttachFileInfo.attachFileId
     attachInfo.value.orderSeq = result.orderAttachFileInfo.seq
   }
-  if ( result.prodAttachFileInfo !== null ){
+  if ( result.prodAttachFileInfo === null ) {
+    isProdFile.value =true
+  }else{
     attachInfo.value.prodFileName = result.prodAttachFileInfo.fileName
-    attachInfo.value.prodFilePath = result.prodAttachFileInfo.filepath
     attachInfo.value.prodFileAttachFileId = result.prodAttachFileInfo.attachFileId
     attachInfo.value.prodSeq = result.prodAttachFileInfo.seq
   }
 }
 
-const approvalOk = () => {
-  if (approvalInfo.value.businessUserId.includes(userId) ){
-    if (isEmpty(approvalInfo.value.businessApprovalDate)) {
-      approvalInfo.value.businessApprovalDate = toDate()
-      approvalInfo.value.productApprovalDate = toDate()
-      approvalInfo.value.purchaseApprovalDate = toDate()
-      approvalInfo.value.qcApprovalDate = toDate()
-      approvalInfo.value.labApprovalDate = toDate()
+const deleteFile = async gb => {
+  let id = ''
+  if ( gb === 'o') {
+    id = attachInfo.value.orderFileAttachFileId
+    attachInfo.value.orderFileAttachFileId = null
+  }else {
+    id = attachInfo.value.prodFileAttachFileId
+    attachInfo.value.prodFileAttachFileId = null
+  }
 
-      approvalDate.value = toDate()
-      getField.value = 'business_approval_date'
-    }else{
-      approvalDate.value = approvalInfo.value.businessApprovalDate
-    }
+  const seq = 1
+  try{
+    const msg = await ApiCommon.deleteFile(id, seq)
+    vSuccess(msg)
+  }catch(err) {
+    vError(err)
   }
-  if ( approvalInfo.value.productUserId.includes(userId) ){
-    if (isEmpty(approvalInfo.value.productApprovalDate)) {
-      approvalInfo.value.productApprovalDate = toDate()
-      approvalDate.value = toDate()
-      getField.value = 'product_Approval_Date'
-    }else{
-      approvalDate.value = approvalInfo.value.productApprovalDate
-    }
-  }else if ( approvalInfo.value.purchaseUserId.includes(userId) ){
-    if (isEmpty(approvalInfo.value.purchaseApprovalDate)) {
-      approvalInfo.value.purchaseApprovalDate = toDate()
-      approvalDate.value = toDate()
-      getField.value = 'purchase_Approval_Date'
-    }else{
-      approvalDate.value = approvalInfo.value.purchaseApprovalDate
-    }
-  }else if ( approvalInfo.value.qcUserId.includes(userId) ){
-    if (isEmpty(approvalInfo.value.qcApprovalDate)) {
-      approvalInfo.value.qcApprovalDate = toDate()
-      approvalDate.value = toDate()
-      getField.value = 'qc_Approval_Date'
-    }else{
-      approvalDate.value = approvalInfo.value.qcApprovalDate
-    }
-  }else if ( approvalInfo.value.labUserId.includes(userId) ){
-    if (isEmpty(approvalInfo.value.labApprovalDate)) {
-      approvalInfo.value.labApprovalDate = toDate()
-      approvalDate.value = toDate()
-      getField.value = 'lab_Approval_Date'
-    }else{
-      approvalDate.value = approvalInfo.value.labApprovalDate
-    }
-  }
-  isApproval.value = false
 }
 
-/**
- * 기안서 편집
- */
-const goEdit = () =>{
-  router.push({ name: 'DraftEdit', params: { id: draftId } })
-}
+onMounted( async () => {
+  const result = await ApiOrder.getDraftInfo(draftId)
+
+  //결재자 자동호출
+  Object.assign( form, result.draftInfo)
+  Object.assign( approvalInfo.value, result.approvalInfo)
+
+  attachInit(result)
+})
 
 /**
  *  기안서 목록
@@ -485,19 +384,11 @@ const goList = () => {
 
 <style scoped>
 .compact-table {
+  table-layout: fixed;
   width: 100%;
   border: 0.5px solid #ccc;
   /* border-collapse: collapse; */
 }
-
-.compact-table .v-table__wrapper {
-  max-height: none !important;
-  height: auto !important;
-  overflow: visible !important;   /* y 스크롤 제거 + 컨텐츠만큼 늘어남 */
-  /* 필요 시 가로만 스크롤 유지하고 싶다면: */
-  /* overflow-x: auto; */
-}
-
 .compact-table th {
   padding: 4px;
   height: 30px;
@@ -529,5 +420,7 @@ const goList = () => {
   padding-top: 2px;
   padding-bottom: 2px;
 }
-
+.overflow-y-hidden {
+  overflow-y: hidden !important; /* !important는 필요에 따라 사용 */
+}
 </style>

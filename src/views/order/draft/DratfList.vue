@@ -1,6 +1,6 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '수주관리', '기안서관리']"
+    :items="['MES', '수주관리', '사양서목록']"
     class="custom-breadcrumbs"
     />
   <v-card class="pa-1" style="height: 60px;">
@@ -101,6 +101,9 @@
         <template #item.itemName ="{ item, index }">
           <div style="cursor: pointer; text-decoration: underline;" @click="handleRowClick(item, index)"> {{ item.itemName }}</div>
         </template>
+        <template #item.statusType = "{item, index}">
+          {{  item.statusType === "ING" ? '진행중' : '완료'  }}
+        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -131,6 +134,7 @@ const form = reactive({
    { title: '고객사명',  key: 'customerName',   align: 'start', width: '250px'},
    { title: '기안일자',  key: 'draftDate',      align: 'center', width: '110px'},
    { title: '기안자',    key: 'draftUserName',  align: 'center', width: '100px'},
+   { title: '진행상태',   key: 'statusType',    align: 'center', width: '100px'},
 ])
 
 const handleRowClick = (item, index ) => {

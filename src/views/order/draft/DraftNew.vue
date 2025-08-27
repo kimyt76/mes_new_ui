@@ -1,5 +1,5 @@
 <template>
-  <v-breadcrumbs :items="['MES', '영업관리', '기안서 등록']"></v-breadcrumbs>
+  <v-breadcrumbs :items="['MES', '영업관리', '사양서 등록']"></v-breadcrumbs>
 
   <v-card>
     <v-card-text class="overflow-y-hidden">
@@ -256,7 +256,7 @@ const saveInfo = async () => {
 
   try{
     const msg = await ApiOrder.saveDraftInfo(formData)
-    console.log('msg', msg)
+    //console.log('msg', msg)
     vSuccess(msg)
     router.push({name: 'DraftList'})
   }catch(err){
