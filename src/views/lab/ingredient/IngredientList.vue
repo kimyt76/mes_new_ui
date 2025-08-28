@@ -131,20 +131,20 @@ const title = ref('')
 const form = reactive({
   ingredientName: '',
   functionNm : '',
-  casNo: '',
+  regName: '',
 })
 
 const headers = ref([
-    { title: '성분코드',    key: 'ingredientCode',   align: 'center',  width: '70px'},
-    { title: '국문성분명',  key: 'krIngredientName',   align: 'start',width: '240px'},
+    { title: '성분코드',    key: 'ingredientCode',     align: 'center',  width: '70px'},
+    { title: '국문성분명',  key: 'krIngredientName',   align: 'start',  width: '240px'},
     { title: '영문성분명',  key: 'enIngredientName',   align: 'start', width: '240px'},
     { title: '중문성분명',  key: 'cnIngredientName',   align: 'start', width: '250px'},
     { title: 'CAS No',     key: 'casNo',              align: 'start', width: '150px'},
-    { title: 'function',   key: 'functionNm',     align: 'start', width: '150px'},
-    { title: '등록자',      key: 'regName',     align: 'center', width: '70px'},
-    { title: '수정자',      key: 'updName',     align: 'center', width: '70px'},
-    { title: '수정일자',    key: 'updDate',     align: 'center', width: '100px'},
-    { title: '비고',        key: 'etc',         align: 'start', width: '110px'},
+    { title: 'function',   key: 'functionNm',         align: 'start', width: '150px'},
+    { title: '등록자',      key: 'regName',           align: 'center', width: '70px'},
+    { title: '수정자',      key: 'updName',           align: 'center', width: '70px'},
+    { title: '수정일자',    key: 'updDate',           align: 'center', width: '100px'},
+    { title: '비고',        key: 'etc',               align: 'start', width: '110px'},
 ])
 
 
