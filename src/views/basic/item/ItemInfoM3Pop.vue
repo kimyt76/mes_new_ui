@@ -174,7 +174,7 @@ import { ApiItem } from '@/api/apiItem';
 
 const { vError } = useAlertStore()
 const { userId } = useAuthStore()
-const emit = defineEmits('saved', 'close-dialog')
+const emit = defineEmits(['saved', 'close-dialog'])
 
 const props = defineProps({
   id: {

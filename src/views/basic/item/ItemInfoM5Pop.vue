@@ -256,7 +256,7 @@ import { onMounted, reactive, ref } from 'vue';
 
 const { vError } = useAlertStore()
 
-const emit = defineEmits('saved', 'close-dialog')
+const emit = defineEmits(['saved', 'close-dialog'])
 const { userId} = useAuthStore()
 const props = defineProps({
   id: {

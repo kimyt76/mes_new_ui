@@ -161,7 +161,7 @@ import { ApiCommon } from '@/api/apiCommon';
 const { userId } = useAlertStore()
 const { vError } = useAlertStore()
 
-const emit = defineEmits('saved','close-dialog')
+const emit = defineEmits(['saved','close-dialog'])
 
 const props = defineProps({
   id: {
