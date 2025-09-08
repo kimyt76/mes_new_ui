@@ -89,6 +89,7 @@
         height="650px"
         return-object
         class="my-table"
+        tableStyle="table-layout: fixed; width: 100%"
         >
         <template v-slot:headers="{ columns }">
           <tr>
