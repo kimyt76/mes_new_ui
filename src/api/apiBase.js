@@ -39,7 +39,6 @@ export const ApiBase = {
       throw err.response
     }
   },
-
   getStorageList: async(params) =>{
     try{
       const res = await API_URL.post('/storage/getStorageList', params )
@@ -66,8 +65,35 @@ export const ApiBase = {
     }catch(err){
       throw new Error(err.response?.data);
     }
-  }
+  },
 
+  getClientList : async(params) =>{
+    try{
+      const res = await API_URL.post('/client/getClientList', params )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  getClientDetail: async(id) => {
+    try{
+      const res = await API_URL.get(`/client/getClientDetail/${id}` )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  getBusinessNoChecked: async(id) => {
+    try{
+      const res = await API_URL.get(`/client/getBusinessNoChecked/${id}` )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
 
 
 }

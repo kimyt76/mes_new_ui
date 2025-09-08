@@ -27,6 +27,11 @@ const routes = [
     component: IndexView,
     children: [
       {
+        path: 'itemList',
+        name: 'ItemList',
+        component: () => import('@/views/basic/item/ItemList.vue')
+      },
+      {
         path: 'itemDetail/:id',
         name: 'ItemDetail',
         component: () => import('@/views/basic/item/ItemDetail.vue'),
@@ -48,11 +53,6 @@ const routes = [
         component: () => import('@/views/basic/item/ItemThird.vue'),
       },
       {
-        path: 'itemList',
-        name: 'ItemList',
-        component: () => import('@/views/basic/item/ItemList.vue')
-      },
-      {
         path: 'itemDetailList',
         name: 'ItemDetailList',
         component: () => import('@/views/basic/item/ItemInfoList.vue')
@@ -66,6 +66,17 @@ const routes = [
         path: 'storageList',
         name: 'StorageList',
         component: () => import('@/views/basic/storage/StorageList.vue')
+      },
+      {
+        path: 'clientList',
+        name: 'ClientList',
+        component: () => import('@/views/basic/client/ClientList.vue')
+      },
+      {
+        path: 'clientDetail/:id?',
+        name: 'ClientDetail',
+        component: () => import('@/views/basic/client/ClientDetail.vue'),
+        props: true,
       },
     ]
   },
