@@ -25,16 +25,16 @@
                 <td style="height: 80px; text-align: center; border-left: 1px solid #ccc;">
                   <span>{{ approvalInfo.labUserName }}</span>
                   <!-- 수정된 버튼 -->
-                  <v-btn @click="dialog = true">결재자</v-btn>
+                  <v-btn @click="dialog = true">결제자</v-btn>
                 </td>
               </tr>
               <tr>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">{{ form.draftDate }}</td>
-                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결재일자</td>
-                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결재일자</td>
-                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결재일자</td>
-                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결재일자</td>
-                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결재일자</td>
+                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결제일자</td>
+                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결제일자</td>
+                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결제일자</td>
+                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결제일자</td>
+                <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">결제일자</td>
               </tr>
             </tbody>
           </v-table>
@@ -269,7 +269,7 @@ const saveInfo = async () => {
 onMounted( async () => {
   //문서번호 호출  및 seq 넘버링
   form.seq = await ApiCommon.getNextSeq('tb_draft_mst', 'draft_date',  form.draftDate)
-  //결재자 자동호출
+  //결제자 자동호출
   const result = await ApiOrder.getApprovalInfo()
   Object.assign(approvalInfo.value, result);
 })

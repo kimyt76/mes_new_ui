@@ -105,7 +105,7 @@
         <v-col>
           <v-text-field
             v-model="form.paymentCondition"
-            label="결재조건"
+            label="결제조건"
             variant="underlined"
             density="compact"
           />

@@ -27,23 +27,23 @@
               <tr>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">{{ form.draftDate }}</td>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">
-                  <span v-if="!approvalInfo.businessApprovalDate">결재일자</span>
+                  <span v-if="!approvalInfo.businessApprovalDate">결제일자</span>
                   <span v-else>{{ approvalInfo.businessApprovalDate }}</span>
                 </td>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">
-                  <span v-if="!approvalInfo.productApprovalDate">결재일자</span>
+                  <span v-if="!approvalInfo.productApprovalDate">결제일자</span>
                   <span v-else>{{ approvalInfo.productApprovalDate }}</span>
                 </td>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">
-                  <span v-if="!approvalInfo.purchaseApprovalDate">결재일자</span>
+                  <span v-if="!approvalInfo.purchaseApprovalDate">결제일자</span>
                   <span v-else>{{ approvalInfo.purchaseApprovalDate }}</span>
                 </td>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">
-                  <span v-if="!approvalInfo.qcApprovalDate">결재일자</span>
+                  <span v-if="!approvalInfo.qcApprovalDate">결제일자</span>
                   <span v-else>{{ approvalInfo.qcApprovalDate }}</span>
                 </td>
                 <td style="height: 30px; text-align: center; border-left: 1px solid #ccc;">
-                  <span v-if="!approvalInfo.labApprovalDate">결재일자</span>
+                  <span v-if="!approvalInfo.labApprovalDate">결제일자</span>
                   <span v-else>{{ approvalInfo.labApprovalDate }}</span>
                 </td>
               </tr>

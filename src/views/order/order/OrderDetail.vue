@@ -29,7 +29,7 @@
                 <span
                   v-if="!approvalInfo.businessApprovalDate"
                   >
-                  결재일자
+                  결제일자
                 </span>
                 <span
                   v-else
@@ -41,7 +41,7 @@
                 <span
                   v-if="!approvalInfo.productApprovalDate"
                   >
-                  결재일자
+                  결제일자
                 </span>
                 <span
                   v-else
@@ -53,7 +53,7 @@
                 <span
                   v-if="!approvalInfo.purchaseApprovalDate"
                   >
-                  결재일자
+                  결제일자
                 </span>
                 <span
                   v-else
@@ -65,7 +65,7 @@
                 <span
                   v-if="!approvalInfo.qcApprovalDate"
                   >
-                  결재일자
+                  결제일자
                 </span>
                 <span
                   v-else
@@ -77,7 +77,7 @@
                 <span
                   v-if="!approvalInfo.labApprovalDate"
                   >
-                  결재일자
+                  결제일자
                 </span>
                 <span
                   v-else

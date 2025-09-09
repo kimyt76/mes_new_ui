@@ -32,18 +32,18 @@
                 <span>{{ approvalUserNm }}</span>
                 <v-btn
                   width="20px"
-                  text="결재자"
+                  text="결제자"
                   @click= "userDialog = true"
                 />
               </td>
             </tr>
             <tr  class="approval-date">
               <td style="height: 30px;">{{ orderInfo.orderDate }}</td>
-              <td style="height: 30px;">결재일자</td>
-              <td style="height: 30px;">결재일자</td>
-              <td style="height: 30px;">결재일자</td>
-              <td style="height: 30px;">결재일자</td>
-              <td style="height: 30px;">결재일자</td>
+              <td style="height: 30px;">결제일자</td>
+              <td style="height: 30px;">결제일자</td>
+              <td style="height: 30px;">결제일자</td>
+              <td style="height: 30px;">결제일자</td>
+              <td style="height: 30px;">결제일자</td>
             </tr>
           </tbody>
         </v-table>
@@ -263,7 +263,7 @@ onMounted( async () => {
   //문서번호 호출  및 seq 넘버링
   orderInfo.value.seq = await ApiOrder.getSeq()
 
-  //결재자 자동호출
+  //결제자 자동호출
   const result = await ApiOrder.getApprovalInfo()
   Object.assign(approvalInfo.value, result);
 })

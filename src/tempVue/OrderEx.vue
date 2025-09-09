@@ -36,11 +36,11 @@
               </tr>
               <tr>
                 <td style="height: 25px;">{{ draftDate }}</td>
-                <td style="height: 25px;">결재일자</td>
-                <td style="height: 25px;">결재일자</td>
-                <td style="height: 25px;">결재일자</td>
-                <td style="height: 25px;">결재일자</td>
-                <td style="height: 25px;">결재일자</td>
+                <td style="height: 25px;">결제일자</td>
+                <td style="height: 25px;">결제일자</td>
+                <td style="height: 25px;">결제일자</td>
+                <td style="height: 25px;">결제일자</td>
+                <td style="height: 25px;">결제일자</td>
               </tr>
             </tbody>
           </v-table>
@@ -298,7 +298,7 @@ const orderCancel = () => {
 
 <style scoped>
 /**
-결재 테이블
+결제 테이블
  */
 .approval-table tr {
   height: 25px; /* 원하는 높이로 조절 */

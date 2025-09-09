@@ -37,11 +37,11 @@
             </tr>
             <tr>
               <td style="height: 25px;">{{ toFullDate }}</td>
-              <td style="height: 25px;">결재일자</td>
-              <td style="height: 25px;">결재일자</td>
-              <td style="height: 25px;">결재일자</td>
-              <td style="height: 25px;">결재일자</td>
-              <td style="height: 25px;">결재일자</td>
+              <td style="height: 25px;">결제일자</td>
+              <td style="height: 25px;">결제일자</td>
+              <td style="height: 25px;">결제일자</td>
+              <td style="height: 25px;">결제일자</td>
+              <td style="height: 25px;">결제일자</td>
             </tr>
           </tbody>
         </v-table>
@@ -224,9 +224,9 @@ const seq = ref(1)
 //   //값이 있을 경우
 
 
-//   //결재자가 없을 경우 승인버튼 hide처리
+//   //결제자가 없을 경우 승인버튼 hide처리
 
-//   //결재자가 있어도 결재일자 정보가 있으면 hide
+//   //결제자가 있어도 결제일자 정보가 있으면 hide
 
 //   //
 // })
@@ -319,7 +319,7 @@ const orderCancel = () => {
 
 <style scoped>
 /**
-결재 테이블
+결제 테이블
  */
 .approval-table tr {
   height: 25px; /* 원하는 높이로 조절 */
