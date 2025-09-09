@@ -66,7 +66,6 @@ export const ApiBase = {
       throw new Error(err.response?.data);
     }
   },
-
   getClientList : async(params) =>{
     try{
       const res = await API_URL.post('/client/getClientList', params )
@@ -76,13 +75,22 @@ export const ApiBase = {
       throw err.response
     }
   },
-  getClientDetail: async(id) => {
+  getClientInfo: async(id) => {
     try{
-      const res = await API_URL.get(`/client/getClientDetail/${id}` )
+      const res = await API_URL.get(`/client/getClientInfo/${id}` )
 
       return res.data
     }catch(err){
       throw err.response
+    }
+  },
+   saveClientInfo: async(params) => {
+    try{
+      const msg = await API_URL.post(`/client/saveClientInfo`, params)
+
+      return msg.data
+    }catch(err){
+      throw new Error(err.response?.data);
     }
   },
   getBusinessNoChecked: async(id) => {

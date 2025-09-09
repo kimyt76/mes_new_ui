@@ -9,6 +9,7 @@ export const useMenuStore = defineStore('menu', {
           { title: '품목상세관리', to: '/basic/itemDetailList'},
           { title: '거래처관리', to: '/basic/customerList'},
           { title: '창고관리', to: '/basic/storageList'},
+          { title: '고객사관리', to: '/basic/clientList' },
         ]
       },
       { title: '영업관리', icon: 'mdi-table-settings', items: [

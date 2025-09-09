@@ -133,7 +133,7 @@
         <v-col>
           <v-text-field
             v-model="form.paymentCondition"
-            label="결재조건"
+            label="결제조건"
             variant="underlined"
             density="compact"
             style="width: 300px;"
@@ -246,7 +246,7 @@
         <v-col>
           <v-text-field
             v-model="form.paymentCd"
-            label="결재회사코드"
+            label="결제회사코드"
             variant="underlined"
             density="compact"
             style="width: 300px;"
@@ -255,7 +255,7 @@
         <v-col>
           <v-text-field
             v-model="form.paymentName"
-            label="결재회사"
+            label="결제회사"
             variant="underlined"
             density="compact"
             style="width: 300px;"
@@ -266,7 +266,7 @@
         <v-col>
           <v-card-title>담당자</v-card-title>
         </v-col>
-        <v-col>
+        <v-col  class="d-flex justify-end">
           <v-btn
             text="추가+"
             @click="addRowU"
@@ -274,12 +274,12 @@
         </v-col>
           <v-data-table-virtual
               :headers="managerHeaders"
-              :items="clienManagerList"
+              :items="clientManagerList"
               class="custom-table"
             >
             <template #item.deptName="{ item, index }">
               <input
-                v-model="clienManagerList[index].deptName"
+                v-model="clientManagerList[index].deptName"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -287,7 +287,7 @@
             </template>
             <template #item.managerName="{ item, index }">
               <input
-                v-model="clienManagerList[index].managerName"
+                v-model="clientManagerList[index].managerName"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -295,7 +295,7 @@
             </template>
             <template #item.jobPosition="{ item, index }">
               <input
-                v-model="clienManagerList[index].jobPosition"
+                v-model="clientManagerList[index].jobPosition"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -303,7 +303,7 @@
             </template>
             <template #item.tel="{ item, index }">
               <input
-                v-model="clienManagerList[index].tel"
+                v-model="clientManagerList[index].tel"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -311,7 +311,7 @@
             </template>
             <template #item.directTel="{ item, index }">
               <input
-                v-model="clienManagerList[index].directTel"
+                v-model="clientManagerList[index].directTel"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -319,7 +319,7 @@
             </template>
             <template #item.email="{ item, index }">
               <input
-                v-model="clienManagerList[index].email"
+                v-model="clientManagerList[index].email"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -334,7 +334,7 @@
          <v-col>
           <v-card-title>주소</v-card-title>
         </v-col>
-        <v-col>
+        <v-col class="d-flex justify-end">
           <v-btn
             text="추가+"
              @click="addRowA"
@@ -342,12 +342,12 @@
         </v-col>
           <v-data-table-virtual
             :headers="addressHeadeers"
-            :items="clineAddressList"
+            :items="clinetAddressList"
             class="custom-table"
             >
             <template #item.address="{ item, index }">
               <input
-                v-model="clineAddressList[index].address"
+                v-model="clinetAddressList[index].address"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -362,7 +362,7 @@
         <v-col>
           <v-card-title>변경이력</v-card-title>
         </v-col>
-        <v-col>
+        <v-col  class="d-flex justify-end">
           <v-btn
             text="추가+"
             @click="addRowH"
@@ -370,12 +370,12 @@
         </v-col>
         <v-data-table-virtual
           :headers="clientHistoryHeader"
-          :items="clineHistroryList"
+          :items="clinetHistroryList"
           class="custom-table"
           >
           <template #item.changeDate="{ item, index }">
             <input
-              v-model="clineHistroryList[index].changeDate"
+              v-model="clinetHistroryList[index].changeDate"
               type="text"
               style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
@@ -383,7 +383,7 @@
           </template>
           <template #item.historyContents="{ item, index }">
             <input
-              v-model="clineHistroryList[index].historyContents"
+              v-model="clinetHistroryList[index].historyContents"
               type="text"
               style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
@@ -433,16 +433,16 @@ import { useRoute, useRouter } from 'vue-router';
 import {formatDate} from '@/util/common'
 import UserListPop from '@/views/system/user/UserListPop.vue';
 
-const {vError, vSuccess, vInfo}  = useAlertStore()
+const {vError, vSuccess, vInfo, vWarning}  = useAlertStore()
 const {userId} = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 const tradeTypes = ref([])
 const clientType = ref([])
 const responSalesBizs = ref([])
-const clienManagerList = ref([])
-const clineAddressList = ref([])
-const clineHistroryList = ref([])
+const clientManagerList = ref([])
+const clinetAddressList = ref([])
+const clinetHistroryList = ref([])
 
 const isBusinessType = ref(false)
 const dialog = ref(false)
@@ -519,25 +519,26 @@ const saveInfo = async () => {
   }
 
   const params = {
-    ...form
+    clientInfo: form,
+    clientManagerList: clientManagerList.value,
+    clinetAddressList: clinetAddressList.value,
+    clinetHistroryList: clinetHistroryList.value,
   }
 
-  params.regDate = formatDate(params.regDate)
-  params.establishDate = formatDate(params.establishDate)
+  params.clientInfo.regDate = formatDate(params.clientInfo.regDate)
+  params.clientInfo.establishDate = formatDate(params.clientInfo.establishDate)
 
-  console.log('params', params)
+  try {
+    const res = await ApiBase.saveClientInfo(params)
+    vSuccess(res)
 
-  const res = await ApiBase.saveClient(params)
-
-  // if ( res.result === 'OK') {
-  //   vSuccess('저장되었습니다.')
-  //   if ( isEmpty(form.clientId)) {
-  //     //신규 저장후 고객사ID 세팅
-  //     form.clientId = res.clientId
-  //   }
-  // }else{
-  //   vError(res.message)
-  // }
+    if ( isEmpty(form.clientId)) {
+      //신규 저장후 고객사ID 세팅
+      form.clientId = res.clientId
+    }
+  }catch(err){
+    vError(res.message)
+  }
 }
 
 watch(() => form.clientType, async (newVal) => {
@@ -549,9 +550,8 @@ watch(() => form.clientType, async (newVal) => {
 })
 
 const addRowU = () => {
-  let nextId = clienManagerList.value.length
-
-  clienManagerList.value.push({
+  let nextId = clientManagerList.value.length
+  clientManagerList.value.push({
     id: nextId++,
     deptName: '',
     managerName:'',
@@ -561,16 +561,18 @@ const addRowU = () => {
     email : '',
   })
 }
+
 const addRowA = () => {
-  let nextId = clineAddressList.value.length
-  clineAddressList.value.push({
+  let nextId = clinetAddressList.value.length
+  clinetAddressList.value.push({
     id: nextId++,
     address: '',
   })
 }
+
 const addRowH = () => {
-  let nextId = clineHistroryList.value.length
-  clineHistroryList.value.push({
+  let nextId = clinetHistroryList.value.length
+  clinetHistroryList.value.push({
     id: nextId++,
     changeDate: '',
     historyContents: '',
@@ -579,25 +581,31 @@ const addRowH = () => {
 
 // 행 삭제
 const removeRow = (index) => {
-  clienManagerList.value.splice(index, 1)
+  console.log('index', index)
+  clientManagerList.value.splice(index, 1)
 }
 // 행 삭제
 const removeRow1 = (index) => {
-  clineAddressList.value.splice(index, 1)
+  clinetAddressList.value.splice(index, 1)
 }
 // 행 삭제
 const removeRow2 = (index) => {
-  clineHistroryList.value.splice(index, 1)
+  clinetHistroryList.value.splice(index, 1)
 }
 
 onMounted( async () => {
   //console.log('clientId', clientId)
   tradeTypes.value = await ApiCommon.getCodeList('trade_type')
   clientType.value = await ApiCommon.getCodeList('client_type')
+  responSalesBizs.value = await ApiCommon.getCodeList('respon_sales_biz')
 
   if ( !isEmpty(clientId)) {
-    //신규
-    const res = await ApiBase.getClientList(clientId)
+    const res = await ApiBase.getClientInfo(clientId)
+
+    Object.assign(form, res.clientInfo)
+    clientManagerList.value = res.clientManagerList
+    clinetHistroryList.value = res.clientHistoryList
+    clinetAddressList.value = res.clinetAddressList
   }
 })
 
@@ -625,11 +633,13 @@ const checkNo = async ()=>{
 
   const checkVal = await ApiBase.getBusinessNoChecked(form.businessNo)
 
+  console.log('checkVal', checkVal)
   if ( checkVal === 'Y') {
     vInfo("등록 가능한 사업자 번호입니다.")
     return
   }else{
-    vInfo("등록된 사업자 번호입니다.")
+    vWarning("등록된 사업자 번호입니다.")
+    form.businessNo = ''
     return
   }
 }

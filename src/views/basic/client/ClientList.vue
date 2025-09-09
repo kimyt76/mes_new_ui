@@ -95,9 +95,6 @@
             {{ item.clientName }}
           </div>
         </template>
-        <template #item.tradeType="{ index }">
-          {{ item.tradeType === 'I' ? '국내' : '해외' }}
-        </template>
       </v-data-table>
     </v-col>
   </v-row>
@@ -124,24 +121,23 @@ const form = reactive({
   businessNo: '',
 })
 
-const headers = [
+const headers = ref([
   { title: 'No.',         key: 'rowNum',           align: 'center', width: '20px' },
   { title: '고객사코드.',  key: 'businessNo',       align: 'center', width: '120px' },
-  { title: '고객사명',     key: 'clientName',       align: 'start', width: '250px' },
+  { title: '고객사명',     key: 'clientName',       align: 'start',  width: '350px' },
   { title: '대표자명',     key: 'president',        align: 'center',  width: '100px' },
   { title: '영업담당자명', key: 'saleManagerName',  align: 'center',  width: '100px' },
   { title: '결제조건',     key: 'paymentCondition', align: 'center',  width: '120px' },
   { title: '최초거래일자', key: 'firstDelaDate',     align: 'center',  width: '100px' },
   { title: '거래구분',     key: 'tradeType',        align: 'center',  width: '100px' },
-]
+])
 
 const searchList = async () => {
   //list.value
-  console.log('date', form.strDate)
+
   const params = {
     ...form
   }
-
   params.strDate = formatDate(form.strDate)
   params.toDate = formatDate(form.toDate)
 
@@ -149,7 +145,6 @@ const searchList = async () => {
 }
 
 const selectRowClick = (item, index) =>{
-  console.log('item', item.clientId)
   router.push({ name: 'ClientDetail', params: { id: item.clientId } })
 }
 
@@ -165,8 +160,6 @@ onMounted(() => {
 const excel = () => {
   exportToExcel(headers, clientList.value, '정보_목록')
 }
-
-
 </script>
 
 <style>
