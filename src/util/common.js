@@ -247,3 +247,23 @@ export const calculateVAT = (supplyPrice) =>{
   let val = supplyPrice * 0.1
   return Math.round(val);
 }
+
+/**
+ * 전화번호 포멧
+ */
+export const formatTelNo = (num) =>{
+  const numbersOnly = num.replaceAll(/[^0-9]/g, "");
+  let result ="";
+  const length = numbersOnly .length;
+    if(length === 8) {
+        result = numbersOnly.replace(/(\d{4})(\d{4})/, '$1-$2');
+    } else if(numbersOnly.startsWith("02") && (length === 9 || length === 10)) {
+        result = numbersOnly.replace(/(\d{2})(\d{3,4})(\d{4})/, '$1-$2-$3');
+    } else if(!numbersOnly.startsWith("02") && (length === 10 || length === 11)) {
+        result = numbersOnly.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+    } else {
+        result = undefined;
+    }
+    console.log(`${num} -> ${result}`);
+    return result;
+}
