@@ -19,6 +19,14 @@
             style="width: 150px;"
           />
           <v-text-field
+            v-model="form.itemCd"
+            label="품목코드"
+            placeholder="품목코드를 입력해주세요"
+            variant="underlined"
+            density="compact"
+            style="width: 180px;"
+            />
+          <v-text-field
             v-model="form.itemName"
             label="품목명"
             placeholder="품목명을 입력해주세요"

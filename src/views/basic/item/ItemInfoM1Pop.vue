@@ -59,8 +59,6 @@
               density="compact"
               />
             </v-col>
-          </v-row>
-          <v-row>
             <v-col>
             <v-select
               v-model="form.itemCondition"
@@ -72,6 +70,8 @@
               density="compact"
               />
             </v-col>
+          </v-row>
+          <v-row>
             <v-col>
               <v-select
                 v-model="form.useSafeStockYn"
@@ -94,6 +94,32 @@
                 <span>kg</span>
               </template>
               </v-text-field>
+            </v-col>
+            <v-col class="d-flex ">
+              <v-checkbox
+                v-model="form.vegan"
+                label="Vegan"
+                density="compact"
+                hide-details
+              />
+              <v-checkbox
+                v-model="form.halal"
+                label="Halal"
+                density="compact"
+                hide-details
+              />
+              <v-checkbox
+                v-model="form.rspo"
+                label="RSPO"
+                density="compact"
+                hide-details
+              />
+              <v-checkbox
+                v-model="form.addtion"
+                label="RSPO"
+                density="compact"
+                hide-details
+              />
             </v-col>
           </v-row>
           <v-row>
@@ -141,6 +167,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
+import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
 const { vError } = useAlertStore()
@@ -168,6 +195,19 @@ onMounted( async () =>{
     itemConditions.value = await ApiCommon.getCodeList('CONDITION_CD')
 
     Object.assign(form, res)
+
+    if ( !isEmpty(res.vegan) ){
+      form.vegan = true
+    }
+    if ( !isEmpty(res.halal) ){
+      form.halal = true
+    }
+    if ( !isEmpty(res.rspo) ){
+      form.rspo = true
+    }
+    if ( !isEmpty(res.addtion) ){
+      form.addtion = true
+    }
 })
 
 const { userId} = useAuthStore()
@@ -177,7 +217,6 @@ const props = defineProps({
     type: String,
   },
 })
-
 
 const form = reactive({
   itemTypeCd : '',
@@ -190,6 +229,10 @@ const form = reactive({
   safeStockQty: '',
   reminderMemo: '',
   history: '',
+  vegan:  false,
+  halal: false,
+  rspo: false,
+  addtion: false,
 
   userId: userId
 })
@@ -201,6 +244,11 @@ const saveInfo = async () =>{
       ...form
     }
 
+    params.vegan = params.vegan === true ? 1 : 0
+    params.halal = params.halal === true ? 1 : 0
+    params.rspo = params.rspo === true ? 1 : 0
+    params.addtion = params.addtion === true ? 1 : 0
+    //console.log('params', params)
     const msg = await ApiItem.saveItemDetailInfo(params)
     emit('saved', msg)
     emit('close-dialog')
