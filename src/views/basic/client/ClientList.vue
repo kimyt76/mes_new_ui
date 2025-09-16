@@ -123,8 +123,8 @@ const form = reactive({
 
 const headers = ref([
   { title: 'No.',         key: 'rowNum',           align: 'center', width: '20px' },
-  { title: '고객사코드.',  key: 'businessNo',       align: 'center', width: '120px' },
-  { title: '고객사명',     key: 'clientName',       align: 'start',  width: '350px' },
+  { title: '고객사코드.',  key: 'businessNo',       align: 'center', width: '150px' },
+  { title: '고객사명',     key: 'clientName',       align: 'start',  width: '450px' },
   { title: '대표자명',     key: 'president',        align: 'center',  width: '100px' },
   { title: '영업담당자명', key: 'saleManagerName',  align: 'center',  width: '100px' },
   { title: '결제조건',     key: 'paymentCondition', align: 'center',  width: '120px' },

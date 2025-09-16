@@ -9,6 +9,7 @@
           <v-text-field
             v-model="form.businessNo"
             label="사업자번호"
+            type="number"
             variant="underlined"
             density="compact"
             style="width: 200px;"
@@ -148,7 +149,7 @@
             variant="underlined"
             density="compact"
             style="width: 300px;"
-            @onKeyup="formatNumber"
+            @blur="onBlur('T')"
             />
         </v-col>
         <v-col>
@@ -158,6 +159,7 @@
             variant="underlined"
             density="compact"
             style="width: 300px;"
+            @blur="onBlur('F')"
             />
         </v-col>
         <v-col>
@@ -395,7 +397,6 @@
         </v-data-table-virtual>
       </v-row>
     </v-card-text>
-
     <v-card-text>
       <v-row>
         <v-col class="d-flex justify-end ga-4" >
@@ -430,7 +431,7 @@ import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
 import { ref, onMounted, reactive, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import {formatDate} from '@/util/common'
+import {formatDate, formatTelNo} from '@/util/common'
 import UserListPop from '@/views/system/user/UserListPop.vue';
 
 const {vError, vSuccess, vInfo, vWarning}  = useAlertStore()
@@ -624,10 +625,6 @@ const handleSelected = (obj) =>{
   }
 }
 
-const formatNumber = (num) =>{
-
-}
-
 const checkNo = async ()=>{
   if ( isEmpty(form.businessNo)) return vInfo("사업자 번호를 입력하세요")
 
@@ -643,6 +640,15 @@ const checkNo = async ()=>{
     return
   }
 }
+
+const onBlur = (index) => {
+  console.log('index', index)
+  if ( index === 'T') {
+    form.telNo = formatTelNo(form.telNo)
+  }else{
+    form.faxNo = formatTelNo(form.faxNo)
+  }
+};
 
 const goList = () =>{
   router.push({name:'ClientList'})
