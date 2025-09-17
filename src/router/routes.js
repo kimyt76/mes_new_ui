@@ -143,6 +143,12 @@ const routes = [
         props: true,
       },
       {
+        path: 'contractEdit/:id',
+        name: 'ContractEdit',
+        component: () => import('@/views/order/contract/ContractEdit.vue'),
+        props: true,
+      },
+      {
         path: 'contractReg',
         name: 'ContractReg',
         component: () => import('@/views/order/contract/ContractReg.vue'),
@@ -201,7 +207,7 @@ const routes = [
       },
       {
         path:'material',
-        name:'Material',
+        name:'MaterialList',
         component: () => import('@/views/lab/material/MaterialList.vue')
       },
       {
