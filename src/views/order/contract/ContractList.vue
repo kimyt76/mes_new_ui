@@ -8,14 +8,31 @@
       <v-row>
       <v-form ref="srhForm" @submit.prevent="srhContractList">
         <v-col class="d-flex flex-row ga-3">
-          <!-- <v-date-input
-            v-model="form.contractDate"
-            label="수주일자"
+          <v-date-input
+            v-model="form.strDate"
+            label="주문일자"
             :display-format="formatDate"
             density="compact"
             variant="underlined"
-            style="width: 200px;"
-          /> -->
+            style="width: 150px;"
+          />
+          <v-date-input
+            v-model="form.toDate"
+            label="주문일자"
+            :display-format="formatDate"
+            density="compact"
+            variant="underlined"
+            style="width: 150px;"
+          />
+          <v-text-field
+              v-model="form.itemCd"
+              dense
+              density="compact"
+              label="품목코드"
+              placeholder="품목코드를 입력해주세요"
+              variant="underlined"
+              style="width: 120px;"
+              />
           <v-text-field
               v-model="form.itemName"
               dense
@@ -32,21 +49,41 @@
               label="담당자명"
               placeholder="담당자명을 입력해주세요"
               variant="underlined"
-              style="width: 180px;"
+              style="width: 120px;"
               />
           <v-text-field
-              v-model="form.customerName"
+              v-model="form.clientName"
               dense
               density="compact"
-              label="거래처명"
-              placeholder="거래처명을 입력해주세요"
+              label="고객사명"
+              placeholder="고객사명을 입력해주세요"
               variant="underlined"
-              style="width: 150px;"
+              style="width: 180px;"
               />
           <v-select
             v-model="form.statusType"
             label="진행상태"
             :items="statusTypes"
+            item-title="codeNm"
+            item-value="code"
+            variant="underlined"
+            density="compact"
+            style="width: 100px;"
+            />
+          <v-select
+            v-model="form.orderType"
+            label="수주유형"
+            :items="orderTypes"
+            item-title="codeNm"
+            item-value="code"
+            variant="underlined"
+            density="compact"
+            style="width: 100px;"
+            />
+          <v-select
+            v-model="form.vatType"
+            label="거래유형"
+            :items="vatTypes"
             item-title="codeNm"
             item-value="code"
             variant="underlined"
@@ -60,7 +97,7 @@
             />
           <v-btn
             text="초기화"
-            @click="srhForm.reset()"
+            @click="reset"
             />
         </v-col>
       </v-form>
@@ -118,22 +155,14 @@
             {{ item.contractDateSeq }}
           </div>
         </template>
-        <template #item.itemName="{ item, index }">
-          <div
-            style="cursor: pointer; text-decoration: underline; width: 95%;"
-            @click="selectRowClick(item, index)"
-          >
-            {{ item.itemName }}
-          </div>
+        <template #item.qty ="{ item }">
+          {{ formatComma(item.qty) }}
         </template>
-        <template #item.totQty ="{ item }">
-          {{ formatComma(item.totQty) }}
+        <template #item.unitPrice ="{ item }">
+          {{ formatComma(item.unitPrice) }}
         </template>
-        <template #item.totSupplyPrice ="{ item }">
-          {{ formatComma(item.totSupplyPrice)}}
-        </template>
-        <template #item.statusType="{ item, index }">
-            {{ item.statusType === 'ING' ?  '진행중' : '종료'}}
+        <template #item.supplyPrice ="{ item }">
+          {{ formatComma(item.supplyPrice)}}
         </template>
         <template #item.printYn="{ item, index }">
            <p style="padding: 4px;
@@ -158,32 +187,44 @@ import { reactive, ref, onMounted, computed } from 'vue';
 import { exportToExcel } from '@/util/exportToExcel';
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
+import { useSortedItems } from 'vuetify/lib/components/VDataTable/composables/sort';
 
 const router = useRouter()
 const { vError } = useAlertStore()
 const loading = ref(false)
 const contractList = ref([])
 const statusTypes = ref([])
+const vatTypes = ref([])
+const orderTypes = ref([])
 const srhForm = ref('')
 
 const form = reactive({
-  //contractDate: '',
+  strDate: '',
+  toDate: '',
+  itemCd: '',
   itemName: '',
   managerName: '',
   customerName: '',
+  orderType: '',
+  vatType: '',
   statusType: '',
 })
 
 const headers = [
-  { title: '일자-No.',          key: 'contractDateSeq',   align: 'center' , width: '100px'},
+  { title: '일자-No',          key: 'contractDateSeq',   align: 'center' , width: '100px'},
+  { title: 'PO No',            key: 'poNo',              align: 'center' , width: '120px'},
+  { title: '품목코드',          key: 'itemCd',            align: 'center',   width: '120px'},
   { title: '품목명',            key: 'itemName',          align: 'start',   width: '380px'},
-  { title: '납기일자',          key: 'dueDate',           align: 'center' , width: '100px'},
+  { title: '납기예정일자',      key: 'expectedDueDate',   align: 'center' , width: '90px'},
+  { title: '고객사명',          key: 'clientName',        align: 'center',   width: '200px'},
   { title: '담당자명',          key: 'managerName',       align: 'center' , width: '100px'},
-  { title: '거래처명',          key: 'customerName',      align: 'start',   width: '200px'},
-  { title: '주문수량합계',       key: 'totQty',           align: 'end',     width: '100px'},
-  { title: '주문공급가액합계',   key: 'totSupplyPrice',      align: 'end',    width: '120px'},
-  { title: '진행상태',          key: 'statusType',        align: 'center' , width: '70px'},
-  { title: '인쇄',              key: 'printYn',           align: 'center',  width: '40px'},
+  { title: '수주유형',          key: 'orderType',       align: 'center' , width: '80px'},
+  { title: '수량',              key: 'qty',              align: 'end',     width: '80px'},
+  { title: '단가',              key: 'unitPrice',           align: 'end',     width: '80px'},
+  { title: '공급가액',          key: 'supplyPrice',       align: 'end',    width: '100px'},
+  { title: '제품유형',          key: 'prodType',          align: 'center',    width: '100px'},
+  { title: '진행상태',          key: 'statusType',        align: 'center' , width: '80px'},
+  { title: '결재조건',          key: 'paymentCondition',  align: 'center',  width: '80px'},
 ]
 
 const selectRowClick = (item, index) => {
@@ -220,8 +261,20 @@ const srhContractList = async () => {
  */
 onMounted( async () =>{
   statusTypes.value = await ApiCommon.getCodeList('status_type')
-  srhContractList()
+  orderTypes.value = await ApiCommon.getCodeList('order_type')
+  vatTypes.value = await ApiCommon.getCodeList('vat_type')
+  form.strDate = todayKST()
+  form.toDate = todayKST()
+
+  //srhContractList()
 })
+
+ const reset =()=>{
+   srhForm.value.reset()
+
+   form.strDate = todayKST()
+   form.toDate = todayKST()
+ }
 
 /**
  * 엑셀 다운로드
@@ -235,4 +288,5 @@ const excel = () => {
 
 <style>
 @import '@/assets/css/main.css';
+
 </style>

@@ -234,7 +234,7 @@ import ClientListPop from '@/views/basic/client/ClientListPop.vue';
 
 const {userId} = useAuthStore()
 
-const { vError, vSuccess} = useAlertStore()
+const { vError, vSuccess, vInfo} = useAlertStore()
 const router = useRouter()
 const dialog = ref(false)
 const currentComponent = shallowRef(null)
@@ -302,11 +302,20 @@ const totalAmount = computed(() => {
 
 const saveInfo = async () =>{
   const formData = new FormData();
+
+  if ( itemList.value <= 0 ){
+    vInfo("품목을 등록하세요")
+    return
+  }
+  if(attachFile.value <= 0 ){
+    vInfo("산출물을 등록하세요")
+    return
+  }
+
   try{
       const params = {
         ...form
       }
-
       params.contractDate = formatDate(params.contractDate)
       params.expectedDueDate = formatDate(params.expectedDueDate)
       // console.log('contractDate', params.contractDate)
@@ -322,9 +331,9 @@ const saveInfo = async () =>{
         }
       })
 
-      const msg = await ApiOrder.saveContractInfo(formData)
-      vSuccess(msg)
-      router.push({name:'ContractList'})
+      const contractId = await ApiOrder.saveContractInfo(formData)
+      vSuccess("저장되었습니다.")
+      router.push({name:'ContractDetail' , params: { id:contractId } })
   }catch(err){
      vError(err.message)
   }
@@ -373,7 +382,6 @@ const onBlur = (index) => {
   }
 };
 
-
 const handleSaved = (obj) =>{
   switch (popType.value){
     case 'C':
@@ -411,7 +419,6 @@ const addRow = (obj) =>{
       etc: o.etc,
       orderDist: baseSeq + index + 1,
   }));
-
   //console.log('selectItem', selectItem)
   if (itemList.value.length > 0) {
     itemList.value.push(...selectItem);
@@ -456,8 +463,6 @@ onMounted( async () => {
   form.contractDate = todayKST()
   form.seq = await ApiCommon.getNextSeq('tb_contract_mst', 'contract_date',  form.contractDate)
 })
-
-
 
 const goList = () => {
   router.push({name:'ContractList'})

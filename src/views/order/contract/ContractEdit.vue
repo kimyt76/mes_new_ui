@@ -1,9 +1,9 @@
 <template>
 <div :id="$attrs.id"></div>
-<v-breadcrumbs :items="['MES', '영업관리', '주문신규']" class="custom-breadcrumbs"/>
+<v-breadcrumbs :items="['MES', '영업관리', '주문수정']" class="custom-breadcrumbs"/>
   <v-card>
     <v-card-item title="주문서입력"/>
-      <v-form ref="vform">
+      <v-form ref="vform" @submit.prevent="saveInfo" >
         <v-card-text>
           <v-row>
             <v-col class="d-flex ga-2 pa-1">
@@ -14,7 +14,6 @@
                 :display-format="formatDate"
                 variant="underlined"
                 style="width: 200px;"
-                readonly
               />
               <v-text-field
                 v-model="form.seq"
@@ -32,7 +31,6 @@
                 variant="underlined"
                 style="width: 200px;"
                 hide-details
-                readonly
               />
             </v-col>
             <v-col>
@@ -43,7 +41,6 @@
                 density="compact"
                 style="width: 200px;"
                 hide-details
-                readonly
               />
             </v-col>
               <v-col>
@@ -52,8 +49,9 @@
                   label="담당자명"
                   variant="underlined"
                   density="compact"
+                  append-inner-icon="mdi-magnify"
+                  @click:append-inner="openPop('U')"
                   style="width: 200px;"
-                  readonly
                 />
               </v-col>
           </v-row>
@@ -61,10 +59,11 @@
             <v-col cols="6" >
               <v-text-field
                 v-model="form.clientName"
-                label="고객사명"
+                label="고객사"
                 variant="underlined"
                 density="compact"
-                readonly
+                append-inner-icon="mdi-magnify"
+                @click:append-inner="openPop('C')"
               />
             </v-col>
             <v-col>
@@ -77,7 +76,6 @@
                 variant="underlined"
                 density="compact"
                 style="width: 200px;"
-                readonly
                 />
             </v-col>
             <v-col>
@@ -90,7 +88,6 @@
                 variant="underlined"
                 density="compact"
                 style="width: 200px;"
-                readonly
                 />
             </v-col>
           </v-row>
@@ -108,6 +105,13 @@
               <v-card-subtitle>
                 - 품목
               </v-card-subtitle>
+            </v-col>
+            <v-col class="d-flex ga-4 justify-end">
+              <v-btn
+                text="추가 +"
+                density="compact"
+                @click="openPop('I')"
+                />
             </v-col>
           </v-row>
           <v-row>
@@ -128,19 +132,22 @@
                     density="compact"
                     variant="outlined"
                     style="width: 120px; height:40px"
-                    readonly
                   />
                 </template>
                 <template #item.qty="{ item, index }">
                   <input
                     v-model="itemList[index].qty"
                     style="text-align: right; width: 90%;"
+                    class="custom-line"
+                    @blur="onBlur(index)"
                   />
                 </template>
                 <template #item.unitPrice="{ item, index }">
                   <input
                     v-model="itemList[index].unitPrice"
                     style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
+                    class="custom-line"
+                    @blur="onBlur(index)"
                   />
                 </template>
                 <template #item.supplyPrice="{ item, index }">
@@ -148,6 +155,7 @@
                     v-model="itemList[index].supplyPrice"
                     type="number"
                     style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
+                    class="custom-line"
                   />
                 </template>
                 <template #item.vatPrice="{ item, index }">
@@ -155,6 +163,7 @@
                     v-model.number="itemList[index].vatPrice"
                     type="number"
                     style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
+                    class="custom-line"
                   />
                 </template>
                 <template #item.totPrice="{ item, index }">
@@ -162,6 +171,7 @@
                     v-model.number="itemList[index].totPrice"
                     type="number"
                     style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
+                    class="custom-line"
                   />
                 </template>
                 <template #item.etc="{ item, index }">
@@ -169,18 +179,21 @@
                     v-model="itemList[index].etc"
                     type="text"
                     style="text-align: left; width: 90%; min-width: 90%; max-width: 90%;"
+                    class="custom-line"
                   />
                 </template>
+                <template #item.actions="{ item }">
+                  <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="removeRow(item.itemCd)"></v-icon>                </template>
               </v-data-table-virtual>
             </v-col>
           </v-row>
           <v-row class="mt-2 mb-2" >
             <v-col class="d-flex ga-4 justify-end">
                 <v-btn
-                  text="수정"
+                  text="저장"
                   class="gt-2"
                   color = "brown-lighten-4"
-                  @click="goEdit"
+                  type="submit"
                   />
                 <v-btn
                   text="목록"
@@ -193,6 +206,15 @@
       </v-form>
   </v-card>
 
+
+  <v-dialog v-model="dialog" :width="dialogWidth" :height="dialogHeight" persistent>
+    <component
+      :is="currentComponent"
+      :id="id"
+      @selected="handleSaved"
+      @close-dialog="dialog = false"
+    />
+</v-dialog>
 </template>
 
 <script setup>
@@ -204,18 +226,29 @@ import { useAlertStore } from '@/stores/alert';
 import { ApiOrder } from '@/api/apiOrders';
 import { useAuthStore } from '@/stores/auth';
 import MultiFileUpload from '@/components/MultiFileUpload.vue';
+import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
+import UserListPop from '@/views/system/user/UserListPop.vue';
+import ClientListPop from '@/views/basic/client/ClientListPop.vue';
 
 const {userId} = useAuthStore()
+const route = useRoute()
+const contractId = route.params.id
 
 const { vError, vSuccess} = useAlertStore()
 const router = useRouter()
-const route = useRoute()
-const contractId = route.params.id
+const dialog = ref(false)
+const currentComponent = shallowRef(null)
+let popType = ref('')
+let listCnt = ref(0)
+
 const itemList = ref([])
 const orderTypes = ref([])
 const vatTypes = ref([])
 const statusTypes = ref([])
 const attachFile = ref([])
+
+const dialogWidth = ref('')
+const dialogHeight = ref('')
 
 const form = reactive({
   contractDate: '',
@@ -233,7 +266,6 @@ const form = reactive({
 })
 
 const headers = [
-  { title: 'PO No ',     key: 'poNo',     align: 'center'  ,width : '120px'},
   { title: '품목코드 ',   key: 'itemCd',     align: 'center'  ,width : '120px'},
   { title: '품목명',      key: 'itemName',   align: 'start', width : '380px'},
   { title: '규격',        key: 'unit',       align: 'center' ,width : '80px' },
@@ -268,10 +300,171 @@ const totalAmount = computed(() => {
   return totalSupplyPrice.value + totalVatPrice.value;
 });
 
+
+const saveInfo = async () =>{
+  const formData = new FormData();
+  try{
+      const params = {
+        ...form
+      }
+
+      params.contractDate = formatDate(params.contractDate)
+      params.expectedDueDate = formatDate(params.expectedDueDate)
+      // console.log('contractDate', params.contractDate)
+      formData.append('contractInfo', JSON.stringify(params))
+      formData.append('itemList', JSON.stringify(itemList.value))
+
+      console.log('itemList', itemList)
+      const deleteFiles = []
+
+      attachFile.value.forEach(file => {
+        if (file.flag === 'N') {
+          formData.append('newFiles', file.file)
+        } else if (file.flag === 'D') {
+          deleteFiles.push({
+            attachFileId: file.attachFileId,
+            seq: file.seq
+          });
+        }
+      })
+
+      formData.append('keptFiles', JSON.stringify(attachFile.value.filter(f => f.flag === 'S')))
+      if (deleteFiles.length > 0) {
+        formData.append('deleteFiles', new Blob(
+          [JSON.stringify(deleteFiles)],
+          { type: 'application/json' }
+        ));
+      }
+
+      const msg = await ApiOrder.updateContractInfo(formData)
+      vSuccess(msg)
+      router.push({name:'ContractDetail' , params: { id:contractId } })
+  }catch(err){
+     vError(err.message)
+  }
+}
+
+watch(() => form.contractDate, async (newVal, oldVal) => {
+  if ( !isEmpty(formatDate(oldVal))) {
+    if ( oldVal !==  formatDate(newVal) ){
+    form.seq = await ApiCommon.getNextSeq('tb_contract_mst','contract_Date', formatDate(newVal))
+    }
+  }
+})
+
+watch(() => form.vatType, async (newVal) => {
+
+  if ( form.vatType === 'VRN' ){
+    itemList.value.map(o => {
+      o.vatPrice = 0
+    })
+  }else{
+    itemList.value.map(o => {
+      o.vatPrice = calculateVAT(o.supplyPrice)
+    })
+  }
+})
+
+const onBlur = (index) => {
+  const qty = Number(itemList.value[index].qty);
+  const unitPrice = Number(itemList.value[index].unitPrice);
+
+  if (!isNaN(qty) && !isNaN(unitPrice)) {
+    itemList.value[index].supplyPrice = qty * unitPrice;
+  } else {
+    itemList.value[index].supplyPrice = 0;
+  }
+
+  if (!isNaN(itemList.value[index].supplyPrice) ) {
+    itemList.value[index].vatPrice = calculateVAT(itemList.value[index].supplyPrice)
+  } else {
+    itemList.value[index].vatPrice = 0;
+  }
+  if (!isNaN(itemList.value[index].supplyPrice) ) {
+    itemList.value[index].totPrice = itemList.value[index].supplyPrice+itemList.value[index].vatPrice
+  } else {
+    itemList.value[index].totPrice = 0;
+  }
+};
+
+const handleSaved = (obj) =>{
+  switch (popType.value){
+    case 'C':
+      form.clientName = obj.clientName
+      form.clientId = obj.clientId
+      break
+    case 'U':
+      form.managerName = obj.memberNm
+      form.managerId = obj.userId
+      break
+    case 'I':
+      addRow(obj);
+      break
+  }
+  popType.value = ''
+}
+
+const addRow = (obj) =>{
+  if (!Array.isArray(obj)) return;
+
+  let baseSeq = listCnt.value;
+
+    const selectItem = obj.map((o, index) => ({
+      itemCd: o.itemCd,
+      itemName: o.itemName,
+      unit: o.unit,
+      prodType: o.prodType,
+      qty: o.qty,
+      unitPrice: o.unitPrice,
+      supplyPrice: o.supplyPrice,
+      vatPrice: 0,
+      totPrice: 0,
+      orderCnt: '',
+      statusType: '',
+      etc: o.etc,
+      orderDist: baseSeq + index + 1,
+  }));
+
+  //console.log('selectItem', selectItem)
+  if (itemList.value.length > 0) {
+    itemList.value.push(...selectItem);
+  } else {
+    itemList.value = [...selectItem];
+  }
+}
+
+const openPop = (type) =>{
+  popType.value = type
+
+  switch (type) {
+    case 'C':
+      currentComponent.value = ClientListPop
+      dialogWidth.value = '800px'
+      dialogHeight.value = '800px'
+      break
+    case 'U':
+      currentComponent.value = UserListPop
+      dialogWidth.value = '800px'
+      dialogHeight.value = '800px'
+      break
+    case 'I':
+      currentComponent.value = ItemListMultiPop
+      dialogWidth.value = '800px'
+      dialogHeight.value = '850px'
+      break
+  }
+  dialog.value = true
+}
+
+const removeRow = (id) => {
+  const index = itemList.value.findIndex(item => item.itemCd === id)
+  itemList.value.splice(index, 1)
+}
+
 onMounted( async () => {
   orderTypes.value = await ApiCommon.getCodeList('order_type')
-  vatTypes.value = await ApiCommon.getCodeList('vat_type')
   statusTypes.value = await ApiCommon.getCodeList('status_Type')
+  vatTypes.value = await ApiCommon.getCodeList('vat_type')
 
   const res = await ApiOrder.getContractInfo(contractId)
 
@@ -284,15 +477,13 @@ onMounted( async () => {
   }
 
   itemList.value = res.itemList
+  listCnt.value = itemList.value.length
 })
-
-const goEdit = () => {
-  router.push({name:'ContractEdit', params: { id:contractId } })
-}
 
 const goList = () => {
   router.push({name:'ContractList'})
 }
+
 </script>
 
 <style scoped>
