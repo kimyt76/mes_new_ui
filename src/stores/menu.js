@@ -9,14 +9,14 @@ export const useMenuStore = defineStore('menu', {
           { title: '품목상세관리', to: '/basic/itemDetailList'},
           { title: '거래처관리', to: '/basic/customerList'},
           { title: '창고관리', to: '/basic/storageList'},
-          { title: '고객사관리', to: '/basic/clientList' },
         ]
       },
       { title: '영업관리', icon: 'mdi-table-settings', items: [
+          { title: '고객사관리', to: '/basic/clientList' },
           { title: '사양서검토', to: '/order/draftList' },
           { title: '주문서관리', to: '/order/contractList' },
-          { title: '판매관리', to: '/order/saleList' },
           { title: '출하관리', to: '/order/shipmentList' },
+          { title: '판매관리', to: '/order/saleList' },
           { title: '진행현황', to: '/order/progressList' },
         ]
       },
