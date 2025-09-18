@@ -7,8 +7,25 @@ axios.defaults.withCredentials = true;
 
 export const API_URL = axios.create({
   baseURL: '/api',
-  withCredentials: true
+  withCredentials: true,
+  timeout: 10000
 });
+
+export async function post(url, payload) {
+  try {
+    const res = await API_URL.post(url, payload);
+
+    if (!res.data.success) {
+      // 실패 처리
+      throw new Error(res.data.message || '서버 오류');
+    }
+    // 성공 시 data 리턴
+    return res.data.data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
 
 
 API_URL.interceptors.response.use(
