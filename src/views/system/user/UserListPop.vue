@@ -87,11 +87,11 @@ const form = reactive({
 })
 
 const headers = [
-  { title: 'No.',       key: 'id',         align: 'right', width: '40px' },
-  { title: '사용자ID',  key: 'userId',      align: 'right', width: '120px' },
-  { title: '사용자명',  key: 'memberNm',    align: 'right', width: '120px' },
-  { title: '부서',      key: 'deptNm',      align: 'right',  width: '100px' },
-  { title: '직급',      key: 'jobPosition', align: 'right',  width: '100px' },
+  { title: 'No.',       key: 'id',     align: 'center', width: '40px' },
+  { title: '사용자ID',  key: 'userId',      align: 'center', width: '120px' },
+  { title: '사용자명',  key: 'memberNm',    align: 'center', width: '120px' },
+  { title: '부서',      key: 'deptNm',      align: 'center',  width: '100px' },
+  { title: '직급',      key: 'jobPosition', align: 'center',  width: '100px' },
 ]
 
 const searchList = async () =>{
@@ -106,7 +106,6 @@ const handleRowClick = (event, item) => {
   emit('selected', item.item)
   emit('close-dialog')
 }
-
 
 </script>
 
