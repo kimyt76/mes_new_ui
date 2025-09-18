@@ -130,14 +130,9 @@ export const ApiOrder = {
   },
   saveContractInfo : async(formData) => {
     try{
-      // const msg =  await API_URL.post('/contract/saveContractInfo', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // })
-      const msg =  await API_URL.post('/contract/saveContractInfo', formData)
+      const res =  await API_URL.post('/contract/saveContractInfo', formData)
 
-      return msg.data
+      return res.data.contractId
     }catch(err) {
       throw new Error(err.response?.data);
     }
@@ -149,10 +144,10 @@ export const ApiOrder = {
           'Content-Type': 'multipart/form-data',
         },
       })
-
       return msg.data
 
     }catch(err) {
+      console.log('err', err)
       throw new Error(err.response?.data);
     }
   },
