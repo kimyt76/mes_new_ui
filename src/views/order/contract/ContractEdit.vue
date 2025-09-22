@@ -314,7 +314,6 @@ const saveInfo = async () =>{
       formData.append('contractInfo', JSON.stringify(params))
       formData.append('itemList', JSON.stringify(itemList.value))
 
-      console.log('itemList', itemList)
       const deleteFiles = []
 
       attachFile.value.forEach(file => {
