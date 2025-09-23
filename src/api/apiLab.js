@@ -33,6 +33,16 @@ export const ApiLab = {
   },
 
   //원료관리
+  getMaterialItemList: async(params) => {
+    try{
+      const res = await API_URL.post('/lab/getMaterialItemList', params)
+
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
   getMaterialList: async(id) => {
     try{
       const res = await API_URL.get(`/lab/getMaterialList/${id}`)
