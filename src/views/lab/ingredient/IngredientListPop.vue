@@ -1,135 +1,146 @@
 <template>
-  <v-card class="pa-3">
-    <v-card-item title="성분 조회"
-      style="height: 30px;"
-    ></v-card-item>
+<v-card>
+  <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+    <v-toolbar-title>성분코드조회</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon @click="emit('close-dialog')">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </v-toolbar>
+  <v-spacer></v-spacer>
+  <v-card-text >
     <v-row>
-      <v-col class="mt-7"  style="height: 20px; padding: 3px;">
-        <v-form ref="srhForm" @submit.prevent="srhIngredientList">
-          <div class="d-flex ga-4 ml-4">
-            <v-text-field
-              v-model="form.ingredientName"
-              label="성분명"
-              placeholder="성분명을 입력해주세요"
-              variant="underlined"
-              density="compact"
-                />
-            <v-text-field
-              v-model="form.functionNm"
-              label="function명"
-              placeholder="function명을 입력해주세요"
-              variant="underlined"
-              density="compact"
-              />
-              <v-btn
-                color="#EFEBE9"
-                class="mt-2"
-                type="submit"
-                density="compact"
-                text="조회"
-                />
-              <v-btn
-                @click="reset"
-                class="mt-2"
-                density="compact"
-                text="초기화"
-                />
-          </div>
-        </v-form>
+      <v-form ref="srhForm" @submit.prevent="srhIngredientList">
+      <v-col class="d-flex flex-row ga-3">
+        <v-text-field
+          v-model="form.ingredientCode"
+          label="성분코드"
+          placeholder="성분코드를 입력해주세요"
+          density="compact"
+          style="width: 200px;"
+        />
+        <v-text-field
+          v-model="form.ingredientName"
+          label="성분명"
+          placeholder="성분명을 입력해주세요"
+          density="compact"
+          style="width: 200px;"
+        />
+        <v-text-field
+          v-model="form.functionNm"
+          label="function명"
+          placeholder="function명을 입력해주세요"
+          density="compact"
+          style="width: 200px;"
+        />
+        <v-btn
+          text="조회"
+          color="brown-lighten-4"
+          type="submit"
+          />
+        <v-btn
+          text="초기화"
+          @click="srhForm.reset()"
+          />
       </v-col>
+      </v-form>
     </v-row>
-    <v-row>
-      <v-col class="mt-5">
+      <!-- 스크롤 가능한 테이블 컨테이너 -->
+      <div style="overflow-y: auto; height: calc(100% - 40px);">
         <v-data-table
+          v-model="selectedItem"
           :headers="headers"
           :items="ingrediantList"
-          style="height: 600px;"
-          >
-          <template v-slot:headers="{ columns }">
-            <tr style="height: 40px;">
-              <th
-                v-for="column in columns"
-                :key="column.key"
-                class="custom-header"
-                style="height: 40px;"
-                >
-                {{ column.title }}
-              </th>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-    <v-row class="mt-10" style="height: 70px;">
-      <v-col>
-        <div class="d-flex ga-4 justify-end">
-          <v-btn
-            text="선택"
-            color = "brown-lighten-4"
-            />
-          <v-btn
-            text="닫기"
-            variant="tonal"
-            @click="emit('close-dialog')"
-            />
-        </div>
-      </v-col>
-    </v-row>
-  </v-card>
-
+          item-value="ingredientCode"
+          density="compact"
+          fixed-header
+          height="520px"
+          show-select
+          class="custom-table"
+          return-object
+        >
+      </v-data-table>
+      </div>
+  </v-card-text>
+  <v-card-actions>
+    <v-btn
+      text="선택"
+      variant="flat"
+      class="mb-4"
+      color="indigo-darken-3"
+      @click="handleRowClick"
+      />
+    <v-btn
+      text="닫기"
+      variant="tonal"
+      class="mb-4 mr-3"
+      @click="emit('close-dialog')"
+      />
+  </v-card-actions>
+</v-card>
 </template>
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
-import { useAlertStore } from '@/stores/alert';
 import { reactive, ref } from 'vue';
 
-const { vError } = useAlertStore()
 const emit = defineEmits(['selected', 'close-dialog'])
+
+const srhForm = ref('')
+const selectedItem = ref([])
 const ingrediantList = ref([])
 
-const  srhForm = ref('')
-const loading = ref(false)
-
-const headers = [
-    { title: '성분코드',    key: 'ingredientCode', width: 100},
-    { title: '국문성분명',  key: 'krIngredientName', width: 200},
-    { title: '영문성분명',  key: 'enIngredientName', width: 200},
-    { title: 'CAS No',     key: 'casNo', width:100},
-    { title: 'function',   key: 'functionNm', width:150},
-]
-
 const form = reactive({
+  ingredientCode: '',
   ingredientName: '',
   functionNm: '',
 })
 
-const srhIngredientList = () =>{
-  loading.value = true
+const headers = [
+    { title: '성분코드',    key: 'ingredientCode', width: 120},
+    { title: '국문성분명',  key: 'krIngredientName', width: 230},
+    { title: '영문성분명',  key: 'enIngredientName', width: 230},
+    { title: 'CAS No',     key: 'casNo', width:110},
+    { title: 'function',   key: 'functionNm', width:130},
+]
 
+const srhIngredientList = async () =>{
   try{
     const params = {
       ...form
     }
 
-    ingrediantList.value = ApiLab.getIngredientList(params)
+    ingrediantList.value = await ApiLab.getIngredientList(params)
 
   }catch(err){
     vError(err)
   }finally{
-    loading.value = false
   }
 }
 
-
-const reset = () =>{
-  srhForm.value.remove()
+const handleRowClick = () =>{
+  emit('selected', selectedItem.value)
 }
 </script>
 
-<style scoped>
-@import '@/assets/css/main.css';
-.v-card-item  {
-  background-color:#BCAAA4
+<style >
+/* .custom-table table {
+  table-layout: fixed !important;
+} */
+
+.custom-table thead th {
+  height: 32px !important;
+  background-color: #BCAAA4 !important;
+}
+
+.wrap-cell {
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
+}
+.toolbar-Head {
+  color: white;
+  background-color:#546E7A;
+
 }
 </style>

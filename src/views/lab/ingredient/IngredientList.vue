@@ -9,6 +9,14 @@
       <v-form ref="srhForm" @submit.prevent="srhList">
         <v-col class="d-flex flex-row ga-3">
           <v-text-field
+              v-model="form.ingredientCode"
+              density="compact"
+              label="성분코드"
+              placeholder="성분코드를 입력해주세요"
+              variant="underlined"
+              style="width: 180px;"
+              />
+          <v-text-field
               v-model="form.ingredientName"
               density="compact"
               label="성분명"
@@ -129,6 +137,7 @@ const mode = ref('')
 const title = ref('')
 
 const form = reactive({
+  ingredientCode: '',
   ingredientName: '',
   functionNm : '',
   regName: '',
@@ -200,7 +209,7 @@ const openPop = (gb) => {
  * 초기화
  */
 onMounted( async () =>{
-  srhList()
+  //srhList()
 })
 
 /**
