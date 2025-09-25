@@ -8,7 +8,7 @@ export const useMenuStore = defineStore('menu', {
           { title: '품목관리', to: '/basic/itemList'},
           { title: '품목상세관리', to: '/basic/itemDetailList'},
           { title: '거래처관리', to: '/basic/customerList'},
-          { title: '창고관리', to: '/basic/storageList'},
+
         ]
       },
       { title: '영업관리', icon: 'mdi-table-settings', items: [
@@ -24,12 +24,15 @@ export const useMenuStore = defineStore('menu', {
           { title: '성분정보', to: '/lab/ingredient'},
           { title: '원료관리', to: '/lab/material'},
           { title: '연구처방', to: '/lab/research'},
+          { title: '처방리스트', to: '/lab/recipeList'},
+          { title: '신원료정보', to: '/lab/newMaterail'},
         ]
       },
       { title: '시스템관리', icon: 'mdi mdi-cog', roles: ['ADMIN'], items: [
           { title: '사용자관리', to: '/system/userMgmt' },
           { title: '공통코드관리', to: '/system/commonMgmt' },
           { title: '템플릿관리', to: '/system/templateMgmt' },
+          { title: '외주관리', to: '/basic/storageList'},
         ]
       },
     ]
