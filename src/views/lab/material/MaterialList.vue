@@ -25,11 +25,11 @@
             style="width: 150px;"
           />
           <v-text-field
-            v-model="form.customerName"
-            label="거래처명"
+            v-model="form.ingredientName"
+            label="성분명"
             density="compact"
             variant="underlined"
-            placeholder="거래처명을 입력해주세요"
+            placeholder="성분명을 입력해주세요"
             style="width: 150px;"
           />
           <v-btn
@@ -49,6 +49,11 @@
   <v-spacer></v-spacer>
   <v-row>
     <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
+      <v-btn
+        color="brown-lighten-4"
+        text="신규"
+        @click="selectRowClick"
+        />
       <v-btn
         class="excel-btn"
         text="엑셀"
@@ -93,32 +98,29 @@ import { exportToExcel } from '@/util/exportToExcel';
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 import { ApiLab } from '@/api/apiLab';
-import { ApiCommon } from '@/api/apiCommon';
 import { useRouter } from 'vue-router';
-import { ApiItem } from '@/api/apiItem';
+import { useCommonListStore } from '@/stores/commonListStore';
 
-
+const store = useCommonListStore()
 const router = useRouter()
 
 const srhForm = ref(null)
 const materialList = ref([])
-const useYns = ref([])
+const routeName = 'MaterialList';
 
 const form = reactive({
-  itemTypeCd : 'M1',
   itemName : '',
   itemCd: '',
   ingredientName: '',
-  customerName: '',
 })
 const headers = [
   { title: 'No.',       key: 'rowNum',       align: 'center', width: '30px' },
-  { title: '품목코드',  key: 'itemCd',       align: 'center', width: '120px' },
-  { title: '품목명',    key: 'itemName',     align: 'start', width: '400px' },
-  { title: '거래처',    key: 'customerName', align: 'start', width: '200px' },
+  { title: '품목코드',  key: 'itemCd',       align: 'center',  width: '120px' },
+  { title: '품목명',    key: 'itemName',     align: 'start',  width: '400px' },
+  { title: '거래처',    key: 'customerName', align: 'start',  width: '200px' },
   { title: '제조원',    key: 'qty',          align: 'center',  width: '100px' },
-  { title: '입고단가',  key: 'inPrice',      align: 'end',  width: '100px' },
-  { title: '출고단가',  key: 'outPrice',     align: 'end',  width: '100px' },
+  { title: '입고단가',  key: 'inPrice',      align: 'end',    width: '100px' },
+  { title: '출고단가',  key: 'outPrice',     align: 'end',    width: '100px' },
   { title: 'Vegan',    key: 'vegan',        align: 'center',  width: '60px' },
   { title: 'Halal',    key: 'halal',        align: 'center',  width: '60px' },
   { title: 'RSPO',     key: 'rspo',         align: 'center',  width: '60px' },
@@ -130,7 +132,13 @@ const srhMaterialList = async () => {
     ...form
   }
 
-  materialList.value = await ApiItem.getItemList(params)
+  materialList.value = await ApiLab.getMaterialItemList(params)
+  // store에 최신 상태 저장
+
+  if (!isEmpty(params) ){
+    store.setSearchParams(routeName, params)
+    store.setListData(routeName, materialList)
+  }
 }
 
 const selectRowClick = (item, index) => {
@@ -138,8 +146,12 @@ const selectRowClick = (item, index) => {
 }
 
 onMounted( async () => {
-  useYns.value = await ApiCommon.getCodeList('use_yn')
-  srhMaterialList()
+  const page = store.getPage(routeName)
+
+  if (!isEmpty(page.searchParams)) {
+    Object.assign(form, page.searchParams)
+    srhMaterialList()
+  }
 })
 
 

@@ -308,7 +308,7 @@ const saveInfo = async () =>{
       attachFileId : attachFileId.value,
       userId: userId,
     }
-console.log('1')
+
     formData.append('materialInfo', JSON.stringify(materialInfo))
     formData.append('materialList', JSON.stringify(materialMappingList.value))
     formData.append('historyList', JSON.stringify(historyList.value))
@@ -401,9 +401,6 @@ onMounted( async() =>{
     attachFile.value = res.fileList
     attachFileId.value =res.materialInfo.attachFileId
   }
-
-  console.log('res' ,res)
-
   if ( !isEmpty(res.materialList) ) {
     materialMappingList.value = res.materialList
   }
