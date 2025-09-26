@@ -16,21 +16,21 @@
           v-model="form.memberNm"
           label="사용자명"
           density="compact"
-          style="width: 200px;"
+          style="width: 180px;"
           placeholder="사용자명을 입력해주세요"
         />
         <v-text-field
           v-model="form.userId"
           label="사용자 ID"
           density="compact"
-          style="width: 200px;"
+          style="width: 180px;"
           placeholder="사용자 ID를 입력해주세요"
         />
         <v-text-field
           v-model="form.deptNm"
           label="부서"
           density="compact"
-          style="width: 200px;"
+          style="width: 180px;"
           placeholder="부서를 입력해주세요"
         />
         <v-btn
