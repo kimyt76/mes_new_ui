@@ -17,21 +17,21 @@
           label="성분코드"
           placeholder="성분코드를 입력해주세요"
           density="compact"
-          style="width: 200px;"
+          style="width: 150px;"
         />
         <v-text-field
           v-model="form.ingredientName"
           label="성분명"
           placeholder="성분명을 입력해주세요"
           density="compact"
-          style="width: 200px;"
+          style="width: 180px;"
         />
         <v-text-field
           v-model="form.functionNm"
           label="function명"
           placeholder="function명을 입력해주세요"
           density="compact"
-          style="width: 200px;"
+          style="width: 180px;"
         />
         <v-btn
           text="조회"
