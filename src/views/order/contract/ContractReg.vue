@@ -230,10 +230,7 @@ import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import ClientListPop from '@/views/basic/client/ClientListPop.vue';
 
-
-
 const {userId} = useAuthStore()
-
 const { vError, vSuccess, vInfo} = useAlertStore()
 const router = useRouter()
 const dialog = ref(false)
