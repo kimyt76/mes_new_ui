@@ -23,8 +23,7 @@ export const useMenuStore = defineStore('menu', {
       { title: '연구관리', icon: 'mdi-microscope', items: [
           { title: '성분정보', to: '/lab/ingredient'},
           { title: '원료관리', to: '/lab/material'},
-          { title: '연구처방', to: '/lab/research'},
-          { title: '처방리스트', to: '/lab/recipeList'},
+          { title: '처방리스트', to: '/lab/recipe'},
           { title: '신원료정보', to: '/lab/newMaterail'},
         ]
       },

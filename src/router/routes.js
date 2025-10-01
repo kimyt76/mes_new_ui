@@ -217,10 +217,27 @@ const routes = [
         props: true,
       },
       {
-        path:'research',
-        name:'Research',
-        component: () => import('@/views/lab/ResearchList.vue')
+        path:'recipe',
+        name:'RecipeList',
+        component: () => import('@/views/lab/recipe/RecipeList.vue')
       },
+      {
+        path:'recipeDetail/:id?',
+        name:'RecipeDetail',
+        component: () => import('@/views/lab/recipe/RecipeDetail.vue')
+      },
+      {
+        path:'newMaterail',
+        name:'NewMaterialList',
+        component: () => import('@/views/lab/newmaterial/NewMaterialList.vue')
+      },
+      {
+        path:'newMaterialDetail/:id?',
+        name:'NewMaterialDetail',
+        component: () => import('@/views/lab/newmaterial/NewMaterialDetail.vue'),
+        props: true,
+      },
+
     ]
   },
 

@@ -4,7 +4,7 @@ export const ApiLab = {
   // 성분관리
   getIngredientList: async(params) => {
     try{
-      const res = await API_URL.post('/lab/getIngredientList', params)
+      const res = await API_URL.post('/ingredient/getIngredientList', params)
 
       return res.data
 
@@ -15,7 +15,7 @@ export const ApiLab = {
 
   getIngredientInfo: async(id) => {
     try{
-      const res = await API_URL.get(`/lab/getIngredientInfo/${id}`)
+      const res = await API_URL.get(`/ingredient/getIngredientInfo/${id}`)
       return res.data
 
     }catch(err){
@@ -25,7 +25,7 @@ export const ApiLab = {
 
   saveIngredientInfo: async(params) => {
     try{
-      const msg = await API_URL.post(`/lab/saveIngredientInfo`, params)
+      const msg = await API_URL.post(`/ingredient/saveIngredientInfo`, params)
       return msg.data
     }catch(err){
       throw new Error(err.response?.data);
@@ -35,7 +35,7 @@ export const ApiLab = {
   //원료관리
   getMaterialItemList: async(params) => {
     try{
-      const res = await API_URL.post('/lab/getMaterialItemList', params)
+      const res = await API_URL.post('/material/getMaterialItemList', params)
 
       return res.data
 
@@ -45,7 +45,7 @@ export const ApiLab = {
   },
   getMaterialList: async(id) => {
     try{
-      const res = await API_URL.get(`/lab/getMaterialList/${id}`)
+      const res = await API_URL.get(`/material/getMaterialList/${id}`)
       return res.data
 
     }catch(err){
@@ -54,7 +54,7 @@ export const ApiLab = {
   },
   getMaterialInfo: async(id) => {
     try{
-      const res = await API_URL.get(`/lab/getMaterialInfo/${id}`)
+      const res = await API_URL.get(`/material/getMaterialInfo/${id}`)
       return res.data
 
     }catch(err){
@@ -63,7 +63,7 @@ export const ApiLab = {
   },
   saveMaterialInfo: async(formData) => {
     try{
-      const msg =  await API_URL.post('/lab/saveMaterialInfo', formData)
+      const msg =  await API_URL.post('/material/saveMaterialInfo', formData)
 
       return msg.data
     }catch(err) {
@@ -71,4 +71,61 @@ export const ApiLab = {
     }
   },
 
+  //연구처방
+  getRecipeList: async(params) => {
+    try{
+      const res = await API_URL.post('/recipe/getRecipeList', params)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+   getRecipeInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/recipe/getRecipeInfo/${id}`)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  saveRecipeInfo: async(params) =>{
+    try{
+      const res =  await API_URL.post('/recipe/saveRecipeInfo', params)
+
+      return res.data
+    }catch(err) {
+      throw new Error(err.response?.data);
+    }
+  },
+
+  //신원료
+  getNewMaterialList: async(params) => {
+    try{
+      const res = await API_URL.post('/newMaterial/getNewMaterialList', params)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  getNewMaterialInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/newMaterial/getNewMaterialInfo/${id}`)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  saveNewMaterialInfo: async(params) =>{
+    try{
+      const res =  await API_URL.post('/newMaterial/saveNewMaterialInfo', params)
+
+      return res.data
+    }catch(err) {
+      throw new Error(err.response?.data);
+    }
+  }
 }
