@@ -91,7 +91,7 @@
             <template #item.phase="{ item, index }">
               <input
                 v-model="recipeList[index].phase"
-                style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
+                style="text-align:center; width: 90%; min-width: 90%; max-width: 90%;"
                 class="custom-line"
               />
             </template>
@@ -231,7 +231,7 @@ const form = reactive({
 })
 
 const headers = [
-  { title: 'Phase ',     key: 'phase',     align: 'center'  ,width : '50px'},
+  { title: 'Phase ',     key: 'phase',     align: 'center'  ,width : '40px'},
   { title: '품목코드',   key: 'itemCd',     align: 'center', width : '150px'},
   { title: '품목명',     key: 'itemName',   align: 'start', width : '480px'},
   { title: '함량',       key: 'content',    align: 'center' ,width : '140px'},
