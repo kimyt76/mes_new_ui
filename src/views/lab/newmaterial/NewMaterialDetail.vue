@@ -24,10 +24,11 @@
         </v-col>
         <v-col>
           <v-text-field
-            v-model="form.inPrice"
+            :model-value="formatComma(form.inPrice)"
             label="입고단가"
             variant="underlined"
             density="compact"
+            @update:model-value="v => form.inPrice = parseCommaInput(v)"
           />
         </v-col>
       </v-row>
@@ -134,7 +135,7 @@
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
-import { isEmpty } from '@/util/common';
+import { isEmpty ,formatComma, parseCommaInput } from '@/util/common';
 import { onMounted, reactive, ref, shallowRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import IngredientListPop from '../ingredient/IngredientListPop.vue';
@@ -186,7 +187,7 @@ const saveInfo = async () =>{
     }
 
     const res = await ApiLab.saveNewMaterialInfo(params)
-    form.newMaterialCd  = res.newMaterialCd
+    form.newMaterialCd  = res.data.newMaterialCd
     vSuccess("저장되었습니다.")
   }catch(err){
     vError("저장에 실패했습니다.")
@@ -203,7 +204,6 @@ const openPop = (type) =>{
   }else if ( type === 'P'  ) {
     currentComponent.value = ItemListSinglePop
   }
-
   dialog.value = true
 }
 
@@ -217,7 +217,6 @@ const handleselect = (obj) => {
    }else if ( selectPop.value === 'I'  ) {
     ingredientList(obj)
    }
-
 }
 
 const ingredientList = (obj) =>{

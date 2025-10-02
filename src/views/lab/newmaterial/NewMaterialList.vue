@@ -79,12 +79,12 @@ const form = reactive({
 })
 
 const headers = [
-  { title: 'No.',       key: 'rowNum',        align: 'center', width: '30px' },
-  { title: '임시코드',   key: 'newMaterialCd', align: 'center',  width: '150px' },
-  { title: '품목명',    key: 'materialName',   align: 'start',  width: '480px' },
-  { title: '등록자',    key: 'regName',        align: 'center',    width: '120px' },
-  { title: '등록일자',  key: 'regDate',        align: 'center',    width: '110px' },
-  { title: '품목코드',   key: 'itemCd',        align: 'center',  width: '150px' },
+  { title: 'No.',       key: 'rowNum',        align: 'center',  width: '30px' },
+  { title: '임시코드',  key: 'newMaterialCd',  align: 'center',  width: '150px' },
+  { title: '품목명',    key: 'materialName',   align: 'start',   width: '480px' },
+  { title: '등록자',    key: 'regName',        align: 'center',  width: '120px' },
+  { title: '등록일자',  key: 'regDate',        align: 'center',  width: '110px' },
+  { title: '품목코드',  key: 'itemCd',         align: 'center',  width: '150px' },
 ]
 
 const srhNewMaterialList = async ()=>{
