@@ -17,39 +17,39 @@
         </v-col>
         <v-col>
           <v-text-field
-              v-model="form.prodName"
-              label="제품명"
-              variant="underlined"
-              density="compact"
+            v-model="form.prodName"
+            label="제품명"
+            variant="underlined"
+            density="compact"
             />
         </v-col>
       </v-row>
       <v-row>
         <v-col>
           <v-text-field
-              v-model="form.managerName"
-              label="담당자명"
-              variant="underlined"
-              density="compact"
-              append-inner-icon="mdi-magnify"
-              @click:append-inner="openPop('U')"
+            v-model="form.managerName"
+            label="담당자명"
+            variant="underlined"
+            density="compact"
+            append-inner-icon="mdi-magnify"
+            @click:append-inner="openPop('U')"
           />
         </v-col>
         <v-col>
           <v-date-input
-              v-model="form.redDate"
-              label="등록일"
-              :display-format="formatDate"
-              variant="underlined"
-              density="compact"
+            v-model="form.regDate"
+            label="등록일"
+            :display-format="formatDate"
+            variant="underlined"
+            density="compact"
             />
         </v-col>
         <v-col>
           <v-text-field
-              v-model="form.labNo"
-              label="Lab No"
-              variant="underlined"
-              density="compact"
+            v-model="form.labNo"
+            label="Lab No"
+            variant="underlined"
+            density="compact"
             />
         </v-col>
         <v-col>
@@ -223,7 +223,7 @@ const form = reactive({
   prodName:'',
   managerName: '',
   managerId: '',
-  redDate : '',
+  regDate : '',
   labNo: '',
   prodType: '',
 
@@ -292,7 +292,7 @@ const saveInfo = async () =>{
       recipeInfo : form,
       recipeList : recipeList.value
     }
-    params.recipeInfo.redDate = formatDate(params.recipeInfo.redDate)
+    params.recipeInfo.regDate = formatDate(params.recipeInfo.regDate)
 
     const res = await ApiLab.saveRecipeInfo(params)
     form.recipeId = res.recipeId
