@@ -99,6 +99,18 @@ export const ApiLab = {
       throw new Error(err.response?.data);
     }
   },
+  downloadRecipe: async (params) => {
+    try {
+      const res = await API_URL.post('/recipe/downloadRecipe',params,{
+         responseType: 'blob'
+      })
+
+      return res.data
+    } catch (err) {
+      console.error('Download error:', err)
+      throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+    }
+  },
 
   //신원료
   getNewMaterialList: async(params) => {

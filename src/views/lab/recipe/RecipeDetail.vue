@@ -3,7 +3,7 @@
 <v-breadcrumbs :items="['MES', '연구관리', '처방상세']"></v-breadcrumbs>
 <v-card>
   <v-card-text>
-    <v-form  @submit.prevent="saveInfo">
+    <v-form @submit.prevent="saveInfo">
       <v-row>
         <v-col>
           <v-text-field
@@ -64,124 +64,87 @@
           />
         </v-col>
       </v-row>
-      <v-row class="mt-4">
-        <v-col class="mt-3">
-          <v-card-subtitle>
-            - 품목코드
-          </v-card-subtitle>
+      <v-row class="justify-end mb-3 mr-2" dense>
+        <v-col  cols="auto">
+          <v-btn
+            color="brown-lighten-4"
+            class="mt-3 mr-3"
+            text="추가+"
+            density="compact"
+            @click="addRow"
+            />
         </v-col>
-        <v-col class="d-flex justify-end">
+        <v-col cols="auto">
           <v-btn
             color="brown-lighten-4"
             class="mt-3"
-            text="추가+"
+            text="삭제-"
             density="compact"
-            @click="openPop('I')"
+            @click="removeRow"
             />
         </v-col>
       </v-row>
       <v-row>
         <v-col>
-          <v-data-table-virtual
-            :headers="headers"
-            :items="recipeList"
-            style="height: 500px;"
-            class="custom-table no-padding-table"
-            >
-            <template #item.phase="{ item, index }">
-              <input
-                v-model="recipeList[index].phase"
-                style="text-align:center; width: 90%; min-width: 90%; max-width: 90%;"
-                class="custom-line"
-              />
-            </template>
-            <template #item.content="{ item, index }">
-              <input
-                v-model="recipeList[index].content"
-                style="text-align: right; width: 90%;"
-                class="custom-line"
-                @blur="onBlur(index)"
-              />
-            </template>
-            <template #item.inPrice="{ item, index }">
-              <input
-                v-model="recipeList[index].inPrice"
-                style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
-                class="custom-line"
-                readonly
-              />
-            </template>
-            <template #item.unitPrice="{ item, index }">
-              <input
-                v-model="recipeList[index].unitPrice"
-                type="number"
-                style="text-align: right; width: 90%; min-width: 90%; max-width: 90%;"
-                readonly
-              />
-            </template>
-            <template #item.actions="{ item }">
-              <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="removeRow(item.ingredientCode)"></v-icon>
-            </template>
-            <!-- 총합 -->
-          <template v-slot:body.append>
-            <tr class="summary-row">
-              <td style="width: 10px; height: 30px; text-align: center;" >합계 : </td>
-              <td></td>
-              <!-- itemName -->
-              <td style="width: 480px; height: 30px;"></td>
-              <!-- 함량 -->
-              <td style="width: 110px; height: 30px; text-align: right; font-weight: bold;">
-                {{ totalContent.toLocaleString() }}
-              </td>
-              <!-- totInPrice -->
-              <td style="width: 110px;  height: 30px; text-align: right; font-weight: bold;">
-                {{ totInPrice.toLocaleString() }}
-              </td>
-              <!-- vatPrice 합계 -->
-              <td style="width: 100px; height: 30px; text-align: right; font-weight: bold;">
-                {{ totUnitPrice.toLocaleString() }}
-              </td>
-              <td></td>
-            </tr>
-          </template>
-          </v-data-table-virtual>
+          <BaseHotTable
+            ref="hotTable"
+            :data="recipeList"
+            :colHeaders="['Phase', '품목코드', '품목명', '함량', '원가(원)', '단가(원/g)']"
+            :columns="columns"
+            :stretchH="'none'"
+            :height="430"
+            :afterChange="onAfterChange"
+            :afterSelection="onAfterSelection"
+          />
+        </v-col>
+      </v-row>
+      <!-- 합계 표시 -->
+      <v-row class="d-flex justify-end mb-2 mr-3 dense" >
+        <v-col cols="auto"><strong>합계</strong></v-col>
+        <v-col cols="auto">
+          <span>함량 : {{ totalContent }}%</span>
+        </v-col>
+        <v-col cols="auto">
+          <span>원가(원) : {{ totalInPrice.toLocaleString('ko-kr') }}원</span>
+        </v-col>
+        <v-col cols="auto">
+          <span>단가(원/g) : {{ totalUnitPrice }}원</span>
         </v-col>
       </v-row>
       <v-row class="justify-end mb-3 mr-2" dense>
-      <v-col cols="auto">
-        <v-btn text="BOM연결"
-          @click="openPop('B')"
+        <v-col cols="auto">
+          <v-btn text="BOM연결"
+            @click="openPop('B')"
+            />
+        </v-col>
+        <v-col cols="auto">
+          <v-btn text="저장"
+            color="brown-lighten-4"
+            type="submit"
           />
-      </v-col>
-      <v-col cols="auto">
-        <v-btn text="저장"
-          color="brown-lighten-4"
-          type="submit"
-        />
-      </v-col>
-      <v-col cols="auto">
-        <v-btn text="전성분(수출)"
-          color="#FFE0B2"
-          @click="openPop('J')"
-        />
-      </v-col>
-      <v-col cols="auto">
-        <v-btn text="단가"
-
+        </v-col>
+        <v-col cols="auto">
+          <v-btn text="전성분(수출)"
+            color="#FFE0B2"
+            @click="openPop('J')"
           />
-      </v-col>
-      <v-col cols="auto">
-        <v-btn text="중국위행허가"
-          @click="openPop('G')"
-        />
-      </v-col>
-      <v-col cols="auto">
-        <v-btn text="목록" @click="goList" />
-      </v-col>
-    </v-row>
+        </v-col>
+        <v-col cols="auto">
+          <v-btn text="단가"
+            @click="downloadRecipe"
+            />
+        </v-col>
+        <v-col cols="auto">
+          <v-btn text="중국위행허가"
+            @click="openPop('G')"
+          />
+        </v-col>
+        <v-col cols="auto">
+          <v-btn text="목록" @click="goList" />
+        </v-col>
+      </v-row>
     </v-form>
   </v-card-text>
-
 </v-card>
 
 <v-dialog v-model="dialog" width="800px" height="800px" persistent>
@@ -196,191 +159,239 @@
 </template>
 
 <script setup>
-import { ApiCommon } from '@/api/apiCommon';
-import { ApiLab } from '@/api/apiLab';
-import { useAlertStore } from '@/stores/alert';
-import { todayKST, isEmpty, formatDate } from '@/util/common';
-import { onMounted, reactive, ref, shallowRef, computed, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import UserListPop from '@/views/system/user/UserListPop.vue';
-import ClientListPop from '@/views/basic/client/ClientListPop.vue';
-import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
-import { useAuthStore } from '@/stores/auth';
+import { useRoute, useRouter } from 'vue-router'
+import { onMounted, reactive, ref, computed, shallowRef } from 'vue'
+import { todayKST, isEmpty, formatDate } from '@/util/common'
+import { ApiLab } from '@/api/apiLab'
+import { ApiItem } from '@/api/apiItem'
+import { ApiCommon } from '@/api/apiCommon'
+import BaseHotTable from '@/components/BaseHotTable.vue'
+import Handsontable from 'handsontable'
+import { useAlertStore } from '@/stores/alert'
+import UserListPop from '@/views/system/user/UserListPop.vue'
+import ClientListPop from '@/views/basic/client/ClientListPop.vue'
+import { useAuthStore } from '@/stores/auth'
 
-const { vError, vSuccess, vInfo, vWarning} = useAlertStore()
-const { userId } = useAuthStore()
+const dialog = ref(false)
+const hotTable = ref(null)
+const { vError, vSuccess, vInfo, vWarning } = useAlertStore()
 const router = useRouter()
 const route = useRoute()
+const {userId} = useAuthStore()
 const currentComponent = shallowRef(null)
 const recipeId = route.params.id
-const recipeList = ref([])
-const prodTypes = ref([])
-const dialog = ref(false)
 const selectPop = ref('')
+const recipeList = ref([
+  { phase: '', itemCd: '', itemName: '', content: 0, inPrice: 0, unitPrice: 0 },
+])
+const prodTypes = ref([])
 const form = reactive({
-  clientName: '',
-  clientId: '',
+  clientName:'',
+  clientId:'',
   prodName:'',
-  managerName: '',
-  managerId: '',
-  regDate : '',
-  labNo: '',
-  prodType: '',
+  managerName:'',
+  managerId:'',
+  regDate:'',
+  labNo:'',
+  prodType:'',
 
+  recipeId: recipeId,
   userId: userId,
 })
 
-const headers = [
-  { title: 'Phase ',     key: 'phase',     align: 'center'  ,width : '40px'},
-  { title: '품목코드',   key: 'itemCd',     align: 'center', width : '150px'},
-  { title: '품목명',     key: 'itemName',   align: 'start', width : '480px'},
-  { title: '함량',       key: 'content',    align: 'center' ,width : '140px'},
-  { title: '원가(원)',   key: 'costPrice',  align: 'center' ,width : '140px'},
-  { title: '단가(원/g)', key: 'unitPrice',  align: 'center' ,width : '140px'},
-  { title: '-', key: 'actions',  align: 'center' ,width : '10px'},
+const columns = [
+  { data: 'phase', type: Handsontable.cellTypes.text , width: 60, className: 'htCenter'},
+  { data: 'itemCd', type: Handsontable.cellTypes.text , width: 180,className: 'htCenter'},
+  { data: 'itemName', type: Handsontable.cellTypes.text , width: 720},
+  { data: 'content', type: Handsontable.cellTypes.numeric , width: 200,className: 'htRight'},
+  { data: 'inPrice', type: Handsontable.cellTypes.numeric , width: 200,className: 'htRight'},
+  { data: 'unitPrice', type: Handsontable.cellTypes.numeric , width: 200,className: 'htRight'},
 ]
 
-// 1. 함량 합계
-const totalContent = computed(() => {
-  // .value로 실제 배열에 접근합니다.
-  return recipeList.value.reduce((sum, item) => sum + Number(item.content || 0), 0);
-});
-
-// 2. 원가 합계
-const totInPrice = computed(() => {
-  return recipeList.value.reduce((sum, item) => sum + Number(item.inPrice || 0), 0);
-});
-// 3. 단가 합계
-const totUnitPrice = computed(() => {
-  return recipeList.value.reduce((sum, item) => sum + Number(item.unitPrice || 0), 0);
-});
-
-const onBlur = (index) => {
-  const content = Number(recipeList.value[index].content);
-  const inPrice = Number(recipeList.value[index].inPrice);
-
-  if (!isNaN(content) && !isNaN(inPrice)) {
-    recipeList.value[index].unitPrice = content * inPrice*0.001*0.01;
-  } else {
-    recipeList.value[index].unitPrice = 0;
+const saveInfo = async () => {
+  if (isEmpty(form.prodName)) {
+    vWarning('제품명을 입력해주세요.')
+    return
   }
 
-  if(totalContent.value > 100 ) {
-    vWarning("함량이 100보다 큽니다. ")
-    recipeList.value[index].content = 0
+  if (totalContent.value !== 100) {
+    vWarning('함량의 합이 100이 아닙니다. 확인해주세요.')
+    return
   }
-};
 
-const openPop = type =>{
+  try{
+    const params = {
+      recipeInfo: { ...form },
+      recipeList: recipeList.value,
+    }
+    params.recipeInfo.regDate = formatDate(params.recipeInfo.regDate)
+    const res = await ApiLab.saveRecipeInfo(params)
+    form.recipeId = res.data.recipeId
+    vSuccess('저장되었습니다.')
+  }catch(err){
+    vError(err.message || '저장 중 오류가 발생했습니다.')
+  }
+}
+
+const openPop = (type) => {
   selectPop.value = type
-
-  if (  type === 'C' ) {
-    currentComponent.value = ClientListPop
-  }else if( type === 'U' ){
-    currentComponent.value = UserListPop
-  }else if( type === 'I' ) {
-    currentComponent.value = ItemListMultiPop
-  }else if( type === 'B' ) {
-    //currentComponent.value = bomListPop
-  }
+  if (type === 'C') currentComponent.value = ClientListPop
+  else if (type === 'U') currentComponent.value = UserListPop
   dialog.value = true
 }
 
-const saveInfo = async () =>{
-  try{
-    const params = {
-      recipeInfo : form,
-      recipeList : recipeList.value
-    }
-    params.recipeInfo.regDate = formatDate(params.recipeInfo.regDate)
-
-    const res = await ApiLab.saveRecipeInfo(params)
-    form.recipeId = res.recipeId
-    vSuccess("저장되었습니다.")
-  }catch(err){
-    vError(err)
-  }
-}
-
-const handleselect = (obj) =>{
-  if ( selectPop.value === 'C') {
+const handleselect = (obj) => {
+  if (selectPop.value === 'C') {
     form.clientName = obj.clientName
     form.clientId = obj.clientId
-  }else if ( selectPop.value === 'U' ){
+  } else if (selectPop.value === 'U') {
     form.managerId = obj.userId
     form.managerName = obj.memberNm
-  }else if ( selectPop.value === 'I' ){
-    addRecipeList(obj)
   }
 }
 
-const addRecipeList = (obj) => {
-  if (!Array.isArray(obj)) return;
+const onAfterChange = async (changes, source) => {
+  if (!changes) return
 
-  let nextId = recipeList.value.length;
+  const hotInstance = hotTable.value?.hotInstance?.hotInstance
 
-  const selectItem = obj.map((o, index) => ({
-      id: nextId++,
-      Phase: '',
-      itemCd: o.itemCd,
-      itemName: o.itemName,
-      content: '',
-      inPrice: obj.inPrice,
-      unitPrice: '',
-  }));
+  if (!hotInstance) return
 
-  if (recipeList.value.length > 0) {
-    recipeList.value.push(...selectItem);
-  } else {
-    recipeList.value = [...selectItem];
+  for (const [row, prop, oldVal, newVal] of changes) {
+    // 품목코드(itemCd) 변경 시
+    if (prop === 'itemCd' && newVal && newVal !== oldVal) {
+      try {
+        const res = await ApiItem.getItemInfo(newVal)
+        if (res) {
+
+          hotInstance.setDataAtRowProp(row, 'inPrice', res.inPrice || 0)
+          // content 값이 이미 있다면 단가 계산
+          const content = Number(hotInstance.getDataAtRowProp(row, 'content'))
+          if (!isNaN(content) && res.inPrice != null) {
+            let unitPrice = content * res.inPrice * 0.001 * 0.01
+            unitPrice = parseFloat(unitPrice.toFixed(7))
+            hotInstance.setDataAtRowProp(row, 'unitPrice', unitPrice)
+          }
+        } else {
+          hotInstance.setDataAtRowProp(row, 'inPrice', 0)
+        }
+      } catch (err) {
+        console.error('품목 조회 오류:', err)
+      }
+    }
+    // 함량(content) 변경 시 단가 재계산
+    if (prop === 'content' && newVal !== oldVal) {
+      const content = Number(newVal)
+      const inPrice = Number(hotInstance.getDataAtRowProp(row, 'inPrice'))
+      if (!isNaN(content) && !isNaN(inPrice) && inPrice > 0) {
+        const unitPrice = parseFloat((content * inPrice * 0.001 * 0.01).toFixed(7))
+        hotInstance.setDataAtRowProp(row, 'unitPrice', unitPrice)
+      }
+    }
   }
 }
-
-const removeRow =(id) => {
-  const index = recipeList.value.findIndex(item => item.itemCd === id)
-  recipeList.value.splice(index, 1)
-}
-
-onMounted( async () =>{
-  prodTypes.value = await ApiCommon.getCodeList('prod_type')
-
-  if ( isEmpty(recipeId)  ){
-    form.redDate = todayKST()
-  }else{
-    const res = await ApiLab.getRecipeInfo(recipeId)
-
-    Object.assign(form, res.recipeInfo)
-    recipeList.value = res.recipeList
-  }
-
+// 합계 계산
+const totalContent = computed(() => {
+  const sum = recipeList.value.reduce((acc, row) => acc + (Number(row.content) || 0), 0)
+  return parseFloat(sum.toFixed(7))
+})
+const totalInPrice = computed(() => {
+  return recipeList.value.reduce((sum, row) => sum + (Number(row.inPrice) || 0), 0)
+})
+const totalUnitPrice = computed(() => {
+  return recipeList.value.reduce((sum, row) => sum + (Number(row.unitPrice) || 0), 0).toFixed(7)
 })
 
-const goList = () =>{
-  router.push({name:'RecipeList'})
+const addRow = () => {
+  recipeList.value.push({ phase: '', itemCd: '', itemName: '', content: 0, cost: 0, unitPrice: 0 })
+}
+
+const lastSelected = ref(null)
+
+const onAfterSelection = (row, col, row2, col2) => {
+  lastSelected.value = [row, col, row2, col2]
+}
+
+const removeRow = () => {
+  if (!lastSelected.value) {
+    vWarning('삭제할 행을 선택하세요.')
+    return
+  }
+  const [startRow,, endRow] = lastSelected.value
+  const hot = hotTable.value?.hotInstance?.hotInstance
+  if (!hot) return
+  hot.alter('remove_row', startRow, endRow - startRow + 1)
+}
+
+onMounted( async() =>{
+  prodTypes.value = await ApiCommon.getCodeList('prod_type')
+  const hot = hotTable.value?.hotInstance
+  if (!hot) return
+
+  if ( !isEmpty(recipeId)){
+    const res = await ApiLab.getRecipeInfo(recipeId)
+    Object.assign(form, res.recipeInfo)
+
+    recipeList.value.splice(0, recipeList.value.length, ...res.recipeList)
+    calculateRecipe(recipeList.value)
+  }else{
+    form.regDate = todayKST()
+  }
+})
+
+const calculateRecipe = async (list) =>{
+  const hotInstance = hotTable.value?.hotInstance?.hotInstance
+  if (!hotInstance) return
+  // 병렬로 itemCd 정보 요청
+  const infos = await Promise.all(
+    recipeList.value.map(item =>
+      item.itemCd ? ApiItem.getItemInfo(item.itemCd).catch(() => null) : null
+    )
+  )
+  recipeList.value.forEach((item, rowIndex) => {
+    const info = infos[rowIndex]
+    if (!info) return
+    // 단가 반영
+    hotInstance.setDataAtRowProp(rowIndex, 'inPrice', info.inPrice || 0)
+    // content 가져오기
+    const content = Number(hotInstance.getDataAtRowProp(rowIndex, 'content'))
+    if (!isNaN(content) && info.inPrice != null) {
+      let unitPrice = content * info.inPrice * 0.001 * 0.01
+      unitPrice = parseFloat(unitPrice.toFixed(7))
+      hotInstance.setDataAtRowProp(rowIndex, 'unitPrice', unitPrice)
+    }
+  })
+}
+
+const downloadRecipe = async () =>{
+  if (isEmpty(recipeId)) {
+    vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
+    return
+  }
+
+  try {
+    const params = {
+      recipeInfo: { ...form },
+      recipeList: recipeList.value,
+    }
+    const blob = await ApiLab.downloadRecipe(params)
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `recipe_${form.prodName}.xlsx`
+    a.click()
+    window.URL.revokeObjectURL(url)
+
+  } catch (err) {
+    vError('엑셀 다운로드 실패', err)
+  }
+}
+
+const goList = () => {
+  router.push({ name: 'RecipeList' })
 }
 </script>
 
 <style scoped>
-@import '@/assets/css/main.css';
 
-.custom-input {
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 2px;
-}
-
-.custom-line {
-  border: 0.5px solid;
-  background: #f1f3f4;
-  padding: 2px;
-}
-.summary-row {
-  background-color: #f4f4f4;
-  height: 40px;
-}
-.custom-cell-input {
-  padding: 0 !important;
-  margin: 0 !important;
-}
 </style>
