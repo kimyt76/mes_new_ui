@@ -67,6 +67,7 @@
       <v-data-table
         :headers="headers"
         :items="materialList"
+        :loading="loading"
         density="compact"
         fixed-header
         :items-per-page="15"
@@ -104,6 +105,7 @@ import { useCommonListStore } from '@/stores/commonListStore';
 const store = useCommonListStore()
 const router = useRouter()
 
+const loading = ref(false)
 const srhForm = ref(null)
 const materialList = ref([])
 const routeName = 'MaterialList';
