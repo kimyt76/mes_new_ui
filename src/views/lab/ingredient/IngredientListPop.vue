@@ -51,6 +51,7 @@
           v-model="selectedItem"
           :headers="headers"
           :items="ingrediantList"
+          :loading="loading"
           item-value="ingredientCode"
           density="compact"
           fixed-header
@@ -86,6 +87,7 @@ import { reactive, ref } from 'vue';
 
 const emit = defineEmits(['selected', 'close-dialog'])
 
+const loading = ref(false)
 const srhForm = ref('')
 const selectedItem = ref([])
 const ingrediantList = ref([])
@@ -105,6 +107,7 @@ const headers = [
 ]
 
 const srhIngredientList = async () =>{
+  loading.value = true
   try{
     const params = {
       ...form
@@ -115,6 +118,7 @@ const srhIngredientList = async () =>{
   }catch(err){
     vError(err)
   }finally{
+    loading.value = false
   }
 }
 
