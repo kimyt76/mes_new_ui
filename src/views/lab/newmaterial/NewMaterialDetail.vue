@@ -253,7 +253,6 @@ onMounted( async () =>{
     const res = await ApiLab.getNewMaterialInfo(newMaterialCd)
 
     Object.assign(form, res.newMaterialInfo)
-
     materialMappingList.value = res.materialMappingList
   }
 })
