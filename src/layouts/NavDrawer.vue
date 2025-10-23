@@ -30,12 +30,11 @@
 </template>
 
 <script setup>
+import { storeToRefs } from 'pinia';
+import { useAppStore } from '@/stores/app';
 import { useMenuStore } from '@/stores/menu';
 import NavDrawerHead from './NavDrawerHead.vue';
-import { useAppStore } from '@/stores/app';
-import { storeToRefs } from 'pinia';
 import ListMain from './ListMain.vue';
-import { proxyRefs } from 'vue';
 
 /**
  *  toggle기능 drawer 기능
@@ -46,7 +45,8 @@ const { drawer } = storeToRefs(appStore)
 /**
  *  menu 호출
  */
-const { items } = useMenuStore()
+const menuStore = useMenuStore();
+const { items } = storeToRefs(menuStore)
 </script>
 
 <style scoped>
