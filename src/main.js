@@ -6,10 +6,7 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import globalCommaNumber from './plugins/global-commaNumber'
 
-
 const app = createApp(App)
-
-
 app.directive('comma-number', globalCommaNumber)
 app.use(vuetify)
 app.use(createPinia())
