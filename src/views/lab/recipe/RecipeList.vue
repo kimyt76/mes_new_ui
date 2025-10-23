@@ -88,6 +88,9 @@ import { exportToExcel } from '@/util/exportToExcel';
 import { ApiLab } from '@/api/apiLab';
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
+const {writeYn, setCurrentWriteYn} = useAuthStore()
 
 const router = useRouter()
 const srhForm = ref('')
@@ -118,6 +121,7 @@ const srhRecipeList = async () => {
 }
 
 const selectRowClick = (item, index) => {
+  setCurrentWriteYn(writeYn)  // 리스트 → 상세 권한 세팅
   router.push({name: 'RecipeDetail',params: { id: item.recipeId }  })
 }
 

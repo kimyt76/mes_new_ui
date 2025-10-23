@@ -118,7 +118,9 @@
             />
         </v-col>
         <v-col cols="auto">
-          <v-btn text="저장"
+          <v-btn
+            v-if="writeYn === 'Y'"
+            text="저장"
             color="brown-lighten-4"
             type="submit"
           />
@@ -126,7 +128,7 @@
         <v-col cols="auto">
           <v-btn text="전성분(수출)"
             color="#FFE0B2"
-            @click="openPop('J')"
+            @click="downloadIngredient"
           />
         </v-col>
         <v-col cols="auto">
@@ -136,7 +138,7 @@
         </v-col>
         <v-col cols="auto">
           <v-btn text="중국위행허가"
-            @click="openPop('G')"
+            @click="downloadIngredientCn"
           />
         </v-col>
         <v-col cols="auto">
@@ -160,7 +162,7 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, reactive, ref, computed, shallowRef } from 'vue'
+import { onMounted, reactive, ref, computed, shallowRef , watch} from 'vue'
 import { todayKST, isEmpty, formatDate } from '@/util/common'
 import { ApiLab } from '@/api/apiLab'
 import { ApiItem } from '@/api/apiItem'
@@ -171,19 +173,30 @@ import { useAlertStore } from '@/stores/alert'
 import UserListPop from '@/views/system/user/UserListPop.vue'
 import ClientListPop from '@/views/basic/client/ClientListPop.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useAuthComposable } from '@/composables/useAuthComposable'
+
+
+// import { storeToRefs } from 'pinia'
+// const { currentWriteYn } = storeToRefs(auth) // 반응형 유지됨
+// const { restoreWriteYn } = auth // 함수는 일반 구조분해로
+//const writeYn = computed(() => currentWriteYn.value)
 
 const dialog = ref(false)
 const hotTable = ref(null)
+const { writeYn , restoreWriteYn } = useAuthComposable()
 const { vError, vSuccess, vInfo, vWarning } = useAlertStore()
 const router = useRouter()
 const route = useRoute()
 const {userId} = useAuthStore()
+const lastSelected = ref(null)
 const currentComponent = shallowRef(null)
 const recipeId = route.params.id
 const selectPop = ref('')
 const recipeList = ref([
   { phase: '', itemCd: '', itemName: '', content: 0, inPrice: 0, unitPrice: 0 },
 ])
+
+
 const prodTypes = ref([])
 const form = reactive({
   clientName:'',
@@ -209,11 +222,14 @@ const columns = [
 ]
 
 const saveInfo = async () => {
+  if (isEmpty(form.clientName)) {
+    vWarning('고객사 정보를 입력해주세요.')
+    return
+  }
   if (isEmpty(form.prodName)) {
     vWarning('제품명을 입력해주세요.')
     return
   }
-
   if (totalContent.value !== 100) {
     vWarning('함량의 합이 100이 아닙니다. 확인해주세요.')
     return
@@ -261,9 +277,17 @@ const onAfterChange = async (changes, source) => {
     // 품목코드(itemCd) 변경 시
     if (prop === 'itemCd' && newVal && newVal !== oldVal) {
       try {
-        const res = await ApiItem.getItemInfo(newVal)
-        if (res) {
 
+        let res = null
+
+        if ( newVal.charAt(0).toUpperCase() === 'J') {
+          res = await ApiItem.getItemInfo(newVal)
+        }else{
+          res = await ApiLab.getNewMaterialInfo(newVal)
+          res = res.getNewMaterialInfo
+        }
+
+        if (res) {
           hotInstance.setDataAtRowProp(row, 'inPrice', res.inPrice || 0)
           // content 값이 이미 있다면 단가 계산
           const content = Number(hotInstance.getDataAtRowProp(row, 'content'))
@@ -305,13 +329,9 @@ const totalUnitPrice = computed(() => {
 const addRow = () => {
   recipeList.value.push({ phase: '', itemCd: '', itemName: '', content: 0, cost: 0, unitPrice: 0 })
 }
-
-const lastSelected = ref(null)
-
 const onAfterSelection = (row, col, row2, col2) => {
   lastSelected.value = [row, col, row2, col2]
 }
-
 const removeRow = () => {
   if (!lastSelected.value) {
     vWarning('삭제할 행을 선택하세요.')
@@ -323,7 +343,12 @@ const removeRow = () => {
   hot.alter('remove_row', startRow, endRow - startRow + 1)
 }
 
+
 onMounted( async() =>{
+  if (isEmpty(writeYn.value)) {
+    restoreWriteYn();
+  }
+
   prodTypes.value = await ApiCommon.getCodeList('prod_type')
   const hot = hotTable.value?.hotInstance
   if (!hot) return
@@ -333,35 +358,10 @@ onMounted( async() =>{
     Object.assign(form, res.recipeInfo)
 
     recipeList.value.splice(0, recipeList.value.length, ...res.recipeList)
-    calculateRecipe(recipeList.value)
   }else{
     form.regDate = todayKST()
   }
 })
-
-const calculateRecipe = async (list) =>{
-  const hotInstance = hotTable.value?.hotInstance?.hotInstance
-  if (!hotInstance) return
-  // 병렬로 itemCd 정보 요청
-  const infos = await Promise.all(
-    recipeList.value.map(item =>
-      item.itemCd ? ApiItem.getItemInfo(item.itemCd).catch(() => null) : null
-    )
-  )
-  recipeList.value.forEach((item, rowIndex) => {
-    const info = infos[rowIndex]
-    if (!info) return
-    // 단가 반영
-    hotInstance.setDataAtRowProp(rowIndex, 'inPrice', info.inPrice || 0)
-    // content 가져오기
-    const content = Number(hotInstance.getDataAtRowProp(rowIndex, 'content'))
-    if (!isNaN(content) && info.inPrice != null) {
-      let unitPrice = content * info.inPrice * 0.001 * 0.01
-      unitPrice = parseFloat(unitPrice.toFixed(7))
-      hotInstance.setDataAtRowProp(rowIndex, 'unitPrice', unitPrice)
-    }
-  })
-}
 
 const downloadRecipe = async () =>{
   if (isEmpty(recipeId)) {
@@ -382,6 +382,44 @@ const downloadRecipe = async () =>{
     a.click()
     window.URL.revokeObjectURL(url)
 
+  } catch (err) {
+    vError('엑셀 다운로드 실패', err)
+  }
+}
+
+const downloadIngredient = async () =>{
+  if (isEmpty(recipeId)) {
+    vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
+    return
+  }
+
+  try {
+    const blob = await ApiLab.downloadIngredient(recipeId)
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `전성분_${form.prodName}.xlsx`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  } catch (err) {
+    vError('엑셀 다운로드 실패', err)
+  }
+}
+
+const downloadIngredientCn = async () =>{
+  if (isEmpty(recipeId)) {
+    vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
+    return
+  }
+
+  try {
+    const blob = await ApiLab.downloadIngredientCn(recipeId)
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `중국위행허가_${form.prodName}.xlsx`
+    a.click()
+    window.URL.revokeObjectURL(url)
   } catch (err) {
     vError('엑셀 다운로드 실패', err)
   }
