@@ -111,6 +111,30 @@ export const ApiLab = {
       throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
     }
   },
+  downloadIngredient: async (recipeId) => {
+    try {
+      const res = await API_URL.get(`/recipe/downloadIngredient/${recipeId}`, {
+        responseType: 'blob'
+      })
+
+      return res.data
+    } catch (err) {
+      console.error('Download error:', err)
+      throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+    }
+  },
+  downloadIngredientCn: async (recipeId) => {
+    try {
+      const res = await API_URL.get(`/recipe/downloadIngredientCn/${recipeId}`, {
+        responseType: 'blob'
+      })
+
+      return res.data
+    } catch (err) {
+      console.error('Download error:', err)
+      throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+    }
+  },
 
   //신원료
   getNewMaterialList: async(params) => {
