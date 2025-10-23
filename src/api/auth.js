@@ -1,11 +1,9 @@
-import authHeader from "@/service/auth_header";
 import { API_URL} from '.'
 
 
 export const login = async (userId, password) => {
   try{
     let type ='json';
-    //const res = await API_URL.post(`/auth/login`, { userId, password }, authHeader(type))
     const res = await API_URL.post(`/auth/login`, { userId, password })
 
     return res.data;
@@ -13,7 +11,6 @@ export const login = async (userId, password) => {
     throw err
   }
 }
-
 
 export const logout = () =>{
   API_URL.post(`/auth/logout`);
@@ -29,3 +26,15 @@ export const fetchUser = async() =>{
     throw err.res
   }
 }
+
+export const getMenuList = async (userId) => {
+  try {
+    const res = await API_URL.get(`/menu/getMenuList/${userId}`, {
+      withCredentials: true, // 세션 유지
+    });
+
+    return res.data;
+  } catch (err) {
+    throw err.response || err;
+  }
+};
