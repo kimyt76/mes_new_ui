@@ -1,41 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import routes from './routes' // 👈 분리한 routes 불러오기
+import routes from './routes'
 import { useAuthStore } from '@/stores/auth'
-import { useCommonListStore } from '@/stores/commonListStore'
-
+import { useMenuStore } from '@/stores/menu'
 
 const router = createRouter({
-  //history: createWebHistory(import.meta.env.BASE_URL),
   history: createWebHistory('/'),
   routes,
 })
 
- router.beforeEach(async (to, from) => {
-  const auth = useAuthStore();
-  const store = useCommonListStore()
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore()
+  const menuStore = useMenuStore()
 
   if (!auth.sessionChecked) {
-    await auth.fetchUser();
-  }
-
-  const sameGroup =
-    (to.name?.toString().startsWith('Material') &&
-     from.name?.toString().startsWith('Material'))
-
-  // 다른 메뉴 그룹 이동 시 clear
-  if (!sameGroup) {
-    store.clearPage(from.name)
+    await auth.fetchUserData()
+    if (auth.isLoggedIn && menuStore.items.length === 0) {
+      await menuStore.loadMenu(auth.userId)
+    }
   }
 
   if (!auth.isLoggedIn && to.name !== 'LogIn') {
-    return { name: 'LogIn' };
-  } else if (auth.isLoggedIn && to.name === 'LogIn') {
-    return { path: '/' };
-  } else {
-    return true;
+    return next({ name: 'LogIn' })
   }
 
-})
+  // 권한 체크
+  const flat = menuStore.items.flatMap(m => [m, ...(m.items || [])])
+  const target = flat.find(m => m.path === to.path)
+  if (target && target.read_yn === 'N') {
+    alert('접근 권한이 없습니다.')
+    return next(false)
+  }
 
+  next()
+})
 
 export default router
