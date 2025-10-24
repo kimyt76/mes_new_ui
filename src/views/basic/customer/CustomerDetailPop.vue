@@ -1,10 +1,14 @@
 <template>
 <v-card>
-  <v-card-item
-    :title="props.title"
-    />
+  <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+    <v-toolbar-title>성분코드조회</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon @click="emit('close-dialog')">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </v-toolbar>
     <v-card-text>
-      <v-form ref="vform">
+      <v-form ref="vform" @submit.prevent="saveInfo">
         <v-row class="mt-3">
           <v-col>
             <v-select
@@ -178,6 +182,22 @@
               </v-col>
             </v-row>
             <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="form.bankName"
+                  label="은행명"
+                  variant="underlined"
+                  density="compact"
+                  />
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="form.accountNo"
+                  label="계좌번호"
+                  variant="underlined"
+                  density="compact"
+                  />
+              </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model="form.searchText"
@@ -186,33 +206,38 @@
                   density="compact"
                   />
               </v-col>
-              <v-col cols="6">
-                <v-text-field
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-textarea
                   v-model="form.memo"
                   label="비고"
-                  variant="underlined"
-                  density="compact"
+                  row-height="15"
+                  rows="2"
+                  variant="outlined"
+                  auto-grow
                   />
               </v-col>
             </v-row>
-      </v-form>
-  </v-card-text>
-    <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="indigo-darken-4"
-          text="저장"
-          variant="tonal"
-          depressed
-          @click="saveInfo"
-          />
-        <v-btn
-          text="닫기"
-          variant="tonal"
-            @click="emit('close-dialog')"
-        />
-      </v-card-actions>
+            <v-row>
+              <v-col class="d-flex ga-3 justify-end">
+                <v-btn
+                  color="indigo-darken-4"
+                  text="저장"
+                  variant="tonal"
+                  type="submit"
+                  depressed
+                  />
+                <v-btn
+                  text="닫기"
+                  variant="tonal"
+                    @click="emit('close-dialog')"
+                />
+              </v-col>
+            </v-row>
 
+         </v-form>
+      </v-card-text>
 <v-dialog  v-model="dialog" height="800" width="900px" persistent>
     <UserListPop
       @selected="handleSelected"
@@ -269,9 +294,11 @@ const form = reactive({
   customerManagerTel: '',
   zipCode: '',
   address: '',
-  tradingMethod: '',
+  tradingMethod: '',    /*거래 방법*/
   customerGrp1: '',
   customerGrp2: '',
+  bankName: '',
+  accountNo: '',
 
   searchText: '',
   memo: '',
