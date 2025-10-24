@@ -1,1 +1,0 @@
-import"./filedownLoad-vZrQWoXx.js";import{_ as a,c as o,o as e}from"./index-CSVU4KnH.js";const r={__name:"DashBoard",setup(s){return(t,_)=>(e(),o("div",null," 이거슨 dashboard "))}},n=a(r,[["__scopeId","data-v-933554d2"]]);export{n as default};
