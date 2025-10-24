@@ -108,7 +108,7 @@
     </v-col>
   </v-row>
 
-  <v-dialog  v-model="dialog" max-width="900px" max-height="800px" persistent>
+  <v-dialog  v-model="dialog" width="1200px" height="750px" persistent>
     <CustomerDetailPop
       :id="id"
       :mode="mode"
