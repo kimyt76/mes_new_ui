@@ -108,8 +108,8 @@
     </v-form>
   </v-card-text>
 </v-card>
-<v-row class="mt-4">
-  <v-col class="mt-3">
+<v-row class="mt-2">
+  <v-col class="mt-2">
     <v-card-subtitle>
       - 성분코드
     </v-card-subtitle>
@@ -117,7 +117,7 @@
   <v-col class="d-flex justify-end">
     <v-btn
       color="brown-lighten-4"
-      class="mt-3"
+      class="mt-2 mb-2"
       text="추가+"
       density="compact"
       @click="openPop"
@@ -157,7 +157,6 @@
       />
   </v-col>
 </v-row>
-
 <v-row>
   <v-col class="mt-3">
     <v-card-subtitle>
@@ -167,7 +166,7 @@
   <v-col class="d-flex justify-end">
     <v-btn
       color="brown-lighten-4"
-      class="mt-3"
+      class="mt-3 mb-1"
       text="추가+"
       density="compact"
       @click="addRow"
@@ -234,16 +233,24 @@
 </v-row>
 
 
-  <v-dialog  v-model="dialog" width="900px" persistent>
+  <v-dialog  v-model="dialog" width="900px" height = "600px" persistent location="center">
     <IngredientListPop
+      :style="{
+          position: 'absolute',
+          top: `${pos.y}px`,
+          left: `${pos.x}px`,
+          cursor: dragging ? 'grabbing' : 'grab',
+        }"
+      @mousedown="startDrag"
       @selected="handleSelected"
-      @close-dialog="dialog = false"/>
+      @close-dialog="dialog = false"
+      />
   </v-dialog>
 </template>
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref,watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { formatComma, isEmpty } from '@/util/common';
 import IngredientListPop from '../ingredient/IngredientListPop.vue';
@@ -251,12 +258,60 @@ import MultiFileUpload from '@/components/MultiFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 
+const dialog = ref(false)
+const pos = ref({ x: 0, y: 0 })
+const dragging = ref(false)
+const offset = ref({ x: 0, y: 0 })
+
+// ✅ 다이얼로그 처음 열릴 때 화면 중앙에 위치
+watch(dialog, async (val) => {
+  if (val) {
+    await nextTick()
+    centerDialog()
+  }
+})
+
+// 중앙 정렬 함수
+const centerDialog = () => {
+  const width = 900 // v-dialog width와 동일해야 함
+  const height = 600 // 팝업 대략 높이 (조정 가능)
+
+  const winW = window.innerWidth
+  const winH = window.innerHeight
+
+  pos.value.x = (winW - width) / 2
+  pos.value.y = (winH - height) / 2
+}
+
+// ✅ 드래그 로직
+const startDrag = (e) => {
+  dragging.value = true
+  offset.value = {
+    x: e.clientX - pos.value.x,
+    y: e.clientY - pos.value.y
+  }
+  window.addEventListener('mousemove', onDrag)
+  window.addEventListener('mouseup', stopDrag)
+}
+
+const onDrag = (e) => {
+  if (!dragging.value) return
+  pos.value.x = e.clientX - offset.value.x
+  pos.value.y = e.clientY - offset.value.y
+}
+
+const stopDrag = () => {
+  dragging.value = false
+  window.removeEventListener('mousemove', onDrag)
+  window.removeEventListener('mouseup', stopDrag)
+}
+
+
 const {userId} = useAuthStore()
 const { vError, vSuccess} = useAlertStore()
 const router = useRouter()
 const route = useRoute()
 const itemCd = route.params.id
-const dialog = ref(false)
 const historyId = ref('')
 const attachFileId = ref('')
 const materialMappingList = ref([])

@@ -3,7 +3,7 @@
 <v-breadcrumbs :items="['MES', '연구관리', '신 원료상세']"></v-breadcrumbs>
 <v-card>
   <v-card-text>
-    <v-form  @submit.prevent="saveInfo">
+    <v-form>
       <v-row>
         <v-col>
           <v-text-field
@@ -110,7 +110,7 @@
           <v-btn
             text="저장"
             color="brown-lighten-4"
-            type="submit"
+            @click="saveInfo"
             ></v-btn>
           <v-btn
             text="목록"
@@ -122,10 +122,18 @@
   </v-card-text>
 </v-card>
 
-<v-dialog v-model="dialog" width="800px" height="800px" persistent>
+<v-dialog v-model="dialog" width="800px" height="800px" persistent location="center">
     <component
       :is="currentComponent"
       :id="id"
+      :style="{
+          position: 'absolute',
+          top: `${pos.y}px`,
+          left: `${pos.x}px`,
+          cursor: dragging ? 'grabbing' : 'grab',
+        }"
+      @mousedown="startDrag"
+
       @selected="handleselect"
       @close-dialog="dialog = false"
     />
@@ -144,12 +152,41 @@ import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 
+const dialog = ref(false)
+const pos = ref({ x: 300, y: 200 })
+const dragging = ref(false)
+let offsetX = 0
+let offsetY = 0
+
+function startDrag(e) {
+  dragging.value = true
+  offsetX = e.clientX - pos.value.x
+  offsetY = e.clientY - pos.value.y
+
+  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('mouseup', stopDrag)
+}
+
+function onMouseMove(e) {
+  if (dragging.value) {
+    pos.value.x = e.clientX - offsetX
+    pos.value.y = e.clientY - offsetY
+  }
+}
+
+function stopDrag() {
+  dragging.value = false
+  window.removeEventListener('mousemove', onMouseMove)
+  window.removeEventListener('mouseup', stopDrag)
+}
+
+
 const { userId } = useAuthStore()
 const {vError, vSuccess, vInfo} = useAlertStore()
 const route = useRoute()
 const router = useRouter()
 const newMaterialCd = route.params.id
-const dialog = ref(false)
+
 const selectPop = ref('')
 const currentComponent = shallowRef(null)
 const materialMappingList = ref([])
@@ -180,6 +217,7 @@ const headers = [
 ]
 
 const saveInfo = async () =>{
+  form.userId = userId
   try{
     const params = {
       newMaterialInfo : form,

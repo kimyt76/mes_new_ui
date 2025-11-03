@@ -50,11 +50,6 @@
   <v-row>
     <v-col class="d-flex justify-end align-center mr-2" style="gap: 10px; margin-top: 10px;">
       <v-btn
-        color="brown-lighten-4"
-        text="신규"
-        @click="selectRowClick"
-        />
-      <v-btn
         class="excel-btn"
         text="엑셀"
         prepend-icon="mdi-microsoft-excel"
@@ -96,7 +91,6 @@
 <script setup>
 import { reactive, ref, onMounted, computed } from 'vue';
 import { exportToExcel } from '@/util/exportToExcel';
-import { VDateInput } from 'vuetify/labs/VDateInput'
 import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
 import { ApiLab } from '@/api/apiLab';
 import { useRouter } from 'vue-router';
