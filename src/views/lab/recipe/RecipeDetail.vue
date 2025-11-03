@@ -89,7 +89,7 @@
           <BaseHotTable
             ref="hotTable"
             :data="recipeList"
-            :colHeaders="['Phase', '품목코드', '품목명', '함량', '원가(원)', '단가(원/g)']"
+            :colHeaders="['No.', 'Phase', '품목코드', '품목명', '함량', '원가(원)', '단가(원/g)']"
             :columns="columns"
             :stretchH="'none'"
             :height="430"
@@ -118,8 +118,15 @@
             />
         </v-col>
         <v-col cols="auto">
+          <!--
           <v-btn
             v-if="writeYn === 'Y'"
+            text="저장"
+            color="brown-lighten-4"
+            type="submit"
+          />
+           -->
+          <v-btn
             text="저장"
             color="brown-lighten-4"
             type="submit"
@@ -149,7 +156,7 @@
   </v-card-text>
 </v-card>
 
-<v-dialog v-model="dialog" width="800px" height="800px" persistent>
+<v-dialog v-model="dialog" width="800px" height="800px" persistent :scrim="false">
     <component
       :is="currentComponent"
       :id="id"
@@ -173,17 +180,11 @@ import { useAlertStore } from '@/stores/alert'
 import UserListPop from '@/views/system/user/UserListPop.vue'
 import ClientListPop from '@/views/basic/client/ClientListPop.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useAuthComposable } from '@/composables/useAuthComposable'
-
-
-// import { storeToRefs } from 'pinia'
-// const { currentWriteYn } = storeToRefs(auth) // 반응형 유지됨
-// const { restoreWriteYn } = auth // 함수는 일반 구조분해로
-//const writeYn = computed(() => currentWriteYn.value)
+//import { useAuthComposable } from '@/composables/useAuthComposable'
 
 const dialog = ref(false)
 const hotTable = ref(null)
-const { writeYn , restoreWriteYn } = useAuthComposable()
+//const { writeYn , restoreWriteYn } = useAuthComposable()
 const { vError, vSuccess, vInfo, vWarning } = useAlertStore()
 const router = useRouter()
 const route = useRoute()
@@ -213,6 +214,7 @@ const form = reactive({
 })
 
 const columns = [
+  { data: 'sortDist', readOnly: true, className: 'htCenter', width: 60 },
   { data: 'phase', type: Handsontable.cellTypes.text , width: 60, className: 'htCenter'},
   { data: 'itemCd', type: Handsontable.cellTypes.text , width: 180,className: 'htCenter'},
   { data: 'itemName', type: Handsontable.cellTypes.text , width: 720},
@@ -240,7 +242,9 @@ const saveInfo = async () => {
       recipeInfo: { ...form },
       recipeList: recipeList.value,
     }
+
     params.recipeInfo.regDate = formatDate(params.recipeInfo.regDate)
+
     const res = await ApiLab.saveRecipeInfo(params)
     form.recipeId = res.data.recipeId
     vSuccess('저장되었습니다.')
@@ -273,10 +277,14 @@ const onAfterChange = async (changes, source) => {
 
   if (!hotInstance) return
 
+  let index = 0
   for (const [row, prop, oldVal, newVal] of changes) {
     // 품목코드(itemCd) 변경 시
     if (prop === 'itemCd' && newVal && newVal !== oldVal) {
       try {
+
+        index = index+1
+        hotInstance.setDataAtRowProp(row, 'sortDist', index)
 
         let res = null
 
@@ -314,6 +322,7 @@ const onAfterChange = async (changes, source) => {
     }
   }
 }
+
 // 합계 계산
 const totalContent = computed(() => {
   const sum = recipeList.value.reduce((acc, row) => acc + (Number(row.content) || 0), 0)
@@ -326,9 +335,42 @@ const totalUnitPrice = computed(() => {
   return recipeList.value.reduce((sum, row) => sum + (Number(row.unitPrice) || 0), 0).toFixed(7)
 })
 
+// const addRow = () => {
+//   recipeList.value.push({ phase: '', itemCd: '', itemName: '', content: 0, cost: 0, unitPrice: 0 })
+// }
 const addRow = () => {
-  recipeList.value.push({ phase: '', itemCd: '', itemName: '', content: 0, cost: 0, unitPrice: 0 })
-}
+  const hotInstance = hotTable.value?.hotInstance?.hotInstance;
+  const data = hotInstance?.getSourceData() || [];
+
+  const nextSort = data.length > 0  ? Math.max(...data.map(row => row.sortDist || 0)) + 1  : 1;
+
+  const newRow = {
+    sort_dist: nextSort,
+    phase: '',
+    itemCd: '',
+    itemName: '',
+    content: 0,
+    inPrice: 0,
+    unitPrice: 0,
+  };
+
+console.log('hotInstance', hotInstance)
+  if (hotInstance) {
+    // 'insert_row_above': 지정한 인덱스 위쪽에 새 행 추가
+    // 'insert_row_below': 지정한 인덱스 아래쪽에 새 행 추가
+    hotInstance.alter('insert_row_above', data.length);
+    hotInstance.setDataAtRowProp(data.length, 'sortDist', nextSort);
+    hotInstance.setDataAtRowProp(data.length, 'phase', '');
+    hotInstance.setDataAtRowProp(data.length, 'itemCd', '');
+    hotInstance.setDataAtRowProp(data.length, 'itemName', '');
+    hotInstance.setDataAtRowProp(data.length, 'content', 0);
+    hotInstance.setDataAtRowProp(data.length, 'inPrice', 0);
+    hotInstance.setDataAtRowProp(data.length, 'unitPrice', 0);
+  } else {
+    recipeList.value.push(newRow);
+  }
+};
+
 const onAfterSelection = (row, col, row2, col2) => {
   lastSelected.value = [row, col, row2, col2]
 }
@@ -343,18 +385,16 @@ const removeRow = () => {
   hot.alter('remove_row', startRow, endRow - startRow + 1)
 }
 
-
 onMounted( async() =>{
-  if (isEmpty(writeYn.value)) {
-    restoreWriteYn();
-  }
-
+  // if (isEmpty(writeYn.value)) {
+  //   restoreWriteYn();
+  // }
   prodTypes.value = await ApiCommon.getCodeList('prod_type')
   const hot = hotTable.value?.hotInstance
   if (!hot) return
 
-  if ( !isEmpty(recipeId)){
-    const res = await ApiLab.getRecipeInfo(recipeId)
+  if ( !isEmpty(form.recipeId)){
+    const res = await ApiLab.getRecipeInfo(form.recipeId)
     Object.assign(form, res.recipeInfo)
 
     recipeList.value.splice(0, recipeList.value.length, ...res.recipeList)
@@ -364,7 +404,7 @@ onMounted( async() =>{
 })
 
 const downloadRecipe = async () =>{
-  if (isEmpty(recipeId)) {
+  if (isEmpty(form.recipeId)) {
     vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
     return
   }
@@ -388,13 +428,13 @@ const downloadRecipe = async () =>{
 }
 
 const downloadIngredient = async () =>{
-  if (isEmpty(recipeId)) {
+  if (isEmpty(form.recipeId)) {
     vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
     return
   }
 
   try {
-    const blob = await ApiLab.downloadIngredient(recipeId)
+    const blob = await ApiLab.downloadIngredient(form.recipeId)
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -407,7 +447,7 @@ const downloadIngredient = async () =>{
 }
 
 const downloadIngredientCn = async () =>{
-  if (isEmpty(recipeId)) {
+  if (isEmpty(form.recipeId)) {
     vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
     return
   }
