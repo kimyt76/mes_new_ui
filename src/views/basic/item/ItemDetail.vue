@@ -375,7 +375,6 @@ onMounted( async () => {
   itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
 
   const res = await ApiItem.getItemInfo(route.params.id);
-  console.log('res', res)
   Object.assign( form, res)
 
   inPriceHistory.value =  res.priceHistory.filter(h => h.priceType === 'I')
@@ -415,14 +414,18 @@ const savePrice = async () =>{
     outPrice: form.outPrice,
     userId: userId,
   }
+
   try {
     const msg = await ApiItem.updatePriceInfo(params)
     vSuccess(msg)
 
+    const priceRes =  await ApiItem.getItemInfo(form.itemCd)
+    inPriceHistory.value =  priceRes.priceHistory.filter(h => h.priceType === 'I')
+    outPriceHistory.value = priceRes.priceHistory.filter(h => h.priceType === 'O')
+
     // 변경 후 이전값 갱신
     oldPrices.inPrice = form.inPrice
     oldPrices.outPrice = form.outPrice
-
     changePrice.value = '' // 초기화
   } catch (err) {
     console.error(err)
@@ -456,23 +459,18 @@ const oldPrices = reactive({
 })
 
 const handlePriceBlur = () => {
-  //  console.log(' 전 입고단가 :', oldPrices.inPrice)
-  //  console.log(' 후 입고단가 :', form.inPrice)
-  //  console.log(' 전 출고단가 :', oldPrices.outPrice)
-  //  console.log(' 전 출고단가 :', form.outPrice)
-
   const inChanged = form.inPrice !== oldPrices.inPrice
   const outChanged = form.outPrice !== oldPrices.outPrice
 
   if (inChanged && !outChanged) {
     changePrice.value = 'I'
-    console.log('입고단가만 변경됨:', form.inPrice)
+    //console.log('입고단가만 변경됨:', form.inPrice)
   } else if (!inChanged && outChanged) {
     changePrice.value = 'O'
-    console.log('출고단가만 변경됨:', form.outPrice)
+    //console.log('출고단가만 변경됨:', form.outPrice)
   } else if (inChanged && outChanged) {
     changePrice.value = 'A'
-    console.log('입고단가와 출고단가 모두 변경됨:', form.inPrice, form.outPrice)
+    //console.log('입고단가와 출고단가 모두 변경됨:', form.inPrice, form.outPrice)
   }
   //console.log('changePrice:', changePrice.value)
 }
@@ -484,7 +482,6 @@ const customerPop = () =>{
 const goList = () =>{
   router.push({name:'ItemList'})
 }
-
 
 </script>
 
