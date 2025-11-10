@@ -1,7 +1,7 @@
 <template>
 <v-card>
   <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
-    <v-toolbar-title>성분코드조회</v-toolbar-title>
+    <v-toolbar-title>거래처 정보</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-btn icon @click="emit('close-dialog')">
       <v-icon>mdi-close</v-icon>
