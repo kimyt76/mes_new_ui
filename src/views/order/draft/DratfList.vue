@@ -1,6 +1,6 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '수주관리', '사양서목록 관리']"
+    :items="['MES', '수주관리', '사양서목록']"
     class="custom-breadcrumbs"
     />
   <v-card class="pa-1" style="height: 60px;">
