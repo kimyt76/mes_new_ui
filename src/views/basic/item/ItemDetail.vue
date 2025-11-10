@@ -172,7 +172,6 @@
                     입고단가 변경 이력
                   </v-card-title>
                   <v-divider></v-divider>
-
                   <v-list density="compact">
                     <v-list-item
                       v-for="(item, i) in inPriceHistory"
@@ -184,7 +183,6 @@
                       </div>
                     </v-list-item>
                   </v-list>
-
                   <v-divider></v-divider>
                   <v-card-actions class="justify-end">
                     <v-btn text="닫기" size="small" @click="inPriceMenu = false" />
@@ -192,7 +190,6 @@
                 </v-card>
               </v-menu>
             </v-col>
-
             <v-col >
               <v-text-field
                 :model-value="formatComma(form.outPrice)"
@@ -238,7 +235,6 @@
                       </div>
                     </v-list-item>
                   </v-list>
-
                   <v-divider></v-divider>
                   <v-card-actions class="justify-end">
                     <v-btn text="닫기" size="small" @click="outPriceMenu = false" />
@@ -246,7 +242,6 @@
                 </v-card>
               </v-menu>
             </v-col>
-
             <v-col>
                 <v-select
                   v-model="form.useYn"
@@ -258,6 +253,12 @@
                   density="compact"
                 />
             </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+
+            </v-col>
+            <v-col></v-col>
           </v-row>
           <v-row>
             <v-col>

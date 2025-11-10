@@ -1,8 +1,13 @@
 <template>
   <v-card>
-    <v-card-item
-      title="폼목정보관리(완제품)"
-    />
+    <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+    <v-toolbar-title>폼목정보관리(완제품)</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon @click="emit('close-dialog')">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </v-toolbar>
+  <v-spacer></v-spacer>
     <v-card-text>
       <v-form ref="vform">
         <v-row  class="mt-3">
@@ -350,6 +355,11 @@ const saveInfo = async () =>{
 .v-card-item  {
   height: 45px;
   background-color:#BCAAA4
+}
+.toolbar-Head {
+  color: white;
+  background-color:#546E7A;
+
 }
 
 </style>
