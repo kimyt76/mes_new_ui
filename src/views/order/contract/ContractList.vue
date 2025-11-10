@@ -10,18 +10,22 @@
         <v-col class="d-flex flex-row ga-3">
           <v-date-input
             v-model="form.strDate"
-            label="주문일자"
+            label="주문시작일자"
             :display-format="formatDate"
             density="compact"
             variant="underlined"
+            prepend-icon=""
+            append-inner-icon="mdi-calendar"
             style="width: 150px;"
           />
           <v-date-input
             v-model="form.toDate"
-            label="주문일자"
+            label="주문종료일자"
             :display-format="formatDate"
             density="compact"
             variant="underlined"
+            prepend-icon=""
+            append-inner-icon="mdi-calendar"
             style="width: 150px;"
           />
           <v-text-field
