@@ -55,7 +55,7 @@
         <v-col>
           <v-select
             v-model="form.prodType"
-            label="제품코드"
+            label="제형코드"
             :items="prodTypes"
             item-title="codeNm"
             item-value="code"
@@ -118,14 +118,6 @@
             />
         </v-col>
         <v-col cols="auto">
-          <!--
-          <v-btn
-            v-if="writeYn === 'Y'"
-            text="저장"
-            color="brown-lighten-4"
-            type="submit"
-          />
-           -->
           <v-btn
             text="저장"
             color="brown-lighten-4"
@@ -144,7 +136,7 @@
             />
         </v-col>
         <v-col cols="auto">
-          <v-btn text="중국위행허가"
+          <v-btn text="중국위생허가"
             @click="downloadIngredientCn"
           />
         </v-col>
@@ -230,6 +222,10 @@ const saveInfo = async () => {
   }
   if (isEmpty(form.prodName)) {
     vWarning('제품명을 입력해주세요.')
+    return
+  }
+  if (isEmpty(form.prodType)) {
+    vWarning('제형코드를 입력해주세요.')
     return
   }
   if (totalContent.value !== 100) {
@@ -353,8 +349,6 @@ const addRow = () => {
     inPrice: 0,
     unitPrice: 0,
   };
-
-console.log('hotInstance', hotInstance)
   if (hotInstance) {
     // 'insert_row_above': 지정한 인덱스 위쪽에 새 행 추가
     // 'insert_row_below': 지정한 인덱스 아래쪽에 새 행 추가
@@ -389,7 +383,9 @@ onMounted( async() =>{
   // if (isEmpty(writeYn.value)) {
   //   restoreWriteYn();
   // }
-  prodTypes.value = await ApiCommon.getCodeList('prod_type')
+  prodTypes.value = await ApiLab.getProdTypeList()
+  form.prodType = prodTypes.value[0]?.code ?? null;
+
   const hot = hotTable.value?.hotInstance
   if (!hot) return
 
@@ -406,6 +402,10 @@ onMounted( async() =>{
 const downloadRecipe = async () =>{
   if (isEmpty(form.recipeId)) {
     vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
+    return
+  }
+  if (isEmpty(form.prodType)) {
+    vWarning('제형코드를 입력해주세요.')
     return
   }
 
@@ -433,6 +433,11 @@ const downloadIngredient = async () =>{
     return
   }
 
+  if (isEmpty(form.prodType)) {
+    vWarning('제형코드를 입력해주세요.')
+    return
+  }
+
   try {
     const blob = await ApiLab.downloadIngredient(form.recipeId)
     const url = window.URL.createObjectURL(blob)
@@ -451,13 +456,17 @@ const downloadIngredientCn = async () =>{
     vInfo('처방정보가 없습니다. 저장 후 시도해주세요.')
     return
   }
+  if (isEmpty(form.prodType)) {
+    vWarning('제형코드를 입력해주세요.')
+    return
+  }
 
   try {
     const blob = await ApiLab.downloadIngredientCn(recipeId)
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `중국위행허가_${form.prodName}.xlsx`
+    a.download = `중국위생허가_${form.prodName}.xlsx`
     a.click()
     window.URL.revokeObjectURL(url)
   } catch (err) {
