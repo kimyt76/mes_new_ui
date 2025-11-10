@@ -89,9 +89,22 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
+import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
 const emit = defineEmits(['selected','close-dialog'])
+
+const props = defineProps({
+  type: {
+    type: String,
+  },
+  cd: {
+    type: String,
+  },
+  name: {
+    type: String,
+  },
+})
 
 const loading = ref(false)
 const srhForm = ref('')
@@ -122,12 +135,23 @@ const searchList = async () =>{
 }
 
 const itemRow = (event, item) =>{
-  //console.log('item', item.item)
+ //console.log('item', item.item)
   emit('selected', item.item)
 }
 
 onMounted( async () => {
   itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
+
+  if ( !isEmpty(props.type) ){
+    form.itemTypeCd = props.type
+  }
+  if ( !isEmpty( props.cd) ){
+    form.itemCd = props.cd
+  }
+  if ( !isEmpty( props.name) ){
+    form.itemName = props.name
+  }
+  await searchList()
 })
 
 </script>
