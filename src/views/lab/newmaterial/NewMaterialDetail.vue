@@ -58,6 +58,7 @@
             variant="underlined"
             density="compact"
             append-inner-icon="mdi-magnify"
+            readonly
             @click:append-inner="openPop('P')"
           />
         </v-col>
@@ -68,13 +69,20 @@
             - 성분코드
           </v-card-subtitle>
         </v-col>
-        <v-col class="d-flex justify-end">
+        <v-col class="d-flex justify-end" style="gap: 8px;">
           <v-btn
             color="brown-lighten-4"
             class="mt-3"
             text="추가+"
             density="compact"
             @click="openPop('I')"
+            />
+          <v-btn
+            color="brown-lighten-4"
+            class="mt-3"
+            text="신원료"
+            density="compact"
+            @click="openPop('N')"
             />
         </v-col>
       </v-row>
@@ -108,9 +116,14 @@
       <v-row>
         <v-col class="d-flex justify-end mt-3 ga-3">
           <v-btn
+            text="원료이관"
+            color="brown-lighten-4"
+            @click="saveInfo('N')"
+            ></v-btn>
+          <v-btn
             text="저장"
             color="brown-lighten-4"
-            @click="saveInfo"
+            @click="saveInfo('S')"
             ></v-btn>
           <v-btn
             text="목록"
@@ -151,6 +164,7 @@ import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
+import NewMaterialListPop from './NewMaterialListPop.vue';
 
 const dialog = ref(false)
 const pos = ref({ x: 300, y: 200 })
@@ -216,7 +230,7 @@ const headers = [
     { title: '-',           key: 'actions',           align: 'center' ,width : '10px'},
 ]
 
-const saveInfo = async () =>{
+const saveInfo = async (type) =>{
   form.userId = userId
   try{
     const params = {
@@ -224,11 +238,22 @@ const saveInfo = async () =>{
       materialMappingList : materialMappingList.value,
     }
 
-    const res = await ApiLab.saveNewMaterialInfo(params)
-    form.newMaterialCd  = res.data.newMaterialCd
-    vSuccess("저장되었습니다.")
+    if( type === 'N' ){
+      if (isEmpty(form.itemCd) ) {
+        vInfo("이관할 품목코드를 선택해주세요.")
+        return
+      }
+
+      const res = await ApiLab.saveNewMaterialMapping(params)
+      vSuccess("이관 되었습니다.")
+      router.push({name:'NewMaterialList'})
+    }else{
+      const res = await ApiLab.saveNewMaterialInfo(params)
+      form.newMaterialCd  = res.data.newMaterialCd
+      vSuccess("저장되었습니다.")
+    }
   }catch(err){
-    vError("저장에 실패했습니다.")
+    vError(err.message)
   }
 }
 
@@ -241,6 +266,8 @@ const openPop = (type) =>{
     currentComponent.value = CustomerListPop
   }else if ( type === 'P'  ) {
     currentComponent.value = ItemListSinglePop
+  }else if ( type === 'N'  ) {
+    currentComponent.value = NewMaterialListPop
   }
   dialog.value = true
 }
@@ -252,9 +279,11 @@ const handleselect = (obj) => {
   }else if ( selectPop.value === 'P'  ) {
     form.itemCd = obj.itemCd
     form.itemName = obj.itemName
-   }else if ( selectPop.value === 'I'  ) {
+   }else if ( selectPop.value === 'I' || selectPop.value === 'N'  ) {
     ingredientList(obj)
    }
+
+   dialog.value = false
 }
 
 const ingredientList = (obj) =>{
@@ -266,8 +295,8 @@ const ingredientList = (obj) =>{
       ingredientCode: o.ingredientCode,
       krIngredientName: o.krIngredientName,
       enIngredientName: o.enIngredientName,
-      inContent: '',
-      outContent: '',
+      inContent: o.inContent,
+      outContent: o.outContent,
       casNo: o.casNo,
       functionNm: o.functionNm,
       limitCountry: o.limitCountry,
