@@ -131,6 +131,5 @@ onMounted( async() => {
 .toolbar-Head {
   color: white;
   background-color:#546E7A;
-
 }
 </style>

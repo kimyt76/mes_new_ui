@@ -344,12 +344,12 @@
         </v-col>
           <v-data-table-virtual
             :headers="addressHeadeers"
-            :items="clinetAddressList"
+            :items="clientAddressList"
             class="custom-table"
             >
             <template #item.address="{ item, index }">
               <input
-                v-model="clinetAddressList[index].address"
+                v-model="clientAddressList[index].address"
                 type="text"
                 style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
                 class="custom-line"
@@ -372,12 +372,12 @@
         </v-col>
         <v-data-table-virtual
           :headers="clientHistoryHeader"
-          :items="clinetHistroryList"
+          :items="clientHistoryList"
           class="custom-table"
           >
           <template #item.changeDate="{ item, index }">
             <input
-              v-model="clinetHistroryList[index].changeDate"
+              v-model="clientHistoryList[index].changeDate"
               type="text"
               style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
@@ -385,7 +385,7 @@
           </template>
           <template #item.historyContents="{ item, index }">
             <input
-              v-model="clinetHistroryList[index].historyContents"
+              v-model="clientHistoryList[index].historyContents"
               type="text"
               style="text-align: left; width: 95%; min-width: 95%; max-width: 95%;"
               class="custom-line"
@@ -442,8 +442,8 @@ const tradeTypes = ref([])
 const clientType = ref([])
 const responSalesBizs = ref([])
 const clientManagerList = ref([])
-const clinetAddressList = ref([])
-const clinetHistroryList = ref([])
+const clientAddressList = ref([])
+const clientHistoryList = ref([])
 
 const isBusinessType = ref(false)
 const dialog = ref(false)
@@ -462,7 +462,7 @@ const clientHistoryHeader = [
   { title: '-',         key: 'actions',           align: 'center' ,width : '10px'},
 ]
 const addressHeadeers = [
-  { title: '주소.',  key: 'address',       align: 'center', width: '500px'},
+  { title: '주소.',  key: 'address',       align: 'center', width: '600px'},
   { title: '-',      key: 'actions',       align: 'center' ,width : '10px'},
 ]
 const managerHeaders = [
@@ -522,8 +522,8 @@ const saveInfo = async () => {
   const params = {
     clientInfo: form,
     clientManagerList: clientManagerList.value,
-    clinetAddressList: clinetAddressList.value,
-    clinetHistroryList: clinetHistroryList.value,
+    clientAddressList: clientAddressList.value,
+    clientHistoryList: clientHistoryList.value,
   }
 
   params.clientInfo.regDate = formatDate(params.clientInfo.regDate)
@@ -564,16 +564,16 @@ const addRowU = () => {
 }
 
 const addRowA = () => {
-  let nextId = clinetAddressList.value.length
-  clinetAddressList.value.push({
+  let nextId = clientAddressList.value.length
+  clientAddressList.value.push({
     id: nextId++,
     address: '',
   })
 }
 
 const addRowH = () => {
-  let nextId = clinetHistroryList.value.length
-  clinetHistroryList.value.push({
+  let nextId = clientHistoryList.value.length
+  clientHistoryList.value.push({
     id: nextId++,
     changeDate: '',
     historyContents: '',
@@ -582,20 +582,18 @@ const addRowH = () => {
 
 // 행 삭제
 const removeRow = (index) => {
-  console.log('index', index)
   clientManagerList.value.splice(index, 1)
 }
 // 행 삭제
 const removeRow1 = (index) => {
-  clinetAddressList.value.splice(index, 1)
+  clientAddressList.value.splice(index, 1)
 }
 // 행 삭제
 const removeRow2 = (index) => {
-  clinetHistroryList.value.splice(index, 1)
+  clientHistoryList.value.splice(index, 1)
 }
 
 onMounted( async () => {
-  //console.log('clientId', clientId)
   tradeTypes.value = await ApiCommon.getCodeList('trade_type')
   clientType.value = await ApiCommon.getCodeList('client_type')
   responSalesBizs.value = await ApiCommon.getCodeList('respon_sales_biz')
@@ -605,8 +603,8 @@ onMounted( async () => {
 
     Object.assign(form, res.clientInfo)
     clientManagerList.value = res.clientManagerList
-    clinetHistroryList.value = res.clientHistoryList
-    clinetAddressList.value = res.clinetAddressList
+    clientHistoryList.value = res.clientHistoryList
+    clientAddressList.value = res.clientAddressList
   }
 })
 

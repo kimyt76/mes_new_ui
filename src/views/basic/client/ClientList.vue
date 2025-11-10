@@ -3,7 +3,6 @@
     :items="['MES', '기본관리', '고객사관리']"
     class="custom-breadcrumbs"
     />
-
   <v-card class="pa-1" style="height: 60px;">
     <v-card-text >
       <v-row>
@@ -15,7 +14,9 @@
             :display-format="formatDate"
             density="compact"
             variant="underlined"
-            style="width: 200px;"
+            prepend-icon=""
+            append-inner-icon="mdi-calendar"
+            style="width: 130px;"
           />
           <v-date-input
             v-model="form.toDate"
@@ -23,7 +24,9 @@
             :display-format="formatDate"
             density="compact"
             variant="underlined"
-            style="width: 200px;"
+            prepend-icon=""
+            append-inner-icon="mdi-calendar"
+            style="width: 130px;"
           />
           <v-text-field
             v-model="form.clientName"
