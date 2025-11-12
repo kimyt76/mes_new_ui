@@ -6,18 +6,21 @@
       <v-form ref="vform" @submit.prevent="saveInfo" >
         <v-card-text>
           <v-row>
-            <v-col class="d-flex ga-2 pa-1">
+            <v-col class="d-flex ga-3">
               <v-date-input
                 v-model="form.contractDate"
                 label="주문일자"
                 density="compact"
                 :display-format="formatDate"
                 variant="underlined"
-                style="width: 200px;"
+                prepend-icon=""
+                append-inner-icon="mdi-calendar"
+                style="width: 100px;"
               />
               <v-text-field
                 v-model="form.seq"
                 density="compact"
+                prepend-icon=""
                 style="width: 40px;"
                 readonly
               />
@@ -30,6 +33,8 @@
                 :display-format="formatDate"
                 variant="underlined"
                 style="width: 200px;"
+                prepend-icon=""
+                append-inner-icon="mdi-calendar"
                 hide-details
               />
             </v-col>

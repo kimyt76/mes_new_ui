@@ -1,6 +1,6 @@
 <template>
 <div :id="$attrs.id"></div>
-<v-breadcrumbs :items="['MES', '영업관리', '주문신규']" class="custom-breadcrumbs"/>
+<v-breadcrumbs :items="['MES', '영업관리', '주문상세']" class="custom-breadcrumbs"/>
   <v-card>
     <v-card-item title="주문서입력"/>
       <v-form ref="vform">
@@ -13,6 +13,8 @@
                 density="compact"
                 :display-format="formatDate"
                 variant="underlined"
+                prepend-icon=""
+                append-inner-icon="mdi-calendar"
                 style="width: 200px;"
                 readonly
               />
@@ -30,6 +32,8 @@
                 density="compact"
                 :display-format="formatDate"
                 variant="underlined"
+                prepend-icon=""
+                append-inner-icon="mdi-calendar"
                 style="width: 200px;"
                 hide-details
                 readonly
