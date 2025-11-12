@@ -1,6 +1,6 @@
 <template>
 <v-breadcrumbs
-    :items="['MES', '영업관리', '수주관리']"
+    :items="['MES', '영업관리', '주문서 목록']"
     class="custom-breadcrumbs"
     />
   <v-card class="pa-1" style="height: 60px;">
@@ -215,11 +215,11 @@ const form = reactive({
 })
 
 const headers = [
-  { title: '일자-No',          key: 'contractDateSeq',   align: 'center' , width: '100px'},
+  { title: '일자-No',          key: 'contractDateSeq',   align: 'center' , width: '120px'},
   { title: 'PO No',            key: 'poNo',              align: 'center' , width: '120px'},
   { title: '품목코드',          key: 'itemCd',            align: 'center',   width: '120px'},
-  { title: '품목명',            key: 'itemName',          align: 'start',   width: '380px'},
-  { title: '납기예정일자',      key: 'expectedDueDate',   align: 'center' , width: '90px'},
+  { title: '품목명',            key: 'itemName',          align: 'start',   width: '340px'},
+  { title: '납기예정일자',      key: 'expectedDueDate',   align: 'center' , width: '120px'},
   { title: '고객사명',          key: 'clientName',        align: 'center',   width: '200px'},
   { title: '담당자명',          key: 'managerName',       align: 'center' , width: '100px'},
   { title: '수주유형',          key: 'orderType',       align: 'center' , width: '80px'},
