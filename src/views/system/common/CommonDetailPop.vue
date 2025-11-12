@@ -1,9 +1,13 @@
 <template>
   <v-card>
-    <v-card-item
-      :title="props.title"
-      style="height: 30px;"
-      />
+    <v-toolbar height="40" class="d-flex align-center justify-space-between px-2 toolbar-Head">
+    <v-toolbar-title>{{ props.title}}</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon @click="emit('close-dialog')">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+  </v-toolbar>
+  <v-spacer></v-spacer>
       <v-row
         class="mt-3">
         <v-col
