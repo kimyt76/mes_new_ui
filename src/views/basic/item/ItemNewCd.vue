@@ -1,6 +1,6 @@
 <template>
   <div :id="$attrs.id"></div>
-  <v-breadcrumbs :items="['MES', '기본관리', '품목코드 신규(N)']"></v-breadcrumbs>
+  <v-breadcrumbs :items="['MES', '기본관리', '품목코드 신규']"></v-breadcrumbs>
 
   <v-card>
     <v-card-item
