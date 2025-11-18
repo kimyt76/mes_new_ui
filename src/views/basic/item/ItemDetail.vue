@@ -217,7 +217,6 @@
                     mdi-information-outline
                   </v-icon>
                 </template>
-
                 <v-card min-width="250">
                   <v-card-title class="text-subtitle-2 font-weight-bold">
                     출고단가 변경 이력
@@ -256,8 +255,22 @@
           </v-row>
           <v-row>
             <v-col>
-
+              <v-text-field
+                v-model="expiryDate"
+                label="유효기한"
+                variant="underlined"
+                density="compact"
+              />
             </v-col>
+            <v-col>
+              <v-text-field
+                v-model="itemCompany"
+                label="원료제조사"
+                variant="underlined"
+                density="compact"
+              />
+            </v-col>
+            <v-col></v-col>
             <v-col></v-col>
           </v-row>
           <v-row>
@@ -366,6 +379,8 @@ const form = reactive({
   unit: '',
   spec: '',
   category: '',
+  expiryDate: '',
+  itemCompany : '',
 
   userId: userId,
 })
