@@ -72,6 +72,15 @@ export const ApiLab = {
   },
 
   //연구처방
+  getProdTypeList: async() => {
+    try{
+      const res = await API_URL.get('/recipe/getProdTypeList')
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
   getRecipeList: async(params) => {
     try{
       const res = await API_URL.post('/recipe/getRecipeList', params)
@@ -163,5 +172,62 @@ export const ApiLab = {
     }catch(err) {
       throw new Error(err.response?.data);
     }
-  }
+  },
+  getNewMaterialListMapping: async(id) => {
+    try{
+      const res = await API_URL.get(`/newMaterial/getNewMaterialListMapping/${id}`)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  saveNewMaterialMapping: async(params) =>{
+    try{
+      const res =  await API_URL.post('/newMaterial/saveNewMaterialMapping', params)
+
+      return res.data
+    }catch(err) {
+      const message = err.response?.data?.message
+      throw new Error(message);
+    }
+  },
+
+  //샘플 리스트
+  getSampleList: async(params) => {
+    try{
+      const res = await API_URL.post('/sample/getSampleList', params)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  getSampleInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/sample/getSampleInfo/${id}`)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  saveSampleInfo: async(params) =>{
+    try{
+      const res =  await API_URL.post('/sample/saveSampleInfo', params)
+
+      return res.data
+    }catch(err) {
+      throw new Error(err.response?.data);
+    }
+  },
+  getNextProdMgmtNo: async() => {
+    try{
+      const res = await API_URL.get('/sample/getNextProdMgmtNo')
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
 }
