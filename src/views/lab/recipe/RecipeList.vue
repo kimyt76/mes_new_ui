@@ -105,11 +105,11 @@ const form = reactive({
 const headers = [
   { title: 'No.',       key: 'rowNum',      align: 'center', width: '30px' },
   { title: '제품명',    key: 'prodName',    align: 'start',  width: '400px' },
-  { title: '고객사',    key: 'clientName',  align: 'center',  width: '200px' },
+  { title: '고객사',    key: 'clientName',  align: 'start',  width: '220px' },
   { title: 'Lab No',    key: 'labNo',       align: 'center',  width: '180px' },
-  { title: '담당자',    key: 'managerName',  align: 'center',    width: '120px' },
-  { title: '제품',      key: 'prodType',      align: 'center',    width: '120px' },
-  { title: '등록일자',  key: 'regDate',     align: 'center',    width: '110px' },
+  { title: '담당자',    key: 'managerName',  align: 'center',    width: '110px' },
+  { title: '제품',      key: 'prodType',      align: 'center',    width: '200px' },
+  { title: '등록일자',  key: 'regDate',       align: 'center',    width: '110px' },
 ]
 
 const srhRecipeList = async () => {
