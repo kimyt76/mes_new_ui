@@ -344,5 +344,9 @@ const userCheck = () => {
   height: 45px;
   background-color:#BCAAA4
 }
+.toolbar-Head {
+  color: white;
+  background-color:#546E7A;
 
+}
 </style>
