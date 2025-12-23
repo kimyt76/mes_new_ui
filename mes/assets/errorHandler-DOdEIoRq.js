@@ -1,0 +1,1 @@
+import{L as l}from"./index-BCdxernO.js";function d(s){var o,a,t,e,n;console.error("API ERROR:",s);const m=((a=(o=s==null?void 0:s.response)==null?void 0:o.data)==null?void 0:a.message)||((n=(e=(t=s==null?void 0:s.response)==null?void 0:t.data)==null?void 0:e.data)==null?void 0:n.message)||(s==null?void 0:s.message)||"처리 중 오류가 발생했습니다.";l().vError(m)}export{d as h};

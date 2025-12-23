@@ -1,0 +1,26 @@
+/** 제조관리 */
+export default [
+
+      {
+        path: 'matPlan',
+        name: 'MatPlanList',
+        component: () => import('@/views/mat/matPlan/MatPlanList.vue')
+      },
+      {
+        path: 'equirementCalculation',
+        name: 'EquirementCalculation',
+        component: () => import('@/views/mat/equirementCalculation/Equirement_Calculation.vue')
+      },
+      {
+        path: 'itemM1Equirment',
+        name: 'ItemM1Equirment',
+        component: () => import('@/views/mat/itemM1Equirment/ItemM1Equirment.vue')
+      },
+      {
+        path: 'mat',
+        name: 'MatList',
+        component: () => import('@/views/mat/mat/MatList.vue')
+      },
+
+
+    ]

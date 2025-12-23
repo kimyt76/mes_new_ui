@@ -1,0 +1,26 @@
+# ======================
+# Node / Frontend
+# ======================
+node_modules/
+dist/
+coverage/
+.cache/
+.output/
+.nuxt/
+.nitro/
+.eslintcache
+
+# Logs
+*.log*
+
+# Env
+.env
+
+# OS
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
