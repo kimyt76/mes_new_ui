@@ -37,7 +37,7 @@
 
     </form>
     <div class="flex items-center justify-end gap-2 mb-2">
-        <Button label="신규" class="btn-new" @click="selectRowClick"/>
+        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick"/>
         <Button label="소요량" class="btn-use" />
         <Button label="삭제" class="btn-del" />
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" ></Button>
@@ -188,11 +188,6 @@ const downloadExcel = () =>{
   display: flex;
   justify-content: center;
 }
-.btn-new {
-  background-color: #5a9cff !important;
-  color: white !important;
-}
-
 .btn-use {
   background-color: #36cfc9 !important;
   color: white !important;

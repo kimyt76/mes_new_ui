@@ -46,7 +46,7 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규" icon="pi pi-file-excel"  @click="selectRowClick('')"></Button>
+    <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 <div>
