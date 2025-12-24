@@ -26,15 +26,23 @@
                 style="width: 160px;"
             />
 
-            <Button label="검색" icon="pi pi-search" severity="secondary" type="submit"></Button>
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600" type="submit"></Button>
         </template>
     </Toolbar>
    </Fluid>
     </form>
-    <div class="flex items-center justify-end gap-2 mb-2">
+    <div class="flex items-center justify-between mb-2">
+    <!-- 왼쪽: 총 건수 -->
+    <div class="font-semibold ml-2">
+        총 {{ totalCount }} 건
+    </div>
+
+    <!-- 오른쪽: 버튼 -->
+    <div class="flex items-center gap-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary" @click="openPop('')"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" ></Button>
     </div>
+</div>
     <div class="flex flex-col mt-2">
         <DataTable
             :value="ingredientList"
@@ -87,7 +95,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import IngredientPop from './IngredientPop.vue';
 
@@ -96,6 +104,9 @@ const { vError, vSuccess} = useAlertStore()
 const visible = ref(false)
 const functions = ref([])
 const ingredientList = ref([])
+const totalCount = computed(() => {
+  return Array.isArray(ingredientList.value) ? ingredientList.value.length : 0
+})
 const home = ref({
     icon: 'pi pi-home'
 });

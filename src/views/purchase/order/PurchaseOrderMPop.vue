@@ -180,15 +180,8 @@
     </DataTable>
 </div>
 <div class="w-full flex gap-2 justify-end mt-2">
-    <Button
-        label="저장"
-        class="btn-save"
-        @click="saveInfo"
-        />
-    <Button
-        label="닫기"
-        @click="closeDialog"
-        />
+    <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
+    <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
     <Dialog
         v-model:visible="itemDialog"
@@ -404,8 +397,4 @@ const closeDialog = () =>{
   height: 100%;
 }
 
-.btn-save {
-  background-color: #5a9cff !important;
-  color: white !important;
-}
 </style>

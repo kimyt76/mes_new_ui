@@ -33,14 +33,22 @@
                 <label for="on_label1">결재상태</label>
              </FloatLabel>
 
-            <Button label="검색" icon="pi pi-search" severity="secondary" type="submit"></Button>
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600" type="submit"></Button>
             </div>
         </template>
     </Toolbar>
 
     </form>
-    <div class="flex items-center justify-end gap-2 mb-2">
-        <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+    <div class="flex items-center justify-between mb-2">
+        <!-- 왼쪽: 총 건수 -->
+        <div class="font-semibold ml-2">
+            총 {{ totalCount }} 건
+        </div>
+
+        <!-- 오른쪽: 버튼 -->
+        <div class="flex items-center gap-2">
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+        </div>
     </div>
     <div class="flex flex-col mt-2">
         <DataTable
@@ -86,7 +94,7 @@ import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import BomDetailPop from './BomDetailPop.vue';
 
 const {vInfo} = useAlertStore()
@@ -95,6 +103,9 @@ const dt = ref(null);
 const approvaStates = ref([])
 const itemTypeCds = ref([])
 const bomList = ref([])
+const totalCount = computed(() => {
+  return Array.isArray(bomList.value) ? bomList.value.length : 0
+})
 const selectedItem = ref([]);
 
 const form = reactive({

@@ -31,7 +31,7 @@
                 label="거래처명"
                 style="width: 200px;"
             />
-            <Button label="검색" icon="pi pi-search" severity="secondary" type="submit"></Button>
+            <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"></Button>
         </template>
     </Toolbar>
    </Fluid>
@@ -111,7 +111,9 @@ const itemList = ref([])
 const selectedItem = ref(null);
 const loading = ref(false)
 const tableWrapper = ref(null);
-const totalCount = computed(() => itemList.value.length)
+const totalCount = computed(() => {
+  return Array.isArray(itemList.value) ? itemList.value.length : 0
+})
 const form = reactive({
     itemName: '',
     itemCd: '',

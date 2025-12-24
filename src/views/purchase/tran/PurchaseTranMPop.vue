@@ -169,15 +169,8 @@
         </Column>
     </DataTable>
     <div class="w-full flex gap-2 justify-end">
-        <Button
-            label="저장"
-            severity="secondary"
-            @click="saveInfo"
-            />
-        <Button
-            label="닫기"
-            @click="closeDialog"
-            />
+        <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
+        <Button label="닫기"   outlined class="ml-2" @click="closeDialog"/>
     </div>
 
     <Dialog

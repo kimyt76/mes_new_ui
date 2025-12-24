@@ -70,8 +70,8 @@
         </div>
         <!-- 🔹 하단 버튼 -->
         <div class="flex gap-2 justify-end pt-3">
-          <Button label="저장"  class="btn-save" @click="saveInfo" />
-          <Button label="닫기" @click="closeDialog" />
+          <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
+          <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
         </div>
     </div>
     </template>
@@ -176,8 +176,5 @@ const closeDialog = () => {
   text-align: center;
   font-family: monaco, Consolas;
 }
-.btn-save {
-  background-color: #5a9cff !important;
-  color: white !important;
-}
+
 </style>

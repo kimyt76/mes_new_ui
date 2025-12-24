@@ -136,11 +136,10 @@
 
   <div class="flex justify-end gap-2 mt-2">
     <Button label="작업지시" @click="workOrder" />
-    <Button label="저장" @click="saveInfo" />
+    <Button label="저장" class="p-button-secondary" @click="saveInfo" />
     <Button label="clear" @click="clearList" />
     <Button label="삭제" @click="deleteWorkOrder" />
-    <Button label="닫기" @click.stop="closeDialog" />
-    <!-- <Button label="닫기" @click.stop="requestClose" /> -->
+    <Button label="닫기"   outlined class="ml-2" @click.stop="closeDialog" />
   </div>
 </template>
 
@@ -176,7 +175,7 @@ const allChecked = ref(false)
 
 const workOrderList = ref([])
 const currentRowIndexForItemPop = ref(null)
-
+const PROC_KEYS = ['weigh', 'mat', 'coating', 'charge', 'packing']
 const form = reactive({
   workOrderDate: todayKST(),
   seq: '',
@@ -444,7 +443,6 @@ function openPop(type) {
     },
   })
 }
-
 // -----------------
 // data init
 // -----------------
@@ -480,8 +478,6 @@ watch(() => form.workOrderDate, async (newVal, oldVal) => {
     }
   }
 })
-
-const PROC_KEYS = ['weigh', 'mat', 'coating', 'charge', 'packing']
 
 const voToRows = (batches) =>{
     return batches.map(b => {
@@ -570,11 +566,9 @@ const rowsToVoPayload = () =>{
           updId: userId,
         })
       }
-
       return batch
     }),
   }
-
   return payload
 }
 
@@ -590,7 +584,6 @@ const workOrder = () =>{
     return
     if ( isEmpty(form.workOrderId )) {
         //데이터 확인 여부
-
     }else{
 
     }
@@ -614,63 +607,8 @@ const saveInfo = async () => {
       vWarning(saveRes?.message || '저장 중 오류가 발생했습니다.')
       return
     }
-
-    // ======================
-    // 2) 저장 성공 → ID 반영
-    // ======================
-    const saved = saveRes.data ?? saveRes.workOrderInfo ?? null
-    const savedWorkOrderId = saved?.workOrderId ?? params.workOrderId
-
-    if (!isEmpty(savedWorkOrderId)) {
-      form.workOrderId = savedWorkOrderId
-    }
-
-    // ======================
-    // 3) 재조회해서 IDENTITY 반영
-    // ======================
-    if (!isEmpty(form.workOrderId)) {
-      const res2 = await ApiWorkOrder.getWorkOrderInfo(form.workOrderId)
-
-      if (res2?.code !== 0) {
-        // 저장은 됐는데 조회 실패 → 치명적이진 않지만 알림 필요
-        vWarning(res2?.message || '저장 후 조회에 실패했습니다.')
-        return
-      }
-
-      const vo2 = res2.data ?? res2.workOrderInfo
-      if (!vo2) {
-        vWarning('저장 후 데이터가 없습니다.')
-        return
-      }
-
-      Object.assign(form, {
-        workOrderId: vo2.workOrderId ?? form.workOrderId,
-        workOrderDate: vo2.workOrderDate ?? form.workOrderDate,
-        seq: vo2.seq ?? form.seq,
-        deliveryQty: vo2.deliveryQty ?? form.deliveryQty,
-        deliveryDate: vo2.deliveryDate ?? form.deliveryDate,
-        managerId: vo2.managerId ?? form.managerId,
-        clientId: vo2.clientId ?? form.clientId,
-        itemCd: vo2.itemCd ?? form.itemCd,
-        areaCd: vo2.areaCd ?? form.areaCd,
-        poNo: vo2.poNo ?? form.poNo,
-        managerName: vo2.managerName ?? form.managerName,
-        clientName: vo2.clientName ?? form.clientName,
-        itemName: vo2.itemName ?? form.itemName,
-      })
-
-      workOrderList.value = voToRows(vo2)
-      if (workOrderList.value.length === 0) {
-        workOrderList.value = [newRow()]
-      }
-    }
-
-    // ======================
-    // 4) 성공 알림
-    // ======================
-    // 필요하면 성공 메시지
-     vSuccess('저장되었습니다.')
-
+    vSuccess('저장되었습니다.')
+    closeDialog()
   } catch (err) {
     // ======================
     // 5) 네트워크 / 서버 예외
@@ -681,8 +619,7 @@ const saveInfo = async () => {
   }
 }
 
-
-function clearList() {
+const clearList = () => {
   allChecked.value = false
   workOrderList.value = [newRow()]
 }
@@ -699,24 +636,6 @@ const closeDialog = async () => {
   dialogRef.value.close()
 }
 
-//const closing = ref(false)
-
-// const requestClose = async () => {
-//   if (closing.value) return
-//   closing.value = true
-
-//   // ✅ 1) 현재 포커스 먼저 제거 (click/focus 경합 줄임)
-//   document.activeElement?.blur?.()
-
-//   // ✅ 2) Handsontable 먼저 "접근 차단 + 지연 destroy 예약"
-//   hotTable.value?.destroyHot?.()
-
-//   // ✅ 3) 이벤트 한 사이클(또는 짧은 시간) 보낸 뒤에 close
-//   //    (여기 숫자는 0/50/100/300 중 상황 맞는 걸로. 보통 100~300이 잘 먹음)
-//   setTimeout(() => {
-//     dialogRef.value?.close()
-//   }, 150)
-// }
 
 </script>
 
@@ -727,7 +646,6 @@ const closeDialog = async () => {
   font-size: 18px;
   height: 100%;
 }
-
 :deep(.ht-icon) {
   font-size: 0.95rem;
   opacity: 0.75;
@@ -736,9 +654,6 @@ const closeDialog = async () => {
 :deep(.ht-icon:hover) {
   opacity: 1;
 }
-</style>
-
-<style>
 /* Handsontable 헤더 */
 .ht_clone_top th {
   background-color: #BCAAA4;

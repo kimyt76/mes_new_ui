@@ -79,10 +79,10 @@
         showGridlines
         class="my-table"
         >
-        <Column field="ingredientCode"    header="성분코드"  style="text-align: center;" :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="ingredientCode"      header="성분코드"  style="text-align: center;" :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="krIngredientName"    header="구문성분명"  :style="{ width: '280px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="enIngredientName"    header="영어성분명"  :style="{ width: '280px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="inContent"       header="국내함량"   :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="inContent"           header="국내함량"   :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.inContent"
@@ -176,8 +176,8 @@
 </div>
 <!-- 🔹 하단 버튼 -->
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장"  class="btn-save" @click="saveInfo" />
-    <Button label="닫기" @click="closeDialog" />
+    <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
+    <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
 </div>
 
 <Dialog
@@ -359,5 +359,4 @@ const closeDialog = () =>{
   text-align: center;
   font-family: monaco, Consolas;
 }
-
 </style>

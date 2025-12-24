@@ -31,14 +31,22 @@
                 label="거래처명"
                 style="width: 200px;"
             />
-            <Button label="검색" icon="pi pi-search" severity="secondary" type="submit"></Button>
+            <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"></Button>
         </template>
     </Toolbar>
    </Fluid>
 
     </form>
-    <div class="flex items-center justify-end gap-2 mb-2">
-        <Button label="엑셀" icon="pi pi-file-excel" severity="success" ></Button>
+    <div class="flex items-center justify-between mb-2">
+        <!-- 왼쪽: 총 건수 -->
+        <div class="font-semibold ml-2">
+            총 {{ totalCount }} 건
+        </div>
+
+        <!-- 오른쪽: 버튼 -->
+        <div class="flex items-center gap-2">
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
+        </div>
     </div>
     <div class="flex flex-col mt-2">
         <DataTable
@@ -69,11 +77,7 @@
             <Column field="businessManager" header="영업담당자"  :style="{ width: '70px'}"  />
             <Column field="labManager"      header="연구담당자"  :style="{ width: '70px'}"  />
         </DataTable>
-<Toast position="center" />
     </div>
-
-
-
 
 </template>
 
@@ -81,8 +85,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref, shallowRef } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, reactive, ref } from 'vue';
 import ItemInfoM0Pop from './ItemInfoM0Pop.vue';
 import ItemInfoM1Pop from './ItemInfoM1Pop.vue';
 import ItemInfoM2Pop from './ItemInfoM2Pop.vue';
@@ -91,16 +94,13 @@ import ItemInfoM4Pop from './ItemInfoM4Pop.vue';
 import ItemInfoM5Pop from './ItemInfoM5Pop.vue';
 import ItemInfoM6Pop from './ItemInfoM6Pop.vue';
 
-
 const dt = ref(null)
 const dialog = useDialog()
-const router = useRouter()
 const itemTypeCds = ref([])
 const itemList = ref([])
-const home = ref({
-    icon: 'pi pi-home'
-});
-
+const totalCount = computed(() => {
+  return Array.isArray(itemList.value) ? itemList.value.length : 0
+})
 const srchItemList = async () => {
   const params = {
     ...form
@@ -112,8 +112,6 @@ onMounted( async () => {
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
 });
 
-const currentComponent = shallowRef(null)
-
 /**
  * 팝업화면
  * @param item
@@ -121,33 +119,35 @@ const currentComponent = shallowRef(null)
  */
 const selectRowClick = (cd, type) => {
     let popTitle = ''
+    let currentComponent = ''
+
     if ( type === 'M0') {
-        currentComponent.value = ItemInfoM0Pop
+        currentComponent = ItemInfoM0Pop
         popTitle = '완제품'
     }else if ( type === 'M1') {
-        currentComponent.value =ItemInfoM1Pop
+        currentComponent =ItemInfoM1Pop
         popTitle = '원재료'
     }else if ( type === 'M2') {
-        currentComponent.value =ItemInfoM2Pop
+        currentComponent =ItemInfoM2Pop
         popTitle = '부자재'
     }else if ( type === 'M3') {
-        currentComponent.value =ItemInfoM3Pop
+        currentComponent =ItemInfoM3Pop
         popTitle = '반제품'
     }else if ( type === 'M4') {
-        currentComponent.value =ItemInfoM4Pop
+        currentComponent =ItemInfoM4Pop
         popTitle = '제품'
     }else if ( type === 'M5') {
-        currentComponent.value = ItemInfoM5Pop
+        currentComponent = ItemInfoM5Pop
         popTitle = '벌크제품'
     }else if ( type === 'M6') {
-        currentComponent.value =ItemInfoM6Pop
+        currentComponent =ItemInfoM6Pop
         popTitle = '포장품'
     }else if ( type === 'M7') {
-        currentComponent.value =ItemInfoM2Pop
+        currentComponent =ItemInfoM2Pop
         popTitle = '소모품'
     }
 
-    dialog.open( currentComponent.value, {
+    dialog.open( currentComponent, {
         props: {
         header: '품목정보관리('+popTitle+')',
         modal: true,
@@ -174,10 +174,26 @@ const form = reactive({
     itemTypeCd: null
 })
 
+const home = ref({
+    icon: 'pi pi-home'
+});
+
 const items = ref([
     { label: '기본관리' },
+    { label: '품목정보관리' },
     { label: '품목정보목록' },
 ]);
+
+const downloadExcel = () =>{
+    const cols = dt.value?.columns ?? [];
+
+  if (!cols.length) {
+    console.warn("No Columns Found");
+    return;
+  }
+
+  exportToExcel(itemList.value, "품목정보리스트", cols);
+}
 </script>
 
 <style scoped>

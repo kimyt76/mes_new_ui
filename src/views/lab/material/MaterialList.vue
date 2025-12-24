@@ -22,9 +22,15 @@
         </template>
     </Toolbar>
 </form>
-<div class="flex items-center justify-end gap-2 mb-2">
-    <!-- <Button label="신규" icon="pi pi-plus" severity="secondary" @click="goNew"></Button> -->
-    <Button label="엑셀" icon="pi pi-file-excel" severity="success"  @click="downloadExcel"></Button>
+<div class="flex items-center justify-between mb-2">
+    <!-- 왼쪽: 총 건수 -->
+    <div class="font-semibold ml-2">
+        총 {{ totalCount }} 건
+    </div>
+    <!-- 오른쪽: 버튼 -->
+    <div class="flex items-center gap-2">
+        <Button label="엑셀" icon="pi pi-file-excel" severity="success"  @click="downloadExcel"></Button>
+    </div>
 </div>
 <div>
     <DataTable
@@ -72,17 +78,24 @@
 <script setup>
 import { ApiLab } from '@/api/apiLab';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import MaterialDetailPop from './MaterialDetailPop.vue';
 
 const dialog = useDialog()
-
+const materialList = ref([])
+const totalCount = computed(() => {
+  return Array.isArray(materialList.value) ? materialList.value.length : 0
+})
 const dt = ref(null)
 const form = reactive({
     itemName : '',
     itemCd: '',
     ingredientName: '',
 })
+
+
+
+
 const home = ref({
     icon: 'pi pi-home'
 });
@@ -90,7 +103,7 @@ const items = ref([
     { label: '원료관리' },
     { label: '원료목록' },
 ]);
-const materialList = ref([])
+
 
 const srhList = async () =>{
     const params = {

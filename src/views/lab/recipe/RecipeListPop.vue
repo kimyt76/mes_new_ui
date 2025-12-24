@@ -59,7 +59,7 @@
     </div>
     <!-- 🔹 하단 버튼 -->
     <div class="flex gap-2 justify-end pt-3">
-      <Button label="닫기" @click="closeDialog"></Button>
+      <Button label="닫기"   outlined class="ml-2" @click="closeDialog"></Button>
     </div>
     </template>
 </Card>

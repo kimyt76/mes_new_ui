@@ -39,9 +39,16 @@
         </template>
     </Toolbar>
 </form>
-<div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규" icon="pi pi-file-excel"  @click="selectRowClick('')"></Button>
-    <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+<div class="flex items-center justify-between mb-2">
+    <!-- 왼쪽: 총 건수 -->
+    <div class="font-semibold ml-2">
+        총 {{ totalCount }} 건
+    </div>
+    <!-- 오른쪽: 버튼 -->
+    <div class="flex items-center gap-2">
+        <Button label="신규" icon="pi pi-file-excel"  @click="selectRowClick('')"></Button>
+        <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+    </div>
 </div>
 <div>
     <DataTable
@@ -67,7 +74,11 @@
             </template>
         </Column>
         <Column field="workOderDate"        header="제조일자"   style="text-align: center;"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="deliveryQty"         header="주문량"     style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="deliveryQty"         header="주문량"     style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+            <template #body="slotProps">
+                {{ slotProps.data.deliveryQty.toLocaleString() }}
+            </template>
+        </Column>
         <Column field="batchCnt"            header="등록배치수" style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="clientName"          header="거래처명"   style="text-align: center;"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="managerName"         header="담당자명"   style="text-align: center;"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
@@ -82,9 +93,10 @@ import { ApiWorkOrder } from '@/api/apiWorkOrder';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import WorkOrderDetail from './WorkOrderDetail.vue';
 
+const totalCount = computed(() => workOrderList.value.length)
 const dialog = useDialog()
 const areaCds = ref([])
 const workOrderList = ref([])

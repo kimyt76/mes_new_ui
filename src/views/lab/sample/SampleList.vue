@@ -34,9 +34,18 @@
         </template>
     </Toolbar>
 </form>
-<div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
-    <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+
+<div class="flex items-center justify-between mb-2">
+    <!-- 왼쪽: 총 건수 -->
+    <div class="font-semibold ml-2">
+        총 {{ totalCount }} 건
+    </div>
+
+    <!-- 오른쪽: 버튼 -->
+    <div class="flex items-center gap-2">
+        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
+        <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+    </div>
 </div>
 <div>
     <DataTable
@@ -51,29 +60,29 @@
         >
         <Column field="areaName"    header="공장명"  :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="clientName"  header="업체명"  :style="{ width: '220px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"    :style="{ width: '150px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemName"    header="품목명"  :style="{ width: '180px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.sampleId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="formulationCd"       header="제형"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="businessManagerName" header="영업담당자명"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="labManagerName"      header="연구담당자명"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="reqDate"             header="의뢰일자"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="prodMgmtNo"          header="제품관리번호"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="countQty"            header="횟수"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '50px'}" style="text-align: right;">
+        <Column field="formulationCd"       header="제형"  :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="businessManagerName" header="영업담당자명"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="labManagerName"      header="연구담당자명"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="reqDate"             header="의뢰일자"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="prodMgmtNo"          header="제품관리번호"  :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="countQty"            header="횟수"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '50px', textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.countQty).toLocaleString() }}
             </template>
         </Column>
-        <Column field="qty"  header="수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '50px'}" style="text-align: right;">
+        <Column field="qty"  header="수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '50px', textAlign:'right'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.qty).toLocaleString() }}
             </template>
         </Column>
-        <Column field="etc"    header="특이사항"  :style="{ width: '140px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="etc"    header="특이사항"  :style="{ width: '180px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 
@@ -82,17 +91,18 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiLab } from '@/api/apiLab';
-import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import SampleDetailPop from './SampleDetailPop.vue';
 
-const { userId} = useAuthStore()
 const dialog = useDialog()
 const dt = ref(null)
 const sampleList = ref([])
+const totalCount = computed(() => {
+  return Array.isArray(sampleList.value) ? sampleList.value.length : 0
+})
 const areaCds = ref([])
 const form = reactive({
   areaCd:'',
@@ -100,8 +110,6 @@ const form = reactive({
   itemName: '',
   busisnessManagerName: '',
   labManagerName: '',
-
-  userId: userId,
 })
 
 const srhList = async () =>{

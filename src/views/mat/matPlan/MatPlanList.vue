@@ -28,7 +28,7 @@
             <label>거래처명</label>
             </FloatLabel>
 
-            <Button label="검색" icon="pi pi-search" severity="secondary" class="w-6rem"/>
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600"/>
         </div>
         </template>
     </Toolbar>

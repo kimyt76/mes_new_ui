@@ -12,7 +12,6 @@ export const ApiMat = {
       throw err.response
     }
   },
-
   getMatPlanInfo: async(id) => {
     try{
       const res = await API_URL.get(`/mat/getMatPlanInfo/${id}`)
@@ -22,7 +21,6 @@ export const ApiMat = {
       throw err.response
     }
   },
-
   saveMatPlanList: async(params) => {
     try{
       const msg = await API_URL.post(`/mat/saveMatPlanList`, params)

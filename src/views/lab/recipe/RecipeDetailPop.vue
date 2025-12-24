@@ -88,11 +88,11 @@
   <!-- 하단 버튼 -->
   <div class="flex gap-2 justify-end mt-1 pt-3">
     <Button label="BOM연결" class="btn-save" @click="openPop('N')" />
-    <Button label="저장" class="btn-save" @click="saveInfo('S')" />
+    <Button label="저장" class="p-button-secondary" @click="saveInfo('S')" />
     <Button label="전성분(수출)" class="btn-save" @click="downloadIngredient('S')" />
     <Button label="단가" class="btn-save" @click="downloadRecipe('S')" />
     <Button label="중국위생허가" class="btn-save" @click="downloadIngredientCn('S')" />
-    <Button label="닫기" @click="closeDialog" />
+    <Button label="닫기"  outlined class="ml-2"  @click="closeDialog" />
   </div>
 </template>
 

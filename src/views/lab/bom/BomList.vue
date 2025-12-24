@@ -24,16 +24,25 @@
                 />
                 <label for="on_label1">결재상태</label>
              </FloatLabel>
-            <Button label="검색" icon="pi pi-search" severity="secondary" type="submit"></Button>
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600" type="submit"></Button>
             </div>
         </template>
     </Toolbar>
     </form>
-    <div class="flex items-center justify-end gap-2 mb-2">
+
+<div class="flex items-center justify-between mb-2">
+    <!-- 왼쪽: 총 건수 -->
+    <div class="font-semibold ml-2">
+        총 {{ totalCount }} 건
+    </div>
+
+    <!-- 오른쪽: 버튼 -->
+    <div class="flex items-center gap-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('N')"></Button>
         <Button label="BOM버전" icon="pi pi-plus" severity="secondary" @click="selectRowClick('B')"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
+</div>
     <div class="flex flex-col mt-2 h-full min-h-0">
         <DataTable
             ref="dt"
@@ -79,7 +88,7 @@ import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref, shallowRef } from 'vue';
+import { computed, onMounted, reactive, ref, shallowRef } from 'vue';
 import BomDetailPop from './BomDetailPop.vue';
 import BomVerPop from './BomVerPop.vue';
 
@@ -89,6 +98,9 @@ const dt = ref(null);
 const currentComponet = shallowRef(null)
 const approvalStates = ref([])
 const bomList = ref([])
+const totalCount = computed(() => {
+  return Array.isArray(bomList.value) ? bomList.value.length : 0
+})
 const selectedItem = ref(null);
 
 const form = reactive({

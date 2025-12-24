@@ -60,7 +60,7 @@
         <!-- 🔹 하단 버튼 -->
         <div class="flex gap-2 justify-end pt-3">
           <Button label="선택" @click="selectedRow" />
-          <Button label="닫기" @click="emit('close')" />
+          <Button label="닫기"   outlined class="ml-2" @click="emit('close')" />
         </div>
     </div>
     </template>

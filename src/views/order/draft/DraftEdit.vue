@@ -214,17 +214,16 @@
 </template>
 
 <script setup>
-import { ApiOrder } from '@/api/apiOrders'
-import { ApiCommon } from '@/api/apiCommon'
-import { useAuthStore } from '@/stores/auth'
-import { useAlertStore } from '@/stores/alert';
-import { useRoute, useRouter } from 'vue-router'
-import { onMounted, reactive, ref } from 'vue'
-import { toDate, deleteComma} from '@/util/common'
-import SingleFileUpload from '@/components/SingleFileUpload.vue'
-import UserListPop from '@/views/system/user/UserListPop.vue'
+import { ApiCommon } from '@/api/apiCommon';
+import { ApiOrder } from '@/api/apiOrders';
 import DownLoadLink from '@/components/DownLoadLink.vue';
-import { isEmpty, formatComma, todayKST, formatDate } from '@/util/common';
+import SingleFileUpload from '@/components/SingleFileUpload.vue';
+import { useAlertStore } from '@/stores/alert';
+import { useAuthStore } from '@/stores/auth';
+import { formatDate, toNumber } from '@/util/common';
+import UserListPop from '@/views/system/user/UserListPop.vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute()
 const router = useRouter()
@@ -294,7 +293,7 @@ const saveInfo = async () => {
     ...form
   }
   params.dueDate = formatDate(form.dueDate)
-  params.orderQty = deleteComma(form.orderQty)
+  params.orderQty = toNumber(form.orderQty)
     console.log('params', params)
     console.log('approval', approvalInfo.value)
   //  console.log('orderFile', orderFile.value)

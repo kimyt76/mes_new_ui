@@ -127,8 +127,8 @@
             <!-- Buttons -->
             <div class="flex gap-2 justify-end pt-3">
                 <Button v-if="isAll" label="전체생성" severity="secondary" @click="saveInfo('A')"></Button>
-                <Button label="저장" severity="secondary" @click="saveInfo('O')"></Button>
-                <Button label="닫기" @click="closeDialog"></Button>
+                <Button label="저장" class="p-button-secondary" @click="saveInfo('O')"></Button>
+                <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
             </div>
 
         </template>

@@ -19,8 +19,7 @@
                     <InputText id="on_label1" v-model="form.deptNm" style="width: 180px" />
                     <label for="on_label1">부서</label>
                 </FloatLabel>
-                <Button label="검색" icon="pi pi-search" severity="secondary"
-                        type="submit" class="search-button"/>
+                <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600" type="submit" />
             </div>
           </form>
         </div>
@@ -77,7 +76,7 @@
 
         <!-- 🔹 하단 버튼 -->
         <div class="flex gap-2 justify-end pt-3">
-          <Button label="닫기" @click="closeDialog"></Button>
+          <Button label="닫기"   outlined class="ml-2" @click="closeDialog"></Button>
         </div>
     </div>
     </template>

@@ -22,9 +22,18 @@
         </template>
     </Toolbar>
 </form>
-<div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
-    <Button label="엑셀" icon="pi pi-file-excel" severity="success"  @click="downloadExcel"></Button>
+
+<div class="flex items-center justify-between mb-2">
+    <!-- 왼쪽: 총 건수 -->
+    <div class="font-semibold ml-2">
+        총 {{ totalCount }} 건
+    </div>
+
+    <!-- 오른쪽: 버튼 -->
+    <div class="flex items-center gap-2">
+        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
+        <Button label="엑셀" icon="pi pi-file-excel" severity="success"  @click="downloadExcel"></Button>
+    </div>
 </div>
 <div>
     <DataTable
@@ -63,12 +72,14 @@ import { ApiLab } from '@/api/apiLab';
 import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import RecipeDetailPop from './RecipeDetailPop.vue';
 
 const dialog = useDialog()
 const recipeList = ref([])
-
+const totalCount = computed(() => {
+  return Array.isArray(recipeList.value) ? recipeList.value.length : 0
+})
 const dt = ref(null)
 const form = reactive({
     prodName:'',

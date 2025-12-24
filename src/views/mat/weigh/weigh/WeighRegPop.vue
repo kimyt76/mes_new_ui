@@ -1,39 +1,41 @@
 <template>
   <div class="w-full mt-3">
     <table cellspacing="0" width="100%">
-      <tr>
-        <th class="cellBorder cellHeader">제조번호</th>
-        <td class="cellBorder"></td>
-        <th class="cellBorder cellHeader">품목코드</th>
-        <td class="cellBorder"></td>
-        <th class="cellBorder cellHeader">품목명</th>
-        <td class="cellBorder" colspan="3"></td>
-      </tr>
-      <tr>
-        <th class="cellBorder cellHeader">지시일자</th>
-        <td class="cellBorder"></td>
-        <th class="cellBorder cellHeader">지시량</th>
-        <td class="cellBorder"></td>
-        <th class="cellBorder cellHeader">칭량일자</th>
-        <td class="cellBorder"></td>
-        <th class="cellBorder cellHeader">칭량처</th>
-        <td class="cellBorder"></td>
-      </tr>
-      <tr>
-        <th class="cellBorder cellHeader">PO NO</th>
-        <td class="cellBorder"></td>
-        <th class="cellBorder cellHeader">특이사항</th>
-        <td class="cellBorder" colspan="5">
-          <InputText class="w-full" v-model="form.note" />
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+            <th class="cellBorder cellHeader">제조번호</th>
+            <td class="cellBorder"></td>
+            <th class="cellBorder cellHeader">품목코드</th>
+            <td class="cellBorder"></td>
+            <th class="cellBorder cellHeader">품목명</th>
+            <td class="cellBorder" colspan="3"></td>
+        </tr>
+        <tr>
+            <th class="cellBorder cellHeader">지시일자</th>
+            <td class="cellBorder"></td>
+            <th class="cellBorder cellHeader">지시량</th>
+            <td class="cellBorder"></td>
+            <th class="cellBorder cellHeader">칭량일자</th>
+            <td class="cellBorder"></td>
+            <th class="cellBorder cellHeader">칭량처</th>
+            <td class="cellBorder"></td>
+        </tr>
+        <tr>
+            <th class="cellBorder cellHeader">PO NO</th>
+            <td class="cellBorder"></td>
+            <th class="cellBorder cellHeader">특이사항</th>
+            <td class="cellBorder" colspan="5">
+            <InputText class="w-full" v-model="form.note" />
+            </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
   <!-- 상단 컨트롤 -->
   <div class="w-full mt-3">
     <div class="flex items-center gap-4 flex-wrap">
-      <!-- ✅ 현재 탭 리스트 전체 선택 -->
+      <!--  현재 탭 리스트 전체 선택 -->
       <div class="flex items-center gap-2">
         <Checkbox v-model="allChecked" binary />
         <span>전체</span>
@@ -46,12 +48,12 @@
         </FloatLabel>
       </div>
 
-      <!-- ✅ 현재 탭 기준 카운트 -->
+      <!--  현재 탭 기준 카운트 -->
       <div>
         <span>{{ totalMatCount }} 중 {{ finishedCount }} 개 완료</span>
       </div>
 
-      <!-- ✅ 성상 체크박스: 데이터 기반 생성 -->
+      <!-- 성상 체크박스: 데이터 기반 생성 -->
       <div class="flex items-center gap-3 flex-wrap">
         <div
           v-for="ss in sungsangOptions"
@@ -69,7 +71,7 @@
     </div>
   </div>
 
-  <!-- ✅ 상구분 탭 + HotTable -->
+  <!-- 상구분 탭 + HotTable -->
   <div class="w-full mt-3">
     <Tabs v-model:value="activeSangGubun">
       <TabList>
@@ -124,19 +126,17 @@
 
 <script setup>
 import BaseHotTable from '@/components/BaseHotTable.vue'
-
+import { toNumber } from '@/util/common'
+import { useDialog } from 'primevue'
 // PrimeVue
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import FloatLabel from 'primevue/floatlabel'
-import InputText from 'primevue/inputtext'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import Tabs from 'primevue/tabs'
-
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
+const dialog = useDialog()
 const ALL_TAB = 'ALL'
 /** ✅ 필드명 매핑 */
 const FIELD = {
@@ -149,13 +149,10 @@ const FIELD = {
 /** 돋보기 컬럼 식별 키(Handsontable에서 prop으로 클릭 감지) */
 const LOOKUP_PROP = {
   CONTAINER: '__lookup_container',   // 용기무게 돋보기
-  TESTNO: '__lookup_testno',         // 사용시험번호 돋보기
   WEIGHER: '__lookup_weighUser',     // 칭량자 돋보기
   CONFIRM: '__lookup_confirmUser',   // 확인자 돋보기
 }
-
 const matUseDataList = ref([])
-
 const form = reactive({
   barcodePrint: '',
   note: '',
@@ -286,11 +283,11 @@ const hotColumns = ref([
   { data: 'itemName', readOnly: true },                       // 3 품목명
   { data: FIELD.SUNGSANG, readOnly: true , className: 'htCenter' },                   // 4 성상
   { data: FIELD.SANGGUBUN, readOnly: true, className: 'htCenter'  },                  // 5 상구분
-  { data: 'orderQty' , className: 'htRight' },                                        // 6 지시량
-  { data: 'weighQty', className: 'htRight' },                                       // 7 칭량
-  { data: 'containerWeight' , className: 'htRight'},                                // 8 용기무게
+  { data: 'orderQty' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight', readOnly: true },                                        // 6 지시량
+  { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },                                       // 7 칭량
+  { data: 'containerWeight' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight'},                                // 8 용기무게
   { data: LOOKUP_PROP.CONTAINER, readOnly: true, renderer: magnifierRenderer }, // 9 '-' (용기무게 조회)
-  { data: 'totalQty', readOnly: true , className: 'htRight'},                       // 10 총량
+  { data: 'totalQty', readOnly: true , type: 'numeric', numericFormat: { pattern: '0,0.00000' },className: 'htRight'},                       // 10 총량
   { data: 'testNo', readOnly: true , className: 'htCenter'},                         // 11 사용시험번호
   { data: FIELD.WEIGH_YN, type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N' , className: 'htCenter'}, // 12 완료
   { data: 'weighUser', className: 'htCenter' },                      // 13 칭량자
@@ -312,11 +309,22 @@ const handleAfterChange = (changes, source) => {
       if (newVal === true) currentTabList.value[rowIndex][FIELD.WEIGH_YN] = 'Y'
       else if (newVal === false) currentTabList.value[rowIndex][FIELD.WEIGH_YN] = 'N'
     }
+
+    if (prop === 'weighQty' || prop === 'containerWeight') {
+      const weighQty = toNumber(row.weighQty)
+      const containerWeight = toNumber(row.containerWeight)
+
+      const total = weighQty + containerWeight
+      row.totalQty = total
+      // ✅ 화면 반영 보장
+      //if (hot) hot.setDataAtRowProp(rowIndex, 'totalQty', total, 'calcTotalQty')
+    }
   }
 }
 
+
 /** =========================
- * ✅ 돋보기 클릭 감지 → 팝업 호출
+ * 돋보기 클릭 감지 → 팝업 호출
  * BaseHotTable의 afterOnCellMouseDown이
  * Handsontable hook 인자( event, coords, td )를 넘겨준다고 가정
  * ========================= */
@@ -334,11 +342,11 @@ const handleCellClickFromHot = (event, coords, td) => {
   const colDef = hotColumns.value[coords.col]
   const prop = colDef?.data
 
+  //품목코드, 품목명 클릭시
   if (prop === 'itemCd' || prop === 'itemName' ) {
     openLookupPopup('ITEM_CODE', rowData)
     return
   }
-
   // 돋보기 컬럼인지 체크
   if (prop === LOOKUP_PROP.CONTAINER) {
     openLookupPopup('CONTAINER_WEIGHT', rowData)
@@ -349,40 +357,54 @@ const handleCellClickFromHot = (event, coords, td) => {
   }
 }
 
-/** ✅ 팝업 호출(여기만 DynamicDialog로 연결하면 됨) */
+/** 팝업 호출() */
 const openLookupPopup = (type, row) => {
     let title = ''
     let currentComponet = ''
 
-      console.log('OPEN POPUP =>', type, row)
+     console.log('OPEN POPUP =>', type, row)
 
     if (type === 'ITEM_CODE') {
-    title = '바코드 칭량 입력'
-    // currentComponent = itemCdLookupDialog
-  } else if (type === 'CONTAINER_WEIGHT') {
-    title = '용기무게 선택'
-    // currentComponent = ContainerWeightDialog
-  } else if (type === 'WEIGH_USER') {
-    title = '칭량자 선택'
-    // currentComponent = UserLookupDialog
-  } else if (type === 'CONFIRM_USER') {
-    title = '확인자 선택'
-    // currentComponent = UserLookupDialog
-  }
+        if ( row.itemCd === 'JRMSC00011') return
+        title = '바코드 칭량 입력'
+        currentComponet = WeighBarcodeRegPop
+    } else if (type === 'CONTAINER_WEIGHT') {
+        title = '용기무게 선택'
+        // currentComponet = ContainerWeightDialog
+    } else if (type === 'WEIGH_USER') {
+        title = '칭량자 선택'
+        // currentComponet = UserLookupDialog
+    } else if (type === 'CONFIRM_USER') {
+        title = '확인자 선택'
+        // currentComponet = UserLookupDialog
+    }
+  dialog.open(currentComponet, {
+    props: {
+        header: title,
+        modal: true,
+        draggable: false,
+        style: { overflow: 'hidden' },
+        pt: {
+            root: { style: { overflow: 'hidden' } },
+            content: { style: { overflow: 'hidden' } },
+        },
+    },
+    data: row,
+    onClose: (event) =>{
+        if( !event.data) return
 
-  // 예: DynamicDialog로 연결 시
-//   dialog.open(CommonLookupDialog, {
-//     data: {
-//       type,
-//       apply: (selected) => {
-//         if (type === 'CONTAINER_WEIGHT') row.containerWeight = selected.weight
-//         if (type === 'WEIGH_USER') row.weighUser = selected.userName
-//         if (type === 'CONFIRM_USER') row.weighConfirmUser = selected.userName
-//       }
-//     }
-//   })
+        if (type === 'ITEM_CODE') {
 
+        } else if (type === 'CONTAINER_WEIGHT') {
 
+        } else if (type === 'WEIGH_USER') {
+
+        } else if (type === 'CONFIRM_USER') {
+
+        }
+    },
+
+  } )
 }
 
 /** ✅ 데이터 정규화 */
