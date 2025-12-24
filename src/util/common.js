@@ -9,18 +9,11 @@ export function unformatNumber (value) {
   return value.replace(/[^\d]/g, '')
 }
 
-// 숫자 → 콤마
-function formatNumber(value) {
-  if (value == null || value === '') return ''
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
 //숫자콤마 제거
-export function deleteComma (value){
-  if (typeof value !== 'string') {
-    value = String(value ?? '');
-  }
-  return parseInt(value.replaceAll(',', ''), 10);
+export function toNumber(v){
+  if (v === null || v === undefined || v === '') return 0
+  // "1,234" 같은 값 대비
+  return Number(String(v).replaceAll(',', '')) || 0
 }
 
 import { format, subMonths } from 'date-fns';
