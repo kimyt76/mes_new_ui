@@ -423,6 +423,7 @@ const closeDialog = () =>{
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
   background-color: #BCAAA4;

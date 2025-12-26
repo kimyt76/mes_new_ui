@@ -63,9 +63,9 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="인쇄" icon="pi pi-file-excel"  @click="print"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="print"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="바코드" icon="pi pi-file-excel"  @click="barcodePrint"></Button>
+    <Button label="바코드" icon="pi pi-barcode"  outlined @click="barcodePrint"></Button>
 </div>
 <div>
     <DataTable
@@ -146,6 +146,10 @@ const form  = reactive({
     passState: null,
 })
 
+const barcodePrint = () =>{
+
+}
+
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('AREA');
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
@@ -187,6 +191,7 @@ const downloadExcel = () =>{
 .clickable-cell {
   cursor: pointer;
   text-decoration: underline;
+  text-align: left;
 }
 
 </style>

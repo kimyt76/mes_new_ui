@@ -82,26 +82,26 @@
         tableStyle="min-width:120rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="itemCd"          header="품목코드"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"          header="품목코드"  :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="orderDateSeq"    header="[시화]"  frozen :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="orderDate"       header="발주일"  frozen :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="deliveryDate"    header="납기일"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="orderDateSeq"    header="[시화]"  frozen :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="orderDate"       header="발주일"  frozen :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="deliveryDate"    header="납기일"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="customerName"    header="거래처명"  :style="{ width: '250px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="srcStorageName"  header="입고창고"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="orderQty"        header="발주수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px'}" style="text-align: right;">
+        <Column field="srcStorageName"  header="입고창고"  :style="{ width: '110px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="orderQty"        header="발주수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="inQty"       header="입고수량"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px'}" style="text-align: right;">
+        <Column field="inQty"       header="입고수량"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.inQty).toLocaleString() }}</template>
         </Column>
-        <Column field="supplyPrice" header="공급가액"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px'}" style="text-align: right;">
+        <Column field="supplyPrice" header="공급가액"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="regYn"       header="입고상태"   :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="endYn"       header="진행상태"   :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="managerName" header="담당자"     :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="regYn"       header="입고상태"   :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="managerName" header="담당자"     :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 

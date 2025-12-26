@@ -153,6 +153,7 @@ const downloadExcel = () =>{
 .clickable-cell {
   cursor: pointer;
   text-decoration: underline;
+  text-align: left;
 }
 
 ::v-deep(.my-table .p-datatable-thead > tr > td) {

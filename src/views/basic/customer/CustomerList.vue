@@ -40,7 +40,7 @@
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
-        <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
+        <Button label="엑셀" icon="pi pi-file-excel"  severity="success" @click="downloadExcel"></Button>
     </div>
 </div>
 
@@ -56,22 +56,22 @@
         tableStyle="min-width: 100rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="customerTypeName"    header="구분"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customerName"        header="거래처명"  frozen  :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="customerTypeName"    header="구분"  :style="{ width: '50px'}" />
+        <Column field="customerName"        header="거래처명"  frozen  :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.customerCd)" class="clickable-cell">
                     {{ slotProps.data.customerName }}
                 </div>
             </template>
         </Column>
-        <Column field="address"         header="주소"       :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="president"       header="대표자명"    :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="businessNo"      header="사업자번호"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="tel"             header="전화번호"   :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customerManager" header="거래처담당자"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="email"           header="이메일"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customerManagerTel"    header="핸드폰번호"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="memberName"      header="담당자명"  :style="{ width: '60px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="address"         header="주소"       :style="{ width: '200px'}" />
+        <Column field="president"       header="대표자명"    :style="{ width: '80px'}" />
+        <Column field="businessNo"      header="사업자번호"  :style="{ width: '120px'}" />
+        <Column field="tel"             header="전화번호"   :style="{ width: '100px'}" />
+        <Column field="customerManager" header="거래처담당자"  :style="{ width: '80px'}" />
+        <Column field="email"           header="이메일"  :style="{ width: '120px'}" />
+        <Column field="customerManagerTel"    header="핸드폰번호"  :style="{ width: '100px'}" />
+        <Column field="memberName"      header="담당자명"  :style="{ width: '60px'}" />
     </DataTable>
 </div>
 </template>
@@ -176,6 +176,7 @@ const downloadExcel = () =>{
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 
 </style>

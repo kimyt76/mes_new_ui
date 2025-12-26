@@ -97,7 +97,18 @@ onMounted(async () => {
   align-items: center !important;
 }
 
+.p-datatable .p-datatable-thead > tr > th {
+  text-align: center !important;
+}
 
+.p-datatable .p-datatable-thead > tr > th .p-datatable-column-header-content {
+  justify-content: center !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th .p-datatable-column-title {
+  width: 100%;
+  text-align: center !important;
+}
 
 </style>
 

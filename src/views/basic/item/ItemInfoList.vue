@@ -63,19 +63,19 @@
             showGridlines
             >
             <Column field="itemTypeName"    header="품목구분"  :style="{ width: '80px'}" />
-            <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}" />
+            <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words">
                 <template #body="slotProps">
                     <div @click="selectRowClick(slotProps.data.itemCd, slotProps.data.itemTypeCd)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
             </Column>
-            <Column field="unit"            header="단위"     :style="{ width: '50px'}" />
-            <Column field="Spec"            header="규격"     :style="{ width: '100px'}" />
-            <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" style="text-align: left;"/>
-            <Column field="businessManager" header="영업담당자"  :style="{ width: '70px'}"  />
-            <Column field="labManager"      header="연구담당자"  :style="{ width: '70px'}"  />
+            <Column field="unit"            header="단위"     :style="{ width: '50px', textAlign:'center'}" />
+            <Column field="Spec"            header="규격"     :style="{ width: '100px', textAlign:'center'}" />
+            <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" />
+            <Column field="businessManager" header="영업담당자"  :style="{ width: '70px', textAlign:'center'}"  />
+            <Column field="labManager"      header="연구담당자"  :style="{ width: '70px', textAlign:'center'}"  />
         </DataTable>
     </div>
 
@@ -197,34 +197,38 @@ const downloadExcel = () =>{
 </script>
 
 <style scoped>
-/*
-::v-deep(.my-table .p-datatable-thead > tr > th .p-column-header-content) {
-  justify-content: center !important;
-  align-items: center;
-  display: flex;
-}
-*/
-::v-deep(.my-table .p-datatable-thead > tr > th) {
+:deep(.my-table .p-datatable-thead > tr > th) {
   background-color: #BCAAA4;
   color: white;
   font-size: 14px;
   text-align: center;
-  font-family: Lobo, Consolas;
+  font-family: monaco, Consolas;
 }
-
+/* 헤더 내부 flex 컨텐츠 중앙정렬 */
+:deep(.my-table .p-datatable-thead > tr > th .p-datatable-column-header-content) {
+  justify-content: center !important;
+}
+/* 텍스트(span)도 중앙정렬 + 폭 100% */
+:deep(.my-table .p-datatable-thead > tr > th .p-datatable-column-title) {
+  width: 100%;
+  text-align: center !important;
+}
 ::v-deep(.my-table .p-datatable-tbody > tr > td) {
   padding: 7px 0.1rem;
   font-size: 14px;
   text-align: center;
   font-family: Roboto;
 }
-
 ::v-deep(.break-words) {
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
   text-decoration: underline;
   cursor: pointer;
-
+}
+.clickable-cell {
+  cursor: pointer;
+  text-decoration: underline;
+  text-align: left;
 }
 </style>

@@ -57,11 +57,11 @@
                 </div>
             </template>
         </Column>
-        <Column field="clientName"   header="고객사"    :style="{ width: '250px' , textAlign:'left'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="labNo"        header="Lab No"    :style="{ width: '140px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="managerName"  header="담당자"    :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="prodType"     header="제품"      :style="{ width: '300px', textAlign:'left'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="regDate"      header="등록일자"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="clientName"   header="고객사"    :style="{ width: '250px', textAlign:'left'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="labNo"        header="Lab No"    :style="{ width: '160px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="managerName"  header="담당자"    :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="prodType"     header="제품"      :style="{ width: '300px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="regDate"      header="등록일자"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 
@@ -176,5 +176,9 @@ const downloadExcel = () =>{
   text-align: center;
   font-family: monaco, Consolas;
 }
-
+.clickable-cell {
+  cursor: pointer;
+  text-decoration: underline;
+  text-align: left;
+}
 </style>

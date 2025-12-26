@@ -159,6 +159,7 @@ const downloadExcel = () =>{
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 
 </style>

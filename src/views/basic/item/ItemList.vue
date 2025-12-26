@@ -66,29 +66,29 @@
             >
             <Column selectionMode="single"  headerStyle="width: 2.5rem" style="text-align: center;"/>
             <Column field="itemTypeName"    header="품목구분"  :style="{ width: '80px'}" />
-            <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}"  />
+            <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words">
                 <template #body="slotProps">
                     <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
             </Column>
-            <Column field="unit"            header="단위"     :style="{ width: '50px'}" />
-            <Column field="Spec"            header="규격"     :style="{ width: '100px'}" />
-            <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" style="text-align: left;"/>
-            <Column field="inPrice"         header="입고단가"  :style="{ width: '80px'}" style="text-align: right;">
+            <Column field="unit"            header="단위"     :style="{ width: '50px', textAlign:'center'}" />
+            <Column field="Spec"            header="규격"     :style="{ width: '100px', textAlign:'center'}" />
+            <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" />
+            <Column field="inPrice"         header="입고단가"  :style="{ width: '80px', textAlign:'right'}">
                 <template #body="slotProps">
                     {{ Number(slotProps.data.inPrice).toLocaleString() }}
                 </template>
             </Column>
-            <Column field="outPrice"        header="출고단가"  :style="{ width: '80px'}" style="text-align: right;">
+            <Column field="outPrice"        header="출고단가"  :style="{ width: '80px', textAlign:'right'}">
                 <template #body="slotProps">
                     {{ Number(slotProps.data.outPrice).toLocaleString() }}
                 </template>
             </Column>
-            <Column field="itemGrp2Name"    header="제품유형"      :style="{ width: '110px'}"  />
-            <Column field="remark"          header="사용유무"  :style="{ width: '70px'}"  />
+            <Column field="itemGrp2Name"    header="제품유형"  :style="{ width: '110px', textAlign:'center'}"  />
+            <Column field="remark"          header="사용유무"  :style="{ width: '70px', textAlign:'center'}"  />
         </DataTable>
     </div>
 </template>
@@ -282,9 +282,10 @@ const downloadExcel = () =>{
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 
-::v-deep(.my-table .p-datatable-thead > tr > th) {
+:deep(.my-table .p-datatable-thead > tr > th) {
   background-color: #BCAAA4;
   color: white;
   font-size: 14px;
@@ -292,6 +293,16 @@ const downloadExcel = () =>{
   font-family: monaco, Consolas;
 }
 
+/* 헤더 내부 flex 컨텐츠 중앙정렬 */
+:deep(.my-table .p-datatable-thead > tr > th .p-datatable-column-header-content) {
+  justify-content: center !important;
+}
+
+/* 텍스트(span)도 중앙정렬 + 폭 100% */
+:deep(.my-table .p-datatable-thead > tr > th .p-datatable-column-title) {
+  width: 100%;
+  text-align: center !important;
+}
 ::v-deep(.my-table .p-datatable-tbody > tr > td) {
   padding: 6px 6px 0.1rem 0.1rem;
   font-size: 14px;
@@ -306,4 +317,6 @@ const downloadExcel = () =>{
   text-decoration: underline;
   cursor: pointer;
 }
+
+
 </style>

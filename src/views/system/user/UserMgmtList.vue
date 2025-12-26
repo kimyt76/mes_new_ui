@@ -44,26 +44,26 @@
         showGridlines
         class="my-table"
         >
-        <Column field="userId"    header="사용자ID"  style="text-align: center;"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="userId"    header="사용자ID" :style="{ width: '120px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.userId)" class="clickable-cell">
                     {{ slotProps.data.userId }}
                 </div>
             </template>
         </Column>
-        <Column field="memberNm"  header="사용자명"  style="text-align: center;"    :style="{ width: '130px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="memberNm"  header="사용자명" :style="{ width: '130px', textAlign: 'center'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.userId)" class="clickable-cell">
                     {{ slotProps.data.memberNm }}
                 </div>
             </template>
         </Column>
-        <Column field="deptNm"    header="부서" style="text-align: center;"  :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="jobPosition"    header="직급" style="text-align: center;"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="phone"    header="전화번호" style="text-align: center;"   :style="{ width: '160px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="email"    header="이메일" style="text-align: center;"  :style="{ width: '180px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="useYn"    header="재직여부" style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="etc"    header="비고" style="text-align: left;"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="deptNm"      header="부서"       :style="{ width: '150px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="jobPosition" header="직급"       :style="{ width: '100px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="phone"       header="전화번호"   :style="{ width: '160px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="email"       header="이메일"     :style="{ width: '180px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="useYn"       header="재직여부"   :style="{ width: '80px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="etc"         header="비고"       :style="{ width: '200px', textAlign: 'left'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 
@@ -160,6 +160,7 @@ const downloadExcel = () =>{
 .clickable-cell {
   cursor: pointer;
   text-decoration: underline;
+  text-align: left;
 }
 
 ::v-deep(.my-table .p-datatable-thead > tr > td) {

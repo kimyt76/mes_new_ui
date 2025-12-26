@@ -59,24 +59,24 @@
             showGridlines
             >
             <Column selectionMode="single"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-            <Column header="No."  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column header="No."  :style="{ width: '40px'}" :pt="{ columnHeaderContent: 'justify-center' }">
                 <template #body="slotProps">
                     {{ slotProps.index + 1 }}
                 </template>
             </Column>
             <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemName"  header="품목명"    :style="{ width: '520px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="itemName"  header="품목명"    :style="{ width: '520px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
                 <template #body="slotProps">
                     <div @click="selectRowClick(slotProps.data.bomId)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
             </Column>
-            <Column field="bomVer"      header="BOM버전"   :style="{ width: '90px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="managerName" header="담당자"     :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemCnt"     header="원료갯수"  :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="approvalState"    header="결재상태"     :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="etc"         header="비고"   :style="{ width: '300px'}" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="bomVer"      header="BOM버전"   :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="managerName" header="담당자"     :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="itemCnt"     header="원료갯수"  :style="{ width: '70px', textAlign:'right'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="approvalState"    header="결재상태"     :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="etc"         header="비고"   :style="{ width: '320px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
         </DataTable>
     </div>
 </template>
@@ -225,6 +225,7 @@ const downloadExcel = () =>{
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 
 ::v-deep(.my-table .p-datatable-thead > tr > th) {

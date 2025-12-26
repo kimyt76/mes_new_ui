@@ -58,7 +58,7 @@
         showGridlines
         class="my-table"
         >
-        <Column field="areaName"    header="공장명"  :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="areaName"    header="공장명"  :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="clientName"  header="업체명"  :style="{ width: '220px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="itemName"    header="품목명"  :style="{ width: '180px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
@@ -181,6 +181,7 @@ const items = ref([
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 
 ::v-deep(.my-table .p-datatable-thead > tr > th) {

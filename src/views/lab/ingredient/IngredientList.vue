@@ -54,21 +54,21 @@
             scrollHeight="650px"
             showGridlines
             >
-            <Column field="ingredientCode"    header="성분코드"  :style="{ width: '100px'}" >
+            <Column field="ingredientCode"    header="성분코드"  :style="{ width: '70px', textAlign:'center'}" >
                 <template #body="slotProps">
-                    <div @click="openPop(slotProps.data.ingredientCode)" class="clickable-cell" style="cursor: pointer; text-decoration: underline;">
+                    <div @click="openPop(slotProps.data.ingredientCode)" style="cursor: pointer; text-decoration: underline;">
                         {{ slotProps.data.ingredientCode }}
                     </div>
                 </template>
             </Column>
-            <Column field="krIngredientName"    header="국문성분명"     :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;"/>
-            <Column field="enIngredientName"    header="영문성분명"     :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;"/>
-            <Column field="cnIngredientName"    header="중문성분명"     :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;"/>
-            <Column field="casNo"               header="CAS NO."        :style="{ width: '100px'}" />
-            <Column field="functionNm"          header="function"       :style="{ width: '180px'}" style="text-align: left;"/>
-            <Column field="regName"             header="등록자"         :style="{ width: '80px'}" />
-            <Column field="updName"             header="수정자"         :style="{ width: '80px'}" />
-            <Column field="etc"                 header="비고"           :style="{ width: '120px'}"  />
+            <Column field="krIngredientName"    header="국문성분명"   class="clickable-cell"   :style="{ width: '200px', textAlign:'left'}" bodyClass="break-words" />
+            <Column field="enIngredientName"    header="영문성분명"   :style="{ width: '200px', textAlign:'left'}" bodyClass="break-words" />
+            <Column field="cnIngredientName"    header="중문성분명"   :style="{ width: '200px', textAlign:'left'}" bodyClass="break-words"/>
+            <Column field="casNo"               header="CAS NO."     :style="{ width: '140px', textAlign:'center'}" />
+            <Column field="functionNm"          header="function"    :style="{ width: '180px'}" />
+            <Column field="regName"             header="등록자"       :style="{ width: '70px', textAlign:'center'}" />
+            <Column field="updName"             header="수정자"      :style="{ width: '70px', textAlign:'center'}" />
+            <Column field="etc"                 header="비고"        :style="{ width: '120px'}"  />
         </DataTable>
     </div>
 
@@ -185,5 +185,10 @@ const items = ref([
 :deep(.custom-dialog .p-dialog-header) {
   background-color: #1976d2;
   color: white;
+}
+.clickable-cell {
+  cursor: pointer;
+  text-decoration: underline;
+  text-align: left;
 }
 </style>

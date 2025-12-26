@@ -153,27 +153,27 @@
     >
     <ColumnGroup type="header">
         <Row>
-            <Column header="No."    :rowspan="2"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="Phase"  :rowspan="2"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="실생"    :colspan="3" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="표준"    :colspan="3" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="적요"    :rowspan="2" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="-"      :rowspan="2" :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column header="No."    :rowspan="2"  />
+            <Column header="Phase"  :rowspan="2"  />
+            <Column header="실생"    :colspan="3" />
+            <Column header="표준"    :colspan="3" />
+            <Column header="적요"    :rowspan="2" />
+            <Column header="-"      :rowspan="2" />
         </Row>
         <Row>
             <!-- 실생 -->
-            <Column header="품목코드"   field="realItemCd"   :style="{ width: '130px' }" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="품목명"     field="realItemName" :style="{ width: '500px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-            <Column header="함량"       field="realContens" :style="{ width: '80px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
+            <Column header="품목코드"   field="realItemCd"   :style="{ width: '130px' }" />
+            <Column header="품목명"     field="realItemName" :style="{ width: '500px' }"  />
+            <Column header="함량"       field="realContens" :style="{ width: '80px' }"  />
             <!-- 표준 -->
-            <Column header="품목코드"   field="stdItemCd"   :style="{ width: '130px' }" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="품목명"     field="stdItemName" :style="{ width: '500px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-            <Column header="함량"       field="stdContens" :style="{ width: '80px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
+            <Column header="품목코드"   field="stdItemCd"   :style="{ width: '130px' }" />
+            <Column header="품목명"     field="stdItemName" :style="{ width: '500px' }"  />
+            <Column header="함량"       field="stdContens" :style="{ width: '80px' }"  />
         </Row>
     </ColumnGroup>
-        <Column field="orderDist"       header="No."        :style="{ width: '40px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderDist"       header="No."        :style="{ width: '40px'}" >
         </Column>
-        <Column field="phase"           header="Phase"   style="text-align: center;"  :style="{ width: '30px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="phase"           header="Phase"   style="text-align: center;"  :style="{ width: '30px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
@@ -182,7 +182,7 @@
                     />
             </template>
         </Column>
-        <Column field="realItemCd"      header="품목코드"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="realItemCd"      header="품목코드"  :style="{ width: '120px'}" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.realItemCd"
@@ -194,7 +194,7 @@
                 <div style="text-align: center; font-weight: bold;" class="footer-cell">합계</div>
             </template>
         </Column>
-        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.realItemName"
@@ -203,7 +203,7 @@
                     />
             </template>
         </Column>
-        <Column field="realContent"     header="함량"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="realContent"     header="함량"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.realContent"
@@ -221,7 +221,7 @@
                 </div>
             </template>
         </Column>
-        <Column field="stdItemCd"       header="품목코드"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="stdItemCd"       header="품목코드"  :style="{ width: '120px'}" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.stdItemCd"
@@ -230,7 +230,7 @@
                     />
             </template>
         </Column>
-        <Column field="stdItemName"     header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="stdItemName"     header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.stdItemName"
@@ -239,7 +239,7 @@
                     />
             </template>
         </Column>
-        <Column field="stdContent"      header="함량"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="stdContent"      header="함량"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.stdContent"
@@ -257,7 +257,7 @@
                     </div>
                 </template>
         </Column>
-        <Column field="etc" header="적요"    :style="{ width: '240px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc" header="적요"    :style="{ width: '240px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -266,7 +266,7 @@
                     />
             </template>
         </Column>
-        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowR(slotProps.index)"></i>
             </template>
@@ -290,8 +290,8 @@
         show-gridlines
         class="my-table fixed-datatable"
     >
-        <Column field="orderDist"   header="No."        :style="{ width: '20px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="phase"       header="공정구분"  style="text-align: center;" :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderDist"   header="No."        :style="{ width: '20px'}" />
+        <Column field="phase"       header="공정구분"   :style="{ width: '70px', textAligh:'center'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
@@ -300,7 +300,7 @@
                     />
             </template>
         </Column>
-        <Column field="procGb"        header="제조부"      :style="{ width: '90px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="procGb"        header="제조부"     :style="{ width: '90px', textAligh:'center'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <Select
                     v-model="slotProps.data.procGb"
@@ -311,7 +311,7 @@
                     />
             </template>
         </Column>
-        <Column field="procType"       header="제조구분"      :style="{ width: '90px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="procType"       header="제조구분"      :style="{ width: '90px', textAligh:'center'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <Select
                     v-model="slotProps.data.procType"
@@ -322,7 +322,7 @@
                     />
             </template>
         </Column>
-        <Column field="matProc"  header="제조공정"    :style="{ width: '470px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="matProc"  header="제조공정"    :style="{ width: '470px', textAligh:'left'}" bodyClass="break-words">
             <template #body="slotProps">
                 <Textarea
                     v-model="slotProps.data.matProc" rows="2" style="resize: none;"
@@ -330,7 +330,7 @@
                 />
             </template>
         </Column>
-        <Column field="ho"  header="HO"    :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="ho"  header="HO"    :style="{ width: '70px'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.ho"
@@ -342,7 +342,7 @@
                     />
             </template>
         </Column>
-        <Column field="pd"  header="PD"    :style="{ width: '70px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="pd"  header="PD"    :style="{ width: '70px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.pd"
@@ -354,7 +354,7 @@
                     />
             </template>
         </Column>
-        <Column field="d1"  header="D1"    :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="d1"  header="D1"    :style="{ width: '70px'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.d1"
@@ -366,7 +366,7 @@
                     />
             </template>
         </Column>
-        <Column field="d2"  header="D2"    :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="d2"  header="D2"    :style="{ width: '70px'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.d2"
@@ -378,7 +378,7 @@
                     />
             </template>
         </Column>
-        <Column field="t"  header="T"    :style="{ width: '70px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="t"  header="T"    :style="{ width: '70px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.t"
@@ -390,7 +390,7 @@
                     />
             </template>
         </Column>
-        <Column field="m"  header="M"    :style="{ width: '70px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="m"  header="M"    :style="{ width: '70px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.m"
@@ -402,7 +402,7 @@
                     />
             </template>
         </Column>
-        <Column field="etc"         header="적요"        :style="{ width: '180px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc"         header="적요"        :style="{ width: '180px'}" bodyClass="break-words">
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -410,7 +410,7 @@
                     />
             </template>
         </Column>
-        <Column field="actions"     header="-"          :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions"     header="-"          :style="{ width: '20px', textAligh:'center'}" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowP(slotProps.index)"></i>
             </template>

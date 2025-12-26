@@ -63,26 +63,26 @@
         tableStyle="min-width: 100rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="workOrderDateSeq"    header="일자-No"    style="text-align: center;"    :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="areaName"            header="구역"       style="text-align: center;"    :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="poNo"                header="PO NO"       style="text-align: center;"    :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"            header="품목명"    :style="{ width: '280px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="workOrderDateSeq"    header="일자-No"   :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="areaName"            header="구역"     :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="poNo"                header="PO NO"     :style="{ width: '110px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemName"            header="품목명"    :style="{ width: '280px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="workOderDate"        header="제조일자"   style="text-align: center;"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="deliveryQty"         header="주문량"     style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="workOderDate"        header="제조일자"    :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="deliveryQty"         header="주문량"     :style="{ width: '80px', textAlign:'right'}" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 {{ slotProps.data.deliveryQty.toLocaleString() }}
             </template>
         </Column>
-        <Column field="batchCnt"            header="등록배치수" style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="clientName"          header="거래처명"   style="text-align: center;"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="managerName"         header="담당자명"   style="text-align: center;"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="etc"                 header="비고"      style="text-align: center;"   :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="batchCnt"            header="등록배치수"  :style="{ width: '80px', textAlign:'right'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="clientName"          header="거래처명"    :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="managerName"         header="담당자명"   :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="etc"                 header="비고"       :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 </template>
@@ -195,6 +195,7 @@ const downloadExcel = () =>{
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
+  text-align: left;
 }
 
 </style>

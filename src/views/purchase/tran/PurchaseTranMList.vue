@@ -50,7 +50,7 @@
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick"></Button>
-    <Button label="인쇄" @click="print"></Button>
+    <Button label="인쇄" icon="pi pi-print" outlined @click="print"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 <div>
@@ -67,28 +67,28 @@
         class="my-table"
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="tranDateSeq"    header="일자-No"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="tranDateSeq"     header="일자-No"  :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="customerName"    header="거래처명"  :style="{ width: '190px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"        header="품목명"  frozen  :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemName"        header="품목명"  frozen  :style="{ width: '350px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="sumQty"  header="수량합계"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="sumQty"  header="수량합계"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px', textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.qty).sumQty() }}
             </template>
         </Column>
-        <Column field="sumPrice"  header="금액합계"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="sumPrice"  header="금액합계"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px', textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.sumPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="testNo"          header="입고창고"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="unit"            header="발주구분"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="manaserName"     header="담당자"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="testNo"          header="입고창고"  :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="unit"            header="발주구분"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="manaserName"     header="담당자"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 

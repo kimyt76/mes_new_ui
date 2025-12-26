@@ -46,7 +46,7 @@
         >
         <Column field="rowNum"    header="No."  style="width: 20px; text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="itemCd"    header="품목코드"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"  header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemName"  header="품목명"    :style="{ width: '400px', textAlign:'left'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div
                     style="cursor: pointer; text-decoration: underline;"
@@ -55,21 +55,21 @@
                 </div>
             </template>
         </Column>
-        <Column field="customerName"   header="거래처"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="customerName"   header="거래처"  :style="{ width: '200px', textAlign:'left'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="itemCompany"   header="제조원"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="inPrice"  header="입고단가"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="inPrice"  header="입고단가"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.inPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="outPrice"  header="출고단가"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="outPrice"  header="출고단가"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.outPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="vegan"   header="Vegan"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="halal"   header="Halal"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="rspo"    header="RSPO"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="vegan"   header="Vegan"  :style="{ width: '50px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="halal"   header="Halal"  :style="{ width: '50px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="rspo"    header="RSPO"  :style="{ width: '50px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 

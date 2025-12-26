@@ -76,14 +76,14 @@
         <Column field="contractDateSeq" header="일자-No"  frozen :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
         <Column field="poNo"            header="PO No"   frozen :style="{ width: '130px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
         <Column field="itemCd"          header="품목코드" frozen :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"        header="품목명"   frozen :style="{ width: '380px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemName"        header="품목명"   frozen :style="{ width: '380px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.contractId)" class="clickable-cell" style="text-decoration: underline; point">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="expectedDueDate" header="납기예정일자"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="expectedDueDate" header="납기예정일자"  :style="{ width: '110px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="clientName"      header="고객사명"  :style="{ width: '250px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="managerName"     header="담당자명"  :style="{ width: '90px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="orderType"       header="수주유형"  :style="{ width: '70px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
@@ -96,9 +96,9 @@
         <Column field="supplyPrice" header="공급가액"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="prodType"         header="제품유형"   :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="statusType"       header="진행상태"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="paymentCondition" header="결재조건" :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="prodType"         header="제품유형"   :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="statusType"       header="진행상태"   :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="paymentCondition" header="결재조건" :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 </template>

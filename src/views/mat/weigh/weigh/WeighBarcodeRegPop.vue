@@ -10,11 +10,15 @@
     </div>
   </div>
   <Divider />
-  <!-- ✅ 상단 한줄: 좌(바코드+요약) / 우(재고타이틀) -->
+  <!-- 상단 한줄: 좌(바코드+요약) / 우(재고타이틀) -->
   <div class="header-row ml-2">
     <div class="barcode-left">
       <label class="barcode-label">바코드(시험번호)</label>
-      <InputText class="barcode-input" v-model="barcode" />
+      <InputText class="barcode-input"
+        v-model="barcode"
+        @keyup.enter="searchByBarcode"
+        autofocus
+        />
       <Button label="초기화" class="ml-2" outlined @click="resetBarcode" />
 
       <div class="qty-summary">
@@ -140,27 +144,10 @@ const stockItemList = ref([
     weighQty: 0.5
   }
 ])
-
 /** 우측 재고현황 테이블 */
 const stockItemHistList = ref([
-  {
-    no: 1,
-    testNo: '25050911004',
-    inDate: '2025-05-09',
-    expireDate: '2027-12-05',
-    rawWarehouse: 0.0,
-    weighRoom: 2.242,
-    sumQty: 2.242
-  },
-  {
-    no: 2,
-    testNo: '25111111002',
-    inDate: '2025-11-11',
-    expireDate: '2027-12-05',
-    rawWarehouse: 0.0,
-    weighRoom: 25.0,
-    sumQty: 25.0
-  }
+  { no: 1,testNo: '25050911004',inDate: '2025-05-09',expireDate: '2027-12-05',rawWarehouse: 0.0,weighRoom: 2.242,sumQty: 2.242},
+  {no: 2,testNo: '25111111002',inDate: '2025-11-11',expireDate: '2027-12-05',rawWarehouse: 0.0,weighRoom: 25.0,sumQty: 25.0}
 ])
 
 /** ✅ 상단 요약: 칭량량 합계 */
@@ -172,6 +159,10 @@ const totalWeighQty = computed(() => {
 const totalOrderQty = computed(() => {
   return stockItemList.value.reduce((acc, cur) => acc + (Number(cur.orderQty) || 0), 0)
 })
+
+const searchByBarcode = () =>{
+
+}
 
 /** 숫자 표시 포맷 (최대 6자리) */
 const formatQty = (value) => {

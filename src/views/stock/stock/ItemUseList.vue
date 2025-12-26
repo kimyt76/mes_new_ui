@@ -41,20 +41,20 @@
         tableStyle="w-full table-layout: fixed;"
         class="my-table"
         >
-        <Column field="rowNum"      header="No."        :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemGrp1"    header="관리구분"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="chingDate"   header="칭량일자"   :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="제조번호"   :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"     :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="inPrice"     header="생산량"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px'}" style="text-align: right;">
+        <Column field="rowNum"      header="No."        :style="{ width: '50px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemGrp1"    header="관리구분"   :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="chingDate"   header="칭량일자"   :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"      header="제조번호"   :style="{ width: '150px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemName"    header="품목명"     :style="{ width: '300px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }" />
+        <Column field="inPrice"     header="생산량"     :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="unit"        header="단위"  frozen :style="{ width: '60px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="품목코드"  frozen :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"  frozen :style="{ width: '300px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="spec"        header="규격"  frozen :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="outQty"      header="소요량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="unit"        header="단위"       frozen :style="{ width: '60px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"      header="품목코드"   frozen :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemName"    header="품목명"     frozen :style="{ width: '300px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="spec"        header="규격"       frozen :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="outQty"      header="소요량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
     </DataTable>

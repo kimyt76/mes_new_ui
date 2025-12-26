@@ -43,8 +43,8 @@
         class="my-table"
         >
         <Column field="rowNum"          header="No."  style="width: 20px; text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="newMaterialCd"   header="임시코드"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="materialName"    header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="newMaterialCd"   header="임시코드"  :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="materialName"    header="품목명"    :style="{ width: '500px', textAlign:'left'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 <div
                     style="cursor: pointer; text-decoration: underline;"
@@ -53,9 +53,10 @@
                 </div>
             </template>
         </Column>
-        <Column field="customerName"    header="등록자"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCompany"     header="등록일"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="customerName"    header="거래처명"  :style="{ width: '250px', textAlign:'left'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="regName"         header="등록자"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="regDate"         header="등록일"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"          header="품목코드"  :style="{ width: '110px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
     </DataTable>
 </div>
 

@@ -50,60 +50,60 @@
         tableStyle="min-width:180rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="rowNum"          header="No."      frozen  :style="{ width: '60px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"          header="관리구분"  frozen :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"          header="품목코드"  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"        header="품목명"    frozen :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="itemName"        header="납품업체"  frozen  :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="inPrice"         header="단가"  frozen :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px'}" style="text-align: right;">
+        <Column field="rowNum"          header="No."      frozen  :style="{ width: '60px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"          header="관리구분"  frozen :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"          header="품목코드"  frozen :style="{ width: '150px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemName"        header="품목명"    frozen :style="{ width: '300px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }" />
+        <Column field="itemName"        header="납품업체"  frozen  :style="{ width: '300px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }" />
+        <Column field="inPrice"         header="단가"  frozen :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="orderQty"        header="기초재고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="orderQty"        header="기초재고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="orderAmt"        header="기초재고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="orderAmt"        header="기초재고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="inQty"        header="입고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px'}" style="text-align: right;">
+        <Column field="inQty"        header="입고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="inAmt"        header="입고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px'}" style="text-align: right;">
+        <Column field="inAmt"        header="입고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="출고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px'}" style="text-align: right;">
+        <Column field="outQty"        header="출고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outAmt"        header="출고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px'}" style="text-align: right;">
+        <Column field="outAmt"        header="출고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="반품조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="반품조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="검사샘플수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="검사샘플수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="연구샘플수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="연구샘플수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="실사조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="실사조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="과입조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="과입조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="계정변경수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="계정변경수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="매출조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="매출조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="사용조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="사용조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="기말재고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="기말재고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="기말재고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px'}" style="text-align: right;">
+        <Column field="outQty"        header="기말재고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
     </DataTable>

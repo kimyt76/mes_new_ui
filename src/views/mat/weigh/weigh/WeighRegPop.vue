@@ -117,7 +117,7 @@
   <div class="w-full mt-3">
     <div class="flex items-center justify-end gap-3">
       <Button label="칭량시작" />
-      <Button label="바코드출력" />
+      <Button label="바코드출력" icon="pi pi-barcode" />
       <Button label="공정기획서" />
       <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
     </div>
