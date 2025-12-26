@@ -161,7 +161,7 @@ const downloadExcel = () =>{
     console.warn("No Columns Found");
     return;
   }
-  exportToExcel(matOrderlist.value, "발주 리스트", cols);
+  exportToExcel(matOrderlist.value, "재고 리스트", cols);
 }
 
 
