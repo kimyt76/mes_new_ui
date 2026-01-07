@@ -9,7 +9,6 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
-
 const app = createApp(App);
 app.use(createPinia())
 app.use(router);
@@ -30,7 +29,9 @@ app.use(PrimeVue, {
         monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
         today: '오늘',
         clear: '초기화',
-        dateFormat: 'yy-mm-dd'
+        dateFormat: 'yy-mm-dd',
+        am: '오전',
+        pm: '오후'
     },
     pt: {
         column: {
