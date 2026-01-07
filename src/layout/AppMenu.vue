@@ -417,7 +417,7 @@ const model = ref([
                     {
                         label: '사용기한',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/usShelf'
+                        to: '/stock/useBy'
                     },
                 ]
             },
@@ -428,12 +428,12 @@ const model = ref([
                     {
                         label: '재고조사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/order/contractList'
+                        to: '/stock/inventory'
                     },
                     {
                         label: '실사재고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/order/shipmentList'
+                        to: '/stock/actualInventory'
                     },
                 ]
             },
@@ -472,15 +472,15 @@ const model = ref([
                 label: '장비 관리',
                 icon: 'pi pi-fw pi-check-square',
                 items:[
-                    {
-                        label: '중량측정이력',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/shipmentList'
-                    },
+                    // {
+                    //     label: '중량측정이력',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/equipment/shipmentList'
+                    // },
                     {
                         label: '저울관리',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/order/shipmentList'
+                        to: '/system/scale'
                     },
                 ]
             },

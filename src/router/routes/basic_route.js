@@ -6,11 +6,11 @@ export default [
         name: 'ItemList',
         component: () => import('@/views/basic/item/ItemList.vue')
       },
-      {
-        path: 'itemSubCd',
-        name: 'ItemSubCd',
-        component: () => import('@/views/basic/item/ItemSubCd.vue'),
-      },
+    //   {
+    //     path: 'itemSubCd',
+    //     name: 'ItemSubCd',
+    //     component: () => import('@/views/basic/item/ItemSubCd.vue'),
+    //   },
       {
         path: 'itemThird',
         name: 'ItemThird',

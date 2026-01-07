@@ -1,4 +1,4 @@
-import { API_URL} from '.'
+import { API_URL } from '.';
 
 export const  ApiSystems = {
 
@@ -14,7 +14,7 @@ export const  ApiSystems = {
 
   updateUserInfo: async (params) => {
     try{
-      const res = await API_URL.patch('systemMgmt/updateUserInfo', params)
+      const res = await API_URL.patch('/systemMgmt/updateUserInfo', params)
       return res
     }catch(err){
       throw err.response
@@ -48,6 +48,34 @@ export const  ApiSystems = {
       return res
     }catch(err){
       throw err.response
+    }
+  },
+
+//  전자저울
+  getScaleList:  async (params) =>{
+    try {
+      const res =  await API_URL.post(`/scale/getScaleList`, params)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
+  getScaleInfo:  async (id) =>{
+    try {
+      const res =  await API_URL.get(`/scale/getScaleInfo/${id}`)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
+  saveScaleInfo: async (params) => {
+    try{
+      const res = await API_URL.patch('/scale/saveScaleInfo', params)
+      return res
+    }catch(err){
+      throw err
     }
   },
 
