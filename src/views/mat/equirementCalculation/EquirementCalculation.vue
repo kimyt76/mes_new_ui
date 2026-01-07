@@ -6,9 +6,6 @@
             label="품목추가"
             @click="openPop"
             />
-
-
-
         <Button
             label="초기화"
             @click="allClear"
@@ -94,6 +91,7 @@
 </template>
 
 <script setup>
+import { getItemCds } from '@/util/common';
 import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
 import { ref } from 'vue';
 
@@ -117,9 +115,8 @@ const handleSelect = (rows) =>{
 
 //반제품에 대한 소요량 계산(원재료)
 const bomCalculation = async ()=>{
-
     const params = {
-
+        itemCds: getItemCds(itemBomList.value),
     }
 
     console.log('itemBomList', itemBomList.value)
