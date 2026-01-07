@@ -27,14 +27,11 @@
             <InputText v-model="form.customerName" class="w-18rem" />
             <label>거래처명</label>
             </FloatLabel>
-
-            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600"/>
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600 w-5rem" />
         </div>
         </template>
     </Toolbar>
     </Fluid>
-
-
     </form>
     <div class="flex items-center justify-end gap-2 mb-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick"/>
@@ -63,24 +60,24 @@
             }"
             >
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-            <Column field="matRegDate"      header="일자"   :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="matRegDate"      header="일자"   :style="{ width: '120px'}" />
             <Column field="poNo"            header="PO No"  :style="{ width: '120px'}" />
-            <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" style="text-align: left;"/>
-            <Column field="itemCd"          header="품목코드"   :style="{ width: '130px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemName"        header="품목명"   frozen  :style="{ width: '400px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="customerName"    header="거래처"   :style="{ width: '210px', textAlign:'left'}"/>
+            <Column field="itemCd"          header="품목코드"   :style="{ width: '130px'}"  />
+            <Column field="itemName"        header="품목명"   frozen  :style="{ width: '400px'}" bodyClass="break-words" >
                 <template #body="slotProps">
                     <div @click="selectRowClick(slotProps.data.matOrdeId)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
             </Column>
-            <Column field="qty"                 header="수량"           :style="{ width: '120px'}" />
-            <Column field="matInstructionQty"   header="제조지시수량"    :style="{ width: '160px'}" />
-            <Column field="matCompleteQty"      header="제조완료수량"    :style="{ width: '160px'}" />
-            <Column field="residualMatQty"      header="잔량제조량"     :style="{ width: '160px'}" />
+            <Column field="qty"                 header="수량"           :style="{ width: '120px', textAlign:'right'}" />
+            <Column field="matInstructionQty"   header="제조지시수량"   :style="{ width: '160px', textAlign:'right'}" />
+            <Column field="matCompleteQty"      header="제조완료수량"   :style="{ width: '160px', textAlign:'right'}" />
+            <Column field="residualMatQty"      header="잔량제조량"     :style="{ width: '160px', textAlign:'right'}" />
             <Column field="matPlanDate"         header="제조예정일"     :style="{ width: '120px'}" />
-            <Column field="etc"                 header="비고"  :style="{ width: '150px'}"  />
-            <Column field="completeYn"          header="완료"  :style="{ width: '70px'}"  />
+            <Column field="etc"                 header="비고"           :style="{ width: '150px'}"  />
+            <Column field="completeYn"          header="완료"           :style="{ width: '70px'}"  />
         </DataTable>
 
     </div>

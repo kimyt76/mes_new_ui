@@ -67,7 +67,7 @@
             <Column selectionMode="single"  headerStyle="width: 2.5rem" style="text-align: center;"/>
             <Column field="itemTypeName"    header="품목구분"  :style="{ width: '80px'}" />
             <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}"  />
-            <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words">
+            <Column field="itemName"        header="품목명"    :style="{ width: '420px'}" bodyClass="break-words">
                 <template #body="slotProps">
                     <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
@@ -87,8 +87,8 @@
                     {{ Number(slotProps.data.outPrice).toLocaleString() }}
                 </template>
             </Column>
-            <Column field="itemGrp2Name"    header="제품유형"  :style="{ width: '110px', textAlign:'center'}"  />
-            <Column field="remark"          header="사용유무"  :style="{ width: '70px', textAlign:'center'}"  />
+            <Column field="itemGrp2Name"    header="제품유형"  :style="{ width: '90px', textAlign:'center'}"  />
+            <Column field="useYn"          header="사용유무"  :style="{ width: '70px', textAlign:'center'}"  />
         </DataTable>
     </div>
 </template>
