@@ -122,7 +122,7 @@
                         :options="useYns"
                         optionLabel="codeNm"
                         optionValue="code"
-                        style="width: 90px"
+                        style="width: 150px"
                         />
                         <label for="on_label">사용유무</label>
                     </FloatLabel>
@@ -153,20 +153,31 @@
 
 
 <script setup>
-import { ApiBase } from '@/api/apiBase';
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiSystems } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
-import { inject, onMounted, reactive, ref, watch } from 'vue';
+import { handleApiError } from '@/util/errorHandler';
+import { computed, inject, onMounted, reactive, ref } from 'vue';
 
 const {userId} = useAuthStore()
 const dialogRef = inject('dialogRef')
 const { vError, vSuccess ,vInfo, vWarning} = useAlertStore()
 const areaCds = ref([])
-const storageCds = ref([])
 const useYns = ref([])
+const storageAllRaw = ref([])
+const storageCds = computed(() => {
+  const area = form.areaCd
+  const list = storageAllRaw.value ?? []
+
+  const filtered = area ? list.filter(x => x.areaCd === area) : list
+
+  return filtered.map(x => ({
+    code: x.storageCd,
+    codeNm: x.storageName,
+  }))
+})
 const form = reactive({
     areaCd: null,
     storageCd: null,
@@ -191,21 +202,18 @@ const saveInfo = async () =>{
     const params = {
       ...form
     }
-    const msg = await ApiSystems.saveScaleInfo(params)
-    vSuccess(msg.data)
+    const res = await ApiSystems.saveScaleInfo(params)
+    vSuccess(res.message)
     closeDialog()
   }catch(err){
-    vError(err.response.data.message)
+    handleApiError(err)
   }
 }
-
-watch(() => form.areaCd, async (newVal) => {
-    storageCds.value = await ApiBase.getStorageList(newVal);
-})
 
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     useYns.value = await ApiCommon.getCodeList('use_yn')
+    storageAllRaw.value = await ApiSystems.getStorageList({})
 
     if ( !isEmpty(dialogRef.value.data)) {
         const res = await ApiSystems.getScaleInfo(dialogRef.value.data)
