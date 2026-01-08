@@ -295,6 +295,9 @@ export const ApiLab = {
     }
   },
 
+  /**
+   *
+   */
   getItemBomList: async(id) => {
     try{
       const res = await API_URL.get(`/bom/getItemBomList/${id}`)
@@ -304,6 +307,17 @@ export const ApiLab = {
       throw err.response
     }
   },
+
+  getItemsBomList: async(parms) => {
+    try{
+      const res = await API_URL.post(`/bom/getItemsBomList`, parms)
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+
 
 
 
