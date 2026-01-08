@@ -45,24 +45,42 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import { useAuthStore } from '@/stores/auth';
+import UserDtlPop from '@/views/system/user/UserDtlPop.vue';
+import { useDialog } from 'primevue';
 import { ref } from 'vue';
-const {memberNm, deptNm} = useAuthStore()
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
+const authStore = useAuthStore()
+const { memberNm, deptNm, userId} = authStore
+const dialog = useDialog()
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
-
 const userMenu = ref(null);
 
 // 사용자 정보 팝업 열기
 const openUserInfo = () => {
   // 예: PrimeVue Dialog 열기
-  alert('사용자 정보 팝업 열기');
   userMenu.value.hide();
+
+  dialog.open(UserDtlPop, {
+    props:{
+        header: '사용자 정보',
+        modal: true,
+    },
+    data: userId,
+    onClose: () => {
+
+    }
+  })
 }
 
 // 로그아웃 처리
 const logout = () => {
   userMenu.value.hide();
   // 실제 로그아웃 로직 호출
+   authStore.logoutUser()
+   authStore.user = null;
+   router.push({name:'LogIn'})
 }
 
 </script>
