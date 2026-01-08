@@ -462,6 +462,11 @@ const model = ref([
                         to: '/system/auth'
                     },
                     {
+                        label: '창고관리',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/system/storage'
+                    },
+                    {
                         label: '메뉴관리',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/system/menu'
