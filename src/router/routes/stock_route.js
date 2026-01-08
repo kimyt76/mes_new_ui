@@ -22,9 +22,17 @@ export default [
         component: () => import('@/views/stock/stock/TestUseList.vue')
       },
       {
-        path: 'usShelf',
-        name: 'UsShelf',
-        component: () => import('@/views/stock/stock/UseShelfList.vue')
+        path: 'useBy',
+        name: 'UseBy',
+        component: () => import('@/views/stock/stock/UseByList.vue')
       },
+
+      {
+        path: 'inventory',
+        name: 'InventoryList',
+        component: () => import('@/views/stock/inventory/InventoryList.vue')
+      },
+
+
 
     ]
