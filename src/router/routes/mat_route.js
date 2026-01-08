@@ -9,7 +9,7 @@ export default [
       {
         path: 'equirementCalculation',
         name: 'EquirementCalculation',
-        component: () => import('@/views/mat/equirementCalculation/Equirement_Calculation.vue')
+        component: () => import('@/views/mat/equirementCalculation/EquirementCalculation.vue')
       },
       {
         path: 'itemM1Equirment',
