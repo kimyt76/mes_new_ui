@@ -65,7 +65,9 @@ API_URL.interceptors.request.use(
 /* ─────────────────────────────────────
  *  📌 응답 인터셉터: 전역 에러 처리
  *      - 다운로드(blob) 요청은 예외 처리
- *      - RestResponse(code/message/data) 공통 처리 추가 ✅
+ *      - RestResponse(code/message/data) 공통 처리
+ *      - ✅ 첫 접속(미로그인) 시 경고 메시지 안 띄우고 조용히 로그인 이동
+ *      - ✅ 사용 중 세션 만료 시에만 세션 만료 메시지 띄움
  * ──────────────────────────────────── */
 API_URL.interceptors.response.use(
   response => {
@@ -80,8 +82,6 @@ API_URL.interceptors.response.use(
     // ✅ RestResponse 공통 처리
     const res = response.data
 
-    // 서버가 RestResponse 형태로 내려주는 경우만 처리
-    // (다른 API가 있을 수도 있으니 형태 체크)
     const isRestResponse =
       res &&
       typeof res === 'object' &&
@@ -89,20 +89,14 @@ API_URL.interceptors.response.use(
       Object.prototype.hasOwnProperty.call(res, 'message')
 
     if (isRestResponse) {
-      // ✅ 성공이면 data를 반환할지, res 전체를 반환할지 선택 가능
-      // → 현재 너희는 msg.data.message 같은 방식이었으니,
-      //    앞으로는 res.message / res.data로 쓰게 하려면 res 전체 반환이 편함
+      // ✅ 성공
       if (res.code === 0) {
         return res // {code, message, data}
       }
 
       // ✅ code != 0 : 비즈니스 에러
-      // - 여기서 alert를 띄우고
-      // - reject로 catch로 보내서 호출부에서 추가 처리 가능하게
       const msg = res.message || '처리 중 오류가 발생했습니다.'
 
-      // code에 따라 알림 강도 다르게 가능 (원하면 수정)
-      // ex) 중복(1001)은 Warning, 저장오류(2001)는 Error
       if (res.code === 1001) {
         vWarning?.(msg)
       } else {
@@ -136,25 +130,48 @@ API_URL.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // 서버 연결 끊김 (네트워크 에러)
+    /**
+     * ✅ 1) error.response가 없는 경우 (네트워크 에러 / CORS / 서버 Down)
+     * - 첫 접속(세션 체크 전)에는 조용히 처리 (알림 X, 라우팅 X)
+     * - 시스템 사용 중에는 알림 + 로그인 페이지 이동
+     */
     if (!error.response) {
+      // ✅ 첫 접속이면 조용히 넘김
+      if (!auth.sessionChecked) {
+        return Promise.reject(error)
+      }
+
       console.error('서버와 연결할 수 없습니다.')
       vWarning?.('서버와 연결할 수 없습니다.')
-      router.push('/login')
-      return Promise.reject(error)
-    }
-
-    // 인증/권한 문제
-    if ((status === 401 || status === 403) && router.currentRoute.value.name !== 'LogIn') {
-      console.warn('접근 권한 오류. 로그인 페이지로 이동합니다.')
-      auth.user = null
       router.push({ name: 'LogIn' }).catch(() => {})
       return Promise.reject(error)
     }
 
-    // ✅ 그 외 서버 오류(500 등)
-    // RestResponse를 쓰는 API라면 여기로 잘 안 오지만,
-    // 혹시 모를 예외 처리
+    /**
+     * ✅ 2) 인증/권한 문제 (401/403)
+     * - 첫 접속(세션 체크 전)에는 "미로그인 확인" 과정이므로 알림 X
+     * - 시스템 사용 중에는 "세션 만료" 안내 후 로그인 이동
+     */
+    if (status === 401 || status === 403) {
+      // ✅ 첫 접속(세션 체크 전): 조용히 처리
+      if (!auth.sessionChecked) {
+        auth.user = null
+        return Promise.reject(error)
+      }
+
+      // ✅ 사용 중 세션 만료: 안내 + 로그인 이동
+      if (router.currentRoute.value.name !== 'LogIn') {
+        vWarning?.('세션이 만료되었습니다. 다시 로그인해주세요.')
+        auth.user = null
+        router.push({ name: 'LogIn' }).catch(() => {})
+      }
+
+      return Promise.reject(error)
+    }
+
+    /**
+     * ✅ 3) 그 외 서버 오류
+     */
     vError?.(error.response?.data?.message || '서버 오류가 발생했습니다.')
 
     return Promise.reject(error)

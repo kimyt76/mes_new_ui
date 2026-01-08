@@ -10,10 +10,19 @@ const router = createRouter({
  router.beforeEach(async (to, form) => {
   const auth = useAuthStore();
 
-  if (!auth.sessionChecked) {
-    await auth.fetchUser();
-  }
-
+//   if (!auth.sessionChecked) {
+//     await auth.fetchUser();
+//   }
+    if (!auth.sessionChecked) {
+        try {
+            await auth.fetchUser();
+        } catch (e) {
+            // ✅ 실패해도 체크 완료 처리
+            auth.user = null;
+        } finally {
+            auth.sessionChecked = true;
+        }
+    }
   if (!auth.isLoggedIn && to.name !== 'LogIn') {
     return { name: 'LogIn' };
   } else if (auth.isLoggedIn && to.name === 'LogIn') {
