@@ -11,9 +11,14 @@ export default [
         name: 'CommonMgmt',
         component: () => import('@/views/system/common/CommonMgmtList.vue')
       },
-    //   {
-    //     path: 'templateMgmt',
-    //     name: 'Template',
-    //     component: () => import('@/views/system/TemplateMgmtList.vue')
-    //   },
+      {
+        path: 'storage',
+        name: 'StorageList',
+        component: () => import('@/views/system/storage/StorageList.vue')
+      },
+      {
+        path: 'scale',
+        name: 'Scale',
+        component: () => import('@/views/system/scale/ScaleList.vue')
+      },
     ]
