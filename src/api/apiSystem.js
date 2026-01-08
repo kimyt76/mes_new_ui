@@ -79,4 +79,13 @@ export const  ApiSystems = {
     }
   },
 
+  getStorageList: async (params) =>{
+    try {
+      const res =  await API_URL.post(`/storage/getStorageList`, params)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
 }
