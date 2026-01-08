@@ -29,7 +29,7 @@ export default [
       {
         path: 'storageList',
         name: 'StorageList',
-        component: () => import('@/views/basic/storage/StorageList.vue')
+        component: () => import('@/views/system/storage/StorageList.vue')
       },
     ]
 
