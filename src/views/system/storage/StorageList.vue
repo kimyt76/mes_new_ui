@@ -1,24 +1,25 @@
 <template>
     <Breadcrumb :home="home" :model="items"/>
-    <form @submit.prevent="srchItemList" class="space-y-4">
-    <Fluid class="flex">
-        <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
+    <form @submit.prevent="srchList" class="space-y-4">
+       <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
+            <div class="flex flex-wrap items-center gap-2 w-full">
             <FloatLabel>
                 <Select
                     v-model="form.areaCd"
-                    :options="itemTypeCds"
+                    :options="areaCds"
                     optionLabel="codeNm"
                     optionValue="code"
-                    class="w-13rem" />
+                     style="width: 150px"
+                    />
                 <label>창고코드</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText v-model="form.storageCd" class="w-13rem" />
+                <InputText v-model="form.storageCd"  />
                 <label>창고코드</label>
             </FloatLabel>
             <FloatLabel>
-                <InputText v-model="form.storageName" class="w-13rem" />
+                <InputText v-model="form.storageName"  style="width: 200px" />
                 <label>창고명</label>
             </FloatLabel>
             <FloatLabel>
@@ -27,13 +28,14 @@
                     :options="useYns"
                     optionLabel="codeNm"
                     optionValue="code"
-                    class="w-13rem" />
+                     style="width: 120px"
+                    />
                 <label>사용유무</label>
             </FloatLabel>
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"></Button>
+            </div>
         </template>
     </Toolbar>
-   </Fluid>
     </form>
     <div class="flex items-center justify-between mb-2">
         <!-- 왼쪽: 총 건수 -->
@@ -43,7 +45,7 @@
 
         <!-- 오른쪽: 버튼 -->
         <div class="flex items-center gap-2">
-            <Button label="신규" icon="pi pi-plus" severity="secondary" @click="newItem" />
+            <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')" />
             <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
         </div>
     </div>
@@ -51,7 +53,6 @@
         <DataTable
             ref="dt"
             v-model:selection="selectedItem"
-            :loading="loading"
             :value="storageList"
             dataKey="storageCd"
             paginator :rows="20"
@@ -62,21 +63,28 @@
             scrollHeight="700px"
             showGridlines
             >
-            <Column field="itemTypeName"    header="창고코드"  :style="{ width: '80px'}" />
-            <Column field="itemCd"          header="창고명"  :style="{ width: '110px'}"  />
-            <Column field="itemCd"          header="구역(공장)"  :style="{ width: '110px'}"  />
-            <Column field="unit"            header="단위"     :style="{ width: '50px', textAlign:'center'}" />
-            <Column field="Spec"            header="규격"     :style="{ width: '100px', textAlign:'center'}" />
-            <Column field="useYn"           header="사용유무"  :style="{ width: '70px', textAlign:'center'}"  />
+            <Column field="storageCd"   header="창고코드"   :style="{ width: '80px'}" />
+            <Column field="storageName" header="창고명"     :style="{ width: '110px'}" >
+                <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data.storageCd)" class="clickable-cell">
+                    {{ slotProps.data.storageName }}
+                </div>
+            </template>
+            </Column>
+            <Column field="areaName"    header="구역(공장)"  :style="{ width: '110px'}"  />
+            <Column field="useYn"       header="사용유무"   :style="{ width: '70px', textAlign:'center'}"  />
         </DataTable>
     </div>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiSystems } from '@/api/apiSystem';
+import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
+import StoragePop from './StoragePop.vue';
 
 const dialog = useDialog()
 const dt = ref(null);
@@ -94,21 +102,38 @@ const form = reactive({
     useYn: ''
 })
 
-const srchItemList = async () => {
+const srchList = async () => {
     const params = {
         ...form
     };
-    storageList.value = await ApiBase.getStorageList(params);
+    storageList.value = await ApiSystems.getStorageList(params);
 };
 
-const newItem = () => {
-  const item = selectedItem.value
+const selectRowClick = (id) => {
+    let title = ''
+console.log('id', id)
+    if (isEmpty(id)) {
+        title = '창고등록'
+    }else {
+        title = '창고상세'
+    }
+
+    dialog.open( StoragePop, {
+        props:  {
+            header: title,
+            modal: true,
+        },
+        data: id,
+        onClose: async (data) => {
+            await srchList()
+        }
+    })
+
 }
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area');
-    useYns.value = await ApiCommon.getCodeList('useYn');
-
+    useYns.value = await ApiCommon.getCodeList('use_yn');
 });
 
 const home = ref({
