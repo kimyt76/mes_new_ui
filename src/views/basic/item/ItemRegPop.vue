@@ -140,7 +140,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty, makeItemCd, typeNm } from '@/util/common';
+import { makeItemCd } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, watch, watchEffect } from 'vue';
@@ -188,8 +188,8 @@ const saveInfo =  async(type) =>{
         const params = {
         ...form
         }
-    const msg = await ApiItem.saveItemInfo(params)
-    vSuccess(msg.data.message)
+    const res = await ApiItem.saveItemInfo(params)
+    vSuccess(res.message)
     closeDialog()
   }catch(err){
     handleApiError(err)
@@ -232,10 +232,6 @@ watch(() => form.itemCategory1, async(newVal) => {
 watchEffect( async () => {
   if (form.itemCategory1 && form.itemCategory2) {
     form.itemCd = await makeItemCd(form.itemTypeCd, form.itemCategory1, form.itemCategory2)
-
-    if ( isEmpty(form.itemName)) {
-      form.itemName = typeNm(form.itemTypeCd)
-    }
   }
 })
 
