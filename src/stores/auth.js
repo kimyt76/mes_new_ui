@@ -1,7 +1,5 @@
+import { fetchUser, login, logout } from "@/api/auth";
 import { defineStore } from "pinia";
-import { login, logout, fetchUser } from "@/api/auth";
-import { useAlertStore } from "./alert";
-
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
@@ -23,7 +21,6 @@ export const useAuthStore = defineStore('auth', {
         this.userId = data.userId;
         this.deptNm = data.deptNm;
         this.memberNm = data.memberNm;
-
         //localStorage.setItem('user', data)
       }catch(err){
         throw err;
