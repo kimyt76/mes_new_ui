@@ -12,7 +12,7 @@
                     <InputText v-model="form.itemName" class="w-20rem" />
                     <label>품목명</label>
                 </FloatLabel>
-                <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600"/>
+                <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"/>
             </form>
         </div>
     </div>
@@ -74,7 +74,6 @@ const srhList =  async () =>{
     const params = {
         ...form
     }
-
     itemList.value = await ApiItem.getItemList(params)
 }
 
@@ -95,7 +94,7 @@ const home = ref({
 });
 const items = ref([
     { label: '제조계획관리' },
-    { label: '품목별소요량(원재료)목록' },
+    { label: '품목별소요량(원재료)' },
     { label: '품목별소요량(원재료)목록' },
 ]);
 </script>
