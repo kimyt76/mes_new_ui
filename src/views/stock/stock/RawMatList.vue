@@ -127,7 +127,6 @@ const form = reactive({
     areaCd: '',
     itemName: '',
     itemCd: '',
-    stdDate: todayKST(),
 })
 const rawMatList = ref([])
 // form
@@ -152,6 +151,7 @@ const home = ref({
 const items = ref([
     { label: '자재관리' },
     { label: '원재료수불부' },
+    { label: '원재료수불부목록' },
 ]);
 
 const downloadExcel = () =>{
