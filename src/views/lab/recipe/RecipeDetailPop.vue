@@ -19,7 +19,6 @@
           </FloatLabel>
         </div>
       </div>
-
       <!-- Row 2 -->
       <div class="grid mb-2">
         <div class="col-3">
