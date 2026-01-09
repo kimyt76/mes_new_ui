@@ -125,13 +125,6 @@ export async function makeItemCd(itemTypeCd, itemL, itemM){
     itemCd = await ApiCommon.newSeq(itemTypeCd, cd, seqLen)
   }
 
-
-  //부재료, 벌크,
-  // }else if (['M2', 'M7'].includes(itemTypeCd) ){    /**부재료 인데  */
-  //   cd = com+'RM'+itemL+itemM
-  // }
-
-
   return itemCd
 }
 
@@ -271,4 +264,28 @@ export const formatTelNo = (num) =>{
     }
     console.log(`${num} -> ${result}`);
     return result;
+}
+
+
+/**
+ * 리스트에서 itemCd 를 추출하여 , 로 붙이기
+ */
+export const getItemCds = (list) =>{
+    return list
+        .map(item => item.itemCd)
+        .filter(cd => cd != null && cd !== '')
+        .join(',');
+}
+
+/**
+ * 리스트에서 itemCd 를 추출하여 뒤에 2자리를 자르고  , 로 붙이기
+ */
+export const getItemCdCsv = (list) =>{
+    return list
+        .map(item => {
+        const cd = item.itemCd;
+        return cd ? cd.slice(0, -2) : cd;   // 끝 2자리 제거
+        })
+        .filter(cd => cd != null && cd !== '')
+        .join(',');
 }
