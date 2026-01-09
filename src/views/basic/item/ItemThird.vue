@@ -152,10 +152,13 @@ import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { incrementAlpabet, incrementNumber, isEmpty, typeNm } from '@/util/common';
+import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, unref, watch, watchEffect } from 'vue';
+import CustomerListPop from '../customer/CustomerListPop.vue';
 
 const {vSuccess, vError, vInfo, vWarning} = useAlertStore()
 const { userId }  = useAuthStore()
+const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const isItemType = ref(false)
 const isDisable = ref(false)
@@ -188,21 +191,27 @@ const form = reactive({
     etc: '',
     useYn: 'Y',
 
-    gb : 'U',
     userId: userId,
 })
 
-watch(() => form.itemTypeCd, (newVal) => {
+watch( () => form.itemTypeCd, async (newVal) => {
   useCates.value = []
   isItemType.value = false;
 
-  const allowedTypes = ['M2', 'M7'];
+  if ( form.itemTypeCd ===  'M2' || form.itemTypeCd ===  'M7' ) {
+      subInit()
+  }else if ( form.itemTypeCd ===  'M0'  ){
+    itemCategory1s.value = await ApiItem.getProdLList()
+    const res = await ApiItem.getItemInfo(dialogPayload.asItemCd)
+    Object.assign(form, res)
 
-  if (allowedTypes.includes(newVal)) {
-            // vWarning('완제품일 경우에만 선택가능합니다.!!');
-            // form.itemTypeCd = dialogPayload.asItemTypeCd;
+    if (form.itemCategory1) {
+      itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
+    } else {
+      itemCategory2s.value = []
+    }
 
-    subInit()
+    form.itemCd = incrementAlpabet(dialogPayload.asItemCd)
   }else{
     mainInit()
   }
@@ -210,7 +219,6 @@ watch(() => form.itemTypeCd, (newVal) => {
 
 const mainInit = async ()=>{
     isItemType.value = false
-    commonInit()
 
     itemCategory1s.value = await ApiItem.getProdLList()
     itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
@@ -239,7 +247,7 @@ const subInit = async () => {
 watchEffect( async () => {
   if (form.itemCategory1 && form.itemCategory2) {
     if ( ['M2', 'M7'].includes(form.itemTypeCd)) {
-      console.log('dialogPayload.asItemTypeCd', dialogPayload.asItemTypeCd)
+
         if ( dialogPayload.asItemTypeCd !== 'M0') {
         vInfo('부자재 및 소모품은 완제품 품목으로 호출하셔야 합니다.')
         return
@@ -261,8 +269,14 @@ const commonInit = () =>{
   form.itemName = null
 }
 
-const saveInfo = () =>{
+const saveInfo = async() =>{
+    const params = {
+        ...form
+    }
 
+    const msg = await ApiItem.saveItemAddInfo(params)
+    vSuccess(msg)
+    closeDialog()
 }
 
 const openPop = () =>{
@@ -316,13 +330,11 @@ onMounted( async () =>{
   useYns.value = await ApiCommon.getCodeList('use_yn')
 
   const res = await ApiItem.getItemInfo(dialogPayload.asItemCd)
-
   Object.assign(form, res)
 
   if (!['M0', 'M2', 'M7'].includes(dialogPayload.asItemTypeCd)  ){
       isDisable.value = true
   }
-
 })
 
 
