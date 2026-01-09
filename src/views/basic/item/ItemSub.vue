@@ -1,12 +1,11 @@
 <template>
-    <Card style="width: 70rem; height: 25rem;">
-        <template #content>
+<Card style="width: 70rem; height: 32rem;">
+    <template #content>
             <div class="w-full mb-4 font-bold">
-              - {{ dialogData.asItemName }} ( {{ dialogData.asItemCd }} )
+              - {{ dialogPayload.asItemName }} ( {{ dialogPayload.asItemCd }} )
             </div>
-            <!-- Row 1 -->
             <div class="grid mb-3">
-                <div class="col-3">
+                <div class="col-12 flex items-center gap-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemTypeCd"
                                 :options="itemTypeCds"
@@ -14,43 +13,31 @@
                                 optionValue="code" class="w-[223px]"  />
                         <label>품목구분</label>
                     </FloatLabel>
-                </div>
-                <div class="col-6 flex">
-                    <FloatLabel variant="on">
-                        <InputText v-model="form.itemCd" class="w-full" />
-                        <label>품목코드</label>
-                    </FloatLabel>
                     <Button icon="pi pi-search"
                         label="중복체크"
                         class="p-button-text p-mt-2"
                         @click="itemCdCheck"
                         />
-                </div>
-                <div class="col-3">
-                    <FloatLabel variant="on">
-                        <Select v-model="form.useYn"
-                                :options="useYns"
-                                optionLabel="codeNm"
-                                optionValue="code" class="w-full" />
-                        <label>사용유무</label>
-                    </FloatLabel>
+                    <span class="text-red-500 font-bold">품목코드가 등록된 뒤에 체크하세요!!!</span>
                 </div>
             </div>
-            <!-- Row 2 -->
-             <div class="grid mb-3">
-                <div class="col-6">
+            <div class="grid mb-3">
+                <div class="col-3">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemName" class="w-full" />
-                        <label>품목명</label>
+                        <Select v-model="form.itemCategory1"
+                                :options="itemCategory1s"
+                                optionLabel="codeNm"
+                                optionValue="code" class="w-[223px]"  />
+                        <label>대분류</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <Select v-model="form.itemGrp1"
-                        :options="itemGrp1s"
-                        optionLabel="codeNm"
-                        optionValue="code" class="w-full" />
-                        <label>거래유형</label>
+                        <Select v-model="form.itemCategory2"
+                                :options="itemCategory2s"
+                                optionLabel="codeNm"
+                                optionValue="code" class="w-[223px]"  />
+                        <label>중분류</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
@@ -62,25 +49,38 @@
                         <label>제품유형</label>
                     </FloatLabel>
                 </div>
-            </div>
-
-            <div class="grid mb-3">
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <Select v-model="form.itemCategory1"
-                                :options="itemCategory1s"
-                                optionLabel="codeNm"
-                                optionValue="code" class="w-full" />
-                        <label>제품유형(대)</label>
+                        <Select v-model="form.itemGrp1"
+                        :options="itemGrp1s"
+                        optionLabel="codeNm"
+                        optionValue="code" class="w-full" />
+                        <label>거래유형</label>
                     </FloatLabel>
                 </div>
-                <div class="col-3">
+            </div>
+            <div class="grid mb-3">
+                <div class="col-3 ">
                     <FloatLabel variant="on">
-                        <Select v-model="form.itemCategory2"
-                                :options="itemCategory2s"
-                                optionLabel="codeNm"
-                                optionValue="code" class="w-full" />
-                        <label>제품유형(중)</label>
+                        <InputText v-model="form.itemCd" class="w-full" />
+                        <label>품목코드</label>
+                    </FloatLabel>
+                </div>
+                <div class="col-9">
+                    <FloatLabel variant="on">
+                        <InputText v-model="form.itemName" class="w-full" />
+                        <label>품목명</label>
+                    </FloatLabel>
+                </div>
+            </div>
+            <div class="grid mb-3">
+                <div class="col-6">
+                    <FloatLabel variant="on">
+                        <IconField iconPosition="left">
+                            <InputText v-model="form.customerName" class="w-full"/>
+                            <InputIcon class="pi pi-search"  @click="openPop"/>
+                        </IconField>
+                        <label>거래처</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
@@ -97,15 +97,6 @@
                 </div>
             </div>
             <div class="grid mb-3">
-                <div class="col-6">
-                    <FloatLabel variant="on">
-                        <IconField iconPosition="left">
-                            <InputText v-model="form.customerName" class="w-full"/>
-                            <InputIcon class="pi pi-search"  @click="openPop"/>
-                        </IconField>
-                        <label>거래처</label>
-                    </FloatLabel>
-                </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputNumber v-model="form.inPrice" class="w-full" />
@@ -118,8 +109,16 @@
                         <label>출고단가</label>
                     </FloatLabel>
                 </div>
+                <div class="col-3">
+                    <FloatLabel variant="on">
+                        <Select v-model="form.useYn"
+                                :options="useYns"
+                                optionLabel="codeNm"
+                                optionValue="code" class="w-full" />
+                        <label>사용유무</label>
+                    </FloatLabel>
+                </div>
             </div>
-            <!-- etc -->
             <div class="grid mb-3">
                 <div class="col-12">
                     <FloatLabel variant="on">
@@ -128,14 +127,13 @@
                     </FloatLabel>
                 </div>
             </div>
-
-        </template>
-    </Card>
-    <!-- Buttons -->
-    <div class="flex gap-2 justify-end pt-3">
-        <Button label="저장" class="p-button-secondary" @click="saveInfo()"></Button>
-        <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
-    </div>
+    </template>
+</Card>
+<!-- Buttons -->
+<div class="flex gap-2 justify-end pt-3">
+    <Button label="저장" class="p-button-secondary" @click="saveInfo()"></Button>
+    <Button label="닫기"  outlined class="ml-2" @click="closeDialog"></Button>
+</div>
 </template>
 
 <script setup>
@@ -143,23 +141,12 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { replaceString, typeCd } from '@/util/common';
-import { handleApiError } from '@/util/errorHandler';
-import { useDialog } from 'primevue';
-import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
-import CustomerListPop from '../customer/CustomerListPop.vue';
+import { isEmpty } from '@/util/common';
+import { inject, onMounted, reactive, ref, unref, watch } from 'vue';
 
-const { vSuccess, vInfo, vWarning } = useAlertStore()
-const {userId} = useAuthStore()
-
-const dialog = useDialog()
-const dialogRef = inject('dialogRef', null);
-const dialogData  = computed(() => dialogRef?.value?.data ?? {
-  asItemCd: '',
-  asItemName: '',
-  itemTypeCd: '',
-});
-
+const {vSuccess, vError, vInfo, vWarning} = useAlertStore()
+const { userId }  = useAuthStore()
+const dialogRef = inject('dialogRef')
 const itemTypeCds = ref([])
 const itemCategory1s = ref([])
 const itemCategory2s = ref([])
@@ -167,6 +154,11 @@ const itemGrp1s = ref([])
 const itemGrp2s = ref([])
 const useYns =ref([])
 
+const dialogPayload = reactive({
+  asItemCd: '',
+  asItemName: '',
+  asItemTypeCd: '',
+})
 const form = reactive({
     itemTypeCd: '',
     itemCd:'',
@@ -184,32 +176,17 @@ const form = reactive({
     etc: '',
     useYn: 'Y',
 
-    gb : 'O',
+    gb : 'U',
     userId: userId,
 })
 
-const saveInfo =  async() =>{
-    try{
-        const params = {
-        ...form
-        }
-    const msg = await ApiItem.saveItemInfo(params)
-    vSuccess(msg.data.message)
-    closeDialog()
-  }catch(err){
-    handleApiError(err)
-  }
+watch(() => form.itemTypeCd, (newVal) => {
+  form.itemCd = dialogPayload.asItemCd+typeCd(newVal)
+})
+
+const saveInfo = () =>{
+
 }
-
-watch(() => form.itemTypeCd, async (newVal) => {
-  form.itemCd = dialogData.value.asItemCd+typeCd(newVal)
-  form.itemName = replaceString(form.itemName, newVal)
-})
-
-watch(() => form.itemCategory1, async(newVal) => {
-    itemCategory2s.value = await ApiItem.getProdMList(newVal)
-})
-
 
 const openPop = () =>{
     dialog.open( CustomerListPop, {
@@ -232,21 +209,9 @@ const openPop = () =>{
     })
 }
 
-onMounted(async () =>{
-    const res = await ApiItem.getItemInfo(dialogData.value.asItemCd);
-
-    itemTypeCds.value = (await ApiCommon.getCodeList('ITEM_TYPE_CD'))
-        .filter(i => !['M1','M2', 'M4','M7'].includes(i.code));
-    itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
-    itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
-    useYns.value = await ApiCommon.getCodeList('use_yn')
-    itemCategory1s.value = await ApiItem.getProdLList()
-    itemCategory2s.value = await ApiItem.getProdMList(res.itemCategory1)
-
-    Object.assign(form, res)
-})
-
 const itemCdCheck = async () =>{
+  if ( isEmpty(form.itemCd)) return vWarning('품목코드가 없습니다. ')
+
   const chk = await ApiItem.getItemCdCheck(form.itemCd)
 
   if ( chk === 'Y' ) {
@@ -256,10 +221,23 @@ const itemCdCheck = async () =>{
   }
 }
 
-const closeDialog = () => {
-  dialogRef.value.close();
-};
+onMounted( async () =>{
+  const data = dialogRef?.value?.data ?? {}
 
+  dialogPayload.asItemCd = unref(data.asItemCd ?? '')
+  dialogPayload.asItemName = unref(data.asItemName ?? '')
+  dialogPayload.asItemTypeCd = unref(data.itemTypeCd ?? '')
+
+  itemTypeCds.value = (await ApiCommon.getCodeList('item_type_cd')).filter(i => ['M3','M5'].includes(i.code))
+  itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
+  itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
+  useYns.value = await ApiCommon.getCodeList('use_yn')
+})
+
+
+const closeDialog = () =>{
+    dialogRef?.value?.close?.()
+}
 </script>
 
 <style scoped>
