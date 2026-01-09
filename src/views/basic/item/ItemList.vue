@@ -211,7 +211,7 @@ const selectRowClick = (cd) => {
         },
         data: cd,
         onClose:(event) => {
-
+            srchItemList()
         },
     })
 }
