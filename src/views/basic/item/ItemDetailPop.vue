@@ -319,7 +319,7 @@ const saveInfo = async () =>{
       ...form
     }
 
-    const msg = await ApiItem.saveItemDetailInfo(params)
+    const msg = await ApiItem.updateItemInfo(params)
     vSuccess(msg)
     closeDialog()
   }catch(err){
