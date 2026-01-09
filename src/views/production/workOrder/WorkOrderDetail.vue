@@ -120,7 +120,7 @@
     </div>
   </div>
 
-  <!-- ✅ Handsontable 공통 컴포넌트 사용 -->
+  <!-- Handsontable 공통 컴포넌트 사용 -->
   <div class="w-full">
     <BaseHotTable
       ref="hotTable"
@@ -175,6 +175,30 @@ const allChecked = ref(false)
 
 const workOrderList = ref([])
 const currentRowIndexForItemPop = ref(null)
+
+/**
+ * weigh:   proc001
+ * mat:     proc002
+ * coating: proc003
+ * charge:  proc004
+ * packing: proc005
+ */
+const PROC_UI_TO_DB = {
+  weigh: 'PRC001',
+  mat: 'PRC002',
+  coating: 'PRC003',
+  charge: 'PRC004',
+  packing: 'PRC005',
+}
+
+const PROC_DB_TO_UI = {
+  PRC001: 'weigh',
+  PRC002: 'mat',
+  PRC003: 'coating',
+  PRC004: 'charge',
+  PRC005: 'packing',
+}
+
 const PROC_KEYS = ['weigh', 'mat', 'coating', 'charge', 'packing']
 const form = reactive({
   workOrderDate: todayKST(),
@@ -289,6 +313,9 @@ const hotColumns = computed(() => {
 // 전체 체크
 // -----------------
 watch(allChecked, (v) => {
+  if (workOrderList.value.length === 0) {
+    workOrderList.value = [newRow()]
+ }
   workOrderList.value.forEach(r => (r.selected = !!v))
 })
 
@@ -332,7 +359,7 @@ const removeRow = (index) =>{
 
         await ApiWorkOrder.deleteBatch({
           workOrderId: form.workOrderId,
-          batchId: row.batchId, // ✅ 실제 PK 필드로 변경
+          workBatchId: row.workBatchId, // ✅ 실제 PK 필드로 변경
         })
 
         workOrderList.value.splice(index, 1)
@@ -484,7 +511,7 @@ const voToRows = (batches) =>{
         const row = newRow()
 
         row.workBatchId = b.workBatchId ?? null
-        row.poNo = b.poNo ?? vo.poNo ?? ''
+        row.poNo = b.poNo ?? form.poNo ?? ''
         row.matNo = b.matNo ?? ''
         row.lotNo = b.lotNo ?? ''
         row.lotNo2 = b.lotNo2 ?? ''
@@ -492,17 +519,17 @@ const voToRows = (batches) =>{
         // items → row.proc[procCd]에 꽂기
         const items = b.items ?? []
         for (const it of items) {
-        const k = it.procCd
-        if (!PROC_KEYS.includes(k)) continue
+            const uiKey = PROC_DB_TO_UI[it.procCd]
+            if (!uiKey) continue
 
-        row.proc[k] = {
-            workProcId: it.workProcId ?? null,
-            itemCd: it.itemCd ?? '',
-            itemName: it.itemName ?? '',     // 서버에서 itemName 안 주면 공백
-            workOrderDate: it.workOrderDate ?? vo.workOrderDate ?? null,
-            workQty: it.workQty ?? 0,
-            workStatus: it.workStatus ?? '',
-        }
+            row.proc[uiKey] = {
+                workProcId: it.workProcId ?? null,
+                itemCd: it.itemCd ?? '',
+                itemName: it.itemName ?? '',     // 서버에서 itemName 안 주면 공백
+                workOrderDate: it.workOrderDate ?? form.workOrderDate ?? null,
+                workQty: it.workQty ?? 0,
+                workStatus: it.workStatus ?? '',
+            }
         }
     return row
   })
@@ -555,8 +582,8 @@ const rowsToVoPayload = () =>{
 
         batch.items.push({
           workProcId: pr.workProcId || null,
-          workBatchId: r.workBatchId || null,   // 신규면 서버에서 batchId 만든 뒤 다시 세팅
-          procCd: p,
+          workBatchId: r.workBatchId || null,   // 신규면 서버에서 workBatchId 만든 뒤 다시 세팅
+          procCd: PROC_UI_TO_DB[p],
           poNo: batch.poNo,
           itemCd: pr.itemCd,
           workOrderDate: pr.workOrderDate || form.workOrderDate,
@@ -620,8 +647,26 @@ const saveInfo = async () => {
 }
 
 const clearList = () => {
+    allChecked.value = false
+    const p = selectedProcess.value
+    if (!p) return
+
+    workOrderList.value.forEach((row) => {
+    // 해당 공정만 초기화
+    row.proc[p] = newProc()
+
+    // (선택) 공정에 itemCd,itemName만 지우고 싶으면 아래처럼
+    // row.proc[p].itemCd = ''
+    // row.proc[p].itemName = ''
+    // row.proc[p].workQty = 0
+    // row.proc[p].workStatus = ''
+    // row.proc[p].workOrderDate = null
+  })
+
+  // 체크박스 선택상태 초기화도 원하면
   allChecked.value = false
-  workOrderList.value = [newRow()]
+
+  //workOrderList.value = [newRow()]
 }
 
 function deleteWorkOrder() {
