@@ -1,4 +1,4 @@
-import { API_URL} from '.'
+import { API_URL } from '.'
 
 
 export const ApiItem = {
@@ -26,14 +26,7 @@ export const ApiItem = {
   },
 
   saveItemInfo : async(params) => {
-    try{
-      const msg = await API_URL.post(`/item/saveItemInfo`, params)
-
-      return msg.data
-
-    }catch(err){
-      throw err
-    }
+      return await API_URL.post(`/item/saveItemInfo`, params)
   },
 
   updateItemInfo : async(params) => {
