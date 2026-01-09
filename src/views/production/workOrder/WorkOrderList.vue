@@ -76,7 +76,7 @@
         <Column field="workOderDate"        header="제조일자"    :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="deliveryQty"         header="주문량"     :style="{ width: '80px', textAlign:'right'}" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
-                {{ slotProps.data.deliveryQty.toLocaleString() }}
+                {{ (slotProps.data.deliveryQty ?? 0).toLocaleString() }}
             </template>
         </Column>
         <Column field="batchCnt"            header="등록배치수"  :style="{ width: '80px', textAlign:'right'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
