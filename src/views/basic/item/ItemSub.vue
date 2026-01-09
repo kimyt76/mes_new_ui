@@ -141,8 +141,9 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty } from '@/util/common';
+import { isEmpty, replaceString, typeCd } from '@/util/common';
 import { inject, onMounted, reactive, ref, unref, watch } from 'vue';
+import CustomerListPop from '../customer/CustomerListPop.vue';
 
 const {vSuccess, vError, vInfo, vWarning} = useAlertStore()
 const { userId }  = useAuthStore()
@@ -176,16 +177,27 @@ const form = reactive({
     etc: '',
     useYn: 'Y',
 
-    gb : 'U',
     userId: userId,
 })
 
-watch(() => form.itemTypeCd, (newVal) => {
-  form.itemCd = dialogPayload.asItemCd+typeCd(newVal)
+watch(() => form.itemCategory1, async (newVal) => {
+  itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
 })
 
-const saveInfo = () =>{
 
+watch(() => form.itemTypeCd, (newVal) => {
+  form.itemCd = dialogPayload.asItemCd+typeCd(newVal)
+  form.itemName = replaceString(dialogPayload.asItemName, newVal)
+})
+
+const saveInfo = async() =>{
+    const params = {
+      ...form
+    }
+
+    const res = await ApiItem.saveItemAddInfo(params)
+    vSuccess(res.message)
+    closeDialog()
 }
 
 const openPop = () =>{
@@ -224,14 +236,25 @@ const itemCdCheck = async () =>{
 onMounted( async () =>{
   const data = dialogRef?.value?.data ?? {}
 
+
   dialogPayload.asItemCd = unref(data.asItemCd ?? '')
   dialogPayload.asItemName = unref(data.asItemName ?? '')
   dialogPayload.asItemTypeCd = unref(data.itemTypeCd ?? '')
 
-  itemTypeCds.value = (await ApiCommon.getCodeList('item_type_cd')).filter(i => ['M3','M5'].includes(i.code))
+  itemTypeCds.value = (await ApiCommon.getCodeList('item_type_cd')).filter(i => ['M3','M5', 'M6', 'M0'].includes(i.code))
   itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
   itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
   useYns.value = await ApiCommon.getCodeList('use_yn')
+
+  itemCategory1s.value = await ApiItem.getProdLList()
+  const res = await ApiItem.getItemInfo(dialogPayload.asItemCd)
+  Object.assign(form, res)
+
+  if (form.itemCategory1) {
+      itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
+    } else {
+      itemCategory2s.value = []
+    }
 })
 
 

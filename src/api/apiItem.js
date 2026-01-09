@@ -28,16 +28,8 @@ export const ApiItem = {
   saveItemInfo : async(params) => {
       return await API_URL.post(`/item/saveItemInfo`, params)
   },
-
   updateItemInfo : async(params) => {
-    try{
-      const msg = await API_URL.post(`/item/updateItemInfo`, params)
-
-      return msg.data
-
-    }catch(err){
-      throw err
-    }
+     return await API_URL.post(`/item/updateItemInfo`, params)
   },
 
   getItemList : async(params) => {
@@ -62,7 +54,6 @@ export const ApiItem = {
 
   getItemCdCheck: async(id) => {
     const res = await API_URL.get(`/item/getItemCdCheck/${id}`)
-
     return res.data
   },
 
@@ -75,6 +66,11 @@ export const ApiItem = {
       throw new Error(err.response?.data);
     }
   },
+
+  saveItemAddInfo: async(params) => {
+    return await API_URL.post(`/item/saveItemAddInfo`, params)
+  },
+
   updatePriceInfo: async(params) => {
     try{
       const msg = await API_URL.post(`/item/updatePriceInfo`, params)

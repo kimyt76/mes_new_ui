@@ -274,8 +274,8 @@ const saveInfo = async() =>{
         ...form
     }
 
-    const msg = await ApiItem.saveItemAddInfo(params)
-    vSuccess(msg)
+    const res = await ApiItem.saveItemAddInfo(params)
+    vSuccess(res.message)
     closeDialog()
 }
 

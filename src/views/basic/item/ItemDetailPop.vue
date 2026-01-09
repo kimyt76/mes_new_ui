@@ -1,8 +1,8 @@
 <template>
-    <Card style="width: 70rem; height: 38rem;">
+    <Card style="width: 70rem; height: 33rem;">
         <template #content>
             <!-- Row 1 -->
-            <div class="grid mb-5">
+            <div class="grid mb-3 mt-1">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemTypeCd"
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <!-- Row 2 -->
-            <div class="grid mb-5">
+            <div class="grid mb-3">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory1" :options="itemCategory1s"
@@ -54,7 +54,7 @@
                     </FloatLabel>
                 </div>
             </div>
-            <div class="grid mb-5">
+            <div class="grid mb-3">
                 <div class="col-6">
                     <FloatLabel variant="on">
                         <IconField iconPosition="left">
@@ -79,7 +79,7 @@
                     </FloatLabel>
                 </div>
             </div>
-            <div class="grid mb-5">
+            <div class="grid mb-3">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.unit" class="w-full" />
@@ -179,7 +179,7 @@
                     </div>
                 </div>
             </div>
-            <div class="grid mb-5">
+            <div class="grid mb-3">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.expiryDate" class="w-full" />
@@ -208,7 +208,7 @@
                 </div>
             </div>
             <!-- History -->
-            <div class="grid mb-5">
+            <div class="grid mb-3">
                 <div class="col-12">
                     <FloatLabel variant="on">
                         <Textarea v-model="form.etc" rows="3" class="w-full" style="resize: none" />
@@ -319,8 +319,9 @@ const saveInfo = async () =>{
       ...form
     }
 
-    const msg = await ApiItem.updateItemInfo(params)
-    vSuccess(msg)
+    const res = await ApiItem.updateItemInfo(params)
+    console.log('res',res )
+    vSuccess(res.message)
     closeDialog()
   }catch(err){
     vError(err.massage)
