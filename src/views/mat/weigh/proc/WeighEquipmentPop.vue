@@ -2,31 +2,41 @@
 <div>
     <DataTable
         :value="equipmentList"
+        dataKey="equipmentId"
         scrollable
         showGridlines
-        tableStyle="width:100%; table-layout: fixed;"
         class="my-table mt-2"
+        @row-click="onRowClick"
      >
-        <
+        <column field="equipmentCd" header="설비코드" style="width: 150px; text-align: center;"></column>
+        <column field="equipmentName" header="설비명" style="width: 150px; text-align: center;"></column>
+        <column field="etc" header="비고" style="width: 150px; text-align: center;"></column>
      </DataTable>
 </div>
+<div class="flex justify-end gap-1 mt-3">
+    <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
+  </div>
 </template>
 
 <script setup>
-import { ApiSystems } from '@/api/apiSystem';
-import { onMounted, ref } from 'vue';
+import { ApiMat } from '@/api/apiMat';
+import { inject, onMounted, ref } from 'vue';
 
-
+const dialogRef = inject('dialogRef');
 const equipmentList = ref([])
 
-
 onMounted( async () =>{
-    let storageCd = ''
-
-    equipmentList.value = ApiSystems.getEquipmentList(storageCd)
+    const res = await ApiMat.getEquipmentList(dialogRef.value.data)
+    equipmentList.value = res.data
 })
 
+const onRowClick = (event) => {
+  dialogRef.value.close(event.data);
+};
 
+const closeDialog = () => {
+  dialogRef.value.close();
+};
 </script>
 
 <style scoped>
