@@ -1,39 +1,43 @@
 <template>
-<div>
+<div class="mt-4">
     <DataTable
-        :value="userList"
-        scrollable
+        v-model:selection="selectItem"
+        :value="workerList"
+        dataKey="workerId"
+        class="my-table"
         showGridlines
-        tableStyle="width:100%; table-layout: fixed;"
-        class="my-table mt-2"
-     >
-        <Column field="no" header="" :style="{ width:'40px', textAlign:'center' }" />
-        <Column header="작업자" :pt="{ columnHeaderContent:'justify-center' }">
-            <template #body="{ data }">
-                <span>{{ data.userName }}</span>
-            </template>
-        </Column>
-        <Column field="etc" header="비고" :style="{ width:'40px', textAlign:'center' }" >
-            <template #body="{ data }">
-                <span>{{ data.etc }}</span>
-            </template>
-        </Column>
-     </DataTable>
+        @row-click="onRowClick"
+    >
+    <Column field="workerName" header="작업자명" style="width: 100px; text-align: center;"></Column>
+    <Column field="etc" header="비고" style="width: 100px;"></Column>
+    </DataTable>
 </div>
+  <div class="flex justify-end gap-1 mt-3">
+    <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ApiMat } from '@/api/apiMat';
+import { inject, onMounted, ref } from 'vue';
 
+const dialogRef = inject('dialogRef');
+const selectItem = ref(null)
+const workerList = ref([])
 
-const userList = ref([
-    {no: 1, userName: '안상규', etc: ''},
-    {no: 2, userName: '조태희', etc: ''},
-    {no: 3, userName: '윤종민', etc: ''},
-    {no: 4, userName: '김종원', etc: ''},
-])
+onMounted( async () => {
+  const res = await ApiMat.getWorkerList(dialogRef.value.data)
+  workerList.value = res.data
+});
+
+const onRowClick = (event) => {
+  dialogRef.value.close(event.data.workerName);
+};
+
+const closeDialog = () => {
+  dialogRef.value.close();
+};
 </script>
-
 <style scoped>
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
   background-color: #BCAAA4;
