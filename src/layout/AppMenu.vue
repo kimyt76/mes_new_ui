@@ -264,37 +264,37 @@ const model = ref([
                     {
                         label: '작업지시',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/weigh'
+                        to: '/proc/weigh'
                     },
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/procTest'
+                        to: '/proc/weigh/procTest'
                     },
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/matOut'
+                        to: '/proc/weigh/matOut'
                     },
                     {
                         label: '자재불출',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/itemOUt'
+                        to: '/proc/weigh/itemOUt'
                     },
                     {
                         label: '일일마감',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/dayDeadline'
+                        to: '/proc/weigh/dayDeadline'
                     },
                     {
                         label: '월간마감',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/monDeadline'
+                        to: '/proc/weigh/monDeadline'
                     },
                     {
                         label: '폐기조정',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/weigh/disposalAdjustment'
+                        to: '/proc/weigh/disposalAdjustment'
                     },
                 ]
             },
@@ -305,17 +305,17 @@ const model = ref([
                     {
                         label: '작업지시',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/mat'
+                        to: '/proc/mat/mat'
                     },
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/processTest'
+                        to: '/procmat/processTest'
                     },
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/matOut'
+                        to: '/proc/matOut'
                     },
                 ]
             },
@@ -326,7 +326,7 @@ const model = ref([
                     {
                         label: '작업지시',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/coating/coating'
+                        to: '/proc/coating/coating'
                     },
                     {
                         label: '공정검사',
@@ -336,7 +336,7 @@ const model = ref([
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/coating/coatingMatOut'
+                        to: '/proc/coating/coatingMatOut'
                     },
                 ]
             },
@@ -347,7 +347,7 @@ const model = ref([
                     {
                         label: '작업지시',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/charge/charge'
+                        to: '/proc/charge/charge'
                     },
                     {
                         label: '공정검사',
@@ -357,7 +357,7 @@ const model = ref([
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/charge/chargeMatOut'
+                        to: '/proc/charge/chargeMatOut'
                     },
                 ]
             },
@@ -368,17 +368,17 @@ const model = ref([
                     {
                         label: '작업지시',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/packing/packing'
+                        to: '/proc/packing/packing'
                     },
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/packing/packingProcessTest'
+                        to: '/proc/packing/packingProcessTest'
                     },
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/packing/packingMatOut'
+                        to: '/proc/packing/packingMatOut'
                     },
                 ]
             },

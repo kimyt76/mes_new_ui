@@ -4,11 +4,11 @@ import basic_route from './routes/basic_route'
 import lab_route from './routes/lab_route'
 import mat_route from './routes/mat_route'
 import order_route from './routes/order_route'
+import proc_route from './routes/proc_route'
 import production_route from './routes/production_route'
 import purchaseOrder_route from './routes/purchaseOrder_route'
 import stock_route from './routes/stock_route'
 import system_route from './routes/system_route'
-import weigh_route from './routes/weigh_route'
 
 
 const routes = [
@@ -51,9 +51,9 @@ const routes = [
   },
   /** /prod – 제 */
   {
-    path: '/mat/weigh',
+    path: '/proc',
     component: AppLayout,
-    children: weigh_route,
+    children: proc_route,
   },
 
   /** /prod – 제 */

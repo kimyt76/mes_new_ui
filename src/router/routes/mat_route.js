@@ -16,11 +16,6 @@ export default [
         name: 'ItemM1Equirment',
         component: () => import('@/views/mat/itemM1Equirment/ItemM1Equirment.vue')
       },
-      {
-        path: 'mat',
-        name: 'MatList',
-        component: () => import('@/views/mat/mat/MatList.vue')
-      },
 
 
     ]
