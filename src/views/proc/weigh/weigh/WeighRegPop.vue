@@ -86,8 +86,7 @@
           :data="currentTabList"
           :colHeaders="hotHeaders"
           :columns="hotColumns"
-          :colWidths="[
-                50,   // 선택
+          :colWidths="[50,   // 선택
                 120,  // 품목코드
                 385,  // 품목명
                 50,   // 성상

@@ -21,8 +21,8 @@
                 <label for="on_label">구역</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <InputText id="on_label1" v-model="form.matNo" />
-                <label for="on_label1">제조번호</label>
+                <InputText id="on_label1" v-model="form.clientName" />
+                <label for="on_label1">납품처명</label>
             </FloatLabel>
             <FloatLabel variant="on">
                 <InputText id="on_label" v-model="form.itemName" />
@@ -38,7 +38,7 @@
                    optionValue="code"
                 style="width: 100px"
                 />
-                <label for="on_label">코팅상태</label>
+                <label for="on_label">제조상태</label>
             </FloatLabel>
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
             </div>
@@ -46,14 +46,13 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="이동요청" icon="pi pi-file-excel"  @click="selectRowClick('')"></Button>
+    <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 <div>
     <DataTable
         ref="dt"
-        :value="coatingList"
-        dataKey="coatingId"
+        :value="matList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -62,40 +61,40 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column selectionMode="multiple"  headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="areaName"    header="구역"       :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="weighDate"   header="코팅지시일"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="areaName"    header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
+        <Column field="weighDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'right'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.coatingId)" class="clickable-cell" style="text-decoration: underline; point">
+                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
                     {{ slotProps.data.weighDate }}
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="logNo"       header="LOT번호"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="qty"         header="지시수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'right'}" ></Column>
+        <Column field="matNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
+        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
+        <Column field="clientName"  header="납품처명"  :style="{ width: '200px'}" />
+        <Column field="qty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="processState" header="제조상태"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="moveStatse"   header="이동요청"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="matState"    header="제조상태"   :style="{ width: '80px', textAlign: 'right'}" />
     </DataTable>
 </div>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { isEmpty, minMonth, todayKST } from '@/util/common';
+import { ApiProc } from '@/api/apiProc';
+import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref, shallowRef } from 'vue';
+import MatRegPop from './MatRegPop.vue';
 
 const dialog = useDialog()
 const dt = ref(null);
-const coatingList = ref([])
+const matList = ref([])
 const processStates = ref([])
 const areaCds = ref([])
 const currentComponent = shallowRef(null)
@@ -108,24 +107,15 @@ const form = reactive({
   itemCd: '',
   itemName: '',
   processState: '',
+
+  proseccCd : 'PRC002',
 })
 
 const selectRowClick = (id) =>{
-    let title = ''
-    let currentComponent = ''
-    if ( isEmpty(id) ) {
-        title = '코팅 자재이동 요청'
-        currentComponent = ''
-    }else{
-        title = '코팅지시 및 기록서'
-        currentComponent = ''
-    }
-
-    dialog.open(WeighRegPop, {
+    dialog.open(MatRegPop, {
         props:{
-            header:  title ,
+            header: '제조지시 및 기록서',
             modal: true,
-            closeOnEscape: false,
             maximizable: false,
             draggable: false,
             style: {
@@ -151,8 +141,9 @@ const srhList = async () =>{
         ...form
     }
     // api
-    coatingList.value = await ApiMat.getCoatingList(params);
+    matList.value = await ApiProc.getMatList(params);
 }
+
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
@@ -160,6 +151,7 @@ onMounted( async () => {
 
     form.toDate = todayKST()
     form.strDate = minMonth(form.toDate)
+
 })
 
 const home = ref({
@@ -178,7 +170,7 @@ const downloadExcel = () =>{
     console.warn("No Columns Found");
     return;
   }
-  exportToExcel(coatingList.value, "코팅 리스트", cols);
+  exportToExcel(matList.value, "제조 리스트", cols);
 }
 
 
