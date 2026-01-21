@@ -4,7 +4,10 @@
       <div class="grid mb-1">
         <div class="col-3 flex align-items-center gap-2">
           <FloatLabel variant="on">
-            <DatePicker v-model="form.workOrderDate" />
+            <DatePicker
+                v-model="form.workOrderDate"
+                value-format="yy-mm-dd"
+                />
             <label>작업지시일자</label>
           </FloatLabel>
 
@@ -135,10 +138,9 @@
   </div>
 
   <div class="flex justify-end gap-2 mt-2">
-    <Button label="작업지시" @click="workOrder" />
+    <Button v-if="form.workOrderId" label="작업지시" @click="updateWorkOrder" />
     <Button label="저장" class="p-button-secondary" @click="saveInfo" />
-    <Button label="clear" @click="clearList" />
-    <Button label="삭제" @click="deleteWorkOrder" />
+    <Button label="삭제" @click="clearList" />
     <Button label="닫기"   outlined class="ml-2" @click.stop="closeDialog" />
   </div>
 </template>
@@ -149,7 +151,7 @@ import BaseHotTable from '@/components/BaseHotTable.vue'
 import { ApiCommon } from '@/api/apiCommon'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
-import { isEmpty, todayKST } from '@/util/common'
+import { formatDate, isEmpty, todayKST } from '@/util/common'
 
 import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue'
 import ClientListPop from '@/views/order/client/ClientListPop.vue'
@@ -157,7 +159,6 @@ import ContractSingleListPop from '@/views/order/contract/ContractSingleListPop.
 import UserListPop from '@/views/system/user/UserListPop.vue'
 
 import { ApiWorkOrder } from '@/api/apiWorkOrder'
-import { handleApiError } from '@/util/errorHandler'
 import { DatePicker, useConfirm, useDialog } from 'primevue'
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
 
@@ -226,7 +227,7 @@ const newProc = () => ({
   itemCd: '',
   itemName: '',
   workOrderDate: null,
-  workQty: 0,
+  orderQty: 0,
   workStatus: '',
 })
 
@@ -284,10 +285,10 @@ const hotColumns = computed(() => {
 
     { data: null, readOnly: true, renderer: searchIconRenderer, width: 50 },
 
-    { data: `proc.${p}.itemCd`, type: 'text', width: 90 },
+    { data: `proc.${p}.itemCd`, type: 'text', width: 70 ,className: 'htCenter htMiddle',},
     { data: `proc.${p}.itemName`, type: 'text', width: 390 },
     {
-      data: `proc.${p}.workOrderDate`,
+      data: `proc.${p}.procOrderDate`,
       type: 'date',
       dateFormat: 'YYYY-MM-DD',
       correctFormat: true,
@@ -303,8 +304,8 @@ const hotColumns = computed(() => {
         format: 'YYYY-MM-DD',
       },
     },
-    { data: `proc.${p}.workQty`, type: 'numeric', numericFormat: { pattern: '0,0' }, width: 80 },
-    { data: `proc.${p}.workStatus`, type: 'text', width: 80 },
+    { data: `proc.${p}.orderQty`, type: 'numeric', numericFormat: { pattern: '0,0' }, width: 80 },
+    { data: `proc.${p}.procStatusName`, type: 'text', width: 80 ,readOnly: true},
     { data: null, readOnly: true, renderer: trashIconRenderer, width: 40 },
   ]
 })
@@ -499,9 +500,12 @@ onMounted(async () => {
 })
 
 watch(() => form.workOrderDate, async (newVal, oldVal) => {
+  if ( !isEmpty(form.workOrderId)) return
+
   if ( !isEmpty(newVal)) {
-    if ( oldVal !==  newVal ){
-    form.seq = await ApiCommon.getNextSeq('tb_work_order_mst','work_order_date', newVal)
+    if (formatDate(oldVal) !== formatDate(newVal) ) {
+        let ymd = formatDate(newVal)
+        form.seq = await ApiCommon.getNextSeq('tb_work_order_mst','work_order_date', ymd)
     }
   }
 })
@@ -526,9 +530,9 @@ const voToRows = (batches) =>{
                 workProcId: it.workProcId ?? null,
                 itemCd: it.itemCd ?? '',
                 itemName: it.itemName ?? '',     // 서버에서 itemName 안 주면 공백
-                workOrderDate: it.workOrderDate ?? form.workOrderDate ?? null,
-                workQty: it.workQty ?? 0,
-                workStatus: it.workStatus ?? '',
+                procOrderDate: it.procOrderDate ??  null,
+                orderQty: it.orderQty ?? 0,
+                procStatusName: it.procStatusName ?? '',
             }
         }
     return row
@@ -574,21 +578,20 @@ const rowsToVoPayload = () =>{
         // “비어있는 공정”은 저장 안 하게 필터 (원하면 조건 바꿔도 됨)
         const hasMeaning =
           !isEmpty(pr.itemCd) ||
-          (pr.workQty && Number(pr.workQty) !== 0) ||
-          !isEmpty(pr.workStatus) ||
-          !isEmpty(pr.workOrderDate)
+          (pr.orderQty && Number(pr.orderQty) !== 0) ||
+          !isEmpty(pr.procStatus) ||
+          !isEmpty(pr.procOrderDate)
 
         if (!hasMeaning) continue
-
         batch.items.push({
           workProcId: pr.workProcId || null,
           workBatchId: r.workBatchId || null,   // 신규면 서버에서 workBatchId 만든 뒤 다시 세팅
           procCd: PROC_UI_TO_DB[p],
           poNo: batch.poNo,
           itemCd: pr.itemCd,
-          workOrderDate: pr.workOrderDate || form.workOrderDate,
-          workQty: pr.workQty ?? 0,
-          workStatus: pr.workStatus ?? '',
+          procOrderDate: pr.procOrderDate || null,
+          orderQty: pr.orderQty ?? 0,
+          procStatus: pr.procStatus ?? '',
           regId: userId,
           updId: userId,
         })
@@ -606,11 +609,11 @@ function handleAfterChange(changes, source) {
   // 필요하면 구현
 }
 
-const workOrder = () =>{
-    vInfo("협의 필요")
-    return
+const updateWorkOrder = () =>{
     if ( isEmpty(form.workOrderId )) {
-        //데이터 확인 여부
+        //데이터 확인 여부3
+        vInfo('저장 후 작업지시 등록을 진행합니다.')
+        return
     }else{
 
     }
@@ -618,32 +621,26 @@ const workOrder = () =>{
 
 const saveInfo = async () => {
   if (isEmpty(form.workOrderDate)) return vWarning('작업지시일자를 입력하세요')
+  if (isEmpty(form.areaCd)) return vWarning('구역을 입력하세요')
   if (isEmpty(form.poNo)) return vWarning('수주품목(PO)을 선택하세요')
 
   const params = rowsToVoPayload()
-
-  try {
     // ======================
     // 1) 저장(merge)
     // ======================
-    const saveRes = await ApiWorkOrder.saveWorkOrderInfo(params)
+    const res = await ApiWorkOrder.saveWorkOrderInfo(params)
+    console.log('res? ', res)
+    console.log('saveRes?.code ', res.message)
     // RestResponse 기준 분기
     // 예: { code: 0, message: 'success', data: {...} }
-    if (saveRes?.code !== 0) {
+    if (res?.code !== 0) {
       // 비즈니스 에러
-      vWarning(saveRes?.message || '저장 중 오류가 발생했습니다.')
+      vWarning(res.message || '저장 중 오류가 발생했습니다.')
       return
     }
-    vSuccess('저장되었습니다.')
+
+    vSuccess(res.message)
     closeDialog()
-  } catch (err) {
-    // ======================
-    // 5) 네트워크 / 서버 예외
-    // ======================
-    console.error('saveInfo error:', err)
-    // Axios 에러 기준
-    handleApiError(err)
-  }
 }
 
 const clearList = () => {
@@ -654,27 +651,16 @@ const clearList = () => {
     workOrderList.value.forEach((row) => {
     // 해당 공정만 초기화
     row.proc[p] = newProc()
-
     // (선택) 공정에 itemCd,itemName만 지우고 싶으면 아래처럼
     // row.proc[p].itemCd = ''
     // row.proc[p].itemName = ''
-    // row.proc[p].workQty = 0
+    // row.proc[p].orderQty = 0
     // row.proc[p].workStatus = ''
     // row.proc[p].workOrderDate = null
   })
-
   // 체크박스 선택상태 초기화도 원하면
   allChecked.value = false
-
   //workOrderList.value = [newRow()]
-}
-
-function deleteWorkOrder() {
-  vInfo("협의 필요")
-    return
-    if (isEmpty(form.workOrderId)) return vWarning('삭제할 작업이 없습니다.')
-
-
 }
 
 const closeDialog = async () => {

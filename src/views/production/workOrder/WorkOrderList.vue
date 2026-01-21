@@ -73,7 +73,7 @@
                 </div>
             </template>
         </Column>
-        <Column field="workOderDate"        header="제조일자"    :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="matOrderDate"        header="제조일자"    :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="deliveryQty"         header="주문량"     :style="{ width: '80px', textAlign:'right'}" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
                 {{ (slotProps.data.deliveryQty ?? 0).toLocaleString() }}
@@ -159,6 +159,7 @@ onMounted( async () =>{
 
     form.strDate = minMonth( todayKST(), -3)
     form.toDate = addMonth( todayKST(), 1)
+    srhList()
 })
 
 const home = ref({
