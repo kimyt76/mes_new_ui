@@ -86,19 +86,27 @@ export function formatDate (value) {
 /**
  *   빈 값 체크
  */
-export function isEmpty(input){
-  if (
-         typeof input === "undefined" ||
-         input === null ||
-         input === "" ||
-         input === "null" ||
-         input.length === 0 ||
-         (typeof input === "object" && !Object.keys(input).length)
-        )
-    {
-        return true;
-    }
-    else return false;
+export function isEmpty(input) {
+  // 1) undefined / null
+  if (input === undefined || input === null) return true;
+
+  // 2) Date: 유효하지 않은 Date만 empty
+  if (input instanceof Date) return Number.isNaN(input.getTime());
+
+  // 3) 문자열: 공백 제거 후 빈 문자열, "null"
+  if (typeof input === "string") {
+    const s = input.trim();
+    return s === "" || s.toLowerCase() === "null";
+  }
+
+  // 4) 배열: 길이 0이면 empty
+  if (Array.isArray(input)) return input.length === 0;
+
+  // 5) 그 외 객체: 키가 없으면 empty
+  if (typeof input === "object") return Object.keys(input).length === 0;
+
+  // 6) 숫자/boolean/function 등은 empty 아님
+  return false;
 }
 
 
