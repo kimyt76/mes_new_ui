@@ -61,33 +61,34 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaName"    header="구역"       :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="weighDate"   header="칭량지시일"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="areaName"        header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
+        <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.weighDate }}
+                <div @click="selectRowClick(slotProps.data.workProcId)" class="clickable-cell" style="text-decoration: underline; point">
+                    {{ slotProps.data.procOrderDate  }}
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="logNo"       header="LOT번호"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="qty"         header="지시수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign: 'right'}">
-            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
+        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'center'}" ></Column>
+        <Column field="matNo"       header="제조번호"  :style="{ width: '160px', textAlign: 'center'}" />
+        <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}" />
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="itemName"    header="품목명"    :style="{ width: '430px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
+        <Column field="orderQty"    header="지시수량"   :style="{ width: '90px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="procStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiProc } from '@/api/apiProc';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref, shallowRef } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import WeighRegPop from './WeighRegPop.vue';
 
 const dialog = useDialog()
@@ -95,7 +96,6 @@ const dt = ref(null);
 const weighList = ref([])
 const processStates = ref([])
 const areaCds = ref([])
-const currentComponent = shallowRef(null)
 
 const form = reactive({
   strDate: '',
@@ -105,6 +105,7 @@ const form = reactive({
   itemCd: '',
   itemName: '',
   processState: '',
+
 })
 
 const selectRowClick = (id) =>{
@@ -137,7 +138,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    weighList.value = await ApiMat.getweighList(params);
+    weighList.value = await ApiProc.getWeighList(params);
 }
 
 onMounted( async () => {
