@@ -110,7 +110,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { inject, onMounted, reactive, ref, watch } from 'vue';
 
 const dialogRef = inject('dialogRef');
 const { userId } = useAuthStore()
@@ -143,10 +143,16 @@ const form = reactive({
   halal: false,
   rspo: false,
   addtion: false,
+  appearance: '',
 
   userId: userId,
 })
 
+watch(() => form.weighType,(code) => {
+    form.appearance =weighTypes.value?.find(o => o.code === code)?.codeNm ?? ''
+  },
+  { immediate: true }
+)
 
 const saveInfo = async () =>{
   try{
@@ -157,7 +163,6 @@ const saveInfo = async () =>{
     rspo: form.rspo ? 'Y' : 'N',
     addtion: form.addtion ? 'Y' : 'N',
     }
-
     const msg = await ApiItem.saveItemDetailInfo(params)
     vSuccess(msg)
     closeDialog()
