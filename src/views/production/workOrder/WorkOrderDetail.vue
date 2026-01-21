@@ -277,15 +277,15 @@ const trashIconRenderer = (instance, td) => {
 const hotColumns = computed(() => {
   const p = selectedProcess.value
   return [
-    { data: 'selected', type: 'checkbox', className: 'htCenter htMiddle', width: 40 },
-    { data: 'poNo', type: 'text', width: 100 },
-    { data: 'matNo', type: 'text', width: 130 },
+    { data: 'selected', type: 'checkbox',  width: 40, className: 'htCenter htMiddle'},
+    { data: 'poNo', type: 'text', className: 'htCenter htMiddle',width: 95 },
+    { data: 'matNo', type: 'text', width: 120 , className: 'htCenter htMiddle'},
     { data: 'lotNo', type: 'text', width: 180 },
     { data: 'lotNo2', type: 'text', width: 180 },
 
-    { data: null, readOnly: true, renderer: searchIconRenderer, width: 50 },
+    { data: null, readOnly: true, renderer: searchIconRenderer, width: 45 },
 
-    { data: `proc.${p}.itemCd`, type: 'text', width: 70 ,className: 'htCenter htMiddle',},
+    { data: `proc.${p}.itemCd`, type: 'text', width: 70 ,className: 'htCenter htMiddle'},
     { data: `proc.${p}.itemName`, type: 'text', width: 390 },
     {
       data: `proc.${p}.procOrderDate`,
@@ -303,9 +303,10 @@ const hotColumns = computed(() => {
         },
         format: 'YYYY-MM-DD',
       },
+      className: 'htCenter htMiddle',
     },
     { data: `proc.${p}.orderQty`, type: 'numeric', numericFormat: { pattern: '0,0' }, width: 80 },
-    { data: `proc.${p}.procStatusName`, type: 'text', width: 80 ,readOnly: true},
+    { data: `proc.${p}.procStatusName`, type: 'text', width: 70 ,readOnly: true,className: 'htCenter htMiddle'},
     { data: null, readOnly: true, renderer: trashIconRenderer, width: 40 },
   ]
 })
@@ -408,7 +409,7 @@ const processToItemTypeCd = (p) => {
   return 'M0'
 }
 
-function openPop(type) {
+const openPop =(type) => {
   let title = ''
   let comp = null
   let itemTypeCd = ''
