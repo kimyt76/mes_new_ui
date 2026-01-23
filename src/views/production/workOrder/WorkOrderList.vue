@@ -119,6 +119,7 @@ const form  =reactive({
 })
 
 const srhList = async () =>{
+    selectItems.value = []
     const params = {
         ...form
     }
