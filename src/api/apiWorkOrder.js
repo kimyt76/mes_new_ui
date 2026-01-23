@@ -13,14 +13,7 @@ export const ApiWorkOrder = {
     }
   },
   deleteWorkOrders: async(ids) => {
-    try{
-      const res = await API_URL.delete(`/workOrder/deleteWorkOrders`, {data: { workOrderIds: ids }})
-
-      return res.data
-
-    }catch(err){
-      throw err.response ?? err
-    }
+      return await API_URL.delete(`/workOrder/deleteWorkOrders`, {data: ids})
   },
   getWorkOrderInfo: async(id) => {
     try{
@@ -33,8 +26,10 @@ export const ApiWorkOrder = {
     }
   },
   saveWorkOrderInfo: async(params) => {
-      return await API_URL.post('/worker/saveWorkOrderInfo', params)
+      return await API_URL.post('/workOrder/saveWorkOrderInfo', params)
   },
+
+//   worker
   getWorkerAllList: async(params) =>{
     const res = await API_URL.post('/worker/getWorkerAllList', params)
     return  res.data

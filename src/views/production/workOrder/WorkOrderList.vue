@@ -47,14 +47,17 @@
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
+        <Button label="삭제" icon="pi pi-trash"severity="danger"  @click="removeRowClick"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
 </div>
 <div>
     <DataTable
         ref="dt"
+        v-model:selection="selectItems"
         :value="workOrderList"
         dataKey="workOrderId"
+        selectionMode="multiple"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="650px"
@@ -63,25 +66,26 @@
         tableStyle="min-width: 100rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="workOrderDateSeq"    header="일자-No"   :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="areaName"            header="구역"     :style="{ width: '70px', textAlign:'center'}" />
-        <Column field="poNo"                header="PO NO"     :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="itemName"            header="품목명"    :style="{ width: '280px'}" bodyClass="break-words"  >
+        <Column selectionMode="multiple"    headerStyle="width: 2.5rem" style="text-align: center;"/>
+        <Column field="poNo"                header="PO NO"      :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="workOrderDateSeq"    header="일자-No"    :style="{ width: '120px', textAlign:'center'}" />
+        <Column field="areaName"            header="구역"       :style="{ width: '70px', textAlign:'center'}" />
+        <Column field="itemName"            header="품목명"     :style="{ width: '280px'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="matOrderDate"        header="제조일자"    :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="matOrderDate"        header="제조일자"   :style="{ width: '90px', textAlign:'center'}" />
         <Column field="deliveryQty"         header="주문량"     :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
                 {{ (slotProps.data.deliveryQty ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="batchCnt"            header="등록배치수"  :style="{ width: '80px', textAlign:'right'}" />
-        <Column field="clientName"          header="거래처명"    :style="{ width: '200px'}" />
-        <Column field="managerName"         header="담당자명"   :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="batchCnt"            header="등록배치수" :style="{ width: '80px', textAlign:'right'}" />
+        <Column field="clientName"          header="거래처명"   :style="{ width: '200px'}" />
+        <Column field="managerName"         header="담당자명"   :style="{ width: '80px', textAlign:'center'}" />
         <Column field="etc"                 header="비고"       :style="{ width: '150px'}" />
     </DataTable>
 </div>
@@ -90,12 +94,16 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiWorkOrder } from '@/api/apiWorkOrder';
+import { useAlertStore } from '@/stores/alert';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import WorkOrderDetail from './WorkOrderDetail.vue';
 
+const { vInfo, vWarning, vSuccess} = useAlertStore()
+const selectItems = ref([])
 const totalCount = computed(() => workOrderList.value.length)
 const dialog = useDialog()
 const areaCds = ref([])
@@ -115,6 +123,24 @@ const srhList = async () =>{
         ...form
     }
     workOrderList.value = await ApiWorkOrder.getWorkOrderList(params)
+}
+
+const removeRowClick = async() =>{
+    const ids = (selectItems.value || [])
+                .map(r => r.workOrderId)
+                .filter(v => v !== null && v !== undefined)
+
+    try {
+        if (ids.length === 0) return  vInfo('삭제할 작업지시를 선택해주세요.')
+
+        if (!confirm(`선택된 ${ids.length}건을 삭제하시겠습니까?`)) return
+        const res = await ApiWorkOrder.deleteWorkOrders(ids)
+
+        vSuccess(res.message)
+        srhList()
+    } catch(err){
+        handleApiError(err)
+    }
 }
 
 const selectRowClick = (id) =>{
@@ -159,7 +185,7 @@ onMounted( async () =>{
 
     form.strDate = minMonth( todayKST(), -3)
     form.toDate = addMonth( todayKST(), 1)
-    srhList()
+    //srhList()
 })
 
 const home = ref({
