@@ -630,16 +630,6 @@ const saveInfo = async () => {
     // 1) 저장(merge)
     // ======================
     const res = await ApiWorkOrder.saveWorkOrderInfo(params)
-    console.log('res? ', res)
-    console.log('saveRes?.code ', res.message)
-    // RestResponse 기준 분기
-    // 예: { code: 0, message: 'success', data: {...} }
-    if (res?.code !== 0) {
-      // 비즈니스 에러
-      vWarning(res.message || '저장 중 오류가 발생했습니다.')
-      return
-    }
-
     vSuccess(res.message)
     closeDialog()
 }
