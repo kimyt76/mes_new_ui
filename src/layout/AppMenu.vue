@@ -253,7 +253,7 @@ const model = ref([
                     {
                         label: '작업자관리',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/prod/workOrderUserList'
+                        to: '/prod/worker'
                     },
                 ]
             },
