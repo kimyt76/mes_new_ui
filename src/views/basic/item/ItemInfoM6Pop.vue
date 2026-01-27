@@ -184,10 +184,10 @@ const saveInfo = async () =>{
     }
 
     const res = await ApiItem.saveItemDetailInfo(params)
-    vSuccess(res.massage)
+    vSuccess(res.message)
     closeDialog()
   }catch(err){
-    vError(err.massage)
+    vError(err.message)
   }
 }
 

@@ -231,6 +231,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
+import { handleApiError } from '@/util/errorHandler';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, watch } from 'vue';
 import CustomerListPop from '../customer/CustomerListPop.vue';
@@ -323,7 +324,7 @@ const saveInfo = async () =>{
     vSuccess(res.message)
     closeDialog()
   }catch(err){
-    vError(err.massage)
+    handleApiError(err)
   }
 }
 
@@ -342,8 +343,8 @@ if (!changePrice.value) {
   }
 
   try {
-    const msg = await ApiItem.updatePriceInfo(params)
-    vSuccess(msg)
+    const res = await ApiItem.updatePriceInfo(params)
+    vSuccess(res.massage)
 
     const priceRes =  await ApiItem.getItemInfo(form.itemCd)
     inPriceHistory.value =  priceRes.priceHistory.filter(h => h.priceType === 'I')

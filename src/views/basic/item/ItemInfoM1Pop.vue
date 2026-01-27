@@ -164,7 +164,7 @@ const saveInfo = async () =>{
     addtion: form.addtion ? 'Y' : 'N',
     }
     const res = await ApiItem.saveItemDetailInfo(params)
-    vSuccess(res.massage)
+    vSuccess(res.message)
     closeDialog()
   }catch(err){
     vError(err.response.data.message)
