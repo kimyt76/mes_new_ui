@@ -318,9 +318,8 @@ const saveInfo = async () =>{
     const params = {
       ...form
     }
-
     const res = await ApiItem.updateItemInfo(params)
-    console.log('res',res )
+
     vSuccess(res.message)
     closeDialog()
   }catch(err){

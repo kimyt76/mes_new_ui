@@ -58,13 +58,7 @@ export const ApiItem = {
   },
 
   saveItemDetailInfo: async(params) => {
-    try{
-      const msg = await API_URL.post(`/item/saveItemDetailInfo`, params)
-
-      return msg.data
-    }catch(err){
-      throw new Error(err.response?.data);
-    }
+    return await API_URL.post(`/item/saveItemDetailInfo`, params)
   },
 
   saveItemAddInfo: async(params) => {

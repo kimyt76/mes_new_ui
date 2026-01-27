@@ -175,15 +175,14 @@ const openPop = () => {
     })
 }
 
-
 const saveInfo = async () =>{
   try{
     const params = {
       ...form
     }
 
-    const msg = await ApiItem.saveItemDetailInfo(params)
-    vSuccess(msg)
+    const res = await ApiItem.saveItemDetailInfo(params)
+    vSuccess(res.massage)
     closeDialog()
   }catch(err){
     vError(err.response.data.message)
