@@ -39,6 +39,7 @@
               paginator
               :rows="15"
               :rowsPerPageOptions="[15,30,40]"
+              :loading="loading"
               tableStyle="table-layout: fixed; width: 100%"
               columnResizeMode="fit"
               class="my-table"
@@ -75,6 +76,7 @@ import { reactive, ref } from 'vue';
 const { vInfo } = useAlertStore()
 const emit = defineEmits(['selected', 'close']);
 
+const loading = ref(false)
 const selectedItem = ref([])
 const ingrediantList = ref([])
 
@@ -85,10 +87,14 @@ const form = reactive({
 })
 
 const searchList = async () =>{
+    loading.value = true
+
     const params = {
         ...form
     }
     ingrediantList.value = await ApiLab.getIngredientList(params)
+
+    loading.value = false
 }
 
 const selectedRow = () =>{

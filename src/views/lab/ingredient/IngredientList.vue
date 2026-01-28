@@ -48,6 +48,7 @@
             :value="ingredientList"
             paginator :rows="20"
             :rowsPerPageOptions="[20,30,40]"
+            :loading="loading"
             tableStyle="table-layout: fixed; width: 100%"
             columnResizeMode="fit"
             class="my-table"
@@ -96,11 +97,10 @@ import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import IngredientPop from './IngredientPop.vue';
 
-const router = useRouter()
 const { vError, vSuccess} = useAlertStore()
+const loading = ref(false)
 const visible = ref(false)
 const functions = ref([])
 const ingredientList = ref([])
@@ -115,10 +115,14 @@ const title = ref('')
 const id = ref('')
 
 const srhIngredientList = async () => {
-  const params = {
+    loading.value = true
+
+    const params = {
     ...form
   };
   ingredientList.value = await ApiLab.getIngredientList(params);
+
+  loading.value = false
 };
 
 onMounted( async () => {
