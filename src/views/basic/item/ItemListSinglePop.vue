@@ -40,6 +40,7 @@
               v-model:selection="selectedItem"
               :value="itemList"
               dataKey="itemCd"
+              :loading="loading"
               paginator
               :rows="15"
               :rowsPerPageOptions="[15,30,40]"
@@ -76,6 +77,7 @@ import { isEmpty } from '@/util/common';
 import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
+const loading = ref(false)
 const selectedItem = ref([])
 const itemList = ref([])
 const itemTypeCds = ref([])
@@ -95,10 +97,13 @@ onMounted( async () =>{
 })
 
 const searchList = async () =>{
+    loading.value = true
+
     const params = {
         ...form
     }
     itemList.value = await ApiItem.getItemList(params);
+    loading.value = false
 }
 
 const selectedRow = () =>{

@@ -40,6 +40,7 @@
               v-model:selection="selectedItem"
               :value="itemList"
               dataKey="itemCd"
+              :loading="loading"
               paginator
               :rows="15"
               :rowsPerPageOptions="[15,30,40]"
@@ -79,6 +80,7 @@ import { onMounted, reactive, ref } from 'vue';
 
 const { vInfo } = useAlertStore()
 const emit = defineEmits(['selected', 'close']);
+const loading = ref(false)
 const props = defineProps({
     itemTypeCd: {
         type: String,
@@ -106,10 +108,13 @@ onMounted( async () =>{
 })
 
 const searchList = async () =>{
+    loading.value = true
     const params = {
         ...form
     }
     itemList.value = await ApiItem.getItemList(params);
+
+    loading.value =false
 }
 
 const selectedRow = () =>{
