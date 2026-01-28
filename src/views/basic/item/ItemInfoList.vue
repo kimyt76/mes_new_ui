@@ -53,6 +53,7 @@
             ref="dt"
             :value="itemList"
             dataKey="itemCd"
+            :loading="loading"
             paginator :rows="20"
             :rowsPerPageOptions="[20,30,40]"
             tableStyle="table-layout: fixed; width: 100%"
@@ -96,16 +97,21 @@ import ItemInfoM6Pop from './ItemInfoM6Pop.vue';
 
 const dt = ref(null)
 const dialog = useDialog()
+const loading = ref(false)
 const itemTypeCds = ref([])
 const itemList = ref([])
 const totalCount = computed(() => {
   return Array.isArray(itemList.value) ? itemList.value.length : 0
 })
 const srchItemList = async () => {
-  const params = {
-    ...form
-  };
-  itemList.value = await ApiItem.getItemList(params);
+    loading.value =true
+
+    const params = {
+        ...form
+    };
+    itemList.value = await ApiItem.getItemList(params);
+
+    loading.value = false
 };
 
 onMounted( async () => {

@@ -48,6 +48,7 @@
     <DataTable
         ref="dt"
         :value="customerList"
+        :loading="loading"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="650px"
@@ -86,6 +87,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import CustomerPop from './CustomerPop.vue';
 
 const dialog = useDialog()
+const loading = ref(false)
 const customerList = ref([])
 const totalCount = computed(() => {
   return Array.isArray(customerList.value) ? customerList.value.length : 0
@@ -100,10 +102,14 @@ const form  =reactive({
 })
 
 const srhList = async () =>{
+    loading.value = true
+
     const params = {
         ...form
     }
     customerList.value = await ApiBase.getCustomerList(params)
+
+    loading.value = false
 }
 
 const selectRowClick = (id) =>{
