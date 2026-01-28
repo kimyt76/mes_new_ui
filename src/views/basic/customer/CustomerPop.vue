@@ -229,8 +229,8 @@ const saveInfo = async () =>{
         ...form
         }
 
-        const msg = await ApiBase.saveCustomerInfo(params)
-        vSuccess(msg)
+        const res = await ApiBase.saveCustomerInfo(params)
+        vSuccess(res.message)
     }catch(err){
         vError(err.message)
     }
