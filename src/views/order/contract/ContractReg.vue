@@ -74,7 +74,7 @@
     />
 </div>
 <div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
-    <h5 class="m-0">- 품목</h5>
+    <h5 class="m-0">- 수주품목</h5>
     <Button
         label="추가+"
         @click="itemOpenPop"
@@ -90,11 +90,18 @@
         show-gridlines
         @row-select="selectedRow"
         >
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="spec"      header="규격"      :style="{ width: '70px'}"  style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"> ></Column>
-        <Column field="itemGrp1"    header="제품유형"    :style="{ width: '80px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="qty"         header="수량"    :style="{ width: '50px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemCd"      header="품목코드"   :style="{ width: '80px', 'text-align': 'center' }" />
+        <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
+        <Column field="spec"        header="규격"       :style="{ width: '70px', 'text-align': 'center' }" ></Column>
+        <Column field="prodType"    header="제품유형"   :style="{ width: '80px', 'text-align': 'center' }" bodyClass="break-words" >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.prodType"
+                    class="w-full"
+                />
+            </template>
+        </Column>
+        <Column field="qty"         header="수량"       :style="{ width: '50px'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.qty"
@@ -107,7 +114,7 @@
                     />
                 </template>
         </Column>
-        <Column field="unitPrice" header="단가"    :style="{ width: '50px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="unitPrice" header="단가"    :style="{ width: '50px'}"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.unitPrice"
@@ -120,7 +127,7 @@
                 />
             </template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '60px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '60px'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
@@ -132,7 +139,7 @@
                     />
                 </template>
         </Column>
-        <Column field="vatPrice"        header="부가세"    :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="vatPrice"        header="부가세"    :style="{ width: '50px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
@@ -144,7 +151,7 @@
                 />
             </template>
         </Column>
-        <Column field="totPrice"        header="합계"    :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="totPrice"        header="합계"    :style="{ width: '50px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.totPrice"
@@ -156,8 +163,8 @@
                 />
             </template>
         </Column>
-        <Column field="degree"    header="차수"       :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="statusType"  header="진행상태"   :style="{ width: '60px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="degree"      header="차수"       :style="{ width: '50px', textAlign:'center'}" bodyClass="break-words" ></Column>
+        <Column field="statusType"  header="진행상태"   :style="{ width: '50px'}" bodyClass="break-words">
             <template #body="slotProps">
                 <Select
                     v-model="slotProps.data.statusType"
@@ -165,11 +172,19 @@
                     :options="statusTypes"
                     option-label="codeNm"
                     option-value="code"
+                    :inputStyle="{ width: '40px', 'text-align': 'right' }"
                 />
             </template>
         </Column>
-        <Column field="etc"         header="비고"       :style="{ width: '100px'}" style="text-align: right;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="actions"     header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc"         header="비고"       :style="{ width: '130px'}"  >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.etc"
+                    class="w-full"
+                />
+            </template>
+        </Column>
+        <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
@@ -212,7 +227,7 @@ import { computed, inject, onMounted, reactive, ref, shallowRef, watch } from 'v
 
 const dialog = useDialog()
 const { userId } = useAuthStore()
-const { vError, vSuccess, vWarning } = useAlertStore()
+const { vError, vSuccess, vWarning, vInfo } = useAlertStore()
 const currentComponent = shallowRef(null)
 const attachFile = ref([])
 const dialogRef = inject('dialogRef')
@@ -225,7 +240,7 @@ const itemDialog = ref(false)
 const form = reactive({
     contractDate: '',
     seq:'',
-    expectedDueDate:'',
+    expectedDueDate: '',
     clientName:'',
     clientId:'',
     managerName:'',
@@ -277,7 +292,6 @@ watch(() => form.contractDate, async (newVal, oldVal) => {
 })
 
 watch(() => form.vatType, async (newVal) => {
-
   if ( newVal === 'VRN' ){
     itemList.value.map(o => {
       o.vatPrice = 0
@@ -298,10 +312,10 @@ const saveInfo = async () =>{
         vInfo("품목을 등록하세요")
         return
     }
-    if(attachFile.value <= 0 ){
-        vInfo("산출물을 등록하세요")
-        return
-    }
+    // if(attachFile.value <= 0 ){
+    //     vInfo("산출물을 등록하세요")
+    //     return
+    // }
 
     try{
         const params = {
@@ -313,12 +327,16 @@ const saveInfo = async () =>{
         attachFile.value.forEach(file => {
             //console.log('파일 객체 여부:',  file.file instanceof File)
             if (file.file instanceof File) {
-            formData.append('attachFile', file.file)
+                formData.append('attachFile', file.file)
             }
         })
 
-        const msg = await ApiOrder.saveContractInfo(formData)
-        vSuccess(msg.data.message)
+        const res = await ApiOrder.saveContractInfo(formData)
+
+        console.log('res', res)
+        console.log('message', res.message)
+
+        vSuccess(res.message)
         closeDialog()
     }catch(err){
         handleApiError(err)

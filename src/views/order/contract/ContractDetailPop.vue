@@ -90,12 +90,12 @@
         show-gridlines
         @row-select="selectedRow"
         >
-        <Column field="poNo"      header="PO No"  :style="{ width: '130px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="spec"      header="규격"      :style="{ width: '70px'}"  style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"> ></Column>
-        <Column field="itemGrp1"    header="제품유형"    :style="{ width: '80px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="qty"    header="수량"    :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="poNo"      header="PO No"  :style="{ width: '130px'}" />
+        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px'}" />
+        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words"></Column>
+        <Column field="spec"      header="규격"      :style="{ width: '70px'}"  style="text-align: center;" > ></Column>
+        <Column field="prodType"  header="제품유형"    :style="{ width: '80px', textAlign:'center'}" bodyClass="break-words" ></Column>
+        <Column field="qty"       header="수량"    :style="{ width: '70px'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.qty"
@@ -108,7 +108,7 @@
                     />
                 </template>
         </Column>
-        <Column field="unitPrice" header="단가"    :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="unitPrice" header="단가"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.unitPrice"
@@ -121,7 +121,7 @@
                 />
             </template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '70px'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
@@ -133,7 +133,7 @@
                     />
                 </template>
         </Column>
-        <Column field="vatPrice"        header="부가세"    :style="{ width: '60px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="vatPrice"        header="부가세"    :style="{ width: '60px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
@@ -145,7 +145,7 @@
                 />
             </template>
         </Column>
-        <Column field="totPrice"        header="합계"    :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="totPrice"        header="합계"    :style="{ width: '70px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.totPrice"
@@ -157,8 +157,8 @@
                 />
             </template>
         </Column>
-        <Column field="orderCnt"    header="차수"       :style="{ width: '60px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="statusType"  header="진행상태"   :style="{ width: '100px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="degree"      header="차수"       :style="{ width: '60px', 'text-align': 'center'}" bodyClass="break-words" ></Column>
+        <Column field="statusType"  header="진행상태"   :style="{ width: '100px', 'text-align': 'center'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <Select
                     v-model="slotProps.data.statusType"
@@ -169,8 +169,15 @@
                 />
             </template>
         </Column>
-        <Column field="etc"         header="비고"       :style="{ width: '120px'}" style="text-align: right;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="actions"     header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc"         header="비고"   :style="{ width: '120px', 'text-align': 'left' }" >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.etc"
+                    class="w-full"
+                />
+            </template>
+        </Column>
+        <Column field="actions"     header="-"      :style="{ width: '20px', 'text-align': 'center'}"  >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
@@ -295,8 +302,8 @@ const saveInfo = async () =>{
             formData.append('deleteFiles', JSON.stringify(deleteFiles))
         }
 
-        const msg = await ApiOrder.updateContractInfo(formData)
-        vSuccess(msg.data.message)
+        const res = await ApiOrder.updateContractInfo(formData)
+        vSuccess(res.message)
         closeDialog()
     }catch(err){
         vError(err.message)
@@ -380,7 +387,7 @@ onMounted( async () =>{
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
     statusTypes.value = await ApiCommon.getCodeList('status_Type')
 
-    console.log('dialogRef.value.data',  dialogRef.value.data)
+
     if ( !isEmpty(dialogRef.value.data) ) {
         const res = await ApiOrder.getContractInfo(dialogRef.value.data)
 

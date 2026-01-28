@@ -129,28 +129,14 @@ export const ApiOrder = {
     }
   },
   saveContractInfo : async(formData) => {
-    try{
-      const res =  await API_URL.post('/contract/saveContractInfo', formData)
-
-      return res.data
-      //return res.data.contractId
-    }catch(err) {
-      throw err
-    }
+    return await API_URL.post('/contract/saveContractInfo', formData)
   },
   updateContractInfo : async(formData) => {
-    try{
-      const msg =  await API_URL.post('/contract/updateContractInfo', formData, {
+    return await API_URL.post('/contract/updateContractInfo', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
-      return msg.data
-
-    }catch(err) {
-      console.log('err', err)
-      throw new Error(err.response?.data);
-    }
   },
   getContractItemList : async(ids) => {
     try{
