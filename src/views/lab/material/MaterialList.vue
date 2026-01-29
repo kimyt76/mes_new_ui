@@ -38,6 +38,7 @@
         paginator :rows="20"
         :value="materialList"
         dataKey="itemCd"
+        :loading="loading"
         :rowsPerPageOptions="[20,30,40]"
         scrollable
         scrollHeight="650px"
@@ -83,6 +84,7 @@ import MaterialDetailPop from './MaterialDetailPop.vue';
 
 const dialog = useDialog()
 const materialList = ref([])
+const loading = ref(false)
 const totalCount = computed(() => {
   return Array.isArray(materialList.value) ? materialList.value.length : 0
 })
@@ -93,24 +95,16 @@ const form = reactive({
     ingredientName: '',
 })
 
-
-
-
-const home = ref({
-    icon: 'pi pi-home'
-});
-const items = ref([
-    { label: '원료관리' },
-    { label: '원료목록' },
-]);
-
-
 const srhList = async () =>{
-    const params = {
-    ...form
-  }
+    loading.value = true
 
-  materialList.value = await ApiLab.getMaterialItemList(params)
+    const params = {
+        ...form
+    }
+
+    materialList.value = await ApiLab.getMaterialItemList(params)
+
+    loading.value = false
 }
 
 onMounted( async () => {
@@ -134,7 +128,7 @@ const selectRowClick = (item) => {
             },
         pt: {
             root: { style: { overflow: 'hidden' } },
-            content: { style: { overflow: 'hidden' } }
+            content: { style: { overflow: 'auto' } }
         },
        // 반응형 너비 설정 (선택 사항)
     //   breakpoints:{
@@ -157,6 +151,14 @@ const downloadExcel = () =>{
 
   exportToExcel(materialList.value, "원료리스트", cols);
 }
+
+const home = ref({
+    icon: 'pi pi-home'
+});
+const items = ref([
+    { label: '원료관리' },
+    { label: '원료목록' },
+]);
 
 </script>
 

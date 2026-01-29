@@ -79,10 +79,10 @@
         showGridlines
         class="my-table"
         >
-        <Column field="ingredientCode"      header="성분코드"  style="text-align: center;" :style="{ width: '70px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="krIngredientName"    header="구문성분명"  :style="{ width: '280px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="enIngredientName"    header="영어성분명"  :style="{ width: '280px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="inContent"           header="국내함량"   :style="{ width: '70px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="ingredientCode"      header="성분코드"   :style="{ width: '70px', textAlign:'center'}"/>
+        <Column field="krIngredientName"    header="구문성분명"  :style="{ width: '280px'}"/>
+        <Column field="enIngredientName"    header="영어성분명"  :style="{ width: '280px'}"/>
+        <Column field="inContent"           header="국내함량"   :style="{ width: '70px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.inContent"
@@ -95,7 +95,7 @@
                 />
             </template>
         </Column>
-        <Column field="outContent"         header="수출용함량"   :style="{ width: '90px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="outContent"         header="수출용함량"   :style="{ width: '90px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.outContent"
@@ -108,11 +108,11 @@
                 />
             </template>
         </Column>
-        <Column field="casNo"           header="CAS No."  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="functionNm"      header="funciton"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="limitCountry"    header="한도국가"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="banCountry"      header="금지국가"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="actions"         header="-"    :style="{ width: '10px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="casNo"           header="CAS No."  :style="{ width: '100px'}"/>
+        <Column field="functionNm"      header="funciton"  :style="{ width: '100px'}"/>
+        <Column field="limitCountry"    header="한도국가"  :style="{ width: '100px'}"/>
+        <Column field="banCountry"      header="금지국가"  :style="{ width: '100px'}"/>
+        <Column field="actions"         header="-"    :style="{ width: '10px'}" style="text-align: center;">
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.data.index)"></i>
             </template>
@@ -146,8 +146,8 @@
         showGridlines
         class="my-table"
         >
-        <Column field="orderDist"    header="No."   style="text-align: center;" :style="{ width: '20px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="historyComment"       header="변경이력"  style="text-align: left;" :style="{ width: '300px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderDist"    header="No."   style="text-align: center;" :style="{ width: '20px'}"/>
+        <Column field="historyComment"       header="변경이력"  style="text-align: left;" :style="{ width: '300px'}" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.historyComment"
@@ -155,7 +155,7 @@
                 />
             </template>
         </Column>
-        <Column field="updName"    header="담당자"  style="text-align: center;"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="updName"    header="담당자"  style="text-align: center;"  :style="{ width: '100px'}">
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.updName"
@@ -163,7 +163,7 @@
                 />
             </template>
         </Column>
-        <Column field="updDate"    header="수정일"  style="text-align: center;"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="updDate"    header="수정일"  style="text-align: center;"  :style="{ width: '100px'}">
             <template #body="slotProps">
                 <DatePicker
                     v-model="slotProps.data.updDate"
