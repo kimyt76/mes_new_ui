@@ -102,6 +102,7 @@ import BaseHotTable from '@/components/BaseHotTable.vue'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
 import { isEmpty } from '@/util/common'
+import { handleApiError } from '@/util/errorHandler'
 
 import ClientListPop from '@/views/order/client/ClientListPop.vue'
 import UserListPop from '@/views/system/user/UserListPop.vue'
@@ -311,10 +312,11 @@ const saveInfo = async () => {
   try {
     const params = { recipeInfo: form, recipeList: recipeList.value }
     const res = await ApiLab.saveRecipeInfo(params)
+
+    vSuccess(res.message)
     form.recipeId = res.data.recipeId
-    vSuccess('저장되었습니다.')
   } catch (err) {
-    vError(err?.response?.data?.message || '저장 중 오류가 발생했습니다.')
+    handleApiError(err)
   }
 }
 
