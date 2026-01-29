@@ -114,7 +114,7 @@
         <Column field="banCountry"      header="금지국가"  :style="{ width: '100px'}"/>
         <Column field="actions"         header="-"    :style="{ width: '10px'}" style="text-align: center;">
             <template #body="slotProps">
-                <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.data.index)"></i>
+                <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
         </Column>
     </DataTable>
