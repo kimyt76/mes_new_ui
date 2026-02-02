@@ -100,13 +100,7 @@ export const ApiLab = {
     }
   },
   saveRecipeInfo: async(params) =>{
-    try{
-      const res =  await API_URL.post('/recipe/saveRecipeInfo', params)
-
-      return res.data
-    }catch(err) {
-      throw new Error(err.response?.data);
-    }
+     return  await API_URL.post('/recipe/saveRecipeInfo', params)
   },
   downloadRecipe: async (params) => {
     try {
