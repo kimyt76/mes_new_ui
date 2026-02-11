@@ -28,17 +28,20 @@
               scrollHeight="flex"
               showGridlines
             >
-              <Column field="matRegDate" header="일자" :style="{ width: '120px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }">
+              <Column field="matRegDate" header="일자" :style="{ width: '120px', textAlign: 'center'}" >
                 <template #body="slotProps">
                     <DatePicker v-model="slotProps.data.matRegDate" :inputStyle="{ width: '120px', textAlign: 'center' }"/>
                 </template>
               </Column>
-              <Column field="poNo"      header="PO No." :style="{ width: '140px', textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-              <Column field="itemCd"    header="품목코드" :style="{ width: '120px' , textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-              <Column field="itemName"  header="품목명" :style="{ width: '350px', textAlign: 'left'}"  bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }"/>
-              <Column field="clientName" header="고객사" :style="{ width: '200px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-              <Column field="qty"       header="수량" :style="{ width: '130px' , textAlign: 'right'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-              <Column field="matInstructionQty" header="제조지시수량" :style="{ width: '130px', textAlign: 'center'}" :pt="{ columnHeaderContent: 'justify-center' }" >
+              <Column field="poNo"      header="PO No."     :style="{ width: '140px', textAlign: 'center'}"  />
+              <Column field="itemCd"    header="품목코드"   :style="{ width: '120px' , textAlign: 'center'}" />
+              <Column field="itemName"  header="품목명"     :style="{ width: '350px', textAlign: 'left'}"  bodyClass="break-words" />
+              <Column field="qty"       header="수량"       :style="{ width: '130px' , textAlign: 'right'}" >
+                 <template #body="slotProps">
+                        {{ slotProps.data.qty.toLocaleString() }}
+                </template>
+              </Column>
+              <Column field="matInstructionQty" header="제조지시량" :style="{ width: '130px', textAlign: 'center'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.matInstructionQty"
@@ -47,17 +50,19 @@
                         :maxFractionDigits="0"
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', textAlign: 'right' }"
+                        :max="slotProps.data.qty"
+                         @update:modelValue="(val) => validateQty(val, slotProps.data)"
                     />
                 </template>
               </Column>
-              <Column field="matPlanDate" header="제조예정일" :style="{ width: '120px', textAlign: 'center'  }" :pt="{ columnHeaderContent: 'justify-center' }">
+              <Column field="matPlanDate" header="제조예정일" :style="{ width: '120px', textAlign: 'center'  }" >
                 <template #body="slotProps">
                     <DatePicker
                         v-model="slotProps.data.matPlanDate" :inputStyle="{ width: '120px', textAlign: 'center' }"
                     />
                 </template>
               </Column>
-              <Column field="etc" header="비고"   :style="{ width: '130px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+              <Column field="etc" header="비고"   :style="{ width: '130px'}" >
                   <template #body="slotProps">
                       <InputText
                           v-model="slotProps.data.etc"
@@ -70,7 +75,6 @@
         </div>
         <!-- 🔹 하단 버튼 -->
         <div class="flex gap-2 justify-end pt-3">
-          <Button label="계산하기"  class="p-button-secondary" @click="calculate" />
           <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
           <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
         </div>
@@ -99,49 +103,15 @@
 
 <script setup>
 import { ApiMat } from '@/api/apiMat';
+import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
-import { useDialog } from 'primevue';
 import { inject, onMounted, ref } from 'vue';
-import CalculateEquirementPop from './CalculateEquirementPop.vue';
 import MatContractListPop from './MatContractListPop.vue';
 
-const dialog = useDialog()
+const { vWarning, vSuccess} = useAlertStore()
 const contractDialogVisible = ref(false);
 const dialogRef = inject('dialogRef')
 const matPlanList = ref([])
-
-const calculate = () =>{
-    dialog.open(CalculateEquirementPop, {
-        props: {
-        header: '소요량 계산(원재료)',
-        modal: true,
-        maximizable: false,
-        draggable: true,
-        style: {
-            overflow: 'hidden'
-            },
-        pt: {
-            root: { style: { overflow: 'hidden' } },
-            content: { style: { overflow: 'hidden' } }
-        }
-        // 반응형 너비 설정 (선택 사항)
-        //   breakpoints:{
-        //     '960px':'75vw',
-        //     '640px':'90vw'
-        //   }
-        },
-        // 팝업 A로 전달할 데이터 (선택 사항)
-        data: {
-            matPlanList: matPlanList.value
-        },
-        onClose: async (data) => {
-        // 팝업이 닫힐 때 실행할 작업 (선택 사항)
-            await srhList()
-        }
-
-    })
-}
-
 
 const openContractDialog = () => {
   contractDialogVisible.value = true;
@@ -176,6 +146,14 @@ const addRow = (rows) =>{
     matPlanList.value = [...rowItem];
   }
 }
+
+const validateQty = (value, rowData) => {
+  if (value > rowData.qty) {
+    vWarning("제조지시량은 수량을 초과할 수 없습니다.");
+    rowData.matInstructionQty = 0;   // 0으로 초기화
+    return;
+  }
+};
 
 const saveInfo = async () => {
      console.log('1번재 matPlanList', matPlanList)
