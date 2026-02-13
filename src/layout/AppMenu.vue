@@ -6,7 +6,7 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
     },
     {
         label: '기본 관리',
@@ -52,7 +52,7 @@ const model = ref([
                         to: '/order/ingredient'
                     },
                     {
-                        label: '업무별생산량',
+                        label: '업체별생산량',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/ingredient'
                     }
@@ -104,15 +104,15 @@ const model = ref([
                         to: '/lab/bom'
                     },
                     {
+                        label: '공정별BOM',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/lab/matBom'
+                    },
+                    {
                         label: 'BOM이력관리',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/lab/bomHist'
                     },
-                    {
-                        label: '공정별BOM',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/matBom'
-                    }
                 ]
             },
         ]
@@ -156,17 +156,17 @@ const model = ref([
                     },
                 ]
             },
-            {
-                label: '영업부',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '영업부 관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/business'
-                    },
-                ]
-            },
+            // {
+            //     label: '영업부',
+            //     icon: 'pi pi-fw pi-check-square',
+            //     items:[
+            //         {
+            //             label: '영업부 관리',
+            //             icon: 'pi pi-fw pi-id-card',
+            //             to: '/order/business'
+            //         },
+            //     ]
+            // },
 
         ]
     } ,
@@ -187,6 +187,16 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/purchase/matOrderP'
                     },
+                    {
+                        label: '발주현황(생산)',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/purchase/matOrderStateM'
+                    },
+                    {
+                        label: '발주현황(구매)',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/purchase/matOrderStateP'
+                    },
                 ]
             },
             {
@@ -204,9 +214,19 @@ const model = ref([
                         to: '/purchase/purchaseTranP'
                     },
                     {
-                        label: '구매현황',
+                        label: '구매현황(생산)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/tranCurrent'
+                        to: '/purchase/purchaseStateM'
+                    },
+                    {
+                        label: '구매현황(구매)',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/purchase/purchaseStateP'
+                    },
+                    {
+                        label: '반품조정',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/purchase/retrunAdj'
                     },
                 ]
             },
@@ -220,7 +240,7 @@ const model = ref([
                 icon: 'pi pi-fw pi-check-square',
                 items:[
                     {
-                        label: '예상제조계획',
+                        label: '원료제조계획',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/mat/matPlan'
                     },
@@ -313,10 +333,11 @@ const model = ref([
                         to: '/procmat/processTest'
                     },
                     {
-                        label: '제조출고',
+                        label: '공정조건(온도RPM)',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/matOut'
                     },
+
                 ]
             },
             {
@@ -385,7 +406,52 @@ const model = ref([
         ]
     },
 
-
+    {
+        label: '품질관리',
+        items: [
+            {
+               label: 'QC',
+               icon: 'pi pi-fw pi-check-square',
+               items:[
+                    {
+                        label: '품질검사요청',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/reqQcTest'
+                    },
+                    {
+                        label: '품질검사',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/qcTest'
+                    },
+                    {
+                        label: '품질별검사비교',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/reqQcTestCompare'
+                    },
+                    {
+                        label: '품질검사유형',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/reqQcTestType'
+                    },
+                    {
+                        label: '공정검사',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/prodTest'
+                    },
+                    {
+                        label: '공정검사유형',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/prodTestType'
+                    },
+                    {
+                        label: '시험번호별내역',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/qc/testNoDetail'
+                    },
+                ]
+            }
+        ]
+    },
 
     {
         label: '재고관리 및 조사',
@@ -415,9 +481,14 @@ const model = ref([
                         to: '/stock/testUse'
                     },
                     {
-                        label: '사용기한',
+                        label: '사용기한(원재료)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/useBy'
+                        to: '/stock/useByM1'
+                    },
+                    {
+                        label: '사용기한(부자재)',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/useByM2'
                     },
                 ]
             },
@@ -443,7 +514,7 @@ const model = ref([
         label: '시스템 관리',
         items: [
             {
-                label: '시스템 관리',
+                label: '시스템 관리 ',
                 icon: 'pi pi-fw pi-check-square',
                 items:[
                     {
@@ -466,11 +537,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/system/storage'
                     },
-                    {
-                        label: '메뉴관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/system/menu'
-                    },
+                    // {
+                    //     label: '메뉴관리',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/system/menu'
+                    // },
                 ]
             },
             {
