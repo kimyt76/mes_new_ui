@@ -1,6 +1,6 @@
 <template>
     <Breadcrumb :home="home" :model="items"/>
-    <form @submit.prevent="srchItemList" class="space-y-4">
+    <form @submit.prevent="srchMatPlanList" class="space-y-4">
     <Fluid>
     <Toolbar class="mt-2 mb-2 w-full">
         <template #start>
@@ -15,19 +15,24 @@
             v-model="form.toDate"
             class="w-11rem"
             />
-            <FloatLabel>
-            <InputText v-model="form.itemCd" class="w-13rem" />
-            <label>품목코드</label>
+            <FloatLabel  variant="on">
+                <InputText v-model="form.itemCd" class="w-13rem" />
+                <label>품목코드</label>
             </FloatLabel>
-            <FloatLabel>
-            <InputText v-model="form.itemName" class="w-20rem" />
-            <label>품목명</label>
+            <FloatLabel  variant="on">
+                <InputText v-model="form.itemName" class="w-20rem" />
+                <label>품목명</label>
             </FloatLabel>
-            <FloatLabel>
-            <InputText v-model="form.customerName" class="w-18rem" />
-            <label>거래처명</label>
+            <FloatLabel  variant="on">
+                <Select
+                    v-model="form.endYn"
+                    :options="endYns"
+                     optionLabel="codeNm"
+                     optionValue="code"
+                    class="w-9rem" />
+                <label>완료여부</label>
             </FloatLabel>
-            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600 w-5rem" />
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600 w-5rem"  type="submit"/>
         </div>
         </template>
     </Toolbar>
@@ -35,15 +40,15 @@
     </form>
     <div class="flex items-center justify-end gap-2 mb-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick"/>
-        <Button label="소요량" class="btn-use" />
+        <Button label="소요량" class="btn-use" @click="calculate"/>
         <Button label="삭제" class="btn-del" />
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" ></Button>
     </div>
     <div class="flex flex-col mt-2">
         <DataTable
             ref="dt"
-            v-model="selectedItem"
-            :value="itemList"
+            v-model:selection="selectedItem"
+            :value="matPlanList"
             dataKey="itemCd"
             paginator
             :rows="20"
@@ -60,54 +65,96 @@
             }"
             >
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-            <Column field="matRegDate"      header="일자"   :style="{ width: '120px'}" />
-            <Column field="poNo"            header="PO No"  :style="{ width: '120px'}" />
-            <Column field="customerName"    header="거래처"   :style="{ width: '210px', textAlign:'left'}"/>
-            <Column field="itemCd"          header="품목코드"   :style="{ width: '130px'}"  />
-            <Column field="itemName"        header="품목명"   frozen  :style="{ width: '400px'}" bodyClass="break-words" >
+            <Column field="matRegDate"  header="일자"   :style="{ width: '120px'}" />
+            <Column field="poNo"        header="PO No"  :style="{ width: '120px'}" />
+            <Column field="itemCd"      header="품목코드"   :style="{ width: '130px'}"  >
                 <template #body="slotProps">
-                    <div @click="selectRowClick(slotProps.data.matOrdeId)" class="clickable-cell">
+                    <div @click="bomPop(slotProps.data.itemCd)" class="clickable-cell">
+                        {{ slotProps.data.itemCd }}
+                    </div>
+                </template>
+            </Column>
+            <Column field="itemName"    header="품목명"   frozen  :style="{ width: '400px', textAlign: 'left'}" bodyClass="break-words" >
+                <template #body="slotProps">
+                    <div @click="selectRowClick(slotProps.data.matPlanId)">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
             </Column>
-            <Column field="qty"                 header="수량"           :style="{ width: '120px', textAlign:'right'}" />
-            <Column field="matInstructionQty"   header="제조지시수량"   :style="{ width: '160px', textAlign:'right'}" />
-            <Column field="matCompleteQty"      header="제조완료수량"   :style="{ width: '160px', textAlign:'right'}" />
-            <Column field="residualMatQty"      header="잔량제조량"     :style="{ width: '160px', textAlign:'right'}" />
-            <Column field="matPlanDate"         header="제조예정일"     :style="{ width: '120px'}" />
-            <Column field="etc"                 header="비고"           :style="{ width: '150px'}"  />
-            <Column field="completeYn"          header="완료"           :style="{ width: '70px'}"  />
+            <Column field="qty"         header="수량(완제품)"   :style="{ width: '120px', textAlign:'right'}">
+                <template #body="slotProps">
+                    {{ (slotProps.data.qty ?? 0).toLocaleString() }}
+                </template>
+            </Column>
+            <Column field="theoryMakeQty"   header="이론제조량" :style="{ width: '120px', textAlign:'right'}">
+                <template #body="slotProps">
+                    {{ (slotProps.data.theoryMakeQty ?? 0).toLocaleString() }}
+                </template>
+            </Column>
+            <Column field="matInstrQty" header="제조지시량(A)"   :style="{ width: '160px', textAlign:'right'}">
+                <template #body="slotProps">
+                    {{ (slotProps.data.matInstrQty ?? 0).toLocaleString() }}
+                </template>
+            </Column>
+            <Column field="matCompQty"  header="제조완료량"      :style="{ width: '160px', textAlign:'right'}">
+                <template #body="slotProps">
+                    {{ (slotProps.data.matCompQty ?? 0).toLocaleString() }}
+                </template>
+            </Column>
+            <Column field="resMatQty"   header="잔량제조량(B)"   :style="{ width: '160px', textAlign:'right'}">
+                <template #body="slotProps">
+                     {{ (slotProps.data.resMatQty ?? 0).toLocaleString() }}
+                </template>
+            </Column>
+            <Column field="matPlanDate" header="제조예정일"     :style="{ width: '120px'}" />
+            <Column field="minQty"      header="A-B"           :style="{ width: '160px', textAlign:'right'}">
+                <template #body="slotProps">
+                    {{ (slotProps.data.minQty ?? 0).toLocaleString() }}
+                </template>
+            </Column>
+            <Column field="etc"         header="비고"           :style="{ width: '180px'}"  />
+            <Column field="matInYn"     header="원료입고완료"    :style="{ width: '110px'}"  />
+            <Column field="endYn"       header="종결여부"        :style="{ width: '90px'}"  />
         </DataTable>
-
     </div>
-
 
 </template>
 
 <script setup>
-import { ApiItem } from '@/api/apiItem';
+import { ApiMat } from '@/api/apiMat';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import MatPlanDetailPop from './MatPlanDetailPop.vue';
 
-
 const dt = ref(null)
 const dialog = useDialog()
-const itemList = ref([])
+const matPlanList = ref([])
 const selectedItem = ref([])
+const endYns = ref([
+    { codeNm: '진행', code: 'N' },
+    { codeNm: '완료', code: 'Y' }
+]);
+
+
+const form = reactive({
+  strDate: '',
+  toDate: '',
+  itemName: '',
+  itemCd: '',
+  endYn: ''
+})
 
 const home = ref({
     icon: 'pi pi-home'
 });
 
-const srchItemList = async () => {
+const srchMatPlanList = async () => {
   const params = {
     ...form
   };
-  itemList.value = await ApiItem.getItemList(params);
+  matPlanList.value = await ApiMat.getMatPlanList(params);
 };
 
 onMounted( async () => {
@@ -130,7 +177,7 @@ const selectRowClick = (id) => {
 
     dialog.open( MatPlanDetailPop, {
         props: {
-            header: '예상제조계획('+type+')',
+            header: '원료제조계획('+type+')',
             modal: true,
             maximizable: false,
             draggable: true,
@@ -139,7 +186,7 @@ const selectRowClick = (id) => {
                 },
             pt: {
                 root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
+                content: { style: { overflow: 'auto' } }
             }
             // 기타 PrimeVue Dialog props 설정
         },
@@ -149,23 +196,53 @@ const selectRowClick = (id) => {
         },
         onClose:(event) => {
             // event.data에 자식 컴포넌트에서 close()로 보낸 데이터가 담겨 있습니다.
-
+            srchMatPlanList()
         },
+    })
+}
+
+const bomPop = (itemCd) =>{
+
+}
+
+const calculate = () =>{
+    selectedItem.value
+
+    dialog.open(CalculateEquirementPop, {
+        props: {
+        header: '소요량 계산(원재료)',
+        modal: true,
+        maximizable: false,
+        draggable: true,
+        style: {
+            overflow: 'hidden'
+            },
+        pt: {
+            root: { style: { overflow: 'hidden' } },
+            content: { style: { overflow: 'hidden' } }
+        }
+        // 반응형 너비 설정 (선택 사항)
+        //   breakpoints:{
+        //     '960px':'75vw',
+        //     '640px':'90vw'
+        //   }
+        },
+        // 팝업 A로 전달할 데이터 (선택 사항)
+        data: {
+            matPlanList: selectedItem.value
+        },
+        onClose: async (data) => {
+        // 팝업이 닫힐 때 실행할 작업 (선택 사항)
+            await srhList()
+        }
 
     })
 }
 
-const form = reactive({
-  strDate: '',
-  toDate: '',
-  itemName: '',
-  itemCd: '',
-  customerName: '',
-})
-
 const items = ref([
     { label: '제조관리' },
-    { label: '예상제조계획' },
+    { label: '제조관리' },
+    { label: '원료제조계획' },
 ]);
 
 const downloadExcel = () =>{
@@ -176,7 +253,7 @@ const downloadExcel = () =>{
     return;
   }
 
-  exportToExcel(itemList.value, "예상제조계획 리스트", cols);
+  exportToExcel(matPlanList.value, "원료제조계획 리스트", cols);
 }
 </script>
 

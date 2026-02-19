@@ -7,6 +7,7 @@
         <div class="search-section">
             <div class="search-field">
             <Button
+              v-if="isBtnDisabled"
               label="주문서"
               severity="secondary"
               @click="openContractDialog"
@@ -18,7 +19,6 @@
         <div class="list-section mt-3">
           <div class="list-wrapper">
             <DataTable
-              ref="dt"
               :value="matPlanList"
               dataKey="matPlanId"
               tableStyle="table-layout: fixed; width: 100%"
@@ -41,16 +41,27 @@
                         {{ slotProps.data.qty.toLocaleString() }}
                 </template>
               </Column>
-              <Column field="matInstructionQty" header="제조지시량" :style="{ width: '130px', textAlign: 'center'}"  >
+              <Column field="theoryMakeQty" header="이론제조량" :style="{ width: '130px', textAlign: 'center'}"  >
                 <template #body="slotProps">
                     <InputNumber
-                        v-model="slotProps.data.matInstructionQty"
+                        v-model="slotProps.data.theoryMakeQty"
                         class="w-full"
                         :min="0"
-                        :maxFractionDigits="0"
+                        :useGrouping="true"
+                        :inputStyle="{ width: '120px', textAlign: 'right' }"
+                    />
+                </template>
+              </Column>
+              <Column field="matInstrQty" header="제조지시량" :style="{ width: '130px', textAlign: 'center'}"  >
+                <template #body="slotProps">
+                    <InputNumber
+                        v-model="slotProps.data.matInstrQty"
+                        class="w-full"
+                        :min="0"
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', textAlign: 'right' }"
                         :max="slotProps.data.qty"
+                        :maxFractionDigits="0"
                          @update:modelValue="(val) => validateQty(val, slotProps.data)"
                     />
                 </template>
@@ -105,11 +116,13 @@
 import { ApiMat } from '@/api/apiMat';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, ref } from 'vue';
 import MatContractListPop from './MatContractListPop.vue';
 
 const { vWarning, vSuccess} = useAlertStore()
 const contractDialogVisible = ref(false);
+const isBtnDisabled = ref(true);
 const dialogRef = inject('dialogRef')
 const matPlanList = ref([])
 
@@ -133,11 +146,11 @@ const addRow = (rows) =>{
       poNo: o.poNo,
       itemCd: o.itemCd,
       itemName: o.itemName,
-      clientName: o.clientName,
       qty: o.qty,
-      matInstructionQty: 0,
+      theoryMakeQty: 0,
+      matInstrQty: 0,
       matPlanDate: '',
-      clientId: '',
+      etc: '',
   }));
 
   if (matPlanList.value.length > 0) {
@@ -148,24 +161,34 @@ const addRow = (rows) =>{
 }
 
 const validateQty = (value, rowData) => {
-  if (value > rowData.qty) {
+  const v = Number(value ?? 0);
+  const qty = Number(rowData.qty ?? 0);
+
+  if (v > qty) {
     vWarning("제조지시량은 수량을 초과할 수 없습니다.");
-    rowData.matInstructionQty = 0;   // 0으로 초기화
-    return;
+    rowData.matInstructionQty = 0;
   }
 };
 
 const saveInfo = async () => {
-     console.log('1번재 matPlanList', matPlanList)
-    //dialogRef.value.close(matPlanList);
-    matPlanList.value = await ApiMat.saveMatPlanList(matPlanList.value)
+    try {
+        if ( matPlanList.value.length === 0 ) {
+            vWarning("저장할 데이터가 없습니다.");
+            return;
+        }
 
-    closeDialog()
+        const res = await ApiMat.saveMatPlanList(matPlanList.value)
+        vSuccess(res.message)
+    } catch (err) {
+        handleApiError(err)
+    }
+    //closeDialog()
 }
 
 onMounted( async () =>{
-    if ( !isEmpty(dialogRef.value) ) {
-
+    if ( !isEmpty(dialogRef.value.data.id) ) {
+        isBtnDisabled.value = false
+        matPlanList.value = await ApiMat.getMatPlanDetailList(dialogRef.value.data.id)
     }
 })
 

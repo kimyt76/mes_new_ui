@@ -12,9 +12,9 @@ export const ApiMat = {
       throw err.response
     }
   },
-  getMatPlanInfo: async(id) => {
+  getMatPlanDetailList: async(id) => {
     try{
-      const res = await API_URL.get(`/mat/getMatPlanInfo/${id}`)
+      const res = await API_URL.get(`/mat/getMatPlanDetailList/${id}`)
       return res.data
 
     }catch(err){
@@ -22,13 +22,9 @@ export const ApiMat = {
     }
   },
   saveMatPlanList: async(params) => {
-    try{
-      const msg = await API_URL.post(`/mat/saveMatPlanList`, params)
-      return msg.data
-    }catch(err){
-      throw new Error(err.response?.data);
-    }
+    return await API_URL.post(`/mat/saveMatPlanList`, params)
   },
+
 
 
 }
