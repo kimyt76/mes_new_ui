@@ -1,4 +1,4 @@
-import { API_URL} from '.'
+import { API_URL } from '.'
 
 
 export const ApiCommon = {
@@ -49,8 +49,6 @@ export const ApiCommon = {
       params: { attachFileId, seq },
       responseType: 'blob' // 중요한 설정!
     });
-
-      console.log('res',res)
       return res
     }catch(err){
       throw err.response
@@ -64,8 +62,6 @@ export const ApiCommon = {
           'Content-Type': 'multipart/form-data',
         },
       })
-
-      console.log('res',res)
       return res
     }catch(err){
       throw err.response
@@ -115,5 +111,6 @@ export const ApiCommon = {
       throw err.response
     }
   },
+
 
 }
