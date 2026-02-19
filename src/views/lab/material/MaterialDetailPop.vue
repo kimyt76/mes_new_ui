@@ -108,11 +108,11 @@
                 />
             </template>
         </Column>
-        <Column field="casNo"           header="CAS No."  :style="{ width: '100px'}"/>
-        <Column field="functionNm"      header="funciton"  :style="{ width: '100px'}"/>
-        <Column field="limitCountry"    header="한도국가"  :style="{ width: '100px'}"/>
-        <Column field="banCountry"      header="금지국가"  :style="{ width: '100px'}"/>
-        <Column field="actions"         header="-"    :style="{ width: '10px'}" style="text-align: center;">
+        <Column field="casNo"           header="CAS No."    :style="{ width: '100px'}"/>
+        <Column field="functionNm"      header="funciton"   :style="{ width: '100px'}"/>
+        <Column field="limitCountry"    header="한도국가"    :style="{ width: '100px'}"/>
+        <Column field="banCountry"      header="금지국가"    :style="{ width: '100px'}"/>
+        <Column field="actions"         header="-"          :style="{ width: '10px'}" style="text-align: center;">
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
