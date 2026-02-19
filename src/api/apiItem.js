@@ -66,13 +66,7 @@ export const ApiItem = {
   },
 
   updatePriceInfo: async(params) => {
-    try{
-      const msg = await API_URL.post(`/item/updatePriceInfo`, params)
-
-      return msg.data
-    }catch(err){
-      throw new Error(err.response?.data);
-    }
+    return  await API_URL.post(`/item/updatePriceInfo`, params)
   },
 
 }
