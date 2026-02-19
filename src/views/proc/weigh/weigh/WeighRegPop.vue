@@ -4,28 +4,28 @@
       <tbody>
         <tr>
             <th class="cellBorder cellHeader">제조번호</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.matNo }}</td>
             <th class="cellBorder cellHeader">품목코드</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.itemCd }}</td>
             <th class="cellBorder cellHeader">품목명</th>
-            <td class="cellBorder" colspan="3"></td>
+            <td class="cellBorder" colspan="3">{{ form.itemName }}</td>
         </tr>
         <tr>
             <th class="cellBorder cellHeader">지시일자</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.procOrderDate }}</td>
             <th class="cellBorder cellHeader">지시량</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.orderQty }}</td>
             <th class="cellBorder cellHeader">칭량일자</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">칭량처</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.storageName }}</td>
         </tr>
         <tr>
             <th class="cellBorder cellHeader">PO NO</th>
-            <td class="cellBorder"></td>
+            <td class="cellBorder">{{ form.poNo }}</td>
             <th class="cellBorder cellHeader">특이사항</th>
             <td class="cellBorder" colspan="5">
-            <InputText class="w-full" v-model="form.note" />
+                <Textarea v-model="form.etc" rows="1" class="w-full mt-1" style="resize: none;" />
             </td>
         </tr>
       </tbody>
@@ -43,7 +43,7 @@
 
       <div>
         <FloatLabel variant="on">
-          <InputText id="barcode" v-model="form.barcodePrint" style="width: 180px" />
+          <InputText id="barcode" v-model="form.barcode" style="width: 180px" />
           <label for="barcode">바코드(시험번호)</label>
         </FloatLabel>
       </div>
@@ -75,7 +75,10 @@
   <div class="w-full mt-3">
     <Tabs v-model:value="activeSangGubun">
       <TabList>
-        <Tab v-for="sg in sangGubunOptions" :key="sg" :value="sg">
+        <Tab v-for="sg in sangGubunOptions"
+              :key="sg"
+              :value="sg"
+              >
           {{ sg }}
         </Tab>
       </TabList>
@@ -104,7 +107,7 @@
                 45    // -
             ]"
           :rowHeaders="false"
-          :height="550"
+          :height="470"
           :afterChange="handleAfterChange"
           :afterOnCellMouseDown="handleCellClickFromHot"
           :stretchH="'all'"
@@ -113,11 +116,12 @@
     </Tabs>
   </div>
 
-  <div class="w-full mt-3">
+  <div class="w-full mt-5">
     <div class="flex items-center justify-end gap-3">
-      <Button label="칭량시작" />
+      <Button v-if="isStarted"  label="칭량시작" @click="openLookupPopup('S')" />
+      <Button v-if="!isStarted" label="저장" @click="saveInfo('S')" />
       <Button label="바코드출력" icon="pi pi-barcode" />
-      <Button label="공정기획서" />
+      <Button label="공정기획서" @click="downloadProc" />
       <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
     </div>
   </div>
@@ -128,19 +132,41 @@ import BaseHotTable from '@/components/BaseHotTable.vue'
 import { toNumber } from '@/util/common'
 import { useDialog } from 'primevue'
 // PrimeVue
+import { ApiProc } from '@/api/apiProc'
+import { useAuthStore } from '@/stores/auth'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import Tabs from 'primevue/tabs'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
+import ProcInfoPop from '../../common/ProcInfoPop.vue'
+import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
+const dialogRef = inject('dialogRef')
+const isStarted = ref(true)
 const dialog = useDialog()
+const { userId} = useAuthStore()
+const form = reactive({
+    matNo: '',
+    itemCd:'',
+    itemName: '',
+    procOrderDate: '',
+    orderQty: 0,
+    prodDate: '',
+    storageName:'',
+    storageCd:'',
+    poNo:'',
+    etc: '',
+
+    barcode: '',
+    userId: userId,
+})
 const ALL_TAB = 'ALL'
 /** ✅ 필드명 매핑 */
 const FIELD = {
-  SUNGSANG: 'sungSang',     // 성상
-  SANGGUBUN: 'sangGubun',   // 상구분
+  SUNGSANG: 'appearance',     // 성상
+  SANGGUBUN: 'phase',   // 상구분
   WEIGH_YN: 'weighYn',      // 완료(Y/N)
   SELECTED: 'selected',     // 선택(프론트용)
 }
@@ -152,10 +178,7 @@ const LOOKUP_PROP = {
   CONFIRM: '__lookup_confirmUser',   // 확인자 돋보기
 }
 const matUseDataList = ref([])
-const form = reactive({
-  barcodePrint: '',
-  note: '',
-})
+
 
 /** ✅ 성상 옵션 */
 const sungsangOptions = computed(() => {
@@ -284,14 +307,14 @@ const hotColumns = ref([
   { data: FIELD.SANGGUBUN, readOnly: true, className: 'htCenter'  },                  // 5 상구분
   { data: 'orderQty' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight', readOnly: true },                                        // 6 지시량
   { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },                                       // 7 칭량
-  { data: 'containerWeight' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight'},                                // 8 용기무게
+  { data: 'bagWeight' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight'},                                // 8 용기무게
   { data: LOOKUP_PROP.CONTAINER, readOnly: true, renderer: magnifierRenderer }, // 9 '-' (용기무게 조회)
   { data: 'totalQty', readOnly: true , type: 'numeric', numericFormat: { pattern: '0,0.00000' },className: 'htRight'},                       // 10 총량
   { data: 'testNo', readOnly: true , className: 'htCenter'},                         // 11 사용시험번호
   { data: FIELD.WEIGH_YN, type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N' , className: 'htCenter'}, // 12 완료
-  { data: 'weighUser', className: 'htCenter' },                      // 13 칭량자
+  { data: 'weigher', className: 'htCenter' },                      // 13 칭량자
   { data: LOOKUP_PROP.WEIGHER, readOnly: true, renderer: magnifierRenderer },  // 14 '-' (칭량자 조회)
-  { data: 'weighConfirmUser', className: 'htCenter' },               // 15 확인자
+  { data: 'confirmer', className: 'htCenter' },               // 15 확인자
   { data: LOOKUP_PROP.CONFIRM, readOnly: true, renderer: magnifierRenderer },  // 16 '-' (확인자 조회)
 ])
 
@@ -320,7 +343,6 @@ const handleAfterChange = (changes, source) => {
     }
   }
 }
-
 
 /** =========================
  * 돋보기 클릭 감지 → 팝업 호출
@@ -361,49 +383,53 @@ const openLookupPopup = (type, row) => {
     let title = ''
     let currentComponet = ''
 
-     console.log('OPEN POPUP =>', type, row)
-
     if (type === 'ITEM_CODE') {
         if ( row.itemCd === 'JRMSC00011') return
         title = '바코드 칭량 입력'
         currentComponet = WeighBarcodeRegPop
     } else if (type === 'CONTAINER_WEIGHT') {
         title = '용기무게 선택'
-        // currentComponet = ContainerWeightDialog
+        currentComponet = ContainerWeightDialog
     } else if (type === 'WEIGH_USER') {
         title = '칭량자 선택'
-        // currentComponet = UserLookupDialog
+        currentComponet = WorkerPop
     } else if (type === 'CONFIRM_USER') {
         title = '확인자 선택'
-        // currentComponet = UserLookupDialog
+        currentComponet = WorkerPop
+    } else {
+        title = '칭량 시작'
+        currentComponet  = ProcInfoPop
     }
-  dialog.open(currentComponet, {
-    props: {
-        header: title,
-        modal: true,
-        draggable: false,
-        style: { overflow: 'hidden' },
-        pt: {
-            root: { style: { overflow: 'hidden' } },
-            content: { style: { overflow: 'hidden' } },
+
+    dialog.open(currentComponet, {
+        props: {
+            header: title,
+            modal: true,
+            draggable: false,
+            style: { overflow: 'hidden' },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } },
+            },
         },
-    },
-    data: row,
-    onClose: (event) =>{
-        if( !event.data) return
+        data: row,
+        onClose: (event) =>{
+            if( !event.data) return
 
-        if (type === 'ITEM_CODE') {
+            if (type === 'ITEM_CODE') {
 
-        } else if (type === 'CONTAINER_WEIGHT') {
+            } else if (type === 'CONTAINER_WEIGHT') {
 
-        } else if (type === 'WEIGH_USER') {
+            } else if (type === 'WEIGH_USER') {
 
-        } else if (type === 'CONFIRM_USER') {
+            } else if (type === 'CONFIRM_USER') {
 
-        }
-    },
+            } else {
 
-  } )
+            }
+        },
+
+    } )
 }
 
 /** ✅ 데이터 정규화 */
@@ -420,6 +446,10 @@ const normalizeRows = (rows) => {
   }))
 }
 
+const saveInfo = () =>{
+
+}
+
 /** 버튼들 */
 const refresh = async () => {
   // API 재호출 필요 시 여기
@@ -429,16 +459,29 @@ const downloadExcel = () => {
   // 기존 로직 사용
 }
 
+
+
+
+
 onMounted(async () => {
-  // ✅ TODO: 실제 API 결과로 교체
-  const rowsFromApi = [
-    { itemCd: 'JRMSC00011', itemName: 'Di-Water', [FIELD.SUNGSANG]: '액상', [FIELD.SANGGUBUN]: 'A', orderQty: 3785.25, weighQty: 0, containerWeight: 0, totalQty: 0, testNo: '', weighYn: 'N', weighUser: '', weighConfirmUser: '' },
-    { itemCd: 'JRMSZ00034', itemName: 'Calcium Chloride', [FIELD.SUNGSANG]: '분말', [FIELD.SANGGUBUN]: 'A', orderQty: 11, weighQty: 0, containerWeight: 0, totalQty: 0, testNo: '', weighYn: 'Y', weighUser: '', weighConfirmUser: '' },
-    { itemCd: 'JRMSJ00044', itemName: 'GREEN GN-Z', [FIELD.SUNGSANG]: '색소', [FIELD.SANGGUBUN]: 'B', orderQty: 5.5, weighQty: 0, containerWeight: 0, totalQty: 0, testNo: '', weighYn: 'N', weighUser: '', weighConfirmUser: '' },
-    { itemCd: 'JRMSF00010', itemName: 'Flavor X', [FIELD.SUNGSANG]: '향료', [FIELD.SANGGUBUN]: 'D', orderQty: 1, weighQty: 0, containerWeight: 0, totalQty: 0, testNo: '', weighYn: 'N', weighUser: '', weighConfirmUser: '' },
-  ]
-  matUseDataList.value = normalizeRows(rowsFromApi)
+    console.log('dialogRef.value.data.procStatus111', dialogRef.value.data.procStatus)
+    if ( dialogRef.value.data.procStatus !== '00') {
+        isStarted.value = false
+    }
+
+    const params = {
+        workProcId: dialogRef.value.data.workProcId,
+        itemCd : dialogRef.value.data.itemCd,
+    }
+    const res = await ApiProc.getWeighInfo(params)
+    Object.assign(form, res)
+    matUseDataList.value = res.weighs
 })
+
+
+const downloadProc = () =>{
+
+}
 </script>
 
 <style scoped>
@@ -471,5 +514,9 @@ td .custom-cell {
   align-items: center;
   justify-content: center;
   z-index: 9999;
+}
+.tab-active {
+  background: #2f6fff; /* 원하는 색 */
+  color: white;
 }
 </style>

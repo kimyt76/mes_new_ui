@@ -31,13 +31,7 @@ export const ApiBase = {
   },
 
   saveCustomerInfo: async(params) => {
-    try{
-      const msg = await API_URL.post('/customer/saveCustomerInfo' , params)
-
-      return msg.data
-    }catch(err){
-      throw err.response
-    }
+    return await API_URL.post('/customer/saveCustomerInfo' , params)
   },
   getStorageList: async(params) =>{
     try{
