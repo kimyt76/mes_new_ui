@@ -40,7 +40,7 @@
         <Column field="draftDateSeq"    header="문서번호"  frozen :style="{ width: '140px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
         <Column field="itemName"        header="품목명"   frozen :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.contractId)" class="clickable-cell">
+                <div @click="selectRowClick(slotProps.data.draftId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
@@ -48,7 +48,11 @@
         <Column field="clientName"      header="고객사명"  :style="{ width: '250px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="draftDate"       header="기안일자"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="draftUserName"   header="기안자"     :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="statusType"      header="진행상태"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="statusType"      header="진행상태"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+            <template #body="slotProps">
+                    {{ slotProps.data.statusType === 'ING' ? '진행중' : '완료' }}
+            </template>
+        </Column>
     </DataTable>
 </div>
 </template>
@@ -59,6 +63,7 @@ import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref, shallowRef } from 'vue';
+import DraftDetail from './DraftDetail.vue';
 import DraftReg from './DraftReg.vue';
 
 const dialog = useDialog()
@@ -81,7 +86,7 @@ const selectRowClick = (id) =>{
         currentComponent.value = DraftReg
     }else{
         title = '사양서 상세'
-        currentComponent.value = ContractDetailPop
+        currentComponent.value = DraftDetail
     }
 
     dialog.open(currentComponent, {

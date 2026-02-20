@@ -303,7 +303,7 @@ import { useRouter } from 'vue-router';
 
 import CustomerListPop from '@/views/basic/customer/CustomerPop.vue';
 import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
-import StorageListPop from '@/views/basic/storage/StorageListPop.vue';
+import StorageListPop from '@/views/system/storage/StorageListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import ContractListPop from '../contract/ContractListPop.vue';
 

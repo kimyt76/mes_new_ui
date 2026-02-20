@@ -19,14 +19,14 @@
 </template>
 
 <script setup>
-import { ApiMat } from '@/api/apiMat';
+import { ApiProc } from '@/api/apiProc';
 import { inject, onMounted, ref } from 'vue';
 
 const dialogRef = inject('dialogRef');
 const equipmentList = ref([])
 
 onMounted( async () =>{
-    const res = await ApiMat.getEquipmentList(dialogRef.value.data)
+    const res = await ApiProc.getEquipmentList(dialogRef.value.data)
     equipmentList.value = res.data
 })
 

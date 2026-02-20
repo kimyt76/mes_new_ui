@@ -82,41 +82,41 @@
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="tranDateSeq"         header="일자-No"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="tranDate"            header="입고일"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customerName"        header="거래처명"  :style="{ width: '190px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"              header="품목코드"      :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"            header="품목명"  frozen  :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="testNo"              header="시험번호"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="unit"                header="규격"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="qty"                 header="수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="tranDateSeq"         header="일자-No"  :style="{ width: '100px',textAlign:'center'}" />
+        <Column field="tranDate"            header="입고일"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="customerName"        header="거래처명"  :style="{ width: '190px'}" />
+        <Column field="itemCd"              header="품목코드"      :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="itemName"            header="품목명"  frozen  :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;"  />
+        <Column field="testNo"              header="시험번호"  :style="{ width: '100px',textAlign:'center'}" />
+        <Column field="unit"                header="규격"  :style="{ width: '90px',textAlign:'center'}" />
+        <Column field="qty"                 header="수량"   :style="{ width: '80px' ,textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.qty).toLocaleString() }}
             </template>
         </Column>
-        <Column field="inPrice"  header="단가"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="inPrice"  header="단가"   :style="{ width: '80px',textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.inPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="supplyPrice"  header="공급가"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="supplyPrice"  header="공급가"   :style="{ width: '80px',textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.supplyPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="vatPrice"  header="부가세"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="vatPrice"  header="부가세"   :style="{ width: '80px',textAlign:'right'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.vatPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="sumPrice"  header="합계"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '80px'}" style="text-align: right;">
+        <Column field="sumPrice"  header="합계"   :style="{ width: '80px',textAlign:'right'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.sumPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="testState"    header="시험상태"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="passState"    header="판정상태"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="areaName"    header="구역"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="testState"    header="시험상태"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="passState"    header="판정상태"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="areaName"     header="구역"      :style="{ width: '80px',textAlign:'center'}" />
     </DataTable>
 </div>
 

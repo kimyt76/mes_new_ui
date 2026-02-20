@@ -46,7 +46,6 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 <div>
@@ -64,7 +63,7 @@
         <Column field="areaName"        header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workProcId)" class="clickable-cell" style="text-decoration: underline; point">
+                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; point">
                     {{ slotProps.data.procOrderDate  }}
                 </div>
             </template>
@@ -108,7 +107,7 @@ const form = reactive({
 
 })
 
-const selectRowClick = (id) =>{
+const selectRowClick = (id, itemCd, procStatus) =>{
     dialog.open(WeighRegPop, {
         props:{
             header: '칭량지시 및 기록서',
@@ -118,7 +117,7 @@ const selectRowClick = (id) =>{
             style: {
                 width: '90vw',          // 🔹 팝업 가로 폭
                 maxWidth: '1800px',
-                height: '800px',
+                height: '850px',
                 overflow: 'hidden'
             },
             pt: {
@@ -126,7 +125,11 @@ const selectRowClick = (id) =>{
                 content: { style: { overflow: 'hidden' } }
             },
         },
-        data: id,
+        data: {
+            workProcId: id,
+            itemCd : itemCd,
+            procStatus: procStatus,
+        },
         onClose:(event) => {
         },
     })

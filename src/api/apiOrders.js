@@ -24,19 +24,7 @@ export const ApiOrder = {
     }
   },
   saveDraftInfo: async(formData) => {
-    try{
-      const msg =  await API_URL.post('/draft/saveDraftInfo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-
-      //console.log('msg',msg.data)
-      return msg.data
-
-    }catch(err){
-      throw new Error(err.response?.data);
-    }
+    return await API_URL.post('/draft/saveDraftInfo', formData)
   },
 
   getOrderList: async(params) => {

@@ -1,7 +1,6 @@
 <template>
 <div class="table-wrapper">
     <DataTable
-        v-model:selection="selectedItem"
         :value="itemBomList"
         selection-mode="multiple"
         data-key="itemCd"
@@ -58,11 +57,14 @@
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
-import { getItemCdCsv } from '@/util/common';
+import { makeLikeCondition } from '@/util/common';
 import PurchaseOrderMPop from '@/views/purchase/order/PurchaseOrderMPop.vue';
 import { inject, onMounted, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
+const selectedItem = ref([])
+const receivedList = ref(dialogRef.value?.data?.list ?? [])
+
 const itemBomList = ref([])
 const itemStockList = ref([])
 
@@ -79,11 +81,10 @@ const openPop = () =>{
 }
 
 onMounted( async () =>{
-    console.log('dialogRef', dialogRef.value.data)
-
     const params = {
-        itemCds: getItemCdCsv(dialogRef.value.data),
-        itemTypeCd: 'M3'
+        itemCds:  receivedList.value.map(item => item.itemCd).join(','),
+        itemTypeCd: 'M3',
+        itemNames: makeLikeCondition(receivedList.value, "item_name"),
     }
 
     const res = await ApiLab.getItemsBomList(params)

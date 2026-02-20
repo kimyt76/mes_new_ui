@@ -135,7 +135,7 @@ const selectRowClick = (id) =>{
             modal: true,
             draggable: false,
             resizable: false,
-            style: { width: '92rem', maxWidth: '120rem' },
+            style: { width: '95rem', maxWidth: '120rem' },
             contentStyle: { height: '38rem', overflow: 'hidden' },
         },
         data: id,

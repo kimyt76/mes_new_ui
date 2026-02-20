@@ -50,15 +50,15 @@
             showGridlines
         >
             <Column selectionMode="multiple"  headerStyle="width: 3rem" style="text-align: center;"></Column>
-            <Column field="contractDateSeq"   header="일자-No." :style="{ width: '130px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="poNo"              header="PO No."  :style="{ width: '150px'}" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemName"          header="품목명"  :style="{ width: '280px'}" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="dueDate"           header="납기일자" :style="{ width: '120px'}" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="clientName"        header="고객사명" :style="{ width: '180px'}" style="text-align:  center;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="qty"               header="총수량" :style="{ width: '100px'}" style="text-align:  center;" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="contractDateSeq"   header="일자-No." :style="{ width: '130px'}" style="text-align: center;" />
+            <Column field="poNo"              header="PO No."  :style="{ width: '150px'}" style="text-align: left;" />
+            <Column field="itemName"          header="품목명"  :style="{ width: '280px'}" style="text-align: left;" />
+            <Column field="expectedDueDate"   header="납기예정일자" :style="{ width: '120px'}" style="text-align: left;" />
+            <Column field="clientName"        header="고객사명" :style="{ width: '180px'}" style="text-align:  center;" />
+            <Column field="qty"               header="총수량" :style="{ width: '100px'}" style="text-align:  center;" >
                 <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
             </Column>
-            <Column field="reQty" header="남은수량" :style="{ width: '100px'}" style="text-align:  center;" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="reQty" header="남은수량" :style="{ width: '100px'}" style="text-align:  center;" >
                 <template #body="slotProps">{{ Number(slotProps.data.reQty).toLocaleString() }}</template>
             </Column>
         </DataTable>

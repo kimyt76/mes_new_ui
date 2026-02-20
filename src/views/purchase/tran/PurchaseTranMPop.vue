@@ -75,6 +75,12 @@
     </div>
     <div>
         <Button
+            label="발주서"
+            @click="itemPop"
+            />
+    </div>
+    <div>
+        <Button
             label="품목+"
             @click="itemPop"
             />
@@ -88,16 +94,16 @@
 </div>
 <div class="w-full mt-2">
     <DataTable
+        v-model:selection="selectedItem"
         :value="matItemList"
-        selectionMode="single"
+        selectionMode="multiple"
         class="my-table"
         show-gridlines
         >
-
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"  header="품목명"    :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="spec"      header="규격"      :style="{ width: '100px'}"  style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="itemName"  header="품목명"    :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" ></Column>
+        <Column field="spec"      header="규격"      :style="{ width: '100px', textAlign: 'center'}">
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.spec"
@@ -108,7 +114,7 @@
                 />
             </template>
         </Column>
-        <Column field="orderQty"        header="수량"    :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderQty"        header="수량"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.orderQty"
@@ -120,7 +126,7 @@
                     />
                 </template>
         </Column>
-        <Column field="inPrice"        header="단가"    :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="inPrice"        header="단가"   >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.inPrice"
@@ -132,7 +138,7 @@
                 />
             </template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="supplyPrice"        header="공급가액" >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
@@ -144,7 +150,7 @@
                     />
                 </template>
         </Column>
-        <Column field="vatPrice"        header="부가세"    :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="vatPrice"        header="부가세"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
@@ -156,7 +162,7 @@
                 />
             </template>
         </Column>
-        <Column field="etc"        header="비고"    :style="{ width: '200px'}" style="text-align: right;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc"        header="비고"    :style="{ width: '200px', textAlign: 'right' }" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -167,6 +173,7 @@
                 />
             </template>
         </Column>
+
     </DataTable>
     <div class="w-full flex gap-2 justify-end">
         <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
@@ -203,6 +210,7 @@ const itemDialog = ref(false)
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
+const selectedItem = ref([])
 const itemTypeCds = ref([])
 const vatType = ref([])
 const matItemList = ref([])
@@ -226,6 +234,12 @@ const form = reactive({
 })
 
 const saveInfo = () =>{
+
+
+    const params = {
+        ...form
+    }
+
 
 }
 

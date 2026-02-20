@@ -297,3 +297,17 @@ export const getItemCdCsv = (list) =>{
         .filter(cd => cd != null && cd !== '')
         .join(',');
 }
+
+export const makeLikeCondition = (list, columnName) => {
+  if (!Array.isArray(list) || list.length === 0) return '';
+
+  return list
+    .map(obj =>
+      String(obj.itemName ?? '')
+        .replace(/^\[[^\]]*\]\s*/, '')
+        .trim()
+    )
+    .filter(Boolean)
+    .map(word => `${columnName} LIKE '%${word}%'`)
+    .join(' OR ');
+};

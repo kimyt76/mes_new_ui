@@ -68,12 +68,13 @@
                         </tr>
                         <tr>
                             <th>제목</th>
-                            <td colspan="3">발주서 및 제품 사양서 검토 요청의 건</td>
+                            <td colspan="3">{{ form.clientName }} &nbsp;&nbsp; {{ form.itemName }} &nbsp;&nbsp; 발주서 및 제품 사양서 검토 요청의 건</td>
                         </tr>
                         <tr>
                             <td colspan="4" style="height: 100px; text-align: center;">
+                                {{ form.clientName }} &nbsp;&nbsp; {{ form.itemName }} &nbsp;&nbsp;
                                 발주서 및 제품 사양서 기안하오니 검토하여 주시기 바랍니다.<br /><br />
-                                 - 아 래 -
+                                - 아 래 -
                             </td>
                         </tr>
                         <tr>
@@ -100,7 +101,7 @@
                             <th>납기일자</th>
                             <td>
                                 <div>
-                                   <DatePicker v-model="form.dliveryDate" showIcon class="w-full" />
+                                   <DatePicker v-model="form.dueDate" showIcon class="w-full" />
                                </div>
                             </td>
                         </tr>
@@ -131,9 +132,11 @@
 </template>
 
 <script setup>
+import { ApiOrder } from '@/api/apiOrders'
 import CommFileUpload from '@/components/CommFileUpload.vue'
 import { useAuthStore } from '@/stores/auth'
 import { toDate } from '@/util/common'
+import { handleApiError } from '@/util/errorHandler'
 import UserListPop from '@/views/system/user/UserListPop.vue'
 import { DatePicker, useDialog } from 'primevue'
 import Button from 'primevue/button'
@@ -146,7 +149,7 @@ const attachFile = ref([])
 const form = reactive({
     draftDate: toDate(),
     seq: '',
-    customerName: '',
+    clientName: '',
     itemName: '',
     orderQty: 0,
     dueDate: '',
@@ -154,6 +157,8 @@ const form = reactive({
     draftDept: deptNm,
     draftUserId: userId,
     statusType: 'ING',
+
+    userId: userId,
 })
 
 const approvalInfo = {
@@ -169,8 +174,26 @@ const approvalInfo = {
   labUserId: '',
 }
 
-const saveInfo = () =>{
+const saveInfo = async () =>{
+    const formData = new FormData();
 
+    const params = {
+      ...form
+    }
+
+    formData.append("draftInfo",new Blob([JSON.stringify(params)], { type: "application/json" }))
+    formData.append("approval",new Blob([JSON.stringify(approvalInfo)], { type: "application/json" }))
+    attachFile.value.forEach((file) => {
+        formData.append("attachFile", file)   // key 고정
+    })
+
+    try{
+        const res = await ApiOrder.saveDraftInfo(formData)
+        vSuccess(res.message)
+
+    }catch(err){
+        handleApiError(err)
+    }
 }
 
 const openPop = () =>{

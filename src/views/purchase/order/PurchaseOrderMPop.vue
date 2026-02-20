@@ -103,9 +103,9 @@
         show-gridlines
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="spec"      header="규격"      :style="{ width: '110px'}"  style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}" />
+        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" />
+        <Column field="spec"      header="규격"      :style="{ width: '110px'}"  style="text-align: center;" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.spec"
@@ -113,7 +113,7 @@
                 />
             </template>
         </Column>
-        <Column field="orderQty"        header="수량"    :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderQty"        header="수량"    :style="{ width: '80px'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.orderQty"
@@ -126,7 +126,7 @@
                     />
                 </template>
         </Column>
-        <Column field="inPrice"        header="단가"    :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="inPrice"        header="단가"    :style="{ width: '80px'}"  >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.inPrice"
@@ -139,7 +139,7 @@
                 />
             </template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '80px'}"  >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
@@ -151,7 +151,7 @@
                     />
                 </template>
         </Column>
-        <Column field="vatPrice"        header="부가세"    :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="vatPrice"        header="부가세"    :style="{ width: '80px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
@@ -163,7 +163,7 @@
                 />
             </template>
         </Column>
-        <Column field="etc"        header="비고"    :style="{ width: '200px'}" style="text-align: right;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc"        header="비고"    :style="{ width: '200px'}" style="text-align: right;" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -171,7 +171,7 @@
                 />
             </template>
         </Column>
-        <Column field="actions"        header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions"        header="-"    :style="{ width: '20px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
@@ -180,6 +180,7 @@
     </DataTable>
 </div>
 <div class="w-full flex gap-2 justify-end mt-2">
+    <Button label="메일발송" class="p-button-secondary" @click="sendmail"/>
     <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
@@ -208,6 +209,7 @@ import StorageListPop from '@/views/system/storage/StorageListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { Checkbox, InputNumber, InputText, useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import MailSendPop from './MailSendPop.vue';
 
 const dialog = useDialog()
 const itemDialog = ref(false)
@@ -223,7 +225,7 @@ const allChecked = ref(false)
 const currentComponent = shallowRef(null)
 
 const form = reactive({
-    orderDate:'',
+    purOrderDa0te:'',
     seq: 1,
     itemTypeCd: '',
     srcStorageName: '',
@@ -245,7 +247,26 @@ const saveInfo = async () =>{
     }
 
     //저장로직
+}
 
+const sendmail = () =>{
+    dialog.open( MailSendPop, {
+        props: {
+            header: '메일발송',
+            modal: true,
+            maximizable: false,
+            draggable: true,
+            style: {
+            overflow: 'hidden'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            }
+        },
+        onClose: (event) => {
+        }
+    } )
 }
 
 const handleSelected = (rows) =>{
@@ -258,6 +279,7 @@ const addRow = (rows) =>{
         itemCd: o.itemCd,
         itemName : o.itemName,
         spec: o.spec,
+        qty: 0,
         inPrice: o.inPrice,
         supplyPrice: o.supplyPrice,
         vatPrice: o.vatPrice,
@@ -272,6 +294,28 @@ const addRow = (rows) =>{
     matItemList.value = [...rowItem];
   }
 }
+
+const addRow1 = (rows) =>{
+    const rowItem = rows.map((o, index) => ({
+        itemCd: o.itemCd,
+        itemName : o.itemName,
+        spec: o.spec,
+        qty: o.qty,
+        inPrice: o.inPrice,
+        supplyPrice: 0,
+        vatPrice: 0,
+        etc: o.etc,
+    }))
+
+    matItemList.value
+
+    if (matItemList.value.length > 0) {
+    matItemList.value.push(...rowItem);
+  } else {
+    matItemList.value = [...rowItem];
+  }
+}
+
 
 const itemPop = () =>{
      itemDialog.value = true
@@ -317,6 +361,8 @@ const openPop = (type) =>{
                 }else if ( type === 'S' ){
                     form.srcStorageCd = event.data.storageCd
                     form.srcStorageName = event.data.storageName
+                }else if ( type === 'O'){
+                    addRow1(event.data)
                 }
             }
         }
@@ -366,7 +412,7 @@ onMounted( async () => {
 
     form.orderDate = todayKST()
     form.deliveryDate = todayKST()
-    //form.seq = await ApiCommon.getNextSeq('tb_mat_order', 'order_date',  form.orderDate)
+    form.seq = await ApiCommon.getNextSeq('tb_purm_order_mst', 'pur_order_date',  form.orderDate)
 })
 
 const closeDialog = () =>{

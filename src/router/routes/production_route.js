@@ -11,6 +11,12 @@ export default [
         name: 'WorkOrderDetail',
         component: () => import('@/views/production/workOrder/WorkOrderDetail.vue')
       },
+      {
+        path:'worker',
+        name: 'WorkerList',
+        component: () => import('@/views/production/worker/WorkerList.vue')
+      },
+
     //   {
     //     path: 'workSchedule',
     //     name: 'WorkSchedule',

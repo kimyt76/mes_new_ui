@@ -7,6 +7,7 @@ import order_route from './routes/order_route'
 import proc_route from './routes/proc_route'
 import production_route from './routes/production_route'
 import purchaseOrder_route from './routes/purchaseOrder_route'
+import qc_route from './routes/qc_route'
 import stock_route from './routes/stock_route'
 import system_route from './routes/system_route'
 
@@ -43,36 +44,42 @@ const routes = [
     component: AppLayout,
     children: lab_route,
   },
-  /** /prod – 제 */
+  /** 제조관리 */
   {
     path: '/mat',
     component: AppLayout,
     children: mat_route,
   },
-  /** /prod – 제 */
+  /** 공정 */
   {
     path: '/proc',
     component: AppLayout,
     children: proc_route,
   },
 
-  /** /prod – 제 */
+  /** 영업관리 */
   {
     path: '/order',
     component: AppLayout,
     children: order_route,
   },
-  /** /prod – 제 */
+  /** 발주구매 */
   {
     path: '/purchase',
     component: AppLayout,
     children: purchaseOrder_route,
   },
-  /** /prod – 제 */
+  /** 작업지시 */
   {
     path: '/prod',
     component: AppLayout,
     children: production_route,
+  },
+  /** QC */
+  {
+    path: '/qc',
+    component: AppLayout,
+    children: qc_route,
   },
   /** /prod – 제 */
   {

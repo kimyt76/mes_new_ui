@@ -49,7 +49,7 @@
             ref="dt"
             v-model:selection="selectedItem"
             :value="matPlanList"
-            dataKey="itemCd"
+            dataKey="matPlanId"
             paginator
             :rows="20"
             :rowsPerPageOptions="[20,30,40]"
@@ -58,11 +58,6 @@
             showGridlines
             class="my-table"
             tableStyle="min-width: 120rem; table-layout: fixed;"
-            :pt="{
-                column: {
-                    headerContent: { class: 'header-center' }
-                }
-            }"
             >
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column field="matRegDate"  header="일자"   :style="{ width: '120px'}" />
@@ -122,12 +117,15 @@
 
 <script setup>
 import { ApiMat } from '@/api/apiMat';
+import { useAlertStore } from '@/stores/alert';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
+import CalculateEquirementPop from './CalculateEquirementPop.vue';
 import MatPlanDetailPop from './MatPlanDetailPop.vue';
 
+const { vInfo, vWarning} = useAlertStore()
 const dt = ref(null)
 const dialog = useDialog()
 const matPlanList = ref([])
@@ -205,37 +203,36 @@ const bomPop = (itemCd) =>{
 
 }
 
+
+
 const calculate = () =>{
-    selectedItem.value
+    if ( isEmpty(selectedItem.value) || selectedItem.value.length === 0) {
+        vWarning('소요량 계산할 데이터를 선택해주세요.')
+        return
+    }
 
     dialog.open(CalculateEquirementPop, {
         props: {
-        header: '소요량 계산(원재료)',
-        modal: true,
-        maximizable: false,
-        draggable: true,
-        style: {
-            overflow: 'hidden'
-            },
-        pt: {
-            root: { style: { overflow: 'hidden' } },
-            content: { style: { overflow: 'hidden' } }
-        }
-        // 반응형 너비 설정 (선택 사항)
-        //   breakpoints:{
-        //     '960px':'75vw',
-        //     '640px':'90vw'
-        //   }
+            header: '소요량 계산(원재료)',
+            modal: true,
+            maximizable: false,
+            draggable: true,
+            style: {
+                overflow: 'hidden'
+                },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'auto' } }
+            }
         },
         // 팝업 A로 전달할 데이터 (선택 사항)
         data: {
-            matPlanList: selectedItem.value
+            list: selectedItem.value
         },
         onClose: async (data) => {
         // 팝업이 닫힐 때 실행할 작업 (선택 사항)
-            await srhList()
+            //await srhList()
         }
-
     })
 }
 
