@@ -424,14 +424,14 @@ const model = ref([
                         to: '/qc/qcTest'
                     },
                     {
-                        label: '품질별검사비교',
+                        label: '품목별검사비교',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/qc/reqQcTestCompare'
                     },
                     {
                         label: '품질검사유형',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/reqQcTestType'
+                        to: '/qc/qcTestType'
                     },
                     {
                         label: '공정검사',
