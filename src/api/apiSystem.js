@@ -79,6 +79,7 @@ export const  ApiSystems = {
     }
   },
 
+  /* 창고관리 */
   getStorageList: async (params) =>{
     try {
       const res =  await API_URL.post(`/storage/getStorageList`, params)
@@ -88,4 +89,35 @@ export const  ApiSystems = {
       throw error.response;
     }
   },
+  getStorageInfo: async (id) =>{
+    try {
+      const res =  await API_URL.get(`/storage/getStorageInfo/${id}`)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
+  saveStorageInfo: async (params) => {
+    return await API_URL.post('/storage/saveStorageInfo', params)
+  },
+  getStorageCodeList: async () =>{
+    try {
+      const res =  await API_URL.post(`/storage/getStorageCodeList`)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
+  useCheck: async (id) =>{
+    try {
+      const res =  await API_URL.get(`/storage/useCheck/${id}`)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
+
 }
