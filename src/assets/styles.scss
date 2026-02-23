@@ -3,3 +3,12 @@
 @use '@/assets/tailwind.css';
 @use '@/assets/layout/layout.scss';
 @use '@/assets/demo/demo.scss';
+
+/* ============================
+   PrimeVue Dialog X 포커스 링 제거 (전역)
+============================ */
+.p-dialog .p-button:focus,
+.p-dialog .p-button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
