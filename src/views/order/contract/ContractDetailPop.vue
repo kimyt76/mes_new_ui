@@ -219,7 +219,7 @@ import { computed, inject, onMounted, reactive, ref, shallowRef } from 'vue';
 
 const dialog = useDialog()
 const { userId } = useAuthStore()
-const { vError, vSuccess, vWarning } = useAlertStore()
+const { vError, vSuccess, vWarning, vInfo } = useAlertStore()
 const currentComponent = shallowRef(null)
 const attachFile = ref([])
 const dialogRef = inject('dialogRef')
@@ -271,10 +271,10 @@ const saveInfo = async () =>{
         vInfo("품목을 등록하세요")
         return
     }
-    if(attachFile.value <= 0 ){
-        vInfo("산출물을 등록하세요")
-        return
-    }
+    // if(attachFile.value <= 0 ){
+    //     vInfo("산출물을 등록하세요")
+    //     return
+    // }
 
     try{
         const params = {
