@@ -180,22 +180,22 @@ const model = ref([
                     {
                         label: '발주등록(생산)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/matOrderM'
+                        to: '/purchase/purOrderM'
                     },
                     {
                         label: '발주등록(구매)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/matOrderP'
+                        to: '/purchase/purOrderP'
                     },
                     {
                         label: '발주현황(생산)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/matOrderStateM'
+                        to: '/purchase/purOrderStateM'
                     },
                     {
                         label: '발주현황(구매)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/matOrderStateP'
+                        to: '/purchase/purOrderStateP'
                     },
                 ]
             },
@@ -407,10 +407,10 @@ const model = ref([
     },
 
     {
-        label: '품질관리',
+        label: 'QC',
         items: [
             {
-               label: 'QC',
+               label: '품질관리',
                icon: 'pi pi-fw pi-check-square',
                items:[
                     {
@@ -433,6 +433,12 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/qc/qcTestType'
                     },
+                ],
+            },
+            {
+                label: '공정관리',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
@@ -443,6 +449,12 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/qc/procTestType'
                     },
+                ],
+            },
+            {
+                label: '시험번호내역관리',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
                     {
                         label: '시험번호별내역',
                         icon: 'pi pi-fw pi-id-card',
@@ -471,6 +483,11 @@ const model = ref([
                         to: '/stock/rawMat'
                     },
                     {
+                        label: '부자재수불부',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/subMat'
+                    },
+                    {
                         label: '품목별사용량',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/stock/itemUse'
@@ -489,6 +506,33 @@ const model = ref([
                         label: '사용기한(부자재)',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/stock/useByM2'
+                    },
+
+                    {
+                        label: '자재조정',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/adjust'
+                    },
+                    {
+                        label: '자재이동요청',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/moveReq'
+                    },
+                ]
+            },
+            {
+                label: '자재관리',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
+                    {
+                        label: '자재조정',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/adjust'
+                    },
+                    {
+                        label: '자재이동요청',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/moveReq'
                     },
                 ]
             },
