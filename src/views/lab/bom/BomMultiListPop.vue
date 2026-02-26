@@ -43,7 +43,7 @@
               showGridlines
               selectionMode="multiple"
             >
-              <Column selectionMode="multiple"  headerStyle="width: 2rem" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
+              <Column selectionMode="multiple"  headerStyle="width: 3rem" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
               <Column field="itemCd" header="품목코드" :style="{ width: '80px', textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
               <Column field="itemName" header="품목명" :style="{ width: '300px', textAlign: 'left'}"    :pt="{ columnHeaderContent: 'justify-center' }" />
               <Column field="bomVer" header="BOM버전" :style="{ width: '90px', textAlign: 'center'}"   :pt="{ columnHeaderContent: 'justify-center' }" />
