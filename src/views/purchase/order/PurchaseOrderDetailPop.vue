@@ -10,7 +10,7 @@
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
-                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }" /> <!-- 크기 축소 -->
+                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }"  readonly/> <!-- 크기 축소 -->
                     <label>연번</label>
                 </FloatLabel>
             </div>
@@ -175,6 +175,7 @@
 <div class="w-full flex gap-2 justify-end mt-2">
     <Button label="메일발송" class="p-button-secondary" @click="sendMail"/>
     <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
+    <Button label="복사하기" class="p-button-secondary" @click="copyOrderInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
     <Dialog
@@ -228,8 +229,8 @@ const form = reactive({
     itemTypeCd: '',
     storageCd: '',
     storageName: '',
-    managerName: memberNm,
-    managerId: userId,
+    managerName: '',
+    managerId: '',
     deliveryDate: '',
     customerName: '',
     customerCd: '',
@@ -243,18 +244,23 @@ const form = reactive({
     userId: userId,
 })
 
-const saveInfo = async () =>{
-    if ( purchaseOrderItemList.value.length === 0 ) {
-        vWarning('저장할 품목을 추가해주세요.')
-        return
-    }
+const copyOrderInfo = async () =>{
+    form.purOrderDate = todayKST()
+    form.deliveryDate = todayKST()
 
+    if ( form.itemTypeCd === 'M1') {
+        form.seq = await ApiCommon.getNextSeq('tb_purm_order_mst', 'pur_order_date',  form.purOrderDate)
+    }else{
+        form.seq = await ApiCommon.getNextSeq('tb_purp_order_mst', 'pur_order_date',  form.purOrderDate)
+    }
+}
+
+const saveInfo = async () =>{
     try{
         const params = {
             purchaseOrderInfo : form,
             purchaseOrderItemList : purchaseOrderItemList.value,
         }
-        console.log('params', params.purchaseOrderInfo)
         //저장로직
         const res = await ApiPurchase.savePurchaseOrder(params)
         vSuccess(res.message)
@@ -262,6 +268,26 @@ const saveInfo = async () =>{
     }catch(err){
         handleApiError(err)
     }
+}
+
+const sendMail = () =>{
+    dialog.open( MailSendPop, {
+        props: {
+            header: '메일발송',
+            modal: true,
+            maximizable: false,
+            draggable: true,
+            style: {
+            overflow: 'hidden'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            }
+        },
+        onClose: (event) => {
+        }
+    } )
 }
 
 const handleSelected = (rows) =>{
@@ -280,7 +306,6 @@ const addRow = (rows) =>{
         supplyPrice: o.supplyPrice,
         vatPrice: o.vatPrice,
         etc: o.etc,
-        itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
     };
 
      onChangeRow(row);
@@ -362,18 +387,6 @@ watch(() => form.purOrderDate, async (newVal, oldVal) => {
   }
 })
 
-watch(() => form.vatType, async (newVal) => {
-  if ( form.vatType === 'VRN' ){
-        purchaseOrderItemList.value.map(o => {
-            o.vatPrice = 0
-        })
-  }else{
-        purchaseOrderItemList.value.map(o => {
-            o.vatPrice = calculateVAT(o.supplyPrice)
-        })
-  }
-})
-
 const onChangeRow = (row) => {
   const qty = Number(row.qty) || 0
   const inPrice  = Number(row.inPrice)  || 0
@@ -387,6 +400,17 @@ const onChangeRow = (row) => {
   }
 };
 
+watch(() => form.vatType, async (newVal) => {
+  if ( form.vatType === 'VRN' ){
+        purchaseOrderItemList.value.map(o => {
+            o.vatPrice = 0
+        })
+  }else{
+        purchaseOrderItemList.value.map(o => {
+            o.vatPrice = calculateVAT(o.supplyPrice)
+        })
+  }
+})
 
 const removeRow = (idx) =>{
     if ( isAllSelected.value ) {
@@ -397,45 +421,19 @@ const removeRow = (idx) =>{
     }
 }
 
-const sendMail = () =>{
-    dialog.open( MailSendPop, {
-        props: {
-            header: '메일발송',
-            modal: true,
-            maximizable: false,
-            draggable: true,
-            style: {
-            overflow: 'hidden'
-            },
-            pt: {
-                root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
-            }
-        },
-        onClose: (event) => {
-        }
-    } )
-}
-
 onMounted( async () => {
     itemTypeCds.value =await ApiCommon.getCodeList('item_type_cd')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
 
-    form.itemTypeCd = dialogRef.value?.data?.itemTypeCd ?? ''
-    form.customerCd = dialogRef.value?.data?.customerCd ?? ''
-    form.customerName = dialogRef.value?.data?.customerName ?? ''
-
-    form.purOrderDate = todayKST()
-    form.deliveryDate = todayKST()
-
-    if ( form.itemTypeCd === 'M1') {
-        form.seq = await ApiCommon.getNextSeq('tb_purm_order_mst', 'pur_order_date',  form.purOrderDate)
-    }else{
-        form.seq = await ApiCommon.getNextSeq('tb_purp_order_mst', 'pur_order_date',  form.purOrderDate)
+    const params = {
+        itemTypeCd: dialogRef.value.data.itemTypeCd,
+        purOrderId: dialogRef.value.data.id
     }
 
-    const itemList = dialogRef.value?.data?.itemList
-    itemList && addRow(itemList)
+    const res = await ApiPurchase.getPurchaseOrderInfo(params)
+
+    Object.assign(form, res.purchaseOrderInfo)
+    purchaseOrderItemList.value =res.purchaseOrderItemList
 })
 
 const closeDialog = () =>{
