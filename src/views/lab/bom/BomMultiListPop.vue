@@ -43,10 +43,10 @@
               showGridlines
               selectionMode="multiple"
             >
-              <Column selectionMode="multiple"  headerStyle="width: 3rem" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-              <Column field="itemCd" header="품목코드" :style="{ width: '80px', textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-              <Column field="itemName" header="품목명" :style="{ width: '300px', textAlign: 'left'}"    :pt="{ columnHeaderContent: 'justify-center' }" />
-              <Column field="bomVer" header="BOM버전" :style="{ width: '90px', textAlign: 'center'}"   :pt="{ columnHeaderContent: 'justify-center' }" />
+              <Column selectionMode="multiple"  headerStyle="width: 2rem" :style="{ textAlign: 'center'}" ></Column>
+              <Column field="itemCd"    header="품목코드" :style="{ width: '80px', textAlign: 'center'}"  />
+              <Column field="itemName"  header="품목명" :style="{ width: '300px', textAlign: 'left'}"     />
+              <Column field="bomVer"    header="BOM버전" :style="{ width: '90px', textAlign: 'center'}"    />
             </DataTable>
           </div>
         </div>
@@ -62,7 +62,7 @@
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 
 const emit = defineEmits(["selected", "close"]);
 const selectedItem = ref([])
@@ -80,7 +80,7 @@ const props = defineProps({
 })
 
 const form = reactive({
-    itemTypeCd : 'M3',
+    itemTypeCd : '',
     itemCd:'',
     itemName:'',
 
@@ -98,6 +98,10 @@ const searchList = async () =>{
 const selectedRow = () => {
     emit('selected', selectedItem.value)
 }
+
+onMounted(() =>{
+    form.itemTypeCd = props.typeCd
+})
 
 </script>
 
