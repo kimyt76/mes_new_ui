@@ -39,8 +39,9 @@
     </Fluid>
     </form>
     <div class="flex items-center justify-end gap-2 mb-2">
-        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick"/>
-        <Button label="소요량" class="btn-use" @click="calculate"/>
+        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"/>
+        <Button label="소요량(원재료)" class="btn-use" @click="calculate('M')"/>
+        <Button label="소요량(부자재)" class="btn-use" @click="calculate('P')"/>
         <Button label="삭제" class="btn-del" />
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" ></Button>
     </div>
@@ -54,17 +55,17 @@
             :rows="20"
             :rowsPerPageOptions="[20,30,40]"
             scrollable
-            scrollHeight="650px"
+            scrollHeight="flex"
             showGridlines
             class="my-table"
             tableStyle="min-width: 120rem; table-layout: fixed;"
             >
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-            <Column field="matRegDate"  header="일자"   :style="{ width: '120px'}" />
-            <Column field="poNo"        header="PO No"  :style="{ width: '120px'}" />
-            <Column field="itemCd"      header="품목코드"   :style="{ width: '130px'}"  >
+            <Column field="matRegDate"  header="일자"   frozen :style="{ width: '120px'}" />
+            <Column field="poNo"        header="PO No"  frozen :style="{ width: '120px'}" />
+            <Column field="itemCd"      header="품목코드" frozen :style="{ width: '130px'}"  >
                 <template #body="slotProps">
-                    <div @click="bomPop(slotProps.data.itemCd)" class="clickable-cell">
+                    <div @click="bomPop(slotProps.data.itemName)" class="clickable-cell">
                         {{ slotProps.data.itemCd }}
                     </div>
                 </template>
@@ -118,8 +119,9 @@
 <script setup>
 import { ApiMat } from '@/api/apiMat';
 import { useAlertStore } from '@/stores/alert';
-import { isEmpty, minMonth, todayKST } from '@/util/common';
+import { addMonth, isEmpty, minMonth, removeBracketPrefix, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
+import BomListPop from '@/views/lab/bom/BomListPop.vue';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import CalculateEquirementPop from './CalculateEquirementPop.vue';
@@ -134,7 +136,6 @@ const endYns = ref([
     { codeNm: '진행', code: 'N' },
     { codeNm: '완료', code: 'Y' }
 ]);
-
 
 const form = reactive({
   strDate: '',
@@ -156,8 +157,9 @@ const srchMatPlanList = async () => {
 };
 
 onMounted( async () => {
-  form.toDate = todayKST()
-  form.strDate = minMonth(form.toDate)
+
+  form.toDate = addMonth(todayKST(), 2)
+  form.strDate = minMonth(todayKST())
 });
 
 
@@ -180,7 +182,8 @@ const selectRowClick = (id) => {
             maximizable: false,
             draggable: true,
             style: {
-                overflow: 'hidden'
+                width: '71vw',
+                height: '82vh'
                 },
             pt: {
                 root: { style: { overflow: 'hidden' } },
@@ -199,21 +202,10 @@ const selectRowClick = (id) => {
     })
 }
 
-const bomPop = (itemCd) =>{
-
-}
-
-
-
-const calculate = () =>{
-    if ( isEmpty(selectedItem.value) || selectedItem.value.length === 0) {
-        vWarning('소요량 계산할 데이터를 선택해주세요.')
-        return
-    }
-
-    dialog.open(CalculateEquirementPop, {
+const bomPop = (itemName) =>{
+    dialog.open(BomListPop, {
         props: {
-            header: '소요량 계산(원재료)',
+            header: 'BOM 조회',
             modal: true,
             maximizable: false,
             draggable: true,
@@ -227,6 +219,46 @@ const calculate = () =>{
         },
         // 팝업 A로 전달할 데이터 (선택 사항)
         data: {
+            itemName : removeBracketPrefix(itemName),
+            itemTypeCd : 'M3'
+        },
+        onClose:(event) => {
+            // event.data에 자식 컴포넌트에서 close()로 보낸 데이터가 담겨 있습니다.
+        },
+    })
+}
+
+const calculate = (type) =>{
+    let title = ''
+
+    if ( type === 'M'){
+        title = "소요량계산(원재료)"
+    }else {
+        title = "소요량계산(부자재)"
+    }
+
+    if ( isEmpty(selectedItem.value) || selectedItem.value.length === 0) {
+        vWarning('소요량 계산할 데이터를 선택해주세요.')
+        return
+    }
+
+    dialog.open(CalculateEquirementPop, {
+        props: {
+            header: title,
+            modal: true,
+            maximizable: false,
+            draggable: true,
+            style: {
+                overflow: 'hidden'
+                },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'auto' } }
+            }
+        },
+        // 팝업 A로 전달할 데이터 (선택 사항)
+        data: {
+            type: type,
             list: selectedItem.value
         },
         onClose: async (data) => {
@@ -275,7 +307,9 @@ const downloadExcel = () =>{
   text-align: center;
   font-family: Lobo, Consolas;
 }
-
+.my-table {
+    height: 750px;
+}
 ::v-deep(.my-table .p-datatable-tbody > tr > td) {
   padding: 7px 0.1rem;
   font-size: 14px;
@@ -291,4 +325,5 @@ const downloadExcel = () =>{
   cursor: pointer;
 
 }
+
 </style>
