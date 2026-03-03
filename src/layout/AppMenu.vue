@@ -187,11 +187,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/purchase/purOrderP'
                     },
-                    {
-                        label: '발주현황(생산)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purOrderStateM'
-                    },
+                    // {
+                    //     label: '발주현황(생산)',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/purchase/purOrderStateM'
+                    // },
                     {
                         label: '발주현황(구매)',
                         icon: 'pi pi-fw pi-id-card',
@@ -506,17 +506,6 @@ const model = ref([
                         label: '사용기한(부자재)',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/stock/useByM2'
-                    },
-
-                    {
-                        label: '자재조정',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/adjust'
-                    },
-                    {
-                        label: '자재이동요청',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/moveReq'
                     },
                 ]
             },
