@@ -54,17 +54,17 @@
         <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', textAlign: 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px' }" />
         <Column field="spec"        header="규격"       :style="{ width: '90px', textAlign: 'center' }" />
-        <Column field="realStockQty" header="재고수량(A)" :style="{ width: '140px', textAlign: 'right' }"
-
-        ></Column>
+        <Column field="realStockQty" header="재고수량(A)" :style="{ width: '140px', textAlign: 'right' }">
+             <template #body="slotProps">{{ Number(slotProps.data.realStockQty).toLocaleString() }}</template>
+        </Column>
         <Column field="qty"         header="소요량(B)"      :style="{ width: '140px', textAlign: 'right' }" >
-
+            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
         <Column field="reserveStockQty" header="발주(입고예정)" :style="{ width: '140px', textAlign: 'right' }" >
-
+             <template #body="slotProps">{{ Number(slotProps.data.reserveStockQty).toLocaleString() }}</template>
         </Column>
         <Column field="differenceQty" header="차이(A-B)"    :style="{ width: '100px', textAlign: 'right' }" >
-
+            <template #body="slotProps">{{ Number(slotProps.data.differenceQty).toLocaleString() }}</template>
         </Column>
         <Column field="customerName"    header="구매처"        :style="{ width: '250px' }" />
       </DataTable>
