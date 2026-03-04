@@ -103,7 +103,15 @@
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}" />
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" />
+        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words">
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.itemName"
+                    class="w-full"
+                    :readonly="!updateItem.includes(slotProps.data.itemCd)"
+                />
+            </template>
+        </Column>
         <Column field="spec"      header="규격"      :style="{ width: '110px'}">
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.spec" class="w-full"/>
@@ -173,7 +181,7 @@
     </DataTable>
 </div>
 <div class="w-full flex gap-2 justify-end mt-2">
-    <Button label="메일발송" class="p-button-secondary" @click="sendMail"/>
+    <!-- <Button label="메일발송" class="p-button-secondary" @click="sendMail"/> -->
     <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
@@ -205,7 +213,6 @@ import StorageListPop from '@/views/system/storage/StorageListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { InputNumber, InputText, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
-import MailSendPop from './MailSendPop.vue';
 
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
@@ -215,6 +222,7 @@ const { userId, memberNm } = useAuthStore()
 const itemTypeCds = ref([])
 const vatTypes = ref([])
 const purchaseOrderItemList = ref([])
+const updateItem = ['D000004','M60038','M60040','M60041','M60043']
 const isAllSelected = computed(() => {
   return (
     purchaseOrderItemList.value.length > 0 &&
@@ -397,25 +405,30 @@ const removeRow = (idx) =>{
     }
 }
 
-const sendMail = () =>{
-    dialog.open( MailSendPop, {
-        props: {
-            header: '메일발송',
-            modal: true,
-            maximizable: false,
-            draggable: true,
-            style: {
-            overflow: 'hidden'
-            },
-            pt: {
-                root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
-            }
-        },
-        onClose: (event) => {
-        }
-    } )
-}
+// const sendMail = () =>{
+//     dialog.open( MailSendPop, {
+//         props: {
+//             header: '메일발송',
+//             modal: true,
+//             maximizable: false,
+//             draggable: true,
+//             style: {
+//             overflow: 'hidden'
+//             },
+//             pt: {
+//                 root: { style: { overflow: 'hidden' } },
+//                 content: { style: { overflow: 'hidden' } }
+//             }
+//         },
+//         data:{
+//             itemTypeCd : form.itemTypeCd,
+//             purOrderId : form.purOrderId,
+//             customerCd : form.customerCd,
+//         },
+//         onClose: (event) => {
+//         }
+//     } )
+// }
 
 onMounted( async () => {
     itemTypeCds.value =await ApiCommon.getCodeList('item_type_cd')
