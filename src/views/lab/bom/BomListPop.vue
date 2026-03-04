@@ -69,7 +69,8 @@
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
-import { inject, reactive, ref } from 'vue';
+import { isEmpty } from '@/util/common';
+import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
 const selectedItem = ref(null)
@@ -79,6 +80,7 @@ const form = reactive({
     itemCd:'',
     itemName:'',
 
+    itemTypeCd:'',
     defaultYn : 'Y',
     approvalState: 'Y',
 })
@@ -95,6 +97,16 @@ const selectRow = async () =>{
     const res = await ApiLab.getBomInfo(selectedItem.value.bomId)
     dialogRef.value.close(res.bomRecipeList)
 }
+
+onMounted( async () =>{
+       console.log('dialogRef.value?.data',dialogRef.value?.data)
+    if( !isEmpty(dialogRef.value?.data)){
+        form.itemTypeCd = dialogRef.value?.data?.itemTypeCd ?? ''
+        form.itemName = dialogRef.value?.data?.itemName ?? ''
+
+        searchList()
+    }
+})
 
 const closeDialog = () => {
     dialogRef.value.close()
