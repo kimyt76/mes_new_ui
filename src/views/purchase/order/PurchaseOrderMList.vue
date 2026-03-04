@@ -41,7 +41,7 @@
                 <label for="on_label1">거래처명</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.regYn" :options="regYns"
+                <Select v-model="form.inYn" :options="inYns"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 90px"
@@ -64,13 +64,14 @@
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="복사" icon="pi pi-copy" outlined @click="copyRow"></Button>
-    <Button label="인쇄" icon="pi pi-print"  outlined  @click="print"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="printInfo"></Button>
 </div>
 <div>
     <DataTable
         ref="dt"
         v-model:selection="selectedProducts"
+        :value="purchaseOrderList"
+        dataKey="purOrderId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -81,68 +82,56 @@
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="orderDateSeq"        header="일자"  frozen :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="orderDate"           header="발주일"  frozen :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="deliveryDate"        header="납기일"  :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customerName"        header="거래처명"  :style="{ width: '250px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"              header="품목코드"  :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"            header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="purOrderDateSeq"     header="일자"   frozen :style="{ width: '130px', textAlign:'center'}" />
+        <Column field="purOrderDate"        header="발주일"  frozen :style="{ width: '120px', textAlign:'center'}" />
+        <Column field="deliveryDate"        header="납기일"     :style="{ width: '120px', textAlign:'center'}" />
+        <Column field="customerName"        header="거래처명"  :style="{ width: '280px'}" />
+        <Column field="itemCd"              header="품목코드"  :style="{ width: '120px', textAlign:'center'}" />
+        <Column field="itemName"            header="품목명"    :style="{ width: '350px'}" bodyClass="break-words">
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
+                <div @click="selectRowClick(slotProps.data.purOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="srcStorageName"  header="입고창고"  :style="{ width: '110px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="orderQty"        header="발주수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px', textAlign:'right'}">
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="storageName"  header="입고창고"  :style="{ width: '140px', textAlign:'center'}" />
+        <Column field="qty"          header="발주수량"   :style="{ width: '90px', textAlign:'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="inQty"       header="입고수량"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px', textAlign:'right'}">
+        <Column field="inQty"       header="입고수량"    :style="{ width: '90px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.inQty).toLocaleString() }}</template>
         </Column>
-        <Column field="supplyPrice" header="공급가액"   :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '90px', textAlign:'center'}">
+        <Column field="supplyPrice" header="공급가액"    :style="{ width: '90px', textAlign:'center'}">
             <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="regYn"       header="입고상태"   :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="managerName" header="담당자"     :style="{ width: '90px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="inYn"        header="입고상태"   :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="managerName" header="담당자"     :style="{ width: '90px', textAlign:'center'}" />
     </DataTable>
 </div>
-<!--
-<Dialog
-    v-model:visible="matOrderDialog"
-    header="발주서정보"
-    modal
-    :draggable="false"
-    :resizable="false"
-    :style="{ width: '92rem', maxWidth: '120rem' }"
-    :contentStyle="{ height: '38rem', overflow: 'hidden' }"
-    >
-    <MatOrderPop
-        :id="matOrderId"
-        @selected = "handlerSelected"
-        @close="dialogClose"
-    />
-
-</Dialog> -->
 
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiPurchase } from '@/api/apiPurchase';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
-import PurchaseOrderPop from './PurchaseOrderMPop.vue';
+import { computed, onMounted, reactive, ref } from 'vue';
+import PurchaseOrderDetailPop from './PurchaseOrderDetailPop.vue';
+import PurchaseOrderPop from './PurchaseOrderPop.vue';
 
-const matOrderDialog = ref(false)
+
+const totalCount = computed(() => {
+  return Array.isArray(purchaseOrderList.value) ? purchaseOrderList.value.length : 0
+})
 const dialog = useDialog()
 const dt = ref(null);
 const areaCds = ref([])
 const itemTypeCds = ref([])
-const regYns = ref([
+const inYns = ref([
     { codeNm: '미입고', code: 'N' },
     { codeNm: '입고', code: 'Y' },
 ])
@@ -150,36 +139,36 @@ const endYns = ref([
     { codeNm: '진행중', code: 'N' },
     { codeNm: '종결', code: 'Y' },
 ])
-
 const form = reactive({
     strDate: '',
     toDate: '',
-    itemTypeCd: '',
+    itemTypeCd: 'M1',
     itemCd: '',
     itemName: '',
     customerName: '',
     customerCd: '',
-    regYn: '',
+    inYn: '',
     endYn: '',
-    selectedCity: '',
 })
-
 // 리스트에서 체크박스,  radio 있을 경우
 const selectedProducts = ref();
 //  select 가 있을 경우
 const cities = ref([])
-//리스트
-const matOrderlist = ref([])
+const purchaseOrderList = ref([])
 
 let matOrderId = ''
 const selectRowClick = (id) =>{
-    let title = '발주서 등록'
-
+    let title = ''
+    let component = ''
     if (!isEmpty(id) ){
         title = '발주서 상세'
+        component = PurchaseOrderDetailPop
+    }else{
+        title = '발주서 등록'
+        component = PurchaseOrderPop
     }
 
-    dialog.open(PurchaseOrderPop, {
+    dialog.open(component, {
         props:{
             header: title,
             modal: true,
@@ -193,32 +182,26 @@ const selectRowClick = (id) =>{
                 content: { style: { overflow: 'hidden' } }
             },
         },
-        data: id,
+        data: {
+            id : id,
+            itemTypeCd : form.itemTypeCd
+        },
         onClose:(event) => {
-
+            srhList()
         },
     })
 }
 
-// form
 const srhList = async () =>{
     const params = {
         ...form
     }
     // api
-    list.value = await ApiCommon.getCodeList(params);
+    purchaseOrderList.value = await ApiPurchase.getPurchaseOrderList(params);
 }
 
-const print = () => {
+const printInfo = () => {
 
-}
-
-const copyRow = () =>{
-
-}
-
-const handlerSelected = () =>{
-    srhList()
 }
 
 onMounted( async () => {
@@ -227,7 +210,6 @@ onMounted( async () => {
 
     form.toDate = todayKST()
     form.strDate = minMonth(form.toDate)
-
 })
 
 const home = ref({
@@ -241,14 +223,11 @@ const items = ref([
 
 const downloadExcel = () =>{
   const cols = dt.value?.columns ?? [];
-
   if (!cols.length) {
-    console.warn("No Columns Found");
     return;
   }
-  exportToExcel(matOrderlist.value, "발주 리스트", cols);
+  exportToExcel(purchaseOrderList.value, "발주 리스트", cols);
 }
-
 
 </script>
 
@@ -259,6 +238,19 @@ const downloadExcel = () =>{
   font-size: 14px;
   text-align: center;
   font-family: monaco, Consolas;
+}
+::v-deep(.break-words) {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.clickable-cell {
+  cursor: pointer;
+  padding: 0.25rem 0;
+  text-decoration: underline;
+  text-align: left;
 }
 
 </style>
