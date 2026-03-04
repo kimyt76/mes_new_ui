@@ -298,6 +298,14 @@ export const getItemCdCsv = (list) =>{
         .join(',');
 }
 
+export const removeBracketPrefix = (name) => {
+  if (!name) return '';
+
+  return String(name)
+    .replace(/^\[[^\]]*\]\s*/, '')  // 앞에 [내용] + 공백 제거
+    .trim();
+};
+
 export const makeLikeCondition = (list, columnName) => {
   if (!Array.isArray(list) || list.length === 0) return '';
 
