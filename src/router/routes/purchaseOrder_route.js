@@ -2,19 +2,24 @@
 /** 발주/구매관리 */
 export default [
       {
-        path: 'matOrderM',
-        name: 'MatOrderM',
+        path: 'purOrderM',
+        name: 'PurOrderM',
         component: () => import('@/views/purchase/order/PurchaseOrderMList.vue')
+      },
+      {
+          path: 'purOrderP',
+          name: 'PurOrderP',
+          component: () => import('@/views/purchase/order/PurchaseOrderPList.vue')
+      },
+      {
+          path: 'purOrderStateP',
+          name: 'ㅖurOrderStateP',
+          component: () => import('@/views/purchase/order/PurchaseOrderPDetailList.vue')
       },
       {
         path: 'purchaseTranM',
         name: 'PurchaseTranM',
         component: () => import('@/views/purchase/tran/PurchaseTranMList.vue')
-      },
-      {
-        path: 'matOrderP',
-        name: 'MatOrderP',
-        component: () => import('@/views/purchase/order/PurchaseOrderPList.vue')
       },
       {
         path: 'purchaseTranP',
