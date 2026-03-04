@@ -93,6 +93,9 @@
     <div>
         <Button label="품목+" @click="itemPop"/>
     </div>
+    <div>
+        <Button label="복사하기" class="p-button-secondary" @click="copyOrderInfo"/>
+    </div>
 </div>
 <div class="w-full mt-2">
     <DataTable
@@ -102,8 +105,16 @@
         show-gridlines
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}" />
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" />
+        <Column field="itemCd"    header="품목코드"  :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words">
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.itemName"
+                    class="w-full"
+                    :readonly="!updateItem.includes(slotProps.data.itemCd)"
+                />
+            </template>
+        </Column>
         <Column field="spec"      header="규격"      :style="{ width: '110px'}">
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.spec" class="w-full"/>
@@ -159,12 +170,12 @@
                 />
             </template>
         </Column>
-        <Column field="etc"        header="비고"    :style="{ width: '200px'}" style="text-align: right;" >
+        <Column field="etc"     header="비고"    :style="{ width: '200px'}">
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.etc" class="w-full" />
             </template>
         </Column>
-        <Column field="actions"        header="-"    :style="{ width: '20px'}" style="text-align: center;" >
+        <Column field="actions" header="-"    :style="{ width: '20px', textAlign:'center'}">
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
@@ -172,11 +183,17 @@
 
     </DataTable>
 </div>
-<div class="w-full flex gap-2 justify-end mt-2">
-    <Button label="메일발송" class="p-button-secondary" @click="sendMail"/>
-    <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
-    <Button label="복사하기" class="p-button-secondary" @click="copyOrderInfo"/>
-    <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+<div class="w-full flex justify-between mt-2">
+    <!-- 왼쪽 -->
+    <div class="flex gap-2">
+        <Button label="메일발송" class="p-button-secondary" @click="sendMail"/>
+        <Button label="인쇄" icon="pi pi-print"  outlined @click="printInfo"></Button>
+    </div>
+    <!-- 오른쪽 -->
+    <div class="flex gap-2">
+        <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
+        <Button label="닫기" outlined @click="closeDialog"/>
+    </div>
 </div>
     <Dialog
         v-model:visible="itemDialog"
@@ -211,11 +228,13 @@ import MailSendPop from './MailSendPop.vue';
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
 const itemDialog = ref(false)
+const isCopy = ref(false)
 const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
 const itemTypeCds = ref([])
 const vatTypes = ref([])
 const purchaseOrderItemList = ref([])
+const updateItem = ['D000004','M60038','M60040','M60041','M60043']
 const isAllSelected = computed(() => {
   return (
     purchaseOrderItemList.value.length > 0 &&
@@ -238,15 +257,23 @@ const form = reactive({
     remark: '',
     vatType: '',
 
+    mailYn : '',
+    printYn : '',
+    inYn: '',
+    endYn: '',
     areaCd: '',
     purOrderId: '',
-    purOrderItemId: '',
     userId: userId,
 })
 
 const copyOrderInfo = async () =>{
+    isCopy.value = true
     form.purOrderDate = todayKST()
     form.deliveryDate = todayKST()
+    form.mailYn ='N'
+    form.printYn ='N'
+    form.inYn ='N'
+    form.endYn ='N'
 
     if ( form.itemTypeCd === 'M1') {
         form.seq = await ApiCommon.getNextSeq('tb_purm_order_mst', 'pur_order_date',  form.purOrderDate)
@@ -261,8 +288,16 @@ const saveInfo = async () =>{
             purchaseOrderInfo : form,
             purchaseOrderItemList : purchaseOrderItemList.value,
         }
-        //저장로직
-        const res = await ApiPurchase.savePurchaseOrder(params)
+
+        let res = ''
+
+        if (isCopy.value){
+            //저장로직
+            res = await ApiPurchase.savePurchaseOrder(params)
+            isCopy.value = false
+        }else{
+            res = await ApiPurchase.updatePurchaseOrder(params)
+        }
         vSuccess(res.message)
         closeDialog()
     }catch(err){
@@ -285,6 +320,11 @@ const sendMail = () =>{
                 content: { style: { overflow: 'hidden' } }
             }
         },
+        data:{
+            itemTypeCd : form.itemTypeCd,
+            purOrderId : form.purOrderId,
+            customerCd : form.customerCd,
+        },
         onClose: (event) => {
         }
     } )
@@ -306,6 +346,7 @@ const addRow = (rows) =>{
         supplyPrice: o.supplyPrice,
         vatPrice: o.vatPrice,
         etc: o.etc,
+        itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
     };
 
      onChangeRow(row);
