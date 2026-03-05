@@ -64,7 +64,7 @@
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="인쇄" icon="pi pi-print"  outlined @click="print"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
 </div>
 <div>
     <DataTable
@@ -183,8 +183,18 @@ const srhList = async () =>{
     purchaseOrderList.value = await ApiPurchase.getPurchaseOrderList(params);
 }
 
-const print = () => {
+const printOut = async () => {
+    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderList.value.map(r => r.purOrderId)
+    const params = {
+        purOrderIds,
+        itemTypeCd : form.itemTypeCd
+    }
 
+    // PDF 새창(미리보기) + 인쇄 다이얼로그
+    const win = window.open("", "_blank"); // 먼저 열어두고
+    const pdfBlob = await ApiPurchase.printOut(params);
+    const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
+    win.location.href = url;
 }
 
 onMounted( async () => {

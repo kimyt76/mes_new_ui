@@ -64,12 +64,12 @@
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="인쇄" icon="pi pi-print"  outlined @click="printInfo"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
 </div>
 <div>
     <DataTable
         ref="dt"
-        v-model:selection="selectedProducts"
+        v-model:selection="selectedItem"
         :value="purchaseOrderList"
         dataKey="purOrderId"
         paginator :rows="20"
@@ -77,7 +77,6 @@
         scrollHeight="700px"
         scrollable
         showGridlines
-        selectionMode="single"
         tableStyle="min-width:120rem; table-layout: fixed;"
         class="my-table"
         >
@@ -123,10 +122,11 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import PurchaseOrderDetailPop from './PurchaseOrderDetailPop.vue';
 import PurchaseOrderPop from './PurchaseOrderPop.vue';
 
-
 const totalCount = computed(() => {
   return Array.isArray(purchaseOrderList.value) ? purchaseOrderList.value.length : 0
 })
+const selectedItem = ref();
+const purchaseOrderList = ref([])
 const dialog = useDialog()
 const dt = ref(null);
 const areaCds = ref([])
@@ -150,13 +150,7 @@ const form = reactive({
     inYn: '',
     endYn: '',
 })
-// 리스트에서 체크박스,  radio 있을 경우
-const selectedProducts = ref();
-//  select 가 있을 경우
-const cities = ref([])
-const purchaseOrderList = ref([])
 
-let matOrderId = ''
 const selectRowClick = (id) =>{
     let title = ''
     let component = ''
@@ -200,8 +194,21 @@ const srhList = async () =>{
     purchaseOrderList.value = await ApiPurchase.getPurchaseOrderList(params);
 }
 
-const printInfo = () => {
+const printOut = async () => {
 
+    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderList.value.map(r => r.purOrderId)
+    const params = {
+        purOrderIds,
+        itemTypeCd : form.itemTypeCd
+    }
+
+    // PDF 새창(미리보기) + 인쇄 다이얼로그
+    const win = window.open("", "_blank"); // 먼저 열어두고
+    const pdfBlob = await ApiPurchase.printOut(params);
+    const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
+    win.location.href = url;
+
+    srhList()
 }
 
 onMounted( async () => {

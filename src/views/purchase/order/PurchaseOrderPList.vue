@@ -64,7 +64,7 @@
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="인쇄" icon="pi pi-print"  outlined @click="printInfo"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
 </div>
 <div>
     <DataTable
@@ -121,7 +121,7 @@ import PurchaseOrderPop from './PurchaseOrderPop.vue';
 
 const matOrderDialog = ref(false)
 // 리스트에서 체크박스,  radio 있을 경우
-const selectedItem = ref();
+const selectedItem = ref([]);
 const dialog = useDialog()
 const dt = ref(null);
 const areaCds = ref([])
@@ -195,11 +195,20 @@ const srhList = async () =>{
     purchaseOrderList.value = await ApiPurchase.getPurchaseOrderList(params);
 }
 
-const printInfo = () => {
+const printOut = async () => {
 
-}
+    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderList.value.map(r => r.purOrderId)
+    const params = {
+        purOrderIds,
+        itemTypeCd : form.itemTypeCd
+    }
 
-const handlerSelected = () =>{
+    // PDF 새창(미리보기) + 인쇄 다이얼로그
+    const win = window.open("", "_blank"); // 먼저 열어두고
+    const pdfBlob = await ApiPurchase.printOut(params);
+    const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
+    win.location.href = url;
+
     srhList()
 }
 
@@ -227,7 +236,7 @@ const downloadExcel = () =>{
     console.warn("No Columns Found");
     return;
   }
-  exportToExcel(matOrderlist.value, "발주 리스트", cols);
+  exportToExcel(purchaseOrderList.value, "발주(구매) 리스트", cols);
 }
 
 
