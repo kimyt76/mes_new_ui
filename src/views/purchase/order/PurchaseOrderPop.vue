@@ -256,14 +256,15 @@ const saveInfo = async () =>{
         vWarning('저장할 품목을 추가해주세요.')
         return
     }
+    if(isEmpty(form.storageCd))  return vWarning('입고창고를 선택해주세요.')
+    if(isEmpty(form.managerId))  return vWarning('담당자를 선택해주세요.')
 
     try{
         const params = {
             purchaseOrderInfo : form,
             purchaseOrderItemList : purchaseOrderItemList.value,
         }
-        console.log('params', params.purchaseOrderInfo)
-        //저장로직
+
         const res = await ApiPurchase.savePurchaseOrder(params)
         vSuccess(res.message)
         closeDialog()
@@ -395,7 +396,6 @@ const onChangeRow = (row) => {
   }
 };
 
-
 const removeRow = (idx) =>{
     if ( isAllSelected.value ) {
         purchaseOrderItemList.value = []
@@ -404,31 +404,6 @@ const removeRow = (idx) =>{
         purchaseOrderItemList.value.splice(idx, 1)
     }
 }
-
-// const sendMail = () =>{
-//     dialog.open( MailSendPop, {
-//         props: {
-//             header: '메일발송',
-//             modal: true,
-//             maximizable: false,
-//             draggable: true,
-//             style: {
-//             overflow: 'hidden'
-//             },
-//             pt: {
-//                 root: { style: { overflow: 'hidden' } },
-//                 content: { style: { overflow: 'hidden' } }
-//             }
-//         },
-//         data:{
-//             itemTypeCd : form.itemTypeCd,
-//             purOrderId : form.purOrderId,
-//             customerCd : form.customerCd,
-//         },
-//         onClose: (event) => {
-//         }
-//     } )
-// }
 
 onMounted( async () => {
     itemTypeCds.value =await ApiCommon.getCodeList('item_type_cd')

@@ -283,6 +283,13 @@ const copyOrderInfo = async () =>{
 }
 
 const saveInfo = async () =>{
+    if ( purchaseOrderItemList.value.length === 0 ) {
+        vWarning('저장할 품목을 추가해주세요.')
+        return
+    }
+    if(isEmpty(form.storageCd))  return vWarning('입고창고를 선택해주세요.')
+    if(isEmpty(form.managerId))  return vWarning('담당자를 선택해주세요.')
+
     try{
         const params = {
             purchaseOrderInfo : form,
