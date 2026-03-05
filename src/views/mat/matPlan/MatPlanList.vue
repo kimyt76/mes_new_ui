@@ -181,13 +181,10 @@ const selectRowClick = (id) => {
             modal: true,
             maximizable: false,
             draggable: true,
-            style: {
-                width: '71vw',
-                height: '82vh'
-                },
+            style: { width: '80vw', height: '40vh' },
             pt: {
                 root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'auto' } }
+                content: { style: { overflow: 'hidden', padding: '0' } }
             }
             // 기타 PrimeVue Dialog props 설정
         },
