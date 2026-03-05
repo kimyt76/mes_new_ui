@@ -28,12 +28,12 @@
         scrollHeight="400px"
         showGridlines
     >
-        <Column selectionMode="multiple"    headerStyle="width: 1rem" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="bomVer"      header="BOM버전"    :style="{ width: '100px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"     :style="{ width: '380px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="unit"        header="단위"       :style="{ width: '50px'}"   :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="qty"         header="생산량"     :style="{ width: '140px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column selectionMode="multiple"    headerStyle="width: 1rem" style="text-align: center;" />
+        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px'}"  />
+        <Column field="bomVer"      header="BOM버전"    :style="{ width: '100px'}"  />
+        <Column field="itemName"    header="품목명"     :style="{ width: '380px'}"  />
+        <Column field="unit"        header="단위"       :style="{ width: '50px'}"   />
+        <Column field="qty"         header="생산량"     :style="{ width: '140px'}"  >
             <template #body="slotProps">
                 <InputNumber
                     class="w-full"
@@ -44,8 +44,8 @@
                 />
             </template>
         </Column>
-        <Column field="etc"     header="비고"   :style="{ width: '130px', textAlign: 'left'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="actions" header="-"      :style="{ width: '20px', textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc"     header="비고"   :style="{ width: '130px', textAlign: 'left'}"  />
+        <Column field="actions" header="-"      :style="{ width: '20px', textAlign: 'center'}"  >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRow(slotProps.index)"></i>
             </template>
@@ -61,17 +61,17 @@
         scrollHeight="600px"
         showGridlines
     >
-        <Column field="itemCd"          header="품목코드"       :style="{ width: '120px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemTypeName"    header="품목구분"       :style="{ width: '80px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"        header="품목명"         :style="{ width: '300px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="spec"            header="규격"           :style="{ width: '50px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="stockQty"        header="재고수량(A)"    :style="{ width: '130px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="orderQty"        header="발주(입고예정)"  :style="{ width: '130px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="calculation"     header="소요량(B)"      :style="{ width: '130px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="differenceQty"   header="차이(A-B)"      :style="{ width: '130px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customrerName"   header="구매처"         :style="{ width: '200px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemGrp1"        header="사급/자급"      :style="{ width: '100px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="inPrice"         header="단가"           :style="{ width: '100px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="itemCd"          header="품목코드"       :style="{ width: '120px'}"  />
+        <Column field="itemTypeName"    header="품목구분"       :style="{ width: '80px'}"  />
+        <Column field="itemName"        header="품목명"         :style="{ width: '300px'}"  />
+        <Column field="spec"            header="규격"           :style="{ width: '50px'}"  />
+        <Column field="stockQty"        header="재고수량(A)"    :style="{ width: '130px'}"  />
+        <Column field="orderQty"        header="발주(입고예정)"  :style="{ width: '130px'}"  />
+        <Column field="calculation"     header="소요량(B)"      :style="{ width: '130px'}"  />
+        <Column field="differenceQty"   header="차이(A-B)"      :style="{ width: '130px'}"  />
+        <Column field="customrerName"   header="구매처"         :style="{ width: '200px'}"  />
+        <Column field="itemGrp1"        header="사급/자급"      :style="{ width: '100px'}"  />
+        <Column field="inPrice"         header="단가"           :style="{ width: '100px'}"  />
     </DataTable>
 </div>
 
