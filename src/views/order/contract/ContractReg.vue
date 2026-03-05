@@ -312,6 +312,10 @@ const saveInfo = async () =>{
         vInfo("품목을 등록하세요")
         return
     }
+
+    if (isEmpty(form.clientName)) return vWarning('고객사를 선택해주세요.')
+    if (isEmpty(form.managerName)) return vWarning('담당자를 선택해주세요.')
+
     // if(attachFile.value <= 0 ){
     //     vInfo("산출물을 등록하세요")
     //     return
@@ -332,10 +336,6 @@ const saveInfo = async () =>{
         })
 
         const res = await ApiOrder.saveContractInfo(formData)
-
-        console.log('res', res)
-        console.log('message', res.message)
-
         vSuccess(res.message)
         closeDialog()
     }catch(err){
