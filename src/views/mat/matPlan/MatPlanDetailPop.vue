@@ -30,23 +30,13 @@
             />
           </template>
         </Column>
-
         <Column field="poNo" header="PO No." :style="{ width: '140px', textAlign: 'center' }" />
         <Column field="itemCd" header="품목코드" :style="{ width: '120px', textAlign: 'center' }" />
-        <Column
-          field="itemName"
-          header="품목명"
-          :style="{ width: '350px', textAlign: 'left' }"
-          bodyClass="break-words"
-        />
-
+        <Column field="itemName" header="품목명" :style="{ width: '350px', textAlign: 'left' }" bodyClass="break-words"/>
         <Column field="qty" header="수량" :style="{ width: '130px', textAlign: 'right' }">
-          <template #body="slotProps">
-            {{ Number(slotProps.data.qty ?? 0).toLocaleString() }}
-          </template>
+            <template #body="slotProps">{{ Number(slotProps.data.qty ?? 0).toLocaleString() }}</template>
         </Column>
-
-        <Column field="theoryMakeQty" header="이론제조량" :style="{ width: '130px', textAlign: 'center' }">
+        <Column field="theoryMakeQty" header="이론제조량" :style="{ width: '130px'}">
           <template #body="slotProps">
             <InputNumber
               v-model="slotProps.data.theoryMakeQty"
@@ -58,8 +48,7 @@
             />
           </template>
         </Column>
-
-        <Column field="matInstrQty" header="제조지시량" :style="{ width: '130px', textAlign: 'center' }">
+        <Column field="matInstrQty" header="제조지시량" :style="{ width: '130px'}">
           <template #body="slotProps">
             <InputNumber
               v-model="slotProps.data.matInstrQty"
@@ -73,7 +62,6 @@
             />
           </template>
         </Column>
-
         <Column field="matPlanDate" header="제조예정일" :style="{ width: '120px', textAlign: 'center' }">
           <template #body="slotProps">
             <DatePicker
@@ -82,11 +70,15 @@
             />
           </template>
         </Column>
-
         <Column field="etc" header="비고" :style="{ width: '130px' }">
           <template #body="slotProps">
             <InputText v-model="slotProps.data.etc" class="w-full" />
           </template>
+        </Column>
+        <Column field="actions"        header="-"    :style="{ width: '20px'}" style="text-align: center;" >
+            <template #body="slotProps">
+                <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
+            </template>
         </Column>
       </DataTable>
     </div>
@@ -181,6 +173,10 @@ const saveInfo = async () => {
     handleApiError(err);
   }
 };
+
+const removeRow = (idx) =>{
+    matPlanList.value.splice(idx, 1)
+}
 
 onMounted(async () => {
   if (!isEmpty(dialogRef.value.data.id)) {
