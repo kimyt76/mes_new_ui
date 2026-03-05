@@ -40,10 +40,11 @@
 </template>
 
 <script setup>
+import { ApiBase } from '@/api/apiBase';
 import { ApiPurchase } from '@/api/apiPurchase';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
-import { inject, reactive } from 'vue';
+import { inject, onMounted, reactive } from 'vue';
 
 const { vWarning, vSuccess} = useAlertStore()
 const dialogRef = inject('dialogRef');
@@ -53,6 +54,8 @@ const form = reactive({
     cc: '',
     from: 'purchase@jincostech.com',
     memo: '',
+    id: dialogRef.value?.data?.purOrderId ?? '',
+    itemTypeCd: dialogRef.value?.data?.itemTypeCd ?? '',
 })
 
 const sendMail = async () =>{
@@ -63,13 +66,21 @@ const sendMail = async () =>{
         const params = {
             ...form
         }
-
         const res = await ApiPurchase.orderMail(params)
-        vSuccess(res.message)
+        vSuccess(res.data.message)
     }catch(err) {
         handleApiError(err)
     }
 }
+
+onMounted( async () => {
+    //초기값 세팅
+    const customerCd = dialogRef.value?.data?.customerCd ?? ''
+    const res = await ApiBase.getCustomerInfo(customerCd)
+
+    form.toName = res.customerName
+    form.to = res.email
+})
 
 const closeDialog = () =>{
     dialogRef.value.close();
