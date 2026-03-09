@@ -470,9 +470,9 @@ const removeRow = (idx) =>{
     }
 }
 
-const printOut = async () => {
+let purOrderIds = []
 
-    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderItemList.value.map(r => r.purOrderId)
+const printOut = async () => {
     const params = {
         purOrderIds,
         itemTypeCd : form.itemTypeCd
@@ -488,6 +488,7 @@ const printOut = async () => {
 onMounted( async () => {
     itemTypeCds.value =await ApiCommon.getCodeList('item_type_cd')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
+    purOrderIds = [dialogRef.value.data.id]
 
     const params = {
         itemTypeCd: dialogRef.value.data.itemTypeCd,
