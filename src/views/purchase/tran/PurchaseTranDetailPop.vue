@@ -176,6 +176,7 @@
 <div class="w-full flex gap-2 justify-end mt-2">
     <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
     <Button label="바코드" icon="pi pi-barcode"  outlined @click="barcodePrint"></Button>
+    <Button label="삭제"  @click="deletePur"></Button>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
     <Dialog
@@ -211,7 +212,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchase } from '@/api/apiPurchase';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { calculateVAT, isEmpty } from '@/util/common';
+import { calculateVAT, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
@@ -226,6 +227,7 @@ const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
 const orderDialog = ref(false)
 const itemDialog = ref(false)
+const isCopy = ref(false)
 const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
 const itemTypeCds = ref([])
@@ -253,6 +255,7 @@ const form = reactive({
     remark: '',
     vatType: '',
 
+    purId:'',
     areaCd: '',
     userId: userId,
 })
@@ -271,12 +274,51 @@ const saveInfo = async () =>{
             purchaseItemList : purchaseItemList.value,
         }
 
-        const res = await ApiPurchase.updatePurchaseInfo(params)
+        let res = ''
+        if ( isCopy.value ) {
+            res = await ApiPurchase.savePurchaseInfo(params)
+        }else{
+            res = await ApiPurchase.updatePurchaseInfo(params)
+        }
         vSuccess(res.message)
         closeDialog()
     }catch(err){
         handleApiError(err)
     }
+}
+
+const copyPurInfo = async () =>{
+    isCopy.value = true
+
+    const newDate = todayKST()
+    // 날짜가 같으면 watch가 안 돌기 때문에 seq 직접 조회
+    if (form.purDate === newDate) {
+        form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date', newDate)
+    }
+
+    form.purDate = newDate
+
+    purchaseItemList.value = purchaseItemList.value.map(o => {
+        return {
+            ...o,
+            purItemId: '',
+            lotNo: '',
+            expiraDate: null,
+            testNo: '',
+            etc: '',
+        }
+    })
+}
+
+const deletePur = async () =>{
+    const hasInYn = purchaseItemList.value.some(v => v.inYn === 'Y')
+    if (hasInYn) return vWarning('이미 입고 처리된 항목이 있습니다.')
+
+    if( !confirm('정말 삭제하시겠습니까?') ) return
+
+    const res = await ApiPurchase.deletePurchase(form.purId)
+    vSuccess(res.message)
+    closeDialog()
 }
 
 const handleOrderSelected = (rows) =>{
@@ -317,10 +359,6 @@ const addRow = (rows) =>{
     } else {
         purchaseItemList.value = [...rowItem];
     }
-}
-
-const copyPurInfo = () =>{
-
 }
 
 const itemPop = (type) =>{
@@ -384,11 +422,7 @@ const openPop = (type) =>{
 watch(() => form.purDate, async (newVal, oldVal) => {
   if ( !isEmpty(oldVal)) {
     if ( oldVal !==  newVal ){
-        if ( form.itemTypeCd === 'M1') {
-            form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  newVal)
-        }else{
-            form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  newVal)
-        }
+        form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  newVal)
     }
   }
 })
@@ -414,10 +448,11 @@ const barcodePrint = () =>{
             modal: true,
             draggable: true,
             resizable: false,
-            style: { width: '40rem', maxWidth: '40rem' },
+            style: { width: '80rem', maxWidth: '80rem' },
             contentStyle: { height: '30rem', overflow: 'hidden' },
         },
         data:{
+            menuType:'PUR',
             itemList : selectedItem.value,
         }
     })
@@ -449,10 +484,9 @@ onMounted( async () => {
     //itemTypeCds.value =await ApiCommon.getCodeList('item_type_cd')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
 
-    console.log('dialogRef.value?.data',  dialogRef.value?.data.id)
-    let purId = dialogRef.value?.data.id
+    form.purId = dialogRef.value?.data.id
 
-    const res = await ApiPurchase.getPurchaseInfo(purId)
+    const res = await ApiPurchase.getPurchaseInfo(form.purId)
 
     Object.assign(form, res.purchaseInfo)
     purchaseItemList.value = res.purchaseItemList
