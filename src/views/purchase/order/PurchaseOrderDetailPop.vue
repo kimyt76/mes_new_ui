@@ -483,6 +483,11 @@ const printOut = async () => {
     const pdfBlob = await ApiPurchase.printOut(params);
     const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
     win.location.href = url;
+
+    // 메모리 해제
+    win.onload = () => {
+        URL.revokeObjectURL(url)
+    }
 }
 
 onMounted( async () => {
