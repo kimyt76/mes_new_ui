@@ -14,6 +14,12 @@
                     <label>연번</label>
                 </FloatLabel>
             </div>
+            <!-- <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.itemTypeCd" :options="itemTypeCds" optionLabel="codeNm" optionValue="code" class="w-full" />
+                    <label>품목구분</label>
+                </FloatLabel>
+            </div> -->
             <div class="col-3">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
@@ -78,13 +84,9 @@
     <div>
         <Button label="품목+" @click="itemPop('I')"/>
     </div>
-    <div>
-        <Button label="복사하기" class="p-button-secondary" @click="copyPurInfo"/>
-    </div>
 </div>
 <div class="w-full mt-2">
     <DataTable
-        v-model:selection="selectedItem"
         :value="purchaseItemList"
         class="my-table"
         show-gridlines
@@ -175,7 +177,6 @@
 </div>
 <div class="w-full flex gap-2 justify-end mt-2">
     <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
-    <Button label="바코드" icon="pi pi-barcode"  outlined @click="barcodePrint"></Button>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
     <Dialog
@@ -211,7 +212,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchase } from '@/api/apiPurchase';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { calculateVAT, isEmpty } from '@/util/common';
+import { calculateVAT, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
@@ -220,7 +221,6 @@ import UserListPop from '@/views/system/user/UserListPop.vue';
 import { InputNumber, InputText, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import PurchaseOrderListPop from '../order/PurchaseOrderListPop.vue';
-import QrCodePop from './QrCodePop.vue';
 
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
@@ -229,7 +229,6 @@ const itemDialog = ref(false)
 const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
 const itemTypeCds = ref([])
-const selectedItem = ref([])
 const vatTypes = ref([])
 const purchaseItemList = ref([])
 const isAllSelected = computed(() => {
@@ -245,9 +244,9 @@ const form = reactive({
     itemTypeCd: '',
     storageCd: '',
     storageName: '',
-    managerName: '',
-    managerId: '',
-    orderType: '',
+    managerName: memberNm,
+    managerId: userId,
+    orderType: '자급',
     customerName: '',
     customerCd: '',
     remark: '',
@@ -271,7 +270,7 @@ const saveInfo = async () =>{
             purchaseItemList : purchaseItemList.value,
         }
 
-        const res = await ApiPurchase.updatePurchaseInfo(params)
+        const res = await ApiPurchase.savePurchaseInfo(params)
         vSuccess(res.message)
         closeDialog()
     }catch(err){
@@ -317,10 +316,6 @@ const addRow = (rows) =>{
     } else {
         purchaseItemList.value = [...rowItem];
     }
-}
-
-const copyPurInfo = () =>{
-
 }
 
 const itemPop = (type) =>{
@@ -405,24 +400,6 @@ watch(() => form.vatType, async (newVal) => {
   }
 })
 
-const barcodePrint = () =>{
-    if( selectedItem.value.length === 0 ) return vWarning('바코드를 출력할 품목을 선택해주세요.')
-
-    dialog.open(QrCodePop, {
-        props:{
-            header: 'QR코드 라벨 출력',
-            modal: true,
-            draggable: true,
-            resizable: false,
-            style: { width: '40rem', maxWidth: '40rem' },
-            contentStyle: { height: '30rem', overflow: 'hidden' },
-        },
-        data:{
-            itemList : selectedItem.value,
-        }
-    })
-}
-
 const onChangeRow = (row) => {
   const qty = Number(row.qty) || 0
   const inPrice  = Number(row.inPrice)  || 0
@@ -446,16 +423,12 @@ const removeRow = (idx) =>{
 }
 
 onMounted( async () => {
-    //itemTypeCds.value =await ApiCommon.getCodeList('item_type_cd')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
+    form.purDate = todayKST()
+    form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  form.purDate)
 
-    console.log('dialogRef.value?.data',  dialogRef.value?.data.id)
-    let purId = dialogRef.value?.data.id
-
-    const res = await ApiPurchase.getPurchaseInfo(purId)
-
-    Object.assign(form, res.purchaseInfo)
-    purchaseItemList.value = res.purchaseItemList
+    //const itemList = dialogRef.value?.data?.itemList
+    //itemList && addRow(itemList)
 })
 
 const closeDialog = () =>{
