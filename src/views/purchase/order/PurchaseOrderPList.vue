@@ -20,14 +20,14 @@
                 />
                 <label for="on_label">구역(공장)</label>
             </FloatLabel>
-            <FloatLabel variant="on">
+            <!-- <FloatLabel variant="on">
                 <Select v-model="form.itemTypeCd" :options="itemTypeCds"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 120px"
                 />
                 <label for="on_label">품목구분</label>
-            </FloatLabel>
+            </FloatLabel> -->
             <FloatLabel variant="on">
                 <InputText id="on_label" v-model="form.itemName" style="width: 180px"/>
                 <label for="on_label">품목명</label>
