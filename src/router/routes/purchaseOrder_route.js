@@ -17,14 +17,9 @@ export default [
           component: () => import('@/views/purchase/order/PurchaseOrderPDetailList.vue')
       },
       {
-        path: 'purchaseTranM',
-        name: 'PurchaseTranM',
-        component: () => import('@/views/purchase/tran/PurchaseTranMList.vue')
-      },
-      {
-        path: 'purchaseTranP',
-        name: 'PurchaseTranP',
-        component: () => import('@/views/purchase/tran/PurchaseTranPList.vue')
+        path: 'purchaseTran',
+        name: 'PurchaseTran',
+        component: () => import('@/views/purchase/tran/PurchaseTranList.vue')
       },
       {
         path: 'tranCurrent',

@@ -204,24 +204,14 @@ const model = ref([
                 icon: 'pi pi-fw pi-check-square',
                 items:[
                     {
-                        label: '구매(생산)',
+                        label: '구매',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purchaseTranM'
+                        to: '/purchase/purchaseTran'
                     },
                     {
-                        label: '구매(구매)',
+                        label: '구매현황',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purchaseTranP'
-                    },
-                    {
-                        label: '구매현황(생산)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purchaseStateM'
-                    },
-                    {
-                        label: '구매현황(구매)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purchaseStateP'
+                        to: '/purchase/purchaseState'
                     },
                     {
                         label: '반품조정',
