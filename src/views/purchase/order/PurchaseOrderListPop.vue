@@ -75,7 +75,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiPurchase } from '@/api/apiPurchase';
+import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
@@ -111,7 +111,7 @@ const searchList = async () =>{
     const params = {
         ...form
     }
-    purOrderList.value = await ApiPurchase.getPurchaseOrderList(params)
+    purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
 }
 
 const selectedRow = async () => {
@@ -120,7 +120,7 @@ const selectedRow = async () => {
 
     if (form.itemTypeCd !== 'M1'){
         const purOrderIds = selectedItem.value.map(v => v.purOrderId)
-        subItemList.value = await ApiPurchase.getSubItemList(purOrderIds)
+        subItemList.value = await ApiPurchaseOrder.getSubItemList(purOrderIds)
         emit('selected', subItemList.value)
     }else{
         emit('selected', selectedItem.value)

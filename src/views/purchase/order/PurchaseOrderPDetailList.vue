@@ -111,7 +111,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiPurchase } from '@/api/apiPurchase';
+import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -180,7 +180,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    purchaseOrderList.value = await ApiPurchase.getPurchaseOrderList(params);
+    purchaseOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params);
 }
 
 const printOut = async () => {
@@ -192,7 +192,7 @@ const printOut = async () => {
 
     // PDF 새창(미리보기) + 인쇄 다이얼로그
     const win = window.open("", "_blank"); // 먼저 열어두고
-    const pdfBlob = await ApiPurchase.printOut(params);
+    const pdfBlob = await ApiPurchaseOrder.printOut(params);
     const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
     win.location.href = url;
 }

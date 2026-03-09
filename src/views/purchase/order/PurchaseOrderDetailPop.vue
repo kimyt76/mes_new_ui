@@ -211,7 +211,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiPurchase } from '@/api/apiPurchase';
+import { ApiPurchaseOrderOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT, isEmpty, todayKST } from '@/util/common';
@@ -301,10 +301,10 @@ const saveInfo = async () =>{
 
         if (isCopy.value){
             //저장로직
-            res = await ApiPurchase.savePurchaseOrder(params)
+            res = await ApiPurchaseOrder.savePurchaseOrder(params)
             isCopy.value = false
         }else{
-            res = await ApiPurchase.updatePurchaseOrder(params)
+            res = await ApiPurchaseOrder.updatePurchaseOrder(params)
         }
         vSuccess(res.message)
         closeDialog()
@@ -480,7 +480,7 @@ const printOut = async () => {
 
     // PDF 새창(미리보기) + 인쇄 다이얼로그
     const win = window.open("", "_blank"); // 먼저 열어두고
-    const pdfBlob = await ApiPurchase.printOut(params);
+    const pdfBlob = await ApiPurchaseOrderOrder.printOut(params);
     const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
     win.location.href = url;
 
@@ -500,7 +500,7 @@ onMounted( async () => {
         purOrderId: dialogRef.value.data.id
     }
 
-    const res = await ApiPurchase.getPurchaseOrderInfo(params)
+    const res = await ApiPurchaseOrder.getPurchaseOrderInfo(params)
 
     Object.assign(form, res.purchaseOrderInfo)
     purchaseOrderItemList.value =res.purchaseOrderItemList

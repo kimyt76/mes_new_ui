@@ -116,7 +116,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiPurchase } from '@/api/apiPurchase';
+import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { InputNumber, InputText } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
 
@@ -156,7 +156,7 @@ onMounted( async () => {
         purOrderId: dialogRef.value.data.id
     }
 
-    const res = await ApiPurchase.getPurchaseOrderInfo(params)
+    const res = await ApiPurchaseOrder.getPurchaseOrderInfo(params)
 
     Object.assign(form, res.purchaseOrderInfo)
     purchaseOrderItemList.value =res.purchaseOrderItemList

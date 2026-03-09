@@ -201,7 +201,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiPurchase } from '@/api/apiPurchase';
+import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT, isEmpty, todayKST } from '@/util/common';
@@ -265,7 +265,7 @@ const saveInfo = async () =>{
             purchaseOrderItemList : purchaseOrderItemList.value,
         }
 
-        const res = await ApiPurchase.savePurchaseOrder(params)
+        const res = await ApiPurchaseOrder.savePurchaseOrder(params)
         vSuccess(res.message)
         closeDialog()
     }catch(err){
