@@ -99,8 +99,8 @@
 </div>
 <div class="w-full mt-2">
     <DataTable
+        v-model:selection="selectedItem"
         :value="purchaseOrderItemList"
-        selectionMode="single"
         class="my-table"
         show-gridlines
         >
@@ -187,7 +187,7 @@
     <!-- 왼쪽 -->
     <div class="flex gap-2">
         <Button label="메일발송" class="p-button-secondary" @click="sendMail"/>
-        <Button label="인쇄" icon="pi pi-print"  outlined @click="printInfo"></Button>
+        <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
     </div>
     <!-- 오른쪽 -->
     <div class="flex gap-2">
@@ -231,6 +231,7 @@ const itemDialog = ref(false)
 const isCopy = ref(false)
 const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
+const selectedItem = ref([])
 const itemTypeCds = ref([])
 const vatTypes = ref([])
 const purchaseOrderItemList = ref([])
@@ -467,6 +468,21 @@ const removeRow = (idx) =>{
     }else{
         purchaseOrderItemList.value.splice(idx, 1)
     }
+}
+
+const printOut = async () => {
+
+    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderItemList.value.map(r => r.purOrderId)
+    const params = {
+        purOrderIds,
+        itemTypeCd : form.itemTypeCd
+    }
+
+    // PDF 새창(미리보기) + 인쇄 다이얼로그
+    const win = window.open("", "_blank"); // 먼저 열어두고
+    const pdfBlob = await ApiPurchase.printOut(params);
+    const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
+    win.location.href = url;
 }
 
 onMounted( async () => {
