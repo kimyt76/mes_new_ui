@@ -36,6 +36,11 @@ export const  ApiPurchase = {
         return API_URL.post('/purchaseOrder/orderMail', params)
     },
 
+    /**
+     * 발주 인쇄
+     * @param {*} params
+     * @returns
+     */
     printOut: async(params) =>{
         try{
             const res = await API_URL.post(`/purchaseOrder/printOut`, params,{
@@ -46,4 +51,45 @@ export const  ApiPurchase = {
             throw err.response
         }
     },
+
+     /* 발주 조회(구매 팝업용 ) */
+    getSubItemList: async(params)  =>{
+        try{
+            const res = await API_URL.post('/purchaseOrder/getSubItemList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /* 구매조회 */
+    getPurchaseList: async(params)  =>{
+        try{
+            const res = await API_URL.post('/purchase/getPurchaseList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+     /* 구매 상세 */
+    getPurchaseInfo: async(id) =>{
+        try{
+            const res = await API_URL.get(`/purchase/getPurchaseInfo/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    /* 구매 저장 */
+    savePurchaseInfo: async(params) =>{
+        return await API_URL.post('/purchase/savePurchaseInfo', params)
+    },
+    /* 구매 수정 */
+
+    updatePurchaseInfo: async(params) =>{
+        return await API_URL.post('/purchase/updatePurchaseInfo', params)
+    },
+
+    /* 바코드 */
+    /* 인쇄 */
 }
