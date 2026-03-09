@@ -164,10 +164,8 @@ const srhList = async() =>{
 }
 
 const printOut = async () =>{
-    const purIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purId) : purchaseList.value.map(r => r.purId)
     const params = {
-        purIds,
-        itemTypeCd : form.itemTypeCd
+        ...form
     }
 
     // PDF 새창(미리보기) + 인쇄 다이얼로그
