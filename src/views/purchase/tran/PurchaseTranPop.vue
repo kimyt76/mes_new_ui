@@ -147,22 +147,22 @@
                 />
             </template>
         </Column>
-        <Column field="lotNo"        header="로트번호"    :style="{ width: '120px'}" >
+        <Column field="lotNo"        header="로트번호"    :style="{ width: '120px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.lotNo" class="w-full"/>
             </template>
         </Column>
-        <Column field="expiraDate"        header="사용기한"    :style="{ width: '110px'}" >
+        <Column field="expiraDate"        header="사용기한"    :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <DatePicker v-model="slotProps.data.expiraDate" :inputStyle="{ width: '120px', textAlign: 'center' }" />
           </template>
         </Column>
-        <Column field="testNo"        header="시험번호"    :style="{ width: '130px'}" >
+        <Column field="testNo"        header="시험번호"    :style="{ width: '110px',  textAlign: 'center'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.testNo" class="w-full"/>
             </template>
         </Column>
-        <Column field="etc"        header="비고"    :style="{ width: '150px'}" style="text-align: right;" >
+        <Column field="etc"        header="비고"    :style="{ width: '150px'}">
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.etc" class="w-full" />
             </template>
@@ -271,8 +271,11 @@ const saveInfo = async () =>{
         }
 
         const res = await ApiPurchase.savePurchaseInfo(params)
-        vSuccess(res.message)
-        closeDialog()
+        const purId = res.data
+        dialogRef.value.close({
+            purId: purId,
+            message: res.message
+        })
     }catch(err){
         handleApiError(err)
     }

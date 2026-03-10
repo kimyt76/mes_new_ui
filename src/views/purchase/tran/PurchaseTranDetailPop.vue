@@ -145,17 +145,17 @@
                 />
             </template>
         </Column>
-        <Column field="lotNo"        header="로트번호"    :style="{ width: '120px'}" >
+        <Column field="lotNo"        header="로트번호"    :style="{ width: '140px'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.lotNo" class="w-full"/>
             </template>
         </Column>
-        <Column field="expiraDate"        header="사용기한"    :style="{ width: '110px'}" >
+        <Column field="expiraDate"        header="사용기한"    :style="{ width: '100px'}" >
             <template #body="slotProps">
-                <DatePicker v-model="slotProps.data.expiraDate" :inputStyle="{ width: '120px', textAlign: 'center' }" />
+                <DatePicker v-model="slotProps.data.expiraDate" :inputStyle="{ width: '100px', textAlign: 'center' }" />
           </template>
         </Column>
-        <Column field="testNo"        header="시험번호"    :style="{ width: '130px'}" >
+        <Column field="testNo"        header="시험번호"    :style="{ width: '170px'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.testNo" class="w-full"/>
             </template>
@@ -232,6 +232,7 @@ const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
 const itemTypeCds = ref([])
 const selectedItem = ref([])
+const deletedItemIds = ref([])
 const vatTypes = ref([])
 const purchaseItemList = ref([])
 const isAllSelected = computed(() => {
@@ -272,6 +273,7 @@ const saveInfo = async () =>{
         const params = {
             purchaseInfo : form,
             purchaseItemList : purchaseItemList.value,
+            deletePurchaseItems: deletedItemIds.value,
         }
 
         let res = ''
@@ -281,6 +283,7 @@ const saveInfo = async () =>{
             res = await ApiPurchase.updatePurchaseInfo(params)
         }
         vSuccess(res.message)
+        deletedItemIds.value = []
         closeDialog()
     }catch(err){
         handleApiError(err)
@@ -314,7 +317,7 @@ const deletePur = async () =>{
     const hasInYn = purchaseItemList.value.some(v => v.inYn === 'Y')
     if (hasInYn) return vWarning('이미 입고 처리된 항목이 있습니다.')
 
-    if( !confirm('정말 삭제하시겠습니까?') ) return
+    if( !confirm('현재 구매항목 삭제합니다. \n 정말 삭제하시겠습니까?') ) return
 
     const res = await ApiPurchase.deletePurchase(form.purId)
     vSuccess(res.message)
@@ -347,6 +350,8 @@ const addRow = (rows) =>{
         etc: o.etc,
         itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
         purOrderId: o.purOrderId ?? o.purOrderId ?? '',
+        purItemId: o.purItemId ?? o.purItemId ?? '',
+        purId: o.purId ?? o.purId ?? '',
     };
 
      onChangeRow(row);
@@ -364,7 +369,6 @@ const addRow = (rows) =>{
 const itemPop = (type) =>{
     if ( type === 'O' ) {
         orderDialog.value = true
-
     }else{
         itemDialog.value = true
     }
@@ -472,12 +476,24 @@ const onChangeRow = (row) => {
 };
 
 const removeRow = (idx) =>{
-    if ( isAllSelected.value ) {
+    if (isAllSelected.value) {
+        purchaseItemList.value.forEach(row => {
+            if (row.purItemId) {
+                deletedItemIds.value.push(row.purItemId)
+            }
+        })
+
         purchaseItemList.value = []
         return
-    }else{
-        purchaseItemList.value.splice(idx, 1)
     }
+
+    const row = purchaseItemList.value[idx]
+
+    if (row.purItemId) {
+        deletedItemIds.value.push(row.purItemId)
+    }
+
+    purchaseItemList.value.splice(idx, 1)
 }
 
 onMounted( async () => {

@@ -95,6 +95,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchase } from '@/api/apiPurchase';
+import { useAlertStore } from '@/stores/alert';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -102,6 +103,7 @@ import { onMounted, reactive, ref } from 'vue';
 import PurchaseTranDetailPop from './PurchaseTranDetailPop.vue';
 import PurchaseTranPop from './PurchaseTranPop.vue';
 
+const { vSuccess} = useAlertStore()
 const dt = ref(null)
 const dialog = useDialog()
 const selectedItem = ref([])
@@ -123,7 +125,7 @@ const form  = reactive({
     endYns: null,
 })
 
-const selectRowClick = (id, type) =>{
+const selectRowClick = (id) =>{
     let title = ''
     let component = ''
 
@@ -146,13 +148,23 @@ const selectRowClick = (id, type) =>{
         },
         data: {
             id: id,
-            itemTypeCd:type
         },
-        onClose: () => {
-            srhList();
+        onClose: (event) => {
+            const closeData = event?.data
+
+            if (closeData?.purId) {
+                selectRowClick(closeData.purId)
+
+                setTimeout(() => {
+                    if (closeData?.message) vSuccess(closeData.message)
+                }, 0)
+
+                return
+            }
+
+            srhList()
         }
     });
-
 }
 
 const srhList = async() =>{
