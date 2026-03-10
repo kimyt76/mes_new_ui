@@ -211,7 +211,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiPurchaseOrderOrder } from '@/api/apiPurchaseOrder';
+import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT, isEmpty, todayKST } from '@/util/common';
@@ -235,6 +235,7 @@ const selectedItem = ref([])
 const itemTypeCds = ref([])
 const vatTypes = ref([])
 const purchaseOrderItemList = ref([])
+const deletedItemIds = ref([])
 const updateItem = ['D000004','M60038','M60040','M60041','M60043']
 const isAllSelected = computed(() => {
   return (
@@ -295,6 +296,7 @@ const saveInfo = async () =>{
         const params = {
             purchaseOrderInfo : form,
             purchaseOrderItemList : purchaseOrderItemList.value,
+            deletePurchaseOrderItems: deletedItemIds.value,
         }
 
         let res = ''
@@ -307,6 +309,7 @@ const saveInfo = async () =>{
             res = await ApiPurchaseOrder.updatePurchaseOrder(params)
         }
         vSuccess(res.message)
+        deletedItemIds.value = [];
         closeDialog()
     }catch(err){
         handleApiError(err)
@@ -355,6 +358,8 @@ const addRow = (rows) =>{
         vatPrice: o.vatPrice,
         etc: o.etc,
         itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
+        purOrderId: o.purOrderId ?? o.purOrderId ?? '',
+        purOrderItemId: o.purOrderItemId ?? o.purOrderItemId ?? '',
     };
 
      onChangeRow(row);
@@ -462,12 +467,24 @@ watch(() => form.vatType, async (newVal) => {
 })
 
 const removeRow = (idx) =>{
-    if ( isAllSelected.value ) {
+    if (isAllSelected.value) {
+        purchaseOrderItemList.value.forEach(row => {
+            if (row.purOrderItemId) {
+                deletedItemIds.value.push(row.purOrderItemId)
+            }
+        })
+
         purchaseOrderItemList.value = []
         return
-    }else{
-        purchaseOrderItemList.value.splice(idx, 1)
     }
+
+    const row = purchaseOrderItemList.value[idx]
+
+    if (row.purOrderItemId) {
+        deletedItemIds.value.push(row.purOrderItemId)
+    }
+
+    purchaseOrderItemList.value.splice(idx, 1)
 }
 
 let purOrderIds = []
@@ -480,7 +497,7 @@ const printOut = async () => {
 
     // PDF 새창(미리보기) + 인쇄 다이얼로그
     const win = window.open("", "_blank"); // 먼저 열어두고
-    const pdfBlob = await ApiPurchaseOrderOrder.printOut(params);
+    const pdfBlob = await ApiPurchaseOrder.printOut(params);
     const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
     win.location.href = url;
 
