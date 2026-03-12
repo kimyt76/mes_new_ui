@@ -89,10 +89,12 @@ const form = reactive({
 })
 
 const searchList = async () =>{
+    selectedItem.value = []
     const params = {
         ...form
     }
     bomList.value = await ApiLab.getBomList(params)
+
 }
 
 const selectedRow = () => {
