@@ -152,9 +152,9 @@
                 <InputText v-model="slotProps.data.lotNo" class="w-full"/>
             </template>
         </Column>
-        <Column field="expiraDate"        header="사용기한"    :style="{ width: '110px', textAlign: 'center'}" >
+        <Column field="expiryDate"        header="사용기한"    :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <DatePicker v-model="slotProps.data.expiraDate" :inputStyle="{ width: '120px', textAlign: 'center' }" />
+                <DatePicker v-model="slotProps.data.expiryDate" :inputStyle="{ width: '120px', textAlign: 'center' }" />
           </template>
         </Column>
         <Column field="testNo"        header="시험번호"    :style="{ width: '110px',  textAlign: 'center'}" >
@@ -262,6 +262,7 @@ const saveInfo = async () =>{
         return
     }
     if(isEmpty(form.storageCd))  return vWarning('입고창고를 선택해주세요.')
+    if(isEmpty(form.customerCd))  return vWarning('거래처를 선택해주세요.')
     if(isEmpty(form.managerId))  return vWarning('담당자를 선택해주세요.')
 
     try{
@@ -302,7 +303,7 @@ const addRow = (rows) =>{
         supplyPrice: o.supplyPrice,
         vatPrice: o.vatPrice,
         lotNo: o.lotNo,
-        expiraDate: o.expiraDate,
+        expiryDate: o.expiryDate,
         testNo: o.testNo,
         etc: o.etc,
         itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
