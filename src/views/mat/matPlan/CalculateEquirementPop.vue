@@ -100,6 +100,7 @@ import { useDialog } from 'primevue';
 import { inject, onMounted, ref } from 'vue';
 
 const { vInfo, vWarning} = useAlertStore()
+const dt =ref(null)
 const dialog = useDialog();
 const bomDialog = ref(false);
 const dialogRef = inject('dialogRef');
