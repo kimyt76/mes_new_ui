@@ -71,7 +71,7 @@
         ref="dt"
         v-model:selection="selectedItem"
         :value="purchaseOrderList"
-        dataKey="purOrderId"
+        dataKey="purOrderItemId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -88,7 +88,7 @@
         <Column field="itemCd"              header="품목코드"  :style="{ width: '120px', textAlign:'center'}" />
         <Column field="itemName"            header="품목명"    :style="{ width: '350px'}" bodyClass="break-words">
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.purOrderId)" class="clickable-cell">
+                <div @click="selectRowClick(slotProps.data.purOrderItemId, slotProps.data.purOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
@@ -151,9 +151,10 @@ const form = reactive({
     endYn: '',
 })
 
-const selectRowClick = (id) =>{
+const selectRowClick = (id, purOrderId) =>{
     let title = ''
     let component = ''
+
     if (!isEmpty(id) ){
         title = '발주서 상세'
         component = PurchaseOrderDetailPop
@@ -177,7 +178,8 @@ const selectRowClick = (id) =>{
             },
         },
         data: {
-            id : id,
+            purOrderItemId : id,
+            purOrderId : purOrderId,
             itemTypeCd : form.itemTypeCd
         },
         onClose:(event) => {
@@ -195,8 +197,14 @@ const srhList = async () =>{
 }
 
 const printOut = async () => {
-
-    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderList.value.map(r => r.purOrderId)
+    const purOrderIds = [
+        ...new Set(
+        (selectedItem.value?.length
+        ? selectedItem.value
+        : purchaseOrderList.value
+        ).map(r => r.purOrderId)
+    )
+    ];
     const params = {
         purOrderIds,
         itemTypeCd : form.itemTypeCd

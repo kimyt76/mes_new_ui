@@ -362,11 +362,7 @@ const openPop = (type) =>{
 watch(() => form.purOrderDate, async (newVal, oldVal) => {
   if ( !isEmpty(oldVal)) {
     if ( oldVal !==  newVal ){
-        if ( form.itemTypeCd === 'M1') {
-            form.seq = await ApiCommon.getNextSeq('tb_purm_order_mst', 'pur_order_date',  newVal)
-        }else{
-            form.seq = await ApiCommon.getNextSeq('tb_purp_order_mst', 'pur_order_date',  newVal)
-        }
+       form.seq = await ApiCommon.getNextSeq('tb_pur_order_mst', 'pur_order_date',  newVal)
     }
   }
 })
@@ -416,11 +412,7 @@ onMounted( async () => {
     form.purOrderDate = todayKST()
     form.deliveryDate = todayKST()
 
-    if ( form.itemTypeCd === 'M1') {
-        form.seq = await ApiCommon.getNextSeq('tb_purm_order_mst', 'pur_order_date',  form.purOrderDate)
-    }else{
-        form.seq = await ApiCommon.getNextSeq('tb_purp_order_mst', 'pur_order_date',  form.purOrderDate)
-    }
+    form.seq = await ApiCommon.getNextSeq('tb_pur_order_mst', 'pur_order_date',  form.purOrderDate)
 
     const itemList = dialogRef.value?.data?.itemList
     itemList && addRow(itemList)

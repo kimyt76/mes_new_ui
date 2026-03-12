@@ -240,7 +240,7 @@ const updateItem = ['D000004','M60038','M60040','M60041','M60043']
 const isAllSelected = computed(() => {
   return (
     purchaseOrderItemList.value.length > 0 &&
-    selectedRows.value.length === purchaseOrderItemList.value.length
+    selectedItem.value.length === purchaseOrderItemList.value.length
   )
 })
 const emit = defineEmits(['selected', 'close'])
@@ -291,7 +291,7 @@ const saveInfo = async () =>{
     }
     if(isEmpty(form.storageCd))  return vWarning('입고창고를 선택해주세요.')
     if(isEmpty(form.managerId))  return vWarning('담당자를 선택해주세요.')
-
+console.log('deletedItemIds.value' , deletedItemIds.value)
     try{
         const params = {
             purchaseOrderInfo : form,
@@ -490,8 +490,20 @@ const removeRow = (idx) =>{
 let purOrderIds = []
 
 const printOut = async () => {
+    if (selectedItem.value.length === 0) {
+        vInfo('인쇄할 품목이 없습니다.')
+        return
+    }
+    const purOrderIds = [
+        ...new Set(
+        (selectedItem.value?.length
+        ? selectedItem.value
+        : purchaseOrderList.value
+        ).map(r => r.purOrderId)
+    )];
+
     const params = {
-        purOrderIds,
+        purOrderIds: purOrderIds,
         itemTypeCd : form.itemTypeCd
     }
 
@@ -514,7 +526,8 @@ onMounted( async () => {
 
     const params = {
         itemTypeCd: dialogRef.value.data.itemTypeCd,
-        purOrderId: dialogRef.value.data.id
+        purOrderId: dialogRef.value.data.purOrderId,
+        purOrderItemId: dialogRef.value.data.purOrderItemId,
     }
 
     const res = await ApiPurchaseOrder.getPurchaseOrderInfo(params)

@@ -42,7 +42,7 @@
       <DataTable
         v-model:selection="selectedItem"
         :value="purOrderList"
-        dataKey="purOrderId"
+        dataKey="purOrderItemId"
         paginator
         :rows="15"
         :rowsPerPageOptions="[15, 30, 40]"

@@ -106,7 +106,6 @@ const searchList = async () =>{
 }
 
 const selectedRow = () => {
-    console.log('selectedItem', selectedItem.value)
     emit('selected', selectedItem.value)
 }
 

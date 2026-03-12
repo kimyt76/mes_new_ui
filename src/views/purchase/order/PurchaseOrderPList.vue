@@ -178,7 +178,8 @@ const selectRowClick = (id) =>{
             },
         },
         data: {
-            id : id,
+            purOrderItemId : id,
+            purOrderId : id,
             itemTypeCd : form.itemTypeCd
         },
         onClose:(event) => {
