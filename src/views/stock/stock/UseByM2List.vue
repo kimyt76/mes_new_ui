@@ -77,7 +77,7 @@
         <Column field="itemCd"      header="품목코드"    :style="{ width: '150px', textAlign:'center'}" />
         <Column field="itemName"    header="품목명"      :style="{ width: '300px'}" bodyClass="break-words"   />
         <Column field="customerName" header="구매처명"     :style="{ width: '300px'}" bodyClass="break-words"   />
-        <Column field="expiraDate"  header="경과일수(일)"     :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="expiryDate"  header="경과일수(일)"     :style="{ width: '100px', textAlign:'center'}" />
         <Column field="inDays"      header="입고일"       :style="{ width: '110px', textAlign:'right'}"/>
         <Column field="inPrice"      header="단가"        :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>

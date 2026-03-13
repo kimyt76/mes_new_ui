@@ -33,7 +33,7 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.processState" :options="processStates"
+                <Select v-model="form.procStatus" :options="procStatuss"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 100px"
@@ -76,7 +76,7 @@
         <Column field="orderQty"    header="지시수량"   :style="{ width: '90px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="procStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatus" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -103,6 +103,7 @@ const form = reactive({
   matNo: '',
   itemCd: '',
   itemName: '',
+  procStatus: '',
   processState: '',
 
 })
@@ -146,7 +147,9 @@ const srhList = async () =>{
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    processStates.value = await ApiCommon.getCodeList('process_state')
+    procStatus.value = await ApiCommon.getCodeList('PROC_STATUS')
+    const want = ["00", "11", "12", "99"];
+    procStatus.value = procStatus.value.filter(v => want.includes(v.code));
 
     form.toDate = todayKST()
     form.strDate = minMonth(form.toDate)

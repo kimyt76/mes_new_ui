@@ -76,7 +76,7 @@
         <Column field="itemCd"      header="품목코드"   frozen :style="{ width: '140px', textAlign:'center'}" />
         <Column field="itemName"    header="품목명"     frozen :style="{ width: '300px'}"/>
         <Column field="testNo"      header="시험번호"   frozen :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="expiraDate"  header="사용기한"   frozen  :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="expiryDate"  header="사용기한"   frozen  :style="{ width: '110px', textAlign:'center'}" />
         <Column field="remainDays"  header="잔여일"     frozen  :style="{ width: '100px', textAlign:'right'}"/>
         <Column field="totQty"      header="합계"       frozen :style="{ width: '100px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.totQty).toLocaleString() }}</template>

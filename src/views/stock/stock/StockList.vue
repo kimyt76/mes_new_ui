@@ -151,7 +151,7 @@ const home = ref({
 const items = ref([
     { label: '재고관리' },
     { label: '재고조회' },
-    { label: '재고목록' },
+    { label: '재고조회목록' },
 ]);
 
 const downloadExcel = () =>{

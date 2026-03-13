@@ -28,7 +28,7 @@ export const ApiQc = {
     },
 
     /**
-     * 공정검사
+     * 공정검사 유형
      * @returns
      */
     getProcTestTypeList : async() =>{

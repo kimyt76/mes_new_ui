@@ -317,6 +317,8 @@ console.log('deletedItemIds.value' , deletedItemIds.value)
 }
 
 const sendMail = () =>{
+    selectedItem
+
     dialog.open( MailSendPop, {
         props: {
             header: '메일발송',

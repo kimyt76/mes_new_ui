@@ -22,6 +22,7 @@
                     :options="statusTypes"
                     optionLabel="codeNm"
                     optionValue="code"
+                    style="width: 150px"
                     />
                 <label for="on_label1">진행상태</label>
             </FloatLabel>
@@ -47,8 +48,7 @@
         showGridlines
         class="my-table"
         >
-        <Column field="saleDateSeq"     header="제품명"    :style="{ width: '140px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <div
                     style="cursor: pointer; text-decoration: underline;"
@@ -57,15 +57,23 @@
                 </div>
             </template>
         </Column>
-        <Column field="managerName"         header="담당자"    :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="clientName"          header="거래처명"    :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="totPrice"            header="금액합계"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="transactionTypeName" header="거래유형"  :style="{ width: '100px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="descStorageName"     header="창고명"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="contractId"          header="주문서"  :style="{ width: '40px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="managerName"         header="담당자"    :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="clientName"          header="거래처명"    :style="{ width: '200px', textAlign:'right'}" >
+                <template #body="slotProps">
+                    {{ slotProps.data.clientName }}
+                </template>
+        </Column>
+        <Column field="totPrice"            header="금액합계"  :style="{ width: '110px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ Number(slotProps.data.totPrice).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="transactionTypeName" header="거래유형"  :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="descStorageName"     header="창고명"  :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="contractId"          header="주문서"  :style="{ width: '150px', textAlign:'center'}" >
 
         </Column>
-        <Column field="printYn"         header="인쇄"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="printYn"         header="인쇄"  :style="{ width: '50px', textAlign:'center'}" >
 
         </Column>
     </DataTable>
@@ -80,6 +88,8 @@ import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
+import SaleDetail from './SaleDetail.vue';
+import SaleReg from './SaleReg.vue';
 
 const dialog = useDialog()
 const recipeList = ref([])
@@ -102,12 +112,16 @@ const srhList = async () =>{
 
 const selectRowClick = (id) => {
     let title = '판매 등록'
+    let component = ''
 
     if ( !isEmpty(id) ) {
         title = '판매 상세'
+        component = SaleDetail
+    }else{
+        component = SaleReg
     }
 
-    dialog.open(RecipeDetailPop, {
+    dialog.open(SaleDetail, {
         props: {
         header: title,
         modal: true,

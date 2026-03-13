@@ -135,12 +135,9 @@ const saveInfo = async () =>{
 onMounted( async () =>{
     functionList.value =  await ApiCommon.getCodeList('fn_Cd')
     countries.value =  await ApiCommon.getCodeList('country_cd')
-console.log('props.id', props.id)
+
     if (!isEmpty(props.id)) {
-
         const result = await ApiLab.getIngredientInfo(props.id)
-
-       console.log('result', result)
         Object.assign(form, result)
 
         limitCountry.value = result.limitCountries

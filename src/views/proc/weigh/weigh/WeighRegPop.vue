@@ -139,7 +139,7 @@ import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import Tabs from 'primevue/tabs'
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
-import ProcInfoPop from '../../common/ProcInfoPop.vue'
+import ProcStartPop from '../../common/ProcStartPop.vue'
 import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
@@ -398,7 +398,7 @@ const openLookupPopup = (type, row) => {
         currentComponet = WorkerPop
     } else {
         title = '칭량 시작'
-        currentComponet  = ProcInfoPop
+        currentComponet  = ProcStartPop
     }
 
     dialog.open(currentComponet, {

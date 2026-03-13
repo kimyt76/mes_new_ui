@@ -33,12 +33,13 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.procStatus" :options="procStatuss"
+                <Select v-model="form.procStatus"
+                   :options="procStatuss"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 100px"
                 />
-                <label for="on_label">제조상태</label>
+                <label for="on_label">코팅상태</label>
             </FloatLabel>
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
             </div>
@@ -46,12 +47,15 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
+    <Button label="이동요청" severity="secondary"  @click="moveReq"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 <div>
     <DataTable
         ref="dt"
-        :value="matList"
+        v-model:selection="selectedItem"
+        :value="coatingList"
+        dataKey="workProcId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -60,24 +64,26 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaName"    header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
-        <Column field="weighDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'right'}" >
+        <Column selectionMode="multiple" headerStyle="width: 3rem" style="text-align: center;" />
+        <Column field="poNo"            header="PO No"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
+        <Column field="procOrderDate"   header="코팅지시일"  :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.weighDate }}
+                <div @click="selectRowClick(slotProps.data.workProcId)" class="clickable-cell" style="text-decoration: underline; point">
+                    {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'right'}" ></Column>
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
-        <Column field="clientName"  header="납품처명"  :style="{ width: '200px'}" />
+        <Column field="lotNo"       header="LOT번호"  :style="{ width: '180px', textAlign: 'center'}" />
+        <Column field="matNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '100px', textAlign: 'center'}" />
+        <Column field="itemName"    header="품목명"    :style="{ width: '440px'}" bodyClass="break-words"  ></Column>
         <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="procStatus"   header="제조상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatus"   header="코팅상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -85,55 +91,84 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
+import { useAlertStore } from '@/stores/alert';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref, shallowRef } from 'vue';
-import MatRegPop from './MatRegPop.vue';
+import { onMounted, reactive, ref } from 'vue';
+import MoveReqPop from '../../common/MoveReqPop.vue';
 
+const { vInfo, vWarning} = useAlertStore()
+const selectedItem = ref([])
 const dialog = useDialog()
 const dt = ref(null);
-const matList = ref([])
-const processStates = ref([])
+const coatingList = ref([])
+const procStatuss = ref([])
 const areaCds = ref([])
-const currentComponent = shallowRef(null)
 
 const form = reactive({
   strDate: '',
   toDate: '',
   areaCd: '',
-  clientName: '',
   itemCd: '',
   itemName: '',
-  procStatus: '',
+  clientName: '',
   processState: '',
 
-  proseccCd : 'PRC002',
+  proseccCd : 'PRC003',
 })
 
 const selectRowClick = (id) =>{
-    dialog.open(MatRegPop, {
+    // dialog.open(MatRegPop, {
+    //     props:{
+    //         header: '코팅지시 및 기록',
+    //         modal: true,
+    //         maximizable: false,
+    //         draggable: false,
+    //         style: {
+    //             width: '90vw',          // 🔹 팝업 가로 폭
+    //             maxWidth: '1800px',
+    //             height: '800px',
+    //             overflow: 'hidden'
+    //         },
+    //         pt: {
+    //             root: { style: { overflow: 'hidden' } },
+    //             content: { style: { overflow: 'hidden' } }
+    //         },
+    //     },
+    //     data: id,
+    //     onClose:(event) => {
+    //     },
+    // })
+}
+
+const moveReq = () =>{
+    //selectedItem.value
+    if ( !selectedItem.value.length ) {
+        vWarning("이동 요청할 항목을 선택해주세요.");
+        return;
+    }
+
+    dialog.open(MoveReqPop, {
         props:{
-            header: '제조지시 및 기록서',
+            header: '이동 요청',
             modal: true,
             maximizable: false,
             draggable: false,
             style: {
-                width: '90vw',          // 🔹 팝업 가로 폭
-                maxWidth: '1800px',
-                height: '800px',
                 overflow: 'hidden'
             },
             pt: {
                 root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
+                content: { style: { overflow: 'auto' } }
             },
         },
-        data: id,
+        data: selectedItem.value,
         onClose:(event) => {
         },
     })
 }
+
 
 // form
 const srhList = async () =>{
@@ -141,15 +176,15 @@ const srhList = async () =>{
         ...form
     }
     // api
-    matList.value = await ApiProc.getMatList(params);
+    coatingList.value = await ApiProc.getCoatingList(params);
 }
-
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    procStatus.value = await ApiCommon.getCodeList('PROC_STATUS')
-    const want = ["00", "21", "22", "99"];
-    procStatus.value = procStatus.value.filter(v => want.includes(v.code));
+    procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
+    const want = ["00", "31", "32", "99"];
+    procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
+    console.log(procStatuss.value);
 
     form.toDate = todayKST()
     form.strDate = minMonth(form.toDate)
@@ -160,8 +195,8 @@ const home = ref({
 });
 const items = ref([
     { label: '공정관리' },
-    { label: '제조' },
-    { label: '제조목록' },
+    { label: '코팅' },
+    { label: '코팅 작업지시목록' },
 ]);
 
 const downloadExcel = () =>{
@@ -171,7 +206,7 @@ const downloadExcel = () =>{
     console.warn("No Columns Found");
     return;
   }
-  exportToExcel(matList.value, "제조 리스트", cols);
+  exportToExcel(coatingList.value, "코팅 리스트", cols);
 }
 
 

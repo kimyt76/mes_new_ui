@@ -112,5 +112,15 @@ export const ApiCommon = {
     }
   },
 
+  barcodePrint: async(params) =>{
+        try{
+            const res = await API_URL.post(`/common/barcodePrint`, params,{
+                 responseType: "blob"
+            })
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
 }

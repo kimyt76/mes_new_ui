@@ -22,9 +22,9 @@ export default [
         component: () => import('@/views/purchase/tran/PurchaseTranList.vue')
       },
       {
-        path: 'tranCurrent',
-        name: 'TranCurrent',
-        component: () => import('@/views/purchase/tran/PurchaseCurrentList.vue')
+        path: 'purchaseState',
+        name: 'PurchaseState',
+        component: () => import('@/views/purchase/tran/PurchaseStateList.vue')
       },
 
 ]

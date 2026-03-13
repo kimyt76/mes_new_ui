@@ -43,22 +43,39 @@ export const ApiProc = {
 
 
 
-
   //제조
  getMatList: async(params) => {
-      return await API_URL.post('/procWeigh/getMatList', params)
+      return await API_URL.post('/procMat/getMatList', params)
   },
 
 
 
   //코팅
+  getCoatingList: async(params) => {
+    try{
+      const res = await API_URL.post('/procCoating/getCoatingList', params)
 
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
 
 
 
 
   //충전
+  getChargeList: async(params) => {
+    try{
+      const res = await API_URL.post('/procCharge/getChargeList', params)
 
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
 
 
 
@@ -68,7 +85,16 @@ export const ApiProc = {
 
 
   //포장
+  getPackingList: async(params) => {
+    try{
+      const res = await API_URL.post('/procPacking/getPackingList', params)
 
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
 
 
 

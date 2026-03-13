@@ -103,7 +103,7 @@ export const  ApiSystems = {
   },
   getStorageCodeList: async () =>{
     try {
-      const res =  await API_URL.post(`/storage/getStorageCodeList`)
+      const res =  await API_URL.get(`/storage/getStorageCodeList`)
       return res.data;
 
     } catch (error) {
