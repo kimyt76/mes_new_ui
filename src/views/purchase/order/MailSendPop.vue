@@ -41,7 +41,7 @@
 
 <script setup>
 import { ApiBase } from '@/api/apiBase';
-import { ApiPurchase } from '@/api/apiPurchase';
+import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { inject, onMounted, reactive } from 'vue';
@@ -66,7 +66,7 @@ const sendMail = async () =>{
         const params = {
             ...form
         }
-        const res = await ApiPurchase.orderMail(params)
+        const res = await ApiPurchaseOrder.orderMail(params)
         vSuccess(res.data.message)
     }catch(err) {
         handleApiError(err)
