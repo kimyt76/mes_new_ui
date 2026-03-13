@@ -64,14 +64,14 @@
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="printList"></Button>
 </div>
 <div>
     <DataTable
         ref="dt"
         v-model:selection="selectedItem"
         :value="purchaseOrderList"
-        dataKey="purOrderId"
+        dataKey="purOrderItemId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -82,27 +82,36 @@
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="purOrderDateSeq"     header="일자"  frozen :style="{ width: '140px', textAlign:'center'}" />
-        <Column field="purOrderDate"  header="발주일"  frozen :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="deliveryDate"  header="납기일"  :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="customerName"  header="거래처명"  :style="{ width: '250px'}" />
-        <Column field="itemName"      header="품목명"    :style="{ width: '400px'}" bodyClass="break-words" >
+        <Column field="purOrderDateSeq"     header="일자"   frozen :style="{ width: '140px', textAlign:'center'}" />
+        <Column field="purOrderDate"  header="발주일"       frozen :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="deliveryDate"  header="납기일"   :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="customerName"  header="거래처명" :style="{ width: '250px'}" />
+        <Column field="itemName"      header="품목명"   :style="{ width: '400px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.purOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="storageName"   header="입고창고"  :style="{ width: '130px', textAlign:'center'}" />
-        <Column field="totQty"        header="발주수량"   :style="{ width: '90px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.totQty).toLocaleString() }}</template>
+        <Column field="storageName" header="입고창고"   :style="{ width: '130px', textAlign:'center'}" />
+        <Column field="qty"      header="발주수량"   :style="{ width: '90px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="supplyPrice" header="공급가액"    :style="{ width: '90px', textAlign:'right'}">
-            <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
+        <Column field="inQty"      header="입고수량"   :style="{ width: '90px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.inQty).toLocaleString() }}</template>
         </Column>
-        <Column field="inYn"        header="입고상태"   :style="{ width: '90px', textAlign:'center'}" />
-        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" />
-        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="inYn"        header="입고상태"   :style="{ width: '90px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span v-if="slotProps.data.inYn === 'Y'">입고완료</span>
+                <span v-else>미입고</span>
+            </template>
+        </Column>
+        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span v-if="slotProps.data.endYn === 'Y'">종결</span>
+                <span v-else>진행중</span>
+            </template>
+        </Column>
         <Column field="managerName" header="담당자"     :style="{ width: '90px', textAlign:'center'}" />
     </DataTable>
 </div>
@@ -180,21 +189,27 @@ const srhList = async () =>{
         ...form
     }
     // api
-    purchaseOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params);
+    purchaseOrderList.value = await ApiPurchaseOrder.getPurchaseOrderDetailList(params);
 }
 
-const printOut = async () => {
-    const purOrderIds = selectedItem.value?.length ? selectedItem.value.map(r => r.purOrderId) : purchaseOrderList.value.map(r => r.purOrderId)
-    const params = {
-        purOrderIds,
-        itemTypeCd : form.itemTypeCd
+const printList = async () => {
+    const param = {
+        strDate: form.strDate,
+        toDate: form.toDate,
     }
 
     // PDF 새창(미리보기) + 인쇄 다이얼로그
     const win = window.open("", "_blank"); // 먼저 열어두고
-    const pdfBlob = await ApiPurchaseOrder.printOut(params);
+    const pdfBlob = await ApiPurchaseOrder.printList(param);
     const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
     win.location.href = url;
+
+    selectedItem.value = [] // 선택 초기화
+
+    // 메모리 해제
+    win.onload = () => {
+        URL.revokeObjectURL(url)
+    }
 }
 
 onMounted( async () => {
