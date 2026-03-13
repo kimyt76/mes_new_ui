@@ -92,21 +92,21 @@
         show-gridlines
         >
         <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}" />
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words"/>
-        <Column field="spec"      header="규격"      :style="{ width: '110px'}"/>
-        <Column field="qty"        header="수량"    :style="{ width: '80px'}"  >
-            <template #body="slotProps">{{ Number(slotProps.data.totQty).toLocaleString() }}</template>
+        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}"/>
+        <Column field="spec"      header="규격"      :style="{ width: '110px', textAlign: 'center'}"/>
+        <Column field="qty"        header="수량"    :style="{ width: '80px', textAlign: 'right'}"  >
+            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="inPrice"        header="단가"    :style="{ width: '80px'}" >
+        <Column field="inPrice"        header="단가"    :style="{ width: '80px', textAlign: 'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '80px'}" >
+        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '80px', textAlign: 'right'}" >
         <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
         <Column field="vatPrice"        header="부가세"    :style="{ width: '80px'}" >
             <template #body="slotProps">{{ Number(slotProps.data.vatPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="etc"        header="비고"    :style="{ width: '200px'}" style="text-align: right;" />
+        <Column field="etc"        header="비고"    :style="{ width: '200px'}" />
     </DataTable>
 </div>
 <div class="w-full flex gap-2 justify-end mt-2">
