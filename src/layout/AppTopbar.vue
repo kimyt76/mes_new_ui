@@ -6,9 +6,8 @@
             </button>
             <div class="layout-topbar-logo">
                 <a href="http://jincostech.com/" target="_blank">
-                    <img src="/logo_jincostech.jpg" alt="JINCOSTECH" style="width:30px; height:30px;" />
+                    <img  src="/jct_logo_700.png" alt="JINCOSTECH" style="width:140px; height:20px; vertical-align: center;" />
                 </a>
-                <span>JINCOSTECH</span>
             </div>
         </div>
 
