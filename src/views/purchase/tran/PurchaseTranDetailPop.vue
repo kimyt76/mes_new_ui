@@ -216,12 +216,12 @@ import { calculateVAT, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
+import QrCodePop from '@/views/common/QrCodePop.vue';
 import StorageListPop from '@/views/system/storage/StorageListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { InputNumber, InputText, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import PurchaseOrderListPop from '../order/PurchaseOrderListPop.vue';
-import QrCodePop from './QrCodePop.vue';
 
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
