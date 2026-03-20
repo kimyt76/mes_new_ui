@@ -307,6 +307,7 @@ const addRow = (rows) =>{
         testNo: o.testNo,
         etc: o.etc,
         itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
+        purOrderItemId: o.purOrderItemId ?? o.purOrderItemId ?? '',
         purOrderId: o.purOrderId ?? o.purOrderId ?? '',
     };
 
