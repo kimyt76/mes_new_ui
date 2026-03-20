@@ -238,14 +238,13 @@ const purchaseItemList = ref([])
 const isAllSelected = computed(() => {
   return (
     purchaseItemList.value.length > 0 &&
-    selectedRows.value.length === purchaseItemList.value.length
+    selectedItem.value.length === purchaseItemList.value.length
   )
 })
 const emit = defineEmits(['selected', 'close'])
 const form = reactive({
     purDate:'',
     seq: 0,
-    itemTypeCd: '',
     storageCd: '',
     storageName: '',
     managerName: '',
@@ -255,6 +254,7 @@ const form = reactive({
     customerCd: '',
     remark: '',
     vatType: '',
+    endYn: '',
 
     purId:'',
     areaCd: '',
@@ -278,6 +278,8 @@ const saveInfo = async () =>{
         }
 
         let res = ''
+        console.log('params purchaseItemList',  params.purchaseItemList)
+
         if ( isCopy.value ) {
             res = await ApiPurchase.savePurchaseInfo(params)
         }else{
@@ -286,6 +288,7 @@ const saveInfo = async () =>{
         vSuccess(res.message)
         deletedItemIds.value = []
         closeDialog()
+        isCopy.value = false
     }catch(err){
         handleApiError(err)
     }
@@ -348,11 +351,14 @@ const addRow = (rows) =>{
         lotNo: o.lotNo,
         expiryDate: o.expiryDate,
         testNo: o.testNo,
+        inYn: o.inYn ?? o.inYn ?? 'N',
         etc: o.etc,
         itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
-        purOrderId: o.purOrderId ?? o.purOrderId ?? '',
+        purOrderItemId: o.purOrderItemId ?? o.purOrderItemId ?? '',
         purItemId: o.purItemId ?? o.purItemId ?? '',
         purId: o.purId ?? o.purId ?? '',
+        tran_item_id: o.tran_item_id ?? o.tran_item_id ?? '',
+        tran_id: o.tran_id ?? o.tran_id ?? '',
     };
 
      onChangeRow(row);
@@ -493,7 +499,6 @@ const removeRow = (idx) =>{
     if (row.purItemId) {
         deletedItemIds.value.push(row.purItemId)
     }
-
     purchaseItemList.value.splice(idx, 1)
 }
 
