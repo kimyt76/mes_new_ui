@@ -1,41 +1,58 @@
 <template>
     <Breadcrumb :home="home" :model="items"/>
     <form @submit.prevent="srchItemList" class="space-y-4">
-    <Fluid class="flex">
-        <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
+     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
-            <FormatFiled
-                v-model="form.itemTypeCd"
-                type="select"
-                label="품목구분"
-                :options="itemTypeCds"
+            <div class="flex flex-wrap items-center gap-2 w-full">
+            <FloatLabel variant="on">
+                <Select v-model="form.itemTypeCd" :options="itemTypeCds"
                 optionLabel="codeNm"
                 optionValue="code"
-                style="width: 150px;"
-            />
-            <FormatFiled
-                v-model="form.itemName"
-                type="text"
-                label="품목명"
-                style="width: 260px;"
-            />
-            <FormatFiled
-                v-model="form.itemCd"
-                type="text"
-                label="품목코드"
-                style="width: 160px;"
-            />
-            <FormatFiled
-                v-model="form.customerName"
-                type="text"
-                label="거래처명"
-                style="width: 200px;"
-            />
+                style="width: 120px"
+                />
+                <label for="on_label">품목구분</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <InputText id="on_label" v-model="form.itemName" style="width: 180px"/>
+                <label for="on_label">품목명</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <InputText id="on_label1" v-model="form.itemCd" style="width: 150px"/>
+                <label for="on_label1">품목코드</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <InputText id="on_label1" v-model="form.customerName" style="width: 150px"/>
+                <label for="on_label1">거래처명</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <Select v-model="form.itemCategory1" :options="itemCategory1s"
+                optionLabel="codeNm"
+                optionValue="code"
+                style="width: 180px"
+                />
+                <label for="on_label">제품유형(대)</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <Select v-model="form.itemCategory2" :options="itemCategory2s"
+                optionLabel="codeNm"
+                optionValue="code"
+                style="width: 150px"
+                />
+                <label for="on_label">제품유형(중)</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <Select v-model="form.functionalTypeCd" :options="functionalTypeCds"
+                optionLabel="codeNm"
+                optionValue="code"
+                style="width: 190px"
+                />
+                <label for="on_label">기능성분류</label>
+            </FloatLabel>
+
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"></Button>
+        </div>
         </template>
     </Toolbar>
-   </Fluid>
-
     </form>
     <div class="flex items-center justify-between mb-2">
         <!-- 왼쪽: 총 건수 -->
@@ -73,10 +90,12 @@
                 </template>
             </Column>
             <Column field="unit"            header="단위"     :style="{ width: '50px', textAlign:'center'}" />
-            <Column field="Spec"            header="규격"     :style="{ width: '100px', textAlign:'center'}" />
+            <Column field="Spec"            header="규격"     :style="{ width: '80px', textAlign:'center'}" />
             <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" />
-            <Column field="businessManager" header="영업담당자"  :style="{ width: '70px', textAlign:'center'}"  />
-            <Column field="labManager"      header="연구담당자"  :style="{ width: '70px', textAlign:'center'}"  />
+            <Column field="businessManager" header="영업담당자"  :style="{ width: '80px', textAlign:'center'}"  />
+            <Column field="labManager"      header="담당연구원"  :style="{ width: '80px', textAlign:'center'}"  />
+            <Column field="itemCategory1Name"   header="제품유형(대)"  :style="{ width: '120px', textAlign:'center'}"  />
+            <Column field="itemCategory2Name"   header="제품유형(중)"  :style="{ width: '120px', textAlign:'center'}"  />
         </DataTable>
     </div>
 
@@ -86,7 +105,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useDialog } from 'primevue';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ItemInfoM0Pop from './ItemInfoM0Pop.vue';
 import ItemInfoM1Pop from './ItemInfoM1Pop.vue';
 import ItemInfoM2Pop from './ItemInfoM2Pop.vue';
@@ -99,10 +118,27 @@ const dt = ref(null)
 const dialog = useDialog()
 const loading = ref(false)
 const itemTypeCds = ref([])
+const itemCategory1s = ref([])
+const itemCategory2s = ref([])
+const functionalTypeCds = ref([])
 const itemList = ref([])
 const totalCount = computed(() => {
   return Array.isArray(itemList.value) ? itemList.value.length : 0
 })
+const form = reactive({
+    itemName: '',
+    itemCd: '',
+    customerName: '',
+    itemCategory1: '',
+    itemCategory2: '',
+    functionalTypeCd: '',
+    itemTypeCd: null
+})
+
+watch(() => form.itemCategory1, async (newVal) => {
+  itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
+})
+
 const srchItemList = async () => {
     loading.value =true
 
@@ -114,8 +150,12 @@ const srchItemList = async () => {
     loading.value = false
 };
 
+
 onMounted( async () => {
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
+    itemCategory1s.value = await ApiItem.getProdLList()
+    itemCategory2s.value = await ApiItem.getProdMList()
+    functionalTypeCds.value = await ApiCommon.getCodeList('FUNCTIONAL_TYPE')
 });
 
 /**
@@ -173,13 +213,6 @@ const selectRowClick = (cd, type) => {
     })
 }
 
-const form = reactive({
-    itemName: '',
-    itemCd: '',
-    customerName: '',
-    itemTypeCd: null
-})
-
 const home = ref({
     icon: 'pi pi-home'
 });
@@ -187,7 +220,7 @@ const home = ref({
 const items = ref([
     { label: '기본관리' },
     { label: '품목정보관리' },
-    { label: '품목정보목록' },
+    { label: '품목정보관리목록' },
 ]);
 
 const downloadExcel = () =>{

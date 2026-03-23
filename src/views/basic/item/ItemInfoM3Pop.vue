@@ -77,14 +77,14 @@
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory1" :options="itemCategory1s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full"  disabled/>
                         <label>제품유형(대분류)</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory2" :options="itemCategory2s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled />
                         <label>제품유형(중분류)</label>
                     </FloatLabel>
                 </div>
