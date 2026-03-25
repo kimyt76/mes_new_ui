@@ -3,6 +3,73 @@ import { API_URL } from '.'
 export const ApiQc = {
 
     /**
+     * 품질검사 요청
+     */
+    getQcTestList: async(params) =>{
+        try{
+            const res = await API_URL.post('/qcTest/getQcTestList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    /**
+     * 품질검사 상세
+     */
+    getQcTestDetailInfo: async(id) =>{
+        try{
+            const res = await API_URL.get(`/qcTest/getQcTestDetailInfo/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    /**
+     * 품질검사 등록 및 수정 정보 조회
+     */
+    getQcTestInfo: async(id) =>{
+        try{
+            const res = await API_URL.get(`/qcTest/getQcTestInfo/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /**
+     * 품질검사 상세정보 저장
+     */
+    updateQcTestDetailInfo: async(params) =>{
+        return await API_URL.post('/qcTest/updateQcTestDetailInfo', params)
+    },
+
+    /**
+     * 품질검사 재검사 저장
+     */
+    insertRetestInfo: async(params) =>{
+        return await API_URL.post('/qcTest/insertRetestInfo', params)
+    },
+
+    /**
+     * 품질검사 검사정보 저장
+     */
+    updateQcTestInfo: async(id) =>{
+        return await API_URL.get(`/qcTest/updateQcTestInfo/${id}`)
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
      * 품질검사유형
      * @returns
      */
@@ -16,15 +83,14 @@ export const ApiQc = {
     },
     getQcTestTypeMethod : async(id) => {
         try{
-        const res = await API_URL.get(`/qcTestType/getQcTestTypeMethod/${id}` )
-
-        return res.data
+            const res = await API_URL.get(`/qcTestType/getQcTestTypeMethod/${id}` )
+            return res.data
         }catch(err){
             throw err.response
         }
     },
-    saveQcTestTypeMethod: async(list) => {
-        return await API_URL.post('/qcTestType/saveQcTestTypeMethod' , list)
+    saveQcTestTypeMethod: async(params) => {
+        return await API_URL.post('/qcTestType/saveQcTestTypeMethod' , params)
     },
 
     /**

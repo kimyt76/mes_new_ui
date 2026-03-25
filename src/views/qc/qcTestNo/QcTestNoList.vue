@@ -12,7 +12,7 @@
                     optionValue="code"
                     style="width: 120px"
                     />
-                    <label for="on_label">구역</label>
+                    <label for="on_label">품목구분</label>
                 </FloatLabel>
                 <FloatLabel variant="on">
                     <InputText id="on_label" v-model="form.itemName" style="width: 180px"/>
@@ -88,6 +88,7 @@ import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import QcTestNoPop from './QcTestNoPop.vue';
 
+const dt = ref(null);
 const dialog = useDialog()
 const itemTypeCds = ref([])
 const itemTestNoList = ref([])

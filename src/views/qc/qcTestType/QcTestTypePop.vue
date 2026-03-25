@@ -70,6 +70,7 @@ const { vSuccess } = useAlertStore()
 const qcTestTypeMethodList = ref([])
 const selectedRows = ref([])
 const dialogRef = inject('dialogRef')
+const deleteIds = ref([])
 const itemCd = ref('')
 const itemName = ref('')
 const isAllSelected = computed(() => {
@@ -83,7 +84,14 @@ const saveInfo = async () =>{
     qcTestTypeMethodList.value.forEach(row => {
         row.itemCd = itemCd.value
     })
-    const res = await ApiQc.saveQcTestTypeMethod(qcTestTypeMethodList.value)
+
+    const params = {
+        deleteIds: deleteIds.value,
+        qcTestTypeMethodList: qcTestTypeMethodList.value
+    }
+
+
+    const res = await ApiQc.saveQcTestTypeMethod(params)
     vSuccess(res.message)
     closeDialog()
 }
@@ -95,7 +103,7 @@ const addRow = (selectItem = [], addBlank = true) => {
 
   let sortNum = qcTestTypeMethodList.value.length > 0 ? Math.max(...qcTestTypeMethodList.value.map(row => row.distOrder)) + 1 : 1
 
-  // ✅ 항상 마지막에 빈 row 추가
+  // 항상 마지막에 빈 row 추가
   qcTestTypeMethodList.value.push({
     itemCd: itemCd.value,
     testItem: '',

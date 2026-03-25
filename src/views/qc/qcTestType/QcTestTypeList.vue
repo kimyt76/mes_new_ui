@@ -30,6 +30,7 @@
                     optionValue="code"
                     style="width: 120px"
                    />
+                   <label for="on_label">등록여부</label>
            </FloatLabel>
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"></Button>
             </div>
@@ -82,6 +83,7 @@ import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import QcTestTypePop from './QcTestTypePop.vue';
 
+const dt = ref(null)
 const dialog = useDialog()
 const qcTestTypeList = ref([])
 const itemTypeCds = ref([])
@@ -89,9 +91,8 @@ const totalCount = computed(() => {
   return Array.isArray(qcTestTypeList.value) ? qcTestTypeList.value.length : 0
 })
 const regYns = ref([
-    { codeNm: '전체', value: '' },
-    { codeNm: '등록', value: 'Y' },
-    { codeNm: '미등록', value: 'N' },
+    { codeNm: '등록', code: 'Y' },
+    { codeNm: '미등록', code: 'N' },
 ])
 const form = reactive({
     itemName: '',
