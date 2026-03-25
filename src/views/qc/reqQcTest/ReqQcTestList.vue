@@ -75,7 +75,7 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column selectionMode="single"  headerStyle="width: 3rem" style="text-align: center;"></Column>
+        <Column selectionMode="multiple"  headerStyle="width: 3rem" style="text-align: center;"></Column>
         <Column field="testNo"          header="시험번호"  :style="{ width: '120px', textAlign: 'center' }" sortable >
             <template #body="slotProps">
                 <div @click="selectRowClick('D', slotProps.data.qcTestId,  slotProps.data.passState)" class="clickable-cell">
@@ -114,6 +114,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
+import { useAlertStore } from '@/stores/alert';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -123,8 +124,9 @@ import ReqQcTestPop from './ReqQcTestPop.vue';
 import RetestPop from './RetestPop.vue';
 
 const dt = ref(null);
+const {vInfo, vWarning} = useAlertStore()
 const dialog = useDialog()
-const selectItem = ref(null);
+const selectItem = ref([]);
 const qcTestList = ref([]);
 const areaCds = ref([]);
 const itemTypeCds = ref([]);
@@ -157,12 +159,19 @@ const srhList = async () =>{
 }
 
 const selectBtnClick = (type, data) =>{
-    if(!data){
-        alert('검사할 항목을 선택해주세요.')
-        return;
+    if (!data || data.length === 0) {
+        vWarning('검사할 항목을 선택해주세요.')
+        return
     }
 
-    selectRowClick(type, data.qcTestId, data.passState)
+    if (data.length > 1) {
+        vWarning('검사할 품목을 1개만 선택해주세요.')
+        return
+    }
+
+    const selected = data[0]
+
+    selectRowClick(type, selected.qcTestId, selected.passState)
 }
 
 const selectRowClick = (type, id, passState) =>{
@@ -180,14 +189,14 @@ const selectRowClick = (type, id, passState) =>{
         componentPop= ReqQcTestDetailPop
     }
 
-    // 👉 기본 props
+    // 기본 props
     const baseProps = {
         header: title,
         modal: true,
         maximizable: false,
         draggable: false,
     }
-     // 👉 type === 'I'일 때만 추가
+     // type === 'I'일 때만 추가
     if (type === 'I') {
         baseProps.style = {
             width: '95vw',
