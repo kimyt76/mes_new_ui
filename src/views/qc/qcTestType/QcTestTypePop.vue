@@ -124,12 +124,23 @@ const addRow = (selectItem = [], addBlank = true) => {
 // }
 
 const removeRow = (index) => {
-    if ( isAllSelected.value ) {
+    if (isAllSelected.value) {
+        qcTestTypeMethodList.value.forEach(row => {
+            if (row.testTypeMethodId) {
+                deleteIds.value.push(row.testTypeMethodId)
+            }
+        })
+
         qcTestTypeMethodList.value = []
         return
-    }else{
-        qcTestTypeMethodList.value.splice(index, 1)
     }
+
+    const row = qcTestTypeMethodList.value[index]
+
+    if (row.testTypeMethodId) {
+        deleteIds.value.push(row.testTypeMethodId)
+    }
+    qcTestTypeMethodList.value.splice(index, 1)
 }
 
 onMounted( async () => {

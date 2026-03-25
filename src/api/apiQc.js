@@ -53,21 +53,9 @@ export const ApiQc = {
     /**
      * 품질검사 검사정보 저장
      */
-    updateQcTestInfo: async(id) =>{
-        return await API_URL.get(`/qcTest/updateQcTestInfo/${id}`)
+    updateQcTestInfo: async(params) =>{
+        return await API_URL.post('/qcTest/updateQcTestInfo', params)
     },
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * 품질검사유형
