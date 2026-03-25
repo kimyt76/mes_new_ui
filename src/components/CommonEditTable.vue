@@ -50,62 +50,72 @@
         </template>
 
         <template #editor="{ data, field }">
-          <slot
-            v-if="$slots[`editor-${col.field}`]"
-            :name="`editor-${col.field}`"
-            :data="data"
-            :field="field"
-            :column="col"
-          />
+          <template v-if="col.editable">
+            <slot
+              v-if="$slots[`editor-${col.field}`]"
+              :name="`editor-${col.field}`"
+              :data="data"
+              :field="field"
+              :column="col"
+            />
+            <template v-else>
+              <InputText
+                v-if="col.editor === 'text'"
+                v-model="data[field]"
+                autofocus
+                class="w-full"
+              />
+
+              <Textarea
+                v-else-if="col.editor === 'textarea'"
+                v-model="data[field]"
+                autoResize
+                rows="1"
+                autofocus
+                class="w-full"
+              />
+
+              <InputNumber
+                v-else-if="col.editor === 'number'"
+                v-model="data[field]"
+                autofocus
+                inputClass="w-full"
+              />
+
+              <Select
+                v-else-if="col.editor === 'select'"
+                v-model="data[field]"
+                :options="col.options || []"
+                :optionLabel="col.optionLabel || 'label'"
+                :optionValue="col.optionValue || 'value'"
+                autofocus
+                class="w-full"
+              />
+
+              <InputText
+                v-else
+                v-model="data[field]"
+                autofocus
+                class="w-full"
+              />
+            </template>
+          </template>
+
           <template v-else>
-            <InputText
-              v-if="col.editor === 'text'"
-              v-model="data[field]"
-              autofocus
-              class="w-full"
-            />
-
-            <Textarea
-              v-else-if="col.editor === 'textarea'"
-              v-model="data[field]"
-              autoResize
-              rows="1"
-              autofocus
-              class="w-full"
-            />
-
-            <InputNumber
-              v-else-if="col.editor === 'number'"
-              v-model="data[field]"
-              autofocus
-              inputClass="w-full"
-            />
-
-            <Select
-              v-else-if="col.editor === 'select'"
-              v-model="data[field]"
-              :options="col.options || []"
-              :optionLabel="col.optionLabel || 'label'"
-              :optionValue="col.optionValue || 'value'"
-              autofocus
-              class="w-full"
-            />
-
-            <InputText
-              v-else
-              v-model="data[field]"
-              autofocus
-              class="w-full"
-            />
+            <div :class="getBodyClass(col)">
+              {{ data[field] }}
+            </div>
           </template>
         </template>
       </Column>
 
-      <Column v-if="showDelete" field="actions"
+      <Column
+        v-if="showDelete"
+        field="actions"
         :header="deleteHeader"
         :headerStyle="{ width: deleteWidth, minWidth: deleteWidth, textAlign: 'center' }"
         :bodyStyle="{ width: deleteWidth, minWidth: deleteWidth, textAlign: 'center' }"
-       >
+      >
         <template #body="slotProps">
           <slot name="delete" :row="slotProps.data" :index="slotProps.index">
             <i class="pi pi-trash cursor-pointer" @click="$emit('remove-row', slotProps.index)"></i>
@@ -117,7 +127,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
@@ -134,7 +144,7 @@ const props = defineProps({
   tableStyle: { type: String, default: 'min-width: 1200px; table-layout: fixed;' },
   showDelete: { type: Boolean, default: false },
   deleteHeader: { type: String, default: '-' },
-  deleteWidth: { type: String, default: '40px' },
+  deleteWidth: { type: String, default: '50px' },
   validators: { type: Object, default: () => ({}) }
 })
 
@@ -145,17 +155,9 @@ const emit = defineEmits([
   'remove-row'
 ])
 
-const innerSelection = ref(props.selection)
-
-watch(
-  () => props.selection,
-  (val) => {
-    innerSelection.value = val
-  }
-)
-
-watch(innerSelection, (val) => {
-  emit('update:selection', val)
+const innerSelection = computed({
+  get: () => props.selection,
+  set: (val) => emit('update:selection', val)
 })
 
 const normalizedColumns = computed(() =>
@@ -164,6 +166,7 @@ const normalizedColumns = computed(() =>
     align: 'left',
     multiline: false,
     editable: true,
+    noEllipsis: false,
     ...col
   }))
 )
@@ -183,13 +186,21 @@ const getBodyStyle = (col) => ({
 
 const getBodyClass = (col) => ({
   'cell-text': true,
-  'single-line-center': !col.multiline && col.align === 'center',
-  'single-line-left': !col.multiline && col.align !== 'center',
+  'single-line-center': !col.multiline && col.align === 'center' && !col.noEllipsis,
+  'single-line-left': !col.multiline && col.align !== 'center' && !col.noEllipsis,
+  'no-ellipsis': col.noEllipsis,
   'multiline-cell': col.multiline
 })
 
 const handleCellEditComplete = (event) => {
   const { field, newValue, data } = event
+  const column = normalizedColumns.value.find((col) => col.field === field)
+
+  if (column && column.editable === false) {
+    event.preventDefault()
+    return
+  }
+
   const validator = props.validators[field]
 
   if (validator) {
@@ -223,13 +234,22 @@ const handleCellEditComplete = (event) => {
 
 :deep(.common-edit-table.p-datatable) {
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+:deep(.common-edit-table .p-datatable-table-container) {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 :deep(.common-edit-table .p-datatable-wrapper) {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 :deep(.common-edit-table .p-datatable-thead > tr > th) {
@@ -270,6 +290,12 @@ const handleCellEditComplete = (event) => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.no-ellipsis {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 .multiline-cell {

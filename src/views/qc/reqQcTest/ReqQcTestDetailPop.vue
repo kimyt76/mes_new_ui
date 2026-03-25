@@ -110,7 +110,7 @@
          <div class="grid mb-3">
             <div class="col-6">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.costomerName" class="w-full" readonly/>
+                    <InputText v-model="form.customerName" class="w-full" readonly/>
                     <label>거래처</label>
                 </FloatLabel>
             </div>
@@ -242,6 +242,8 @@ onMounted( async () =>{
 
     const res = await ApiQc.getQcTestDetailInfo(form.qcTestId)
     Object.assign(form , res)
+
+    console.log(  'res ' , res)
 
     if ( res.itemTypeCd === 'M1') {
         isExpirDate.value =true

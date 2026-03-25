@@ -78,7 +78,7 @@
         <Column selectionMode="single"  headerStyle="width: 3rem" style="text-align: center;"></Column>
         <Column field="testNo"          header="시험번호"  :style="{ width: '120px', textAlign: 'center' }" sortable >
             <template #body="slotProps">
-                <div @click="selectRowClick('D', slotProps.data.qcTestId)" class="clickable-cell">
+                <div @click="selectRowClick('D', slotProps.data.qcTestId,  slotProps.data.passState)" class="clickable-cell">
                     {{ slotProps.data.testNo }}
                 </div>
             </template>
@@ -100,7 +100,7 @@
                 <span
                     class="action-link"
                     :class="slotProps.data.passState === 'REQ' ? 'action-register' : 'action-edit'"
-                    @click="selectRowClick('I',slotProps.data.qcTestId)"
+                    @click="selectRowClick('I',slotProps.data.qcTestId,  slotProps.data.passState)"
                 >
                     {{ slotProps.data.passState === 'REQ' ? '[등록]' : '[수정]' }}
                 </span>
@@ -162,10 +162,10 @@ const selectBtnClick = (type, data) =>{
         return;
     }
 
-    selectRowClick(type, data.qcTestId)
+    selectRowClick(type, data.qcTestId, data.passState)
 }
 
-const selectRowClick = (type, id) =>{
+const selectRowClick = (type, id, passState) =>{
     let title = ''
     let componentPop = null
 
@@ -206,6 +206,7 @@ const selectRowClick = (type, id) =>{
         data: {
             qcTestId: id,
             type: type,
+            passState: passState,
         },
         onClose: () => {
             srhList()
