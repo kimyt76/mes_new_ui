@@ -43,6 +43,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model:selection="selectedItem"
         :value="itemTestNoList"
         dataKey="testNo"
         paginator :rows="20"
@@ -81,6 +82,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
+import { useAlertStore } from '@/stores/alert';
 import { todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import QrCodePop from '@/views/common/QrCodePop.vue';
@@ -89,7 +91,9 @@ import { onMounted, reactive, ref } from 'vue';
 import QcTestNoPop from './QcTestNoPop.vue';
 
 const dt = ref(null);
+const { vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
+const selectedItem = ref([])
 const itemTypeCds = ref([])
 const itemTestNoList = ref([])
 const form = reactive({
