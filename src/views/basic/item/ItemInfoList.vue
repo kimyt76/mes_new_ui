@@ -110,6 +110,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
+import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ItemInfoM0Pop from './ItemInfoM0Pop.vue';
