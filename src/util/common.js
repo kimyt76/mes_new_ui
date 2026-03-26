@@ -38,9 +38,13 @@ export function addMonth(date, amount) {
 /**
  *   월 계산 (빼기)
  */
-export function minMonth(date) {
-  const prevMonth = subMonths(date, 1); // 월 -1
-  return format(prevMonth, 'yyyy-MM-dd')
+export function minMonth(date, amount = 1) {
+  if (!date) return '';
+
+  const baseDate = typeof date === 'string' ? new Date(date) : date;
+  const result = subMonths(baseDate, amount);
+
+  return format(result, 'yyyy-MM-dd');
 }
 
 /**

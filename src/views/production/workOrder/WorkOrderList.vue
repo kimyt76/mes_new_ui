@@ -184,7 +184,7 @@ onMounted( async () =>{
     areaCds.value = (await ApiCommon.getCodeList('area'))
       .filter(i => !['A003'].includes(i.code))
 
-    form.strDate = minMonth( todayKST(), -3)
+    form.strDate = minMonth( todayKST(), 2)
     form.toDate = addMonth( todayKST(), 1)
     //srhList()
 })

@@ -116,7 +116,7 @@ const endYns = ref([
 const areaCds  = ref([])
 
 const form  = reactive({
-    strDate: minMonth(todayKST(), -3),
+    strDate: minMonth(todayKST(), 2),
     toDate: addMonth(todayKST(), 1),
     areaCd: null,
     itemName: '',

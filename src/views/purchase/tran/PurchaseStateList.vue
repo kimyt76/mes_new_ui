@@ -166,7 +166,7 @@ onMounted( async () => {
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
 
     form.toDate = addMonth(todayKST(), 1);
-    form.strDate = minMonth(todayKST(), -3)
+    form.strDate = minMonth(todayKST(), 2)
 });
 
 const home = ref({

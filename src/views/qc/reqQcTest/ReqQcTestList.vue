@@ -228,7 +228,7 @@ onMounted(async () => {
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
     passStates.value = await ApiCommon.getCodeList('pass_state')
 
-    form.strDate = minMonth(todayKST(), -3)
+    form.strDate = minMonth(todayKST(), 2)
     form.toDate = addMonth(todayKST(), 1)
 })
 
