@@ -80,6 +80,11 @@
             scrollable
             showGridlines
             >
+            <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+                <template #body="slotProps">
+                    {{ slotProps.index + 1 + (dt?.first ?? 0) }}
+                </template>
+            </Column>
             <Column field="itemTypeName"    header="품목구분"  :style="{ width: '80px'}" />
             <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}" />
             <Column field="itemName"        header="품목명"    :style="{ width: '400px'}" bodyClass="break-words">
