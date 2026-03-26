@@ -69,23 +69,17 @@
             <Column field="itemCd"          header="품목코드"  :style="{ width: '110px'}"  />
             <Column field="itemName"        header="품목명"    :style="{ width: '420px'}" bodyClass="break-words">
                 <template #body="slotProps">
-                    <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
-                        {{ slotProps.data.itemName }}
-                    </div>
+                    <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">{{ slotProps.data.itemName }}</div>
                 </template>
             </Column>
             <Column field="unit"            header="단위"     :style="{ width: '50px', textAlign:'center'}" />
             <Column field="Spec"            header="규격"     :style="{ width: '100px', textAlign:'center'}" />
             <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" />
             <Column field="inPrice"         header="입고단가"  :style="{ width: '80px', textAlign:'right'}">
-                <template #body="slotProps">
-                    {{ Number(slotProps.data.inPrice).toLocaleString() }}
-                </template>
+                <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
             </Column>
             <Column field="outPrice"        header="출고단가"  :style="{ width: '80px', textAlign:'right'}">
-                <template #body="slotProps">
-                    {{ Number(slotProps.data.outPrice).toLocaleString() }}
-                </template>
+                <template #body="slotProps">{{ Number(slotProps.data.outPrice).toLocaleString() }}</template>
             </Column>
             <Column field="itemGrp2Name"    header="제품유형"  :style="{ width: '90px', textAlign:'center'}"  />
             <Column field="useYn"          header="사용유무"  :style="{ width: '70px', textAlign:'center'}"  />
