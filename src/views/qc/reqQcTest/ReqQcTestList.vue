@@ -93,7 +93,16 @@
                 <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
         </Column>
         <Column field="storageCd"       header="창고명"    :style="{ width: '150px', textAlign: 'center'}" />
-        <Column field="testState"       header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" />
+        <Column field="testState"       header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" >
+            <template #body="slotProps">
+                <span
+                    class="action-link"
+                    :class="slotProps.data.passState === 'REQ' ? 'action-register' : 'action-edit'"
+                >
+                    {{ slotProps.data.testState}}
+                </span>
+            </template>
+        </Column>
         <Column field="passStateName"   header="판정상태"  :style="{ width: '90px', textAlign: 'center'}" />
         <Column header="검사"      :style="{ width: '70px', textAlign: 'center'}" >
             <template #body="slotProps">
@@ -228,7 +237,7 @@ onMounted(async () => {
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
     passStates.value = await ApiCommon.getCodeList('pass_state')
 
-    form.strDate = minMonth(todayKST(), 2)
+    form.strDate = minMonth(todayKST(), 3)
     form.toDate = addMonth(todayKST(), 1)
 })
 
@@ -241,6 +250,17 @@ const downloadExcel = () =>{
   }
   exportToExcel(qcTestList.value, "품질검사요청 리스트", cols);
 }
+
+const stateClassMap = {
+    REQ: 'tw-text-black',
+    ING: 'tw-text-yellow-500',
+    ING2: 'tw-text-blue-500',
+    ING3: 'tw-text-blue-500',
+    FAIL: 'tw-text-red-600',
+    PASS: 'tw-text-green-500'
+}
+
+const getPassStateClass = (state) => stateClassMap[state] || ''
 
 
 const home = ref({
