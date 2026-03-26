@@ -143,7 +143,7 @@ const srhList = async () =>{
 }
 
 onMounted( async () =>{
-    form.strDate = minMonth(todayKST(), -3)
+    form.strDate = minMonth(todayKST(), 2)
     form.toDate = addMonth(todayKST(), 1)
 
     allStorages.value = await ApiSystems.getStorageCodeList()
