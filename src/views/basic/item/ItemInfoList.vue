@@ -68,6 +68,7 @@
     <div class="flex flex-col mt-2">
         <DataTable
             ref="dt"
+            v-model:first="first"
             :value="itemList"
             dataKey="itemCd"
             :loading="loading"
@@ -82,7 +83,7 @@
             >
             <Column header="No" :style="{ width: '40px', textAlign:'center'}">
                 <template #body="slotProps">
-                    {{ slotProps.index + 1 + (dt?.first ?? 0) }}
+                    {{ slotProps.index + 1 + first }}
                 </template>
             </Column>
             <Column field="itemTypeName"    header="품목구분"  :style="{ width: '80px'}" />
@@ -120,6 +121,7 @@ import ItemInfoM5Pop from './ItemInfoM5Pop.vue';
 import ItemInfoM6Pop from './ItemInfoM6Pop.vue';
 
 const dt = ref(null)
+const first = ref(0)
 const dialog = useDialog()
 const loading = ref(false)
 const itemTypeCds = ref([])
@@ -146,7 +148,7 @@ watch(() => form.itemCategory1, async (newVal) => {
 
 const srchItemList = async () => {
     loading.value =true
-
+    first.value = 0
     const params = {
         ...form
     };
