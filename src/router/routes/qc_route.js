@@ -26,16 +26,17 @@ export default [
       },
        /* 공정검사 */
       {
-        path:'procTest',
-        name:'ProcTest',
-        component: () => import('@/views/qc/procTest/ProcTestList.vue'),
+        path:'qcProcTest',
+        name:'qcProcTest',
+        component: () => import('@/views/qc/qcProcTest/QcProcTestList.vue'),
         props: true,
       },
+
     /* 공정검사유형 */
       {
-        path:'procTestType',
-        name:'ProcTestType',
-        component: () => import('@/views/qc/procTestType/ProcTestTypeList.vue')
+        path:'qcProcTestType',
+        name:'qcProcTestType',
+        component: () => import('@/views/qc/QcprocTestType/QcProcTestTypeList.vue')
       },
        /* 시험번호별 내역 */
       {

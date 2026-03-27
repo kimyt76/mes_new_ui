@@ -432,12 +432,12 @@ const model = ref([
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/procTest'
+                        to: '/qc/qcProcTest'
                     },
                     {
                         label: '공정검사유형',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/procTestType'
+                        to: '/qc/qcProcTestType'
                     },
                 ],
             },
