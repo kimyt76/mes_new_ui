@@ -77,9 +77,42 @@ export const ApiQc = {
             throw err.response
         }
     },
+    getQcTestTypeMethodComp : async(params) => {
+        try{
+            const res = await API_URL.post('/qcTestType/getQcTestTypeMethodComp', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
     saveQcTestTypeMethod: async(params) => {
         return await API_URL.post('/qcTestType/saveQcTestTypeMethod' , params)
     },
+
+
+    /**
+     * 공정검사
+     * @returns
+     */
+    getQcProcTestList: async(params) =>{
+        try{
+            const res = await API_URL.post('/qcProcTest/getQcProcTestList', params)
+
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /**
+     * 공정검사 등록
+     */
+    createQcProcTestInfo: async(params) =>{
+        return await API_URL.post('/qcProcTest/createQcProcTestInfo', params)
+    },
+
+
+
 
     /**
      * 공정검사 유형
