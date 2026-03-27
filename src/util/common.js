@@ -21,7 +21,7 @@ import { format, subMonths } from 'date-fns';
 /**
  *  날짜 2025-05-31  형식
  */
-export function toDate() {
+export function endDate() {
   return format(new Date(), 'yyyy-MM-dd')
 }
 

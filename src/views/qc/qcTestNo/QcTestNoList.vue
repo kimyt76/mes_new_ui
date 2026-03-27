@@ -5,7 +5,7 @@
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
                 <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-                <DatePicker v-model="form.toDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+                <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
                 <FloatLabel variant="on">
                     <Select v-model="form.itemTypeCd" :options="itemTypeCds"
                     optionLabel="codeNm"
@@ -98,7 +98,7 @@ const itemTypeCds = ref([])
 const itemTestNoList = ref([])
 const form = reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     itemTypeCd: '',
     itemName: '',
     itemCd: '',
@@ -172,7 +172,7 @@ onMounted( async () =>{
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
 
     form.strDate = todayKST()
-    form.toDate = todayKST()
+    form.endDate = todayKST()
 })
 
 const home = ref({

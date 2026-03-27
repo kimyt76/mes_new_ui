@@ -5,7 +5,7 @@
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
                 <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-                <DatePicker v-model="form.toDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+                <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
                 <FloatLabel variant="on">
                     <Select v-model="form.areaCd" :options="areaCds"
                     optionLabel="codeNm"
@@ -146,7 +146,7 @@ const retestYns = ref([
 ])
 const form = reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     areaCd: '',
     retestYn: '',
     itemTypeCd: '',
@@ -238,7 +238,7 @@ onMounted(async () => {
     passStates.value = await ApiCommon.getCodeList('pass_state')
 
     form.strDate = minMonth(todayKST(), 3)
-    form.toDate = addMonth(todayKST(), 1)
+    form.endDate = addMonth(todayKST(), 1)
 })
 
 const downloadExcel = () =>{

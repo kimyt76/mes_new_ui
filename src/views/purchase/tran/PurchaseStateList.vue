@@ -9,7 +9,7 @@
                 <label for="on_label">시작</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -128,16 +128,18 @@ import { ApiPurchase } from '@/api/apiPurchase';
 import { useCodeList } from '@/composable/useCodeList';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
+import QrCodePop from '@/views/common/QrCodePop.vue';
 import { onMounted, reactive, ref } from 'vue';
 
 const { codes: itemTypeCds, loading } = useCodeList("ITEM_TYPE_CD");
 
+const selectedItem = ref([])
 const dt = ref(null)
 const areaCds = ref([])
 const purchaseList = ref([])
 const form  = reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     areaCd: null,
     itemTypeCd: null,
     itemName: '',
@@ -146,7 +148,6 @@ const form  = reactive({
     testState: null,
     passState: null,
 })
-
 
 const srhList = async () =>{
     const params = {
@@ -158,14 +159,29 @@ const srhList = async () =>{
 }
 
 const barcodePrint = () =>{
+    if( selectedItem.value.length === 0 ) return vWarning('바코드를 출력할 품목을 선택해주세요.')
 
+    dialog.open(QrCodePop, {
+        props:{
+            header: 'QR코드 라벨 출력',
+            modal: true,
+            draggable: true,
+            resizable: false,
+            style: { width: '80rem', maxWidth: '80rem' },
+            contentStyle: { height: '30rem', overflow: 'hidden' },
+        },
+        data:{
+            menuType:'PUR',
+            itemList : selectedItem.value,
+        }
+    })
 }
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('AREA');
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
 
-    form.toDate = addMonth(todayKST(), 1);
+    form.endDate = addMonth(todayKST(), 1);
     form.strDate = minMonth(todayKST(), 2)
 });
 

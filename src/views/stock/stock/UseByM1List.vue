@@ -9,7 +9,7 @@
                 <label for="on_label">시작</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -124,7 +124,7 @@ const totalCount = computed(() => {
 })
 const form = reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     itemGrp1: '',
     itemTypeCd : '',
     areaCd: '',
@@ -149,8 +149,8 @@ const searchDateAdd = (day) =>{
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
 
-    form.toDate = todayKST()
-    form.strDate = addMonth(form.toDate, -3)
+    form.endDate = todayKST()
+    form.strDate = addMonth(form.endDate, -3)
 })
 
 const home = ref({

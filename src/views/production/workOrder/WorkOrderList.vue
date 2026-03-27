@@ -9,7 +9,7 @@
                 <label for="on_label">시작일자</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료일자</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -111,7 +111,7 @@ const workOrderList = ref([])
 const dt = ref(null)
 const form  =reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     areaCd: '',
     itemName: '',
     itemCd: '',
@@ -185,7 +185,7 @@ onMounted( async () =>{
       .filter(i => !['A003'].includes(i.code))
 
     form.strDate = minMonth( todayKST(), 2)
-    form.toDate = addMonth( todayKST(), 1)
+    form.endDate = addMonth( todayKST(), 1)
     //srhList()
 })
 

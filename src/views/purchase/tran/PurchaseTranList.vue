@@ -5,7 +5,7 @@
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
             <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-            <DatePicker v-model="form.toDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+            <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd"
                  :options="areaCds"
@@ -117,7 +117,7 @@ const areaCds  = ref([])
 
 const form  = reactive({
     strDate: minMonth(todayKST(), 2),
-    toDate: addMonth(todayKST(), 1),
+    endDate: addMonth(todayKST(), 1),
     areaCd: null,
     itemName: '',
     itemCd: '',

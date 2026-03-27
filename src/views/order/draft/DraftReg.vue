@@ -135,7 +135,7 @@
 import { ApiOrder } from '@/api/apiOrders'
 import CommFileUpload from '@/components/CommFileUpload.vue'
 import { useAuthStore } from '@/stores/auth'
-import { toDate } from '@/util/common'
+import { endDate } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import UserListPop from '@/views/system/user/UserListPop.vue'
 import { DatePicker, useDialog } from 'primevue'
@@ -147,7 +147,7 @@ const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const attachFile = ref([])
 const form = reactive({
-    draftDate: toDate(),
+    draftDate: endDate(),
     seq: '',
     clientName: '',
     itemName: '',

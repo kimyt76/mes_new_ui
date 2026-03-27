@@ -5,7 +5,7 @@
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
                 <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-                <DatePicker v-model="form.toDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+                <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
                     <InputText v-model="form.itemName" class="w-full" />
@@ -92,7 +92,7 @@ const selectedTestItem = ref('ALL')
 const methodList = ref([])
 const form = reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     itemName: '',
     itemCd: '',
 })
@@ -148,7 +148,7 @@ const srhList = async () =>{
 
 onMounted( () => {
     form.strDate = minMonth(todayKST(), 2)
-    form.toDate = todayKST()
+    form.endDate = todayKST()
 })
 
 const downloadExcel = () =>{

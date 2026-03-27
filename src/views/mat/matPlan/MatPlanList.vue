@@ -12,7 +12,7 @@
             />
             <DatePicker
             :showIcon="true"
-            v-model="form.toDate"
+            v-model="form.endDate"
             class="w-11rem"
             />
             <FloatLabel  variant="on">
@@ -139,7 +139,7 @@ const endYns = ref([
 
 const form = reactive({
   strDate: '',
-  toDate: '',
+  endDate: '',
   itemName: '',
   itemCd: '',
   endYn: ''
@@ -158,7 +158,7 @@ const srchMatPlanList = async () => {
 
 onMounted( async () => {
 
-  form.toDate = addMonth(todayKST(), 2)
+  form.endDate = addMonth(todayKST(), 2)
   form.strDate = minMonth(todayKST())
 });
 

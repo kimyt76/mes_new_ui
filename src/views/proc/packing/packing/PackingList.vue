@@ -9,7 +9,7 @@
                 <label for="on_label">시작</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -104,7 +104,7 @@ const areaCds = ref([])
 
 const form = reactive({
   strDate: '',
-  toDate: '',
+  endDate: '',
   areaCd: '',
   itemCd: '',
   itemName: '',
@@ -164,8 +164,8 @@ onMounted( async () => {
     const want = ["00", "51", "52", "99"];
     procStatus.value = procStatus.value.filter(v => want.includes(v.code));
 
-    form.toDate = todayKST()
-    form.strDate = minMonth(form.toDate)
+    form.endDate = todayKST()
+    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({

@@ -9,7 +9,7 @@
                 <label for="on_label">시작</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -136,7 +136,7 @@ const progressStatuss = ref([
 
 const form = reactive({
     strDate: null,
-    toDate: null,
+    endDate: null,
     areaCd: null,
     progressStatus: null,
     srcStorageCd: null,
@@ -178,7 +178,7 @@ const srhList = async () =>{
 
 onMounted( async () =>{
     form.strDate = minMonth(todayKST(), 3)
-    form.toDate =  addMonth(todayKST(), 1)
+    form.endDate =  addMonth(todayKST(), 1)
 
     areaCds.value = await ApiCommon.getCodeList('area')
     allStorages.value = await ApiSystems.getStorageCodeList()

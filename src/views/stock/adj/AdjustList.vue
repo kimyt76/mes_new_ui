@@ -9,7 +9,7 @@
                 <label for="on_label">시작</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -106,7 +106,7 @@ const totalCount = computed(() => {
 
 const form = reactive({
     strDate: '',
-    toDate: '',
+    endDate: '',
     storageCd: '',
     itemName: '',
     itemCd:'',
@@ -144,7 +144,7 @@ const srhList = async () =>{
 
 onMounted( async () =>{
     form.strDate = minMonth(todayKST(), 2)
-    form.toDate = addMonth(todayKST(), 1)
+    form.endDate = addMonth(todayKST(), 1)
 
     allStorages.value = await ApiSystems.getStorageCodeList()
     tranCds.value = (await ApiCommon.getCodeList('tran_cd')).filter(i => ['P','Q', 'R','S','T','U','V','W', 'X'].includes(i.code)  )

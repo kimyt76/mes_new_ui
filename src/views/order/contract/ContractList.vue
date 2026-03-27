@@ -9,7 +9,7 @@
                 <label for="on_label">시작</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <DatePicker v-model="form.toDate" inputId="on_label" showIcon iconDisplay="input" />
+                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
                 <label for="on_label">종료</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -123,7 +123,7 @@ const currentComponent = shallowRef(null)
 
 const form = reactive({
   strDate: '',
-  toDate: '',
+  endDate: '',
   itemCd: '',
   itemName: '',
   managerName: '',
@@ -185,8 +185,8 @@ onMounted( async () => {
     orderTypes.value = await ApiCommon.getCodeList('order_type')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
 
-    form.toDate = todayKST()
-    form.strDate = minMonth(form.toDate)
+    form.endDate = todayKST()
+    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({
