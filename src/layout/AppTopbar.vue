@@ -1,16 +1,15 @@
 <template>
     <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
-            <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
-                <i class="pi pi-bars"></i>
-            </button>
             <div class="layout-topbar-logo">
                 <a href="http://jincostech.com/" target="_blank">
                     <img  src="/jct_logo_700.png" alt="JINCOSTECH" style="width:140px; height:20px; vertical-align: center;" />
                 </a>
             </div>
+            <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
+                <i class="pi pi-bars"></i>
+            </button>
         </div>
-
         <div class="layout-topbar-actions flex items-center gap-4">
       <div class="layout-config-menu">
         <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
