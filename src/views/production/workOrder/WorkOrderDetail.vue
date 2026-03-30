@@ -568,6 +568,7 @@ const rowsToVoPayload = () =>{
         lotNo2: r.lotNo2,
         regId: userId,
         updId: userId,
+        batchStatus: '00',
         items: [],
       }
 
