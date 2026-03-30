@@ -15,17 +15,14 @@
               />
               <label>품목구분</label>
             </FloatLabel>
-
             <FloatLabel variant="on">
               <InputText v-model="form.itemName" style="width: 200px" />
               <label>품목명</label>
             </FloatLabel>
-
             <FloatLabel variant="on">
               <InputText v-model="form.itemCd" style="width: 150px" />
               <label>품목코드</label>
             </FloatLabel>
-
             <Button
               label="검색"
               icon="pi pi-search"
@@ -59,8 +56,8 @@
         <Column field="itemCd" header="품목코드" :style="{ width: '110px', textAlign: 'center' }" />
         <Column field="itemName" header="품목명" :style="{ width: '300px', textAlign: 'left' }" />
         <Column field="spec" header="규격" :style="{ width: '90px', textAlign: 'center' }" />
-        <Column field="totQty" header="수량" :style="{ width: '90px', textAlign: 'center' }">
-            <template #body="slotProps">{{ Number(slotProps.data.totQty).toLocaleString() }}</template>
+        <Column field="qty" header="수량" :style="{ width: '90px', textAlign: 'center' }">
+            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
       </DataTable>
     </div>
@@ -111,7 +108,14 @@ const searchList = async () =>{
     const params = {
         ...form
     }
-    purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
+
+    if (  form.itemTypeCd === 'M1'  ){
+        purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
+    }else{
+        purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderDetailList(params)
+    }
+
+
 }
 
 const selectedRow = async () => {
