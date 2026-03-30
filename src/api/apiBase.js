@@ -78,14 +78,8 @@ export const ApiBase = {
       throw err.response
     }
   },
-   saveClientInfo: async(params) => {
-    try{
-      const msg = await API_URL.post(`/client/saveClientInfo`, params)
-
-      return msg.data
-    }catch(err){
-      throw err
-    }
+  saveClientInfo: async(params) => {
+    return await API_URL.post(`/client/saveClientInfo`, params)
   },
   getBusinessNoChecked: async(id) => {
     try{

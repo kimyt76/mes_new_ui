@@ -429,8 +429,8 @@ const saveInfo = async () =>{
     }
 
     try {
-        const msg = await ApiBase.saveClientInfo(params)
-        vSuccess(msg.data.message)
+        const res = await ApiBase.saveClientInfo(params)
+        vSuccess(res.message)
         closeDialog()
     }catch(err){
         handleApiError(err)
