@@ -67,10 +67,10 @@
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 2.5rem" style="text-align: center;"/>
-        <Column field="poNo"                header="PO NO"      :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="poNo"                header="PO NO"      :style="{ width: '120px', textAlign:'center'}" />
         <Column field="workOrderDateSeq"    header="일자-No"    :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="areaName"            header="구역"       :style="{ width: '70px', textAlign:'center'}" />
-        <Column field="itemName"            header="품목명"     :style="{ width: '280px'}" bodyClass="break-words"  >
+        <Column field="areaName"            header="구역"       :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="itemName"            header="품목명"     :style="{ width: '380px'}" bodyClass="break-words"  >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
@@ -83,7 +83,7 @@
                 {{ (slotProps.data.deliveryQty ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="batchCnt"            header="등록배치수" :style="{ width: '80px', textAlign:'right'}" />
+        <Column field="batchCnt"            header="등록배치수" :style="{ width: '90px', textAlign:'right'}" />
         <Column field="clientName"          header="거래처명"   :style="{ width: '200px'}" />
         <Column field="managerName"         header="담당자명"   :style="{ width: '80px', textAlign:'center'}" />
         <Column field="etc"                 header="비고"       :style="{ width: '150px'}" />
