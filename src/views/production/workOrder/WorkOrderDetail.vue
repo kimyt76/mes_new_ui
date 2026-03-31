@@ -235,7 +235,7 @@ const newRow = () => ({
   selected: false,
   workBatchId: null,
   poNo: form.poNo,
-  matNo: '',
+  makeNo: '',
   lotNo: '',
   lotNo2: '',
   proc: {
@@ -279,7 +279,7 @@ const hotColumns = computed(() => {
   return [
     { data: 'selected', type: 'checkbox',  width: 40, className: 'htCenter htMiddle'},
     { data: 'poNo', type: 'text', className: 'htCenter htMiddle',width: 95 },
-    { data: 'matNo', type: 'text', width: 120 , className: 'htCenter htMiddle'},
+    { data: 'makeNo', type: 'text', width: 120 , className: 'htCenter htMiddle'},
     { data: 'lotNo', type: 'text', width: 180 },
     { data: 'lotNo2', type: 'text', width: 180 },
 
@@ -350,7 +350,6 @@ const removeRow = (index) =>{
 
    // 저장 후: ConfirmDialog
   confirm.require({
-    group: 'deleteBatch',
     header: '삭제 확인',
     message: '삭제 후에는 복구 할 수 없습니다.\n작업지시 작업을 삭제하시겠습니까?',
     acceptLabel: '예',     // 템플릿 footer 쓰면 사실상 의미 없음(그냥 남겨도 됨)
@@ -361,7 +360,7 @@ const removeRow = (index) =>{
 
         await ApiWorkOrder.deleteBatch({
           workOrderId: form.workOrderId,
-          workBatchId: row.workBatchId, // ✅ 실제 PK 필드로 변경
+          workBatchId: row.workBatchId, //
         })
 
         workOrderList.value.splice(index, 1)
@@ -517,7 +516,7 @@ const voToRows = (batches) =>{
 
         row.workBatchId = b.workBatchId ?? null
         row.poNo = b.poNo ?? form.poNo ?? ''
-        row.matNo = b.matNo ?? ''
+        row.makeNo = b.makeNo ?? ''
         row.lotNo = b.lotNo ?? ''
         row.lotNo2 = b.lotNo2 ?? ''
 
@@ -563,7 +562,7 @@ const rowsToVoPayload = () =>{
         workBatchId: r.workBatchId || null,
         workOrderId: form.workOrderId || null, // 서버에서 최종 세팅해도 됨
         poNo: r.poNo || form.poNo,
-        matNo: r.matNo,
+        makeNo: r.makeNo,
         lotNo: r.lotNo,
         lotNo2: r.lotNo2,
         regId: userId,

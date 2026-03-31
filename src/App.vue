@@ -5,33 +5,43 @@
     class="big-toast"/>
   <router-view />
   <DynamicDialog />
-  <ConfirmDialog group="deleteBatch">
-  <template #container="{ message, acceptCallback, rejectCallback }">
-    <div class="p-dialog p-component" style="width:360px">
-      <!-- header 제거: 아예 안 그려줌 -->
 
-      <!-- content -->
-      <div class="p-dialog-content px-6 pt-7 pb-5 text-center">
-        <p class="text-lg font-semibold m-0 whitespace-pre-line">
+  <ConfirmDialog>
+  <template #container="{ message, acceptCallback, rejectCallback }">
+    <div class="custom-confirm">
+
+      <!-- ✅ 헤더: 색으로 강조 -->
+      <div class="custom-confirm-header">
+        {{ message.header || '확인' }}
+      </div>
+
+      <div class="custom-confirm-body">
+
+        <!-- 아이콘 작게 -->
+        <div class="custom-confirm-icon-wrap">
+          <i class="pi pi-exclamation-triangle custom-confirm-icon"></i>
+        </div>
+
+        <!-- 텍스트 작게 -->
+        <p class="custom-confirm-message">
           {{ message.message }}
         </p>
       </div>
 
-      <!-- footer -->
-      <div class="p-dialog-footer flex justify-center gap-5" style="padding: 0 64px 22px;">
+      <div class="custom-confirm-footer">
         <Button
-          label="예"
-          class="p-button-sm"
-          style="width:96px"
-          @click="acceptCallback"
-        />
-        <Button
-          label="아니오"
-          class="p-button-sm p-button-outlined"
-          style="width:96px"
+          label="취소"
+          class="custom-btn cancel"
+          outlined
           @click="rejectCallback"
         />
+        <Button
+          label="확인"
+          class="custom-btn accept"
+          @click="acceptCallback"
+        />
       </div>
+
     </div>
   </template>
 </ConfirmDialog>
@@ -110,5 +120,83 @@ onMounted(async () => {
   text-align: center !important;
 }
 
+:deep(.p-dialog-mask) {
+  backdrop-filter: blur(2px);
+}
+.custom-confirm {
+  width: 360px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* ✅ 헤더 강조 */
+.custom-confirm-header {
+  background: #BCAAA4; /* 초록 */
+  color: #fff;
+  font-size: 16px;   /* 작게 */
+  font-weight: 600;
+  padding: 12px 16px;
+}
+
+/* 본문 */
+.custom-confirm-body {
+  padding: 24px 20px 16px;
+  text-align: center;
+}
+
+/* 아이콘 작게 */
+.custom-confirm-icon-wrap {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #fef3c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-confirm-icon {
+  font-size: 20px;  /* 작게 */
+  color: #f59e0b;
+}
+
+/* 텍스트 작게 */
+.custom-confirm-message {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 15px;   /* 기존 25 → 줄임 */
+  line-height: 1.6;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* 버튼 영역 */
+.custom-confirm-footer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+/* 버튼 */
+.custom-btn {
+  min-width: 100px;
+  height: 38px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.cancel {
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+.accept {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+}
 </style>
 
