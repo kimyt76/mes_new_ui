@@ -1,106 +1,140 @@
 <template>
-<Card style="width: 50rem; height: 27rem;">
+<Card style="width: 34rem; height: 18rem;">
     <template #content>
-        <!-- Row 1 -->
-        <div class="grid mb-3">
-            <div class="col-8 flex gap-2">
+        <div class="grid mb-2">
+            <div class="col-6">
                 <FloatLabel variant="on">
-                    <Select
-                      v-model="form.areaCd"
-                      :options="areaCds"
-                      :option-label="codeNm"
-                      :option-value="code"
-                      readonly
+                    <Select v-model="form.areaCd" :options="areaCds"
+                    optionLabel="codeNm"
+                    optionValue="code"
+                    class="w-full"
+                    readonly
                     />
-                    <label for="areaCd" id="areaCd">구역(공장)</label>
+                    <label for="on_label">구역</label>
                 </FloatLabel>
             </div>
-            <div class="col-8 flex gap-2">
+            <div class="col-6">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.workOrderDataSeq" readonly />
+                    <InputText v-model="form.workOrderDateSeq" class="w-full" readonly  />
+                    <label>작업지시번호</label>
                 </FloatLabel>
-                <label for="workOrderData" id="workOrderData">작업지시번호</label>
             </div>
-        </div>
-        <div class="grid mb-3">
-            <div class="col-8 flex gap-2">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.makeNo" readonly />
+            <div class="col-6">
+                 <FloatLabel variant="on">
+                    <InputText v-model="form.makeNo" class="w-full" readonly />
+                    <label>제조번호</label>
                 </FloatLabel>
-                <label for="makeNo" id="makeNo">제조번호</label>
             </div>
-            <div class="col-8 flex gap-2">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.lotNo" readonly />
+            <div class="col-6">
+                 <FloatLabel variant="on">
+                    <InputText v-model="form.lotNo" class="w-full" readonly />
+                    <label>LOT번호</label>
                 </FloatLabel>
-                <label for="lotNo" id="lotNo">LOT번호</label>
             </div>
-        </div>
-        <div class="grid mb-3">
-            <div class="col-12 flex">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.itemName" readonly />
+            <div class="col-12">
+                 <FloatLabel variant="on">
+                    <InputText v-model="form.itemName" class="w-full" readonly />
+                    <label>품목명</label>
                 </FloatLabel>
-                <label for="itemName" id="itemName">품목명</label>
             </div>
-        </div>
-        <div class="grid mb-3">
-            <div class="col-8 flex gap-2">
+            <div class="col-12">
                 <FloatLabel variant="on">
-                    <Select
-                      v-model="form.storageCd"
-                      :options="storageCds"
-                      :option-label="codeNm"
-                      :option-value="code"
+                    <Select v-model="form.storageCd" :options="storages"
+                    optionLabel="codeNm"
+                    optionValue="code"
+                    class="w-full"
                     />
-                    <label for="areaCd" id="areaCd">작업처</label>
+                    <label for="on_label">작업처</label>
                 </FloatLabel>
             </div>
+        </div>
+        <div class="flex justify-end gap-2">
+            <Button label="작업시작" class="p-button-secondary" @click="saveInfo" />
+            <Button label="닫기" outlined class="ml-2" @click="closeDialog"></Button>
         </div>
     </template>
-</Card>
 
-<div class="w-full flex gap-2">
-    <Button label="작업시작" class="p-button-secondary" @click="saveInfo" />
-    <Button label="닫기" outlined class="ml-2" @click="closeDialog"></Button>
-</div>
+</Card>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { useAuthStore } from '@/stores/auth';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { ApiProc } from '@/api/apiProc';
+import { ApiSystems } from '@/api/apiSystem';
+import { useAlertStore } from '@/stores/alert';
+import { isEmpty } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
+import { useConfirm } from 'primevue';
+import { computed, inject, onMounted, reactive, ref } from 'vue';
 
-const { userId } = useAuthStore()
+const confirm = useConfirm()
+const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialogRef = inject('dialogRef')
 const areaCds = ref([])
-const storageCds = ref([])
+const allStorages = ref([]);
+const filteredStorages = computed(() => {
+    if (!form.areaCd) return [];
+    return allStorages.value.filter(s => s.areaCd === form.areaCd);
+});
+const storages = computed(() => filteredStorages.value);
+
 const form = reactive({
     areaCd: '',
     storageCd: '',
-    workOrderDataSeq: '',
+    workOrderDateSeq: '',
     makeNo: '',
     lotNo: '',
     itemName: '',
 
-    userId: userId,
+    workProcId: '',
+    workBatchId: '',
+    workOrderId: '',
+    procStatus: '11',
+    batchStatus: '11',
 })
 
-const saveInfo =()=>{
+const saveInfo = () => {
+    if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
 
+    confirm.require({
+        header: '칭량시작확인',
+        message: '해당 작업을 시작하시겠습니까?\n내용을 다시 한 번 확인해 주세요.\n시작 후에는 취소할 수 없습니다.',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            try {
+                const param = {
+                    workProcId: form.workProcId,
+                    workBatchId: form.workBatchId,
+                    storageCd: form.storageCd,
+                    procStatus: '11',
+                    batchStatus: '11',
+                }
+
+                const res = await ApiProc.updateProcStatus(param)
+                vSuccess(res.message)
+                closeDialog()
+            } catch (err) {
+                handleApiError(err)
+            }
+        }
+    });
 }
 
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
+    const popupForm = dialogRef.value?.data?.form
 
-    console.log('dialogRef.value', dialogRef.value.data)
-    //storageCds.value = await ApiBase.getStorageList(dialogRef.value.data.areaCd)
-
+    if (popupForm) {
+        Object.assign(form, popupForm)
+    }
+    Object.assign(form, popupForm)
+    allStorages.value = await ApiSystems.getStorageCodeList()
 })
 
 const closeDialog = () =>{
     dialogRef.value.close()
 }
+
 
 </script>
 

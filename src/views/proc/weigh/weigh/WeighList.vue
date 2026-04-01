@@ -21,7 +21,7 @@
                 <label for="on_label">구역</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <InputText id="on_label1" v-model="form.matNo" />
+                <InputText id="on_label1" v-model="form.makeNo" />
                 <label for="on_label1">제조번호</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -60,23 +60,25 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaName"        header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
+        <Column field="areaCd"          header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; point">
+                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.procOrderDate  }}
                 </div>
             </template>
         </Column>
         <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'center'}" ></Column>
-        <Column field="matNo"       header="제조번호"  :style="{ width: '160px', textAlign: 'center'}" />
+        <Column field="makeNo"      header="제조번호"  :style="{ width: '160px', textAlign: 'center'}" />
         <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '430px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
         <Column field="orderQty"    header="지시수량"   :style="{ width: '90px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="procStatus" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatus"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" >
+
+        </Column>
     </DataTable>
 </div>
 </template>
@@ -93,14 +95,14 @@ import WeighRegPop from './WeighRegPop.vue';
 const dialog = useDialog()
 const dt = ref(null);
 const weighList = ref([])
-const processStates = ref([])
+const procStatuss = ref([])
 const areaCds = ref([])
 
 const form = reactive({
   strDate: '',
   endDate: '',
   areaCd: '',
-  matNo: '',
+  makeNo: '',
   itemCd: '',
   itemName: '',
   procStatus: '',
@@ -147,12 +149,12 @@ const srhList = async () =>{
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    procStatus.value = await ApiCommon.getCodeList('PROC_STATUS')
+    procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "11", "12", "99"];
-    procStatus.value = procStatus.value.filter(v => want.includes(v.code));
+    procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
 
+    form.strDate = minMonth(todayKST(), 3)
     form.endDate = todayKST()
-    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({

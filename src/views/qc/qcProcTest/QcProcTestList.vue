@@ -74,7 +74,7 @@
                 </div>
             </template>
         </Column>
-        <Column field="matNo"           header="제조번호" :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="makeNo"           header="제조번호" :style="{ width: '150px', textAlign: 'center'}" />
         <Column field="lotNo"           header="1차포장LOT" :style="{ width: '150px', textAlign: 'center'}" />
         <Column field="lotNo2"          header="2차포장LOT" :style="{ width: '150px', textAlign: 'center'}" />
         <Column field="batchStatus"     header="배치상태" :style="{ width: '90px', textAlign: 'center'}" >

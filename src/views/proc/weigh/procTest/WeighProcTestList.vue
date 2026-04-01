@@ -21,7 +21,7 @@
                 <label for="on_label">구역</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <InputText id="on_label1" v-model="form.matNo" />
+                <InputText id="on_label1" v-model="form.makeNo" />
                 <label for="on_label1">제조번호</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -69,7 +69,7 @@
             </template>
         </Column>
         <Column field="poNo"        header="PO No"    :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="logNo"       header="LOT번호"  :style="{ width: '200px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="itemCd"      header="품목코드"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
         <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }"></Column>
@@ -98,7 +98,7 @@ const form = reactive({
   strDate: '',
   endDate: '',
   areaCd: '',
-  matNo: '',
+  makeNo: '',
   itemCd: '',
   itemName: '',
   processState: '',

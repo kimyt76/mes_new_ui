@@ -14,7 +14,7 @@
             <th class="cellBorder cellHeader">제조일자</th>
             <td class="cellBorder">{{ form.matDate }}</td>
             <th class="cellBorder cellHeader">제조번호</th>
-            <td class="cellBorder">{{ form.matNo }}</td>
+            <td class="cellBorder">{{ form.makeNo }}</td>
             <th class="cellBorder cellHeader">제조량</th>
             <td class="cellBorder">{{ form.workQty }}</td>
             <th class="cellBorder cellHeader">고객사</th>

@@ -4,7 +4,7 @@
       <tbody>
         <tr>
             <th class="cellBorder cellHeader">제조번호</th>
-            <td class="cellBorder">{{ form.matNo }}</td>
+            <td class="cellBorder">{{ form.makeNo }}</td>
             <th class="cellBorder cellHeader">품목코드</th>
             <td class="cellBorder">{{ form.itemCd }}</td>
             <th class="cellBorder cellHeader">품목명</th>
@@ -148,7 +148,7 @@ const isStarted = ref(true)
 const dialog = useDialog()
 const { userId} = useAuthStore()
 const form = reactive({
-    matNo: '',
+    makeNo: '',
     itemCd:'',
     itemName: '',
     procOrderDate: '',
@@ -159,7 +159,11 @@ const form = reactive({
     poNo:'',
     etc: '',
 
+    areaCd: '',
     barcode: '',
+    workProcId: '',
+    workBatchId: '',
+    workOrderId: '',
     userId: userId,
 })
 const ALL_TAB = 'ALL'
@@ -412,23 +416,26 @@ const openLookupPopup = (type, row) => {
                 content: { style: { overflow: 'hidden' } },
             },
         },
-        data: row,
+        data: {
+            form: form
+        },
         onClose: (event) =>{
-            if( !event.data) return
-
             if (type === 'ITEM_CODE') {
-
+                if (!event.data) return;
+                // ...
             } else if (type === 'CONTAINER_WEIGHT') {
-
+                if (!event.data) return;
+                // ...
             } else if (type === 'WEIGH_USER') {
-
+                if (!event.data) return;
+                // ...
             } else if (type === 'CONFIRM_USER') {
-
+                if (!event.data) return;
+                // ...
             } else {
-
+                loadWeighInfo();
             }
         },
-
     } )
 }
 
@@ -452,30 +459,36 @@ const saveInfo = () =>{
 
 /** 버튼들 */
 const refresh = async () => {
-  // API 재호출 필요 시 여기
+    await loadWeighInfo()
 }
 
 const downloadExcel = () => {
   // 기존 로직 사용
 }
 
+const createWeighInfoParams = () => ({
+    workProcId: dialogRef.value.data.workProcId,
+    itemCd: dialogRef.value.data.itemCd,
+})
 
+const fetchWeighInfo = async () => {
+    const params = createWeighInfoParams()
+    return await ApiProc.getWeighInfo(params)
+}
 
+const bindWeighInfo = (data) => {
+    Object.assign(form, data.procWeigh || {})
+    matUseDataList.value = data.weightBomList || []
+    isStarted.value = data.procWeigh?.procStatus === '00'
+    console.log('isStarted.value', isStarted.value)
+}
 
-
+const loadWeighInfo = async () => {
+    const data = await fetchWeighInfo()
+    bindWeighInfo(data)
+}
 onMounted(async () => {
-    console.log('dialogRef.value.data.procStatus111', dialogRef.value.data.procStatus)
-    if ( dialogRef.value.data.procStatus !== '00') {
-        isStarted.value = false
-    }
-
-    const params = {
-        workProcId: dialogRef.value.data.workProcId,
-        itemCd : dialogRef.value.data.itemCd,
-    }
-    const res = await ApiProc.getWeighInfo(params)
-    Object.assign(form, res)
-    matUseDataList.value = res.weighs
+    await loadWeighInfo()
 })
 
 

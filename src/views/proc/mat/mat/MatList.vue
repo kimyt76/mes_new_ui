@@ -69,7 +69,7 @@
             </template>
         </Column>
         <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'right'}" ></Column>
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
+        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
         <Column field="clientName"  header="납품처명"  :style="{ width: '200px'}" />

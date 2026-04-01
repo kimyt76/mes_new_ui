@@ -33,7 +33,7 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.procStatus" :options="procStatuss"
+                <Select v-model="form.procState" :options="processStates"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 100px"
@@ -74,13 +74,14 @@
             </template>
         </Column>
         <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
+        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
-        <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="orderQty"    header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="batchStateus" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="processState" header="작업상태"   :style="{ width: '80px', textAlign: 'right'}" />
         <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'right'}" />
         <Column field="procStatus"   header="충전상태"   :style="{ width: '80px', textAlign: 'right'}" />
     </DataTable>
@@ -109,7 +110,7 @@ const form = reactive({
   itemCd: '',
   itemName: '',
   clientName: '',
-  processState: '',
+  procState: '',
 
   proseccCd : 'PRC004',
 })

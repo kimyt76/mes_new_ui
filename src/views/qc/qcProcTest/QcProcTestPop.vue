@@ -14,7 +14,7 @@
                 <th class="cellBorder cellHeader">제조일자</th>
                 <td class="cellBorder">{{ form.procOrderDate }}</td>
                 <th class="cellBorder cellHeader">제조번호</th>
-                <td class="cellBorder">{{ form.matNo }}</td>
+                <td class="cellBorder">{{ form.makeNo }}</td>
                 <th class="cellBorder cellHeader">표시량</th>
                 <td class="cellBorder">{{ form.spec }}</td>
                 <th class="cellBorder cellHeader">점검자</th>
@@ -147,7 +147,7 @@ const form = reactive({
     itemCd: '',
     itemName: '',
     procOrderDate: '',
-    matNo: '',
+    makeNo: '',
     lotNo:'',
     lotNo2: '',
     spec: '',

@@ -74,7 +74,7 @@
             </template>
         </Column>
         <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="matNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
+        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
         <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
