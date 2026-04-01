@@ -57,6 +57,43 @@ export const ApiQc = {
         return await API_URL.post('/qcTest/updateQcTestInfo', params)
     },
 
+    getPrintTest: async(ids) => {
+        try{
+            const res = await API_URL.post('/qcTest/getPrintTest', ids,{
+                responseType: 'blob'
+            })
+            return res
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    certificateDownloadExcel: async (id) => {
+        try {
+            const res = await API_URL.get(`/qcTest/certificateDownloadExcel/${id}`, {
+                responseType: 'blob'
+            })
+
+            return res.data
+        } catch (err) {
+            console.error('Download error:', err)
+            throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+        }
+    },
+
+    tesetDownloadExcel: async (id) => {
+        try {
+            const res = await API_URL.get(`/qcTest/tesetDownloadExcel/${id}`, {
+                responseType: 'blob'
+            })
+
+            return res.data
+        } catch (err) {
+            console.error('Download error:', err)
+            throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+        }
+    },
+
     /**
      * 품질검사유형
      * @returns
@@ -88,6 +125,7 @@ export const ApiQc = {
     saveQcTestTypeMethod: async(params) => {
         return await API_URL.post('/qcTestType/saveQcTestTypeMethod' , params)
     },
+
 
 
     /**

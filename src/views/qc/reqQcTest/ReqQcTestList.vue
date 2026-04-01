@@ -57,6 +57,7 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
+    <Button label="시험일지(PDF)" class="p-button-secondary" @click="printTest"></Button>
     <Button label="재검사요청" class="p-button-secondary" @click="selectBtnClick('R',selectItem)"></Button>
     <Button label="검사요청" class="p-button-secondary" @click="selectBtnClick('I',selectItem)"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
@@ -125,6 +126,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
 import { useAlertStore } from '@/stores/alert';
 import { addMonth, minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
@@ -158,6 +160,46 @@ const form = reactive({
     menuType: 'R'
 })
 
+
+const printTest = async () =>{
+    try {
+        if (!selectItem.value || selectItem.value.length === 0) {
+            vInfo('출력할 항목을 선택하세요.')
+            return
+        }
+
+        const hasReq = selectItem.value.some(item => item.passState === 'REQ');
+        if (hasReq) {
+            vInfo('시험중 이상만 출력이 가능합니다.')
+            return
+        }
+
+        // 체크된 row에서 qcTestId만 추출
+        const qcTestIds = selectItem.value.map(item => item.qcTestId)
+
+        // 서버에 PDF 생성 요청
+        const res = await ApiQc.getPrintTest(qcTestIds)
+
+        // blob 생성
+        const blob = new Blob([res.data], { type: 'application/pdf' })
+        const url = window.URL.createObjectURL(blob)
+        window.open(url, '_blank')
+
+        // 다운로드 방식
+        // const link = document.createElement('a')
+        // link.href = url
+        // link.download = `qc-test_${new Date().getTime()}.pdf`
+        // document.body.appendChild(link)
+        // link.click()
+        // document.body.removeChild(link)
+
+        // window.URL.revokeObjectURL(url)
+    } catch (err) {
+        handleApiError(err)
+    }
+}
+
+
 const srhList = async () =>{
     const params = {
         ...form
@@ -179,7 +221,6 @@ const selectBtnClick = (type, data) =>{
     }
 
     const selected = data[0]
-
     selectRowClick(type, selected.qcTestId, selected.passState)
 }
 
@@ -231,6 +272,7 @@ const selectRowClick = (type, id, passState) =>{
         }
     })
 }
+
 
 onMounted(async () => {
     areaCds.value = await ApiCommon.getCodeList('area')

@@ -239,9 +239,9 @@
 
   <div class="flex gap-2 mt-3">
     <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
-    <Button label="성적서(PDF)" outlined />
-    <Button label="성적서(EXCEL)" outlined />
-    <Button label="시험일지(EXCEL)" outlined />
+    <Button label="성적서(PDF)"   @click="printPdf"  />
+    <Button label="성적서(EXCEL)" outlined  @click="downLoadExcel('C')" />
+    <Button label="시험일지(EXCEL)" outlined  @click="downLoadExcel('T')"/>
     <Button label="닫기" outlined @click="closeDialog" />
   </div>
 
@@ -255,6 +255,7 @@ import CommonEditTable from '@/components/CommonEditTable.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
@@ -349,6 +350,50 @@ const saveInfo = async () =>{
 
     const res = await ApiQc.updateQcTestInfo(params)
     vSuccess(res.message)
+}
+
+const printPdf = async () =>{
+    try {
+        // 체크된 row에서 qcTestId만 추출
+        const qcTestIds = [form.qcTestId]
+
+        // 서버에 PDF 생성 요청
+        const res = await ApiQc.getPrintTest(qcTestIds)
+
+        // blob 생성
+        const blob = new Blob([res.data], { type: 'application/pdf' })
+        const url = window.URL.createObjectURL(blob)
+        window.open(url, '_blank')
+    } catch (err) {
+        handleApiError(err)
+    }
+}
+
+const downLoadExcel = async (type) =>{
+    try {
+        let data
+
+        if ( type === 'C') {
+            data = await ApiQc.certificateDownloadExcel(form.qcTestId)
+        }else{
+            data = await ApiQc.tesetDownloadExcel(form.qcTestId)
+        }
+
+        const blob = new Blob([data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = type === 'C'? `[${form.testNo}] 시험지시 및 성적서.xlsx`: `[${form.testNo}] 시험일지.xlsx`;
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+    } catch(err) {
+        handleApiError(err)
+    }
 }
 
 const openPop = (type) =>{
