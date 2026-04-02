@@ -57,7 +57,7 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="시험일지(PDF)" class="p-button-secondary" @click="printPdf"></Button>
+    <Button label="시험일지(PDF)" severity="help" @click="printPdf"></Button>
     <Button label="재검사요청" class="p-button-secondary" @click="selectBtnClick('R',selectItem)"></Button>
     <Button label="검사요청" class="p-button-secondary" @click="selectBtnClick('I',selectItem)"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
