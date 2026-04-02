@@ -134,6 +134,7 @@
     />
     <Button
         label="전체삭제"
+        severity="danger"
         @click="removeAll"
         class="p-button-xm"
     />

@@ -358,7 +358,7 @@ const printPdf = async () =>{
         const qcTestIds = [form.qcTestId]
 
         // 서버에 PDF 생성 요청
-        const res = await ApiQc.getPrintTest(qcTestIds)
+        const res = await ApiQc.getPrintAll(qcTestIds)
 
         // blob 생성
         const blob = new Blob([res.data], { type: 'application/pdf' })

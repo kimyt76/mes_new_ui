@@ -57,7 +57,7 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="시험일지(PDF)" class="p-button-secondary" @click="printTest"></Button>
+    <Button label="시험일지(PDF)" class="p-button-secondary" @click="printPdf"></Button>
     <Button label="재검사요청" class="p-button-secondary" @click="selectBtnClick('R',selectItem)"></Button>
     <Button label="검사요청" class="p-button-secondary" @click="selectBtnClick('I',selectItem)"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
@@ -94,13 +94,13 @@
                 <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
         </Column>
         <Column field="storageCd"       header="창고명"    :style="{ width: '150px', textAlign: 'center'}" />
-        <Column field="testState"       header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" >
+        <Column field="testStateName"   header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <span
                     class="action-link"
-                    :class="slotProps.data.passState === 'REQ' ? 'action-register' : 'action-edit'"
+                    :class="slotProps.data.testState === 'REQ' ? 'action-register' : 'action-edit'"
                 >
-                    {{ slotProps.data.testState}}
+                    {{ slotProps.data.testStateName}}
                 </span>
             </template>
         </Column>
@@ -161,14 +161,14 @@ const form = reactive({
 })
 
 
-const printTest = async () =>{
+const printPdf = async () =>{
     try {
         if (!selectItem.value || selectItem.value.length === 0) {
             vInfo('출력할 항목을 선택하세요.')
             return
         }
 
-        const hasReq = selectItem.value.some(item => item.passState === 'REQ');
+        const hasReq = selectItem.value.some(item => item.testState === 'REQ');
         if (hasReq) {
             vInfo('시험중 이상만 출력이 가능합니다.')
             return

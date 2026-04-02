@@ -3,9 +3,9 @@
     <Card class="w-[400px] h-[400px] shadow-2xl rounded-2xl">
       <template #title>
         <div class="flex flex-row items-center justify-center mb-6">
-            <Avatar size="48" shape="circle" class="mr-3">
+            <!-- <Avatar size="48" shape="circle" class="mr-3">
                 <img src="/logo_jincostech.jpg" alt="Logo" />
-            </Avatar>
+            </Avatar> -->
             <h2 class="font-bold text-5lg leading-[48px]">MES LOGIN</h2>
         </div>
       </template>

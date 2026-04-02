@@ -176,7 +176,7 @@
 <div class="w-full flex gap-2 justify-end mt-2">
     <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
     <Button label="바코드" icon="pi pi-barcode"  outlined @click="barcodePrint"></Button>
-    <Button label="삭제"  @click="deletePur"></Button>
+    <Button label="삭제"  severity="danger" @click="deletePur"></Button>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
     <Dialog

@@ -89,21 +89,15 @@
                 <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
         </Column>
         <Column field="storageCd"       header="창고명"    :style="{ width: '130px', textAlign: 'center'}" />
-        <Column field="testState"       header="검사유형"  :style="{ width: '90px', textAlign: 'center'}" >
-
+        <Column field="retestYn"       header="검사유형"  :style="{ width: '90px', textAlign: 'center'}" >
+                <template #body="slotProps">{{ slotProps.data.retestYn === 'Y' ? '재검사' : '입고검사' }}</template>
         </Column>
-        <Column field="testState"       header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" />
-        <Column field="testState"       header="판정일자"  :style="{ width: '90px', textAlign: 'center'}" />
-        <Column field="passStateName"   header="판정상태"  :style="{ width: '90px', textAlign: 'center'}" >
+        <Column field="testState"   header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <span
-                    class="action-link"
-                    :class="slotProps.data.passState === 'REQ' ? 'action-register' : 'action-edit'"
-                >
-                    {{ slotProps.data.passState === 'REQ' ? '[등록]' : '[수정]' }}
-                </span>
+                    {{ slotProps.data.testStateName}}
             </template>
         </Column>
+        <Column field="confirmDate"     header="판정일자"  :style="{ width: '110px', textAlign: 'center'}" />
     </DataTable>
 </div>
 
@@ -112,12 +106,15 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
+import { useAlertStore } from '@/stores/alert';
 import { minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import ReqQcTestPop from '../reqQcTest/ReqQcTestPop.vue';
 
+const { vInfo, vWarning} = useAlertStore()
 const dt = ref(null);
 const dialog = useDialog()
 const selectItem = ref(null);
@@ -177,10 +174,32 @@ const selectRowClick = (obj) =>{
     )
 }
 
-const printPdf = () =>{
+const printPdf = async () =>{
+    try {
+        if (!selectItem.value || selectItem.value.length === 0) {
+            vInfo('출력할 항목을 선택하세요.')
+            return
+        }
 
+        const hasReq = selectItem.value.some(item => item.testState !== 'END');
+        if (hasReq) {
+            vInfo('시험완료 건만 출력이 가능합니다.')
+            return
+        }
+        // 체크된 row에서 qcTestId만 추출
+        const qcTestIds = selectItem.value.map(item => item.qcTestId)
+
+        // 서버에 PDF 생성 요청
+        const res = await ApiQc.getPrintCertificate(qcTestIds)
+
+        // blob 생성
+        const blob = new Blob([res.data], { type: 'application/pdf' })
+        const url = window.URL.createObjectURL(blob)
+        window.open(url, '_blank')
+    } catch (err) {
+        handleApiError(err)
+    }
 }
-
 
 onMounted(async () => {
     areaCds.value = await ApiCommon.getCodeList('area')

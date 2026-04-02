@@ -42,7 +42,7 @@
         <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"/>
         <Button label="소요량(원재료)" class="btn-use" @click="calculate('M')"/>
         <Button label="소요량(부자재)" class="btn-use" @click="calculate('P')"/>
-        <Button label="삭제" class="btn-del" />
+        <Button label="삭제" class="btn-del" severity="danger" />
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" ></Button>
     </div>
     <div class="flex flex-col mt-2">

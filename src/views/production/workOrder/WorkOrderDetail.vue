@@ -140,7 +140,7 @@
   <div class="flex justify-end gap-2 mt-2">
     <Button v-if="form.workOrderId" label="작업지시" @click="updateWorkOrder" />
     <Button label="저장" class="p-button-secondary" @click="saveInfo" />
-    <Button label="삭제" @click="clearList" />
+    <Button label="삭제" severity="danger" @click="clearList" />
     <Button label="닫기"   outlined class="ml-2" @click.stop="closeDialog" />
   </div>
 </template>

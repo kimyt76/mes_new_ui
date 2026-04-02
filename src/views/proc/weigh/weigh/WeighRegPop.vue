@@ -383,12 +383,16 @@ const handleCellClickFromHot = (event, coords, td) => {
 }
 
 /** 팝업 호출() */
-const openLookupPopup = (type, row) => {
+const openLookupPopup = (type, row = null) => {
     let title = ''
-    let currentComponet = ''
+    let currentComponet = null
+
+    // row를 넘겨야 하는 팝업 타입
+    const rowTargetTypes = ['ITEM_CODE', 'CONTAINER_WEIGHT', 'WEIGH_USER', 'CONFIRM_USER']
+    const shouldPassRow = rowTargetTypes.includes(type)
 
     if (type === 'ITEM_CODE') {
-        if ( row.itemCd === 'JRMSC00011') return
+        if (row?.itemCd === 'JRMSC00011') return
         title = '바코드 칭량 입력'
         currentComponet = WeighBarcodeRegPop
     } else if (type === 'CONTAINER_WEIGHT') {
@@ -402,7 +406,7 @@ const openLookupPopup = (type, row) => {
         currentComponet = WorkerPop
     } else {
         title = '칭량 시작'
-        currentComponet  = ProcStartPop
+        currentComponet = ProcStartPop
     }
 
     dialog.open(currentComponet, {
@@ -417,27 +421,57 @@ const openLookupPopup = (type, row) => {
             },
         },
         data: {
-            form: form
+            form,
+            ...(shouldPassRow ? { row } : {}),
+            type,
         },
-        onClose: (event) =>{
-            if (type === 'ITEM_CODE') {
-                if (!event.data) return;
-                // ...
-            } else if (type === 'CONTAINER_WEIGHT') {
-                if (!event.data) return;
-                // ...
-            } else if (type === 'WEIGH_USER') {
-                if (!event.data) return;
-                // ...
-            } else if (type === 'CONFIRM_USER') {
-                if (!event.data) return;
-                // ...
-            } else {
-                loadWeighInfo();
+        onClose: (event) => {
+            if (!event?.data) {
+                if (!shouldPassRow) {
+                    loadWeighInfo()
+                }
+                return
             }
+            // row를 넘긴 팝업이면 선택된 row에 값 반영
+            if (shouldPassRow && row) {
+                applyPopupResultToRow(type, row, event.data)
+                return
+            }
+            // 그 외 팝업은 기존 처리
+            loadWeighInfo()
         },
-    } )
+    })
 }
+
+/**
+ * 팝업 결과를 row에 반영
+ * event.data 구조에 맞게 필드명만 맞춰주면 됨
+ */
+const applyPopupResultToRow = (type, row, data) => {
+    if (type === 'ITEM_CODE') {
+        // 예시: 바코드 팝업에서 넘겨주는 값
+        row.barcodeNo = data.barcodeNo ?? row.barcodeNo
+        row.lotNo = data.lotNo ?? row.lotNo
+        row.itemCd = data.itemCd ?? row.itemCd
+        row.itemNm = data.itemNm ?? row.itemNm
+        row.weighQty = data.weighQty ?? row.weighQty
+    } else if (type === 'CONTAINER_WEIGHT') {
+        // 예시: 용기무게 선택 팝업 반환값
+        row.containerWeight = data.containerWeight ?? row.containerWeight
+        row.containerCd = data.containerCd ?? row.containerCd
+        row.containerNm = data.containerNm ?? row.containerNm
+    } else if (type === 'WEIGH_USER') {
+        // 예시: 작업자 선택 팝업 반환값
+        row.weighUserId = data.userId ?? row.weighUserId
+        row.weighUserNm = data.userNm ?? row.weighUserNm
+    } else if (type === 'CONFIRM_USER') {
+        // 예시: 확인자 선택 팝업 반환값
+        row.confirmUserId = data.userId ?? row.confirmUserId
+        row.confirmUserNm = data.userNm ?? row.confirmUserNm
+    }
+}
+
+
 
 /** ✅ 데이터 정규화 */
 const normalizeRows = (rows) => {
