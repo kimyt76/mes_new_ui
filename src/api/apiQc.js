@@ -57,9 +57,46 @@ export const ApiQc = {
         return await API_URL.post('/qcTest/updateQcTestInfo', params)
     },
 
+    /**
+     * 시험일지 pdf
+     * @param {*} ids
+     * @returns
+     */
     getPrintTest: async(ids) => {
         try{
             const res = await API_URL.post('/qcTest/getPrintTest', ids,{
+                responseType: 'blob'
+            })
+            return res
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /**
+     * 성적서 pdf
+     * @param {*} ids
+     * @returns
+     */
+    getPrintCertificate: async(ids) => {
+        try{
+            const res = await API_URL.post('/qcTest/getPrintCertificate', ids,{
+                responseType: 'blob'
+            })
+            return res
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /**
+     * 성적서, 시험일지 전부 pdf
+     * @param {*} ids
+     * @returns
+     */
+    getPrintAll: async(ids) => {
+        try{
+            const res = await API_URL.post('/qcTest/getPrintAll', ids,{
                 responseType: 'blob'
             })
             return res
