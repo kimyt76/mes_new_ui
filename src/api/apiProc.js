@@ -3,12 +3,17 @@ import { API_URL } from '.'
 //공정 API
 export const ApiProc = {
 
+    /**  공통 */
   getWorkerList: async(id) => {
       return  await API_URL.get(`/procCommon/getWorkerList/${id}`)
   },
 
   getEquipmentList: async(id) => {
       return  await API_URL.get(`/procCommon/getEquipmentList/${id}`)
+  },
+
+  updateProcStatus: async(params) => {
+    return await API_URL.post(`/procCommon/updateProcStatus`, params)
   },
 
 
@@ -41,13 +46,10 @@ export const ApiProc = {
   },
 
 
-
-
   //제조
  getMatList: async(params) => {
       return await API_URL.post('/procMat/getMatList', params)
   },
-
 
 
   //코팅
@@ -61,8 +63,6 @@ export const ApiProc = {
       throw err.response
     }
   },
-
-
 
 
   //충전
