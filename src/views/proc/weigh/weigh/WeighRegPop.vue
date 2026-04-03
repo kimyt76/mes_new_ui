@@ -139,12 +139,14 @@ import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import Tabs from 'primevue/tabs'
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
+import * as XLSX from 'xlsx'
 import BagWeightInfoPop from '../../common/BagWeightInfoPop.vue'
 import BagWeightPop from '../../common/BagWeightPop.vue'
 import ProcStartPop from '../../common/ProcStartPop.vue'
 import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
+const hotTable = ref(null)
 const dialogRef = inject('dialogRef')
 const isStarted = ref(true)
 const dialog = useDialog()
@@ -232,8 +234,8 @@ watch(sangGubunOptions, (opts) => {
   }
 }, { immediate: true })
 
-/** ✅ 현재 탭 + 성상 필터 적용 리스트 */
-const currentTabList = computed(() => {
+  /** ✅ 현재 탭 + 성상 필터 적용 리스트 */
+  const currentTabList = computed(() => {
   const tab = activeSangGubun.value
   const allowedSs = new Set(
     Object.entries(sungsangCheckedMap)
@@ -345,7 +347,7 @@ const handleAfterChange = (changes, source) => {
 
       const total = weighQty + containerWeight
       row.totalQty = total
-      // ✅ 화면 반영 보장
+      // 화면 반영 보장
       //if (hot) hot.setDataAtRowProp(rowIndex, 'totalQty', total, 'calcTotalQty')
     }
   }
@@ -370,21 +372,25 @@ const handleCellClickFromHot = (event, coords, td) => {
 
   const now = Date.now()
 
-  const bagWeightColIndex = hotColumns.value.findIndex(
-    col => col.data === 'bagWeight'
-  )
+  const itemCdColIndex = hotColumns.value.findIndex((col) => col.data === 'itemCd')
+  const itemNameColIndex = hotColumns.value.findIndex((col) => col.data === 'itemName')
+  const bagWeightColIndex = hotColumns.value.findIndex(col => col.data === 'bagWeight')
+  const containerLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.CONTAINER)
+  const weigherLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.WEIGHER)
+  const confirmLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.CONFIRM)
 
-  const containerLookupColIndex = hotColumns.value.findIndex(
-    col => col.data === LOOKUP_PROP.CONTAINER
-  )
+  // 같은 itemCd가 여러 건이면 testNo 없는 다음 row를 찾아 팝업에 전달
+  if (coords.col === itemCdColIndex || coords.col === itemNameColIndex) {
+    const targetRow = findTargetRowForItemCd(rowData)
 
-  const weigherLookupColIndex = hotColumns.value.findIndex(
-    col => col.data === LOOKUP_PROP.WEIGHER
-  )
+    if (!targetRow) {
+        // 같은 itemCd가 모두 사용된 상태
+        return
+    }
 
-  const confirmLookupColIndex = hotColumns.value.findIndex(
-    col => col.data === LOOKUP_PROP.CONFIRM
-  )
+    openLookupPopup('ITEM_CODE', targetRow)
+    return
+  }
 
   // 1. 용기무게 돋보기 클릭
   if (coords.col === containerLookupColIndex) {
@@ -431,8 +437,47 @@ const handleCellClickFromHot = (event, coords, td) => {
     col: coords.col,
     time: now,
   }
-
 }
+
+/**
+ * 같은 itemCd가 여러 줄일 경우
+ * testNo가 비어있는 첫 번째 row를 우선 대상으로 사용
+ * - 클릭한 row의 itemCd 기준으로 전체 목록(matUseDataList)에서 탐색
+ * - 모두 사용된 상태면 클릭한 row 그대로 반환
+ */
+const findTargetRowForItemCd = (clickedRow) => {
+  if (!clickedRow?.itemCd) return clickedRow
+
+  const sameItemRows = matUseDataList.value.filter(
+    (r) => String(r.itemCd ?? '') === String(clickedRow.itemCd ?? '')
+  )
+
+  if (sameItemRows.length <= 1) {
+    return !String(clickedRow.testNo ?? '').trim() ? clickedRow : null
+  }
+
+  const clickedIndex = sameItemRows.findIndex((r) => r === clickedRow)
+  if (clickedIndex === -1) {
+    return sameItemRows.find((r) => !String(r.testNo ?? '').trim()) || null
+  }
+
+  // 현재 row 포함, 뒤쪽부터 먼저 탐색
+  for (let i = clickedIndex; i < sameItemRows.length; i++) {
+    if (!String(sameItemRows[i].testNo ?? '').trim()) {
+      return sameItemRows[i]
+    }
+  }
+
+  // 뒤에 없으면 앞쪽 순환 탐색
+  for (let i = 0; i < clickedIndex; i++) {
+    if (!String(sameItemRows[i].testNo ?? '').trim()) {
+      return sameItemRows[i]
+    }
+  }
+
+  return null
+}
+
 
 const lastMouseDown = ref({
   row: -1,
@@ -477,9 +522,6 @@ const handleAfterSelection = (row, column) =>{
         time: now,
     }
 }
-
-
-
 
 /** 팝업 호출() */
 const openLookupPopup = (type, row = null) => {
@@ -555,8 +597,13 @@ const applyPopupResultToRow = (type, row, data) => {
         row.barcodeNo = data.barcodeNo ?? row.barcodeNo
         row.lotNo = data.lotNo ?? row.lotNo
         row.itemCd = data.itemCd ?? row.itemCd
-        row.itemNm = data.itemNm ?? row.itemNm
-        row.weighQty = data.weighQty ?? row.weighQty
+        row.itemName = data.itemName ?? row.itemName
+        row.orderQty = data.orderQty ?? row.orderQty
+        row.testNo = data.testNo ?? row.testNo
+
+        const orderQty = toNumber(row.orderQty)
+        const bagWeight = toNumber(row.bagWeight)
+
     } else if (type === 'CONTAINER_WEIGHT') {
         // 예시: 용기무게 선택 팝업 반환값
         row.bagWeight = data.weight ?? row.weight
@@ -598,7 +645,26 @@ const refresh = async () => {
 }
 
 const downloadExcel = () => {
-  // 기존 로직 사용
+  const rows = currentTabList.value.map(row => ({
+    품목코드: row.itemCd ?? '',
+    품목명: row.itemName ?? '',
+    성상: row.appearance ?? '',
+    상구분: row.phase ?? '',
+    지시량: row.orderQty ?? 0,
+    칭량: row.weighQty ?? 0,
+    용기무게: row.bagWeight ?? 0,
+    총량: row.totalQty ?? 0,
+    사용시험번호: row.testNo ?? '',
+    완료: row.weighYn ?? '',
+    칭량자: row.weigher ?? '',
+    확인자: row.confirmer ?? '',
+  }))
+
+  const ws = XLSX.utils.json_to_sheet(rows)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, '칭량처방리스트')
+
+  XLSX.writeFile(wb, '칭량_처방_리스트.xlsx')
 }
 
 const createWeighInfoParams = () => ({
