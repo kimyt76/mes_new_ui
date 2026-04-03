@@ -139,6 +139,8 @@ import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import Tabs from 'primevue/tabs'
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue'
+import BagWeightInfoPop from '../../common/BagWeightInfoPop.vue'
+import BagWeightPop from '../../common/BagWeightPop.vue'
 import ProcStartPop from '../../common/ProcStartPop.vue'
 import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
@@ -164,6 +166,7 @@ const form = reactive({
     workProcId: '',
     workBatchId: '',
     workOrderId: '',
+    procCd: 'PRC001',
     userId: userId,
 })
 const ALL_TAB = 'ALL'
@@ -309,11 +312,11 @@ const hotColumns = ref([
   { data: 'itemName', readOnly: true },                       // 3 품목명
   { data: FIELD.SUNGSANG, readOnly: true , className: 'htCenter' },                   // 4 성상
   { data: FIELD.SANGGUBUN, readOnly: true, className: 'htCenter'  },                  // 5 상구분
-  { data: 'orderQty' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight', readOnly: true },                                        // 6 지시량
-  { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },                                       // 7 칭량
-  { data: 'bagWeight' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight'},                                // 8 용기무게
+  { data: 'orderQty' , type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight', readOnly: true },                                        // 6 지시량
+  { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight' },                                       // 7 칭량
+  { data: 'bagWeight' , type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight'},                                // 8 용기무게
   { data: LOOKUP_PROP.CONTAINER, readOnly: true, renderer: magnifierRenderer }, // 9 '-' (용기무게 조회)
-  { data: 'totalQty', readOnly: true , type: 'numeric', numericFormat: { pattern: '0,0.00000' },className: 'htRight'},                       // 10 총량
+  { data: 'totalQty', readOnly: true , type: 'numeric', numericFormat: { pattern: '0,0.000' },className: 'htRight'},                       // 10 총량
   { data: 'testNo', readOnly: true , className: 'htCenter'},                         // 11 사용시험번호
   { data: FIELD.WEIGH_YN, type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N' , className: 'htCenter'}, // 12 완료
   { data: 'weigher', className: 'htCenter' },                      // 13 칭량자
@@ -361,26 +364,122 @@ const handleCellClickFromHot = (event, coords, td) => {
   // 현재 탭에서 보이는 row(필터 적용 후)
   const rowData = currentTabList.value[coords.row]
   if (!rowData) return
+  if (!coords || coords.row < 0 || coords.col < 0) return
 
-  // 클릭한 col의 prop 얻기(Handsontable API)
-  // BaseHotTable에서 instance를 넘겨주지 않는다면, hotColumns 기준으로 매핑
-  const colDef = hotColumns.value[coords.col]
-  const prop = colDef?.data
 
-  //품목코드, 품목명 클릭시
-  if (prop === 'itemCd' || prop === 'itemName' ) {
-    openLookupPopup('ITEM_CODE', rowData)
+
+  const now = Date.now()
+
+  const bagWeightColIndex = hotColumns.value.findIndex(
+    col => col.data === 'bagWeight'
+  )
+
+  const containerLookupColIndex = hotColumns.value.findIndex(
+    col => col.data === LOOKUP_PROP.CONTAINER
+  )
+
+  const weigherLookupColIndex = hotColumns.value.findIndex(
+    col => col.data === LOOKUP_PROP.WEIGHER
+  )
+
+  const confirmLookupColIndex = hotColumns.value.findIndex(
+    col => col.data === LOOKUP_PROP.CONFIRM
+  )
+
+  // 1. 용기무게 돋보기 클릭
+  if (coords.col === containerLookupColIndex) {
+    openLookupPopup('CONTAINER_WEIGHT', rowData)
     return
   }
-  // 돋보기 컬럼인지 체크
-  if (prop === LOOKUP_PROP.CONTAINER) {
-    openLookupPopup('CONTAINER_WEIGHT', rowData)
-  } else if (prop === LOOKUP_PROP.WEIGHER) {
+
+  // 2. 칭량자 돋보기 클릭
+  if (coords.col === weigherLookupColIndex) {
     openLookupPopup('WEIGH_USER', rowData)
-  } else if (prop === LOOKUP_PROP.CONFIRM) {
-    openLookupPopup('CONFIRM_USER', rowData)
+    return
   }
+
+  // 3. 확인자 돋보기 클릭
+  if (coords.col === confirmLookupColIndex) {
+    openLookupPopup('CONFIRM_USER', rowData)
+    return
+  }
+
+  // 4. bagWeight 셀 더블클릭 시 팝업
+  if (coords.col === bagWeightColIndex) {
+    const isSameCell =
+      lastMouseDown.value.row === coords.row &&
+      lastMouseDown.value.col === coords.col
+
+    const isDoubleClick = isSameCell && (now - lastMouseDown.value.time < 300)
+
+    if (isDoubleClick) {
+      openLookupPopup('CONTAINER_WEIGHT1', rowData)
+
+      // 연속 오픈 방지
+      lastMouseDown.value = {
+        row: -1,
+        col: -1,
+        time: 0,
+      }
+      return
+    }
+  }
+
+  // 마지막 클릭 정보 저장
+  lastMouseDown.value = {
+    row: coords.row,
+    col: coords.col,
+    time: now,
+  }
+
 }
+
+const lastMouseDown = ref({
+  row: -1,
+  col: -1,
+  time: 0,
+})
+const calcTotalQty = (row) => {
+  const weighQty = Number(row.weighQty || 0)
+  const bagWeight = Number(row.bagWeight || 0)
+  return weighQty + bagWeight
+}
+
+const handleAfterSelection = (row, column) =>{
+    if (row < 0 || column < 0) return
+
+    const bagWeightColIndex = hotColumns.value.findIndex(
+        col => col.data === 'bagWeight'
+    )
+
+    if (column !== bagWeightColIndex) return
+
+    const selectedRow = currentTabList.value[row]
+    if (!selectedRow) return
+
+    const now = Date.now()
+
+    const isSameCell =
+        lastSelectedCell.value.row === row &&
+        lastSelectedCell.value.col === column
+
+    const isDoubleSelect = isSameCell && now - lastSelectedCell.value.time < 300
+
+    if (isDoubleSelect) {
+        openLookupPopup('CONTAINER_WEIGHT1', selectedRow)
+        lastSelectedCell.value = { row: -1, col: -1, time: 0 }
+        return
+    }
+
+    lastSelectedCell.value = {
+        row,
+        col: column,
+        time: now,
+    }
+}
+
+
+
 
 /** 팝업 호출() */
 const openLookupPopup = (type, row = null) => {
@@ -388,7 +487,7 @@ const openLookupPopup = (type, row = null) => {
     let currentComponet = null
 
     // row를 넘겨야 하는 팝업 타입
-    const rowTargetTypes = ['ITEM_CODE', 'CONTAINER_WEIGHT', 'WEIGH_USER', 'CONFIRM_USER']
+    const rowTargetTypes = ['ITEM_CODE', 'CONTAINER_WEIGHT', 'WEIGH_USER', 'CONFIRM_USER', 'CONTAINER_WEIGHT1']
     const shouldPassRow = rowTargetTypes.includes(type)
 
     if (type === 'ITEM_CODE') {
@@ -397,7 +496,10 @@ const openLookupPopup = (type, row = null) => {
         currentComponet = WeighBarcodeRegPop
     } else if (type === 'CONTAINER_WEIGHT') {
         title = '용기무게 선택'
-        currentComponet = ContainerWeightDialog
+        currentComponet = BagWeightPop
+    } else if (type === 'CONTAINER_WEIGHT1') {
+        title = '용기무게 입력'
+        currentComponet = BagWeightInfoPop
     } else if (type === 'WEIGH_USER') {
         title = '칭량자 선택'
         currentComponet = WorkerPop
@@ -457,20 +559,19 @@ const applyPopupResultToRow = (type, row, data) => {
         row.weighQty = data.weighQty ?? row.weighQty
     } else if (type === 'CONTAINER_WEIGHT') {
         // 예시: 용기무게 선택 팝업 반환값
-        row.containerWeight = data.containerWeight ?? row.containerWeight
-        row.containerCd = data.containerCd ?? row.containerCd
-        row.containerNm = data.containerNm ?? row.containerNm
+        row.bagWeight = data.weight ?? row.weight
     } else if (type === 'WEIGH_USER') {
         // 예시: 작업자 선택 팝업 반환값
-        row.weighUserId = data.userId ?? row.weighUserId
-        row.weighUserNm = data.userNm ?? row.weighUserNm
+        console.log('data', data)
+        row.weigher = data.workerName ?? row.workerName
     } else if (type === 'CONFIRM_USER') {
         // 예시: 확인자 선택 팝업 반환값
-        row.confirmUserId = data.userId ?? row.confirmUserId
-        row.confirmUserNm = data.userNm ?? row.confirmUserNm
+        row.confirmer = data.workerName ?? row.workerName
+    } else if (type === 'CONTAINER_WEIGHT1') {
+        console.log('data.inputValue', data.inputValue)
+        row.bagWeight = data ?? row.weight
     }
 }
-
 
 
 /** ✅ 데이터 정규화 */
@@ -514,7 +615,6 @@ const bindWeighInfo = (data) => {
     Object.assign(form, data.procWeigh || {})
     matUseDataList.value = data.weightBomList || []
     isStarted.value = data.procWeigh?.procStatus === '00'
-    console.log('isStarted.value', isStarted.value)
 }
 
 const loadWeighInfo = async () => {
