@@ -7,6 +7,9 @@ export const ApiProc = {
   getWorkerList: async(id) => {
       return  await API_URL.get(`/procCommon/getWorkerList/${id}`)
   },
+  getBagWeightList: async() => {
+      return  await API_URL.get(`/procCommon/getBagWeightList`)
+  },
 
   getEquipmentList: async(id) => {
       return  await API_URL.get(`/procCommon/getEquipmentList/${id}`)
