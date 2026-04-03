@@ -26,12 +26,15 @@ const selectItem = ref(null)
 const workerList = ref([])
 
 onMounted( async () => {
-  const res = await ApiProc.getWorkerList(dialogRef.value.data)
+  console.log('dialogRef.value.data.form', dialogRef.value.data.form)
+    let procCd = dialogRef.value?.data?.form?.procCd
+    console.log('procCd', procCd)
+  const res = await ApiProc.getWorkerList(procCd)
   workerList.value = res.data
 });
 
 const onRowClick = (event) => {
-  dialogRef.value.close(event.data.workerName);
+  dialogRef.value.close(event.data);
 };
 
 const closeDialog = () => {
