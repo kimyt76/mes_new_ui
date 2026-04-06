@@ -207,13 +207,7 @@ export const ApiLab = {
     }
   },
   saveSampleInfo: async(params) =>{
-    try{
-      const res =  await API_URL.post('/sample/saveSampleInfo', params)
-
-      return res.data
-    }catch(err) {
-      throw new Error(err.response?.data);
-    }
+    return  await API_URL.post('/sample/saveSampleInfo', params)
   },
   getNextProdMgmtNo: async() => {
     try{
@@ -261,22 +255,10 @@ export const ApiLab = {
     }
   },
   saveBomInfo: async(params) =>{
-    try{
-      const res =  await API_URL.post('/bom/saveBomInfo', params)
-
-      return res.data
-    }catch(err) {
-      throw err
-    }
+    return  await API_URL.post('/bom/saveBomInfo', params)
   },
   saveBomVerInfo: async(params) =>{
-    try{
-      const res =  await API_URL.post('/bom/saveBomVerInfo', params)
-
-      return res.data
-    }catch(err) {
-      throw err
-    }
+    return await API_URL.post('/bom/saveBomVerInfo', params)
   },
   getItemBomStockList: async(params) => {
     try{

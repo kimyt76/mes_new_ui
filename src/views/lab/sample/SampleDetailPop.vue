@@ -173,8 +173,8 @@ const saveInfo = async () =>{
       ...form
     }
 
-    const msg = await ApiLab.saveSampleInfo(params)
-    vSuccess(msg.data)
+    const res = await ApiLab.saveSampleInfo(params)
+    vSuccess(res.message)
     //closeDialog()
   }catch(err){
     vError(err.massage)

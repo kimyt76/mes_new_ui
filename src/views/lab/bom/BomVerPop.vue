@@ -443,8 +443,8 @@ const saveInfo = async () =>{
             bomProcList : bomProcList.value,
         }
 
-        const msg = await ApiLab.saveBomVerInfo(params)
-        vSuccess(msg.data.message)
+        const res = await ApiLab.saveBomVerInfo(params)
+        vSuccess(res)
         closeDialog()
     }catch(err){
         handleApiError(err)

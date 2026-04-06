@@ -174,8 +174,8 @@ const saveInfo = async () =>{
             bomRecipeList : recipeList.value,
         }
 
-        const msg = await ApiLab.saveBomInfo(params)
-        vSuccess(msg.data.message)
+        const res = await ApiLab.saveBomInfo(params)
+        vSuccess(res.message)
         closeDialog()
     }catch(err){
         handleApiError(err)
