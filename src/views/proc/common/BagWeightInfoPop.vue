@@ -24,11 +24,25 @@
           <Button label="DEL" class="keypad-btn p-button-outlined" @click="removeLast" />
         </div>
 
-        <div class="bottom-btns">
-          <Button label="확인" class="action-btn confirm-btn" @click="onConfirm" />
-          <Button label="리셋" class="action-btn reset-btn" @click="onReset" />
+        <div class="bottom-btns" :class="{ three: isSaveBtn }">
+            <Button
+                v-if="isSaveBtn"
+                label="저장"
+                class="action-btn confirm-btn"
+                @click="saveWeight"
+            />
+            <Button
+                label="입력"
+                class="action-btn confirm-btn"
+                @click="onConfirm"
+            />
+            <Button
+                label="리셋"
+                class="action-btn reset-btn"
+                @click="onReset"
+            />
         </div>
-      </div>
+    </div>
 
       <!-- 우측 테이블 영역 -->
       <div class="right-panel">
@@ -53,13 +67,10 @@
 </template>
 
 <script setup>
-import { ApiSystems } from '@/api/apiSystem'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
 import { computed, inject, onMounted, ref } from 'vue'
 
 const dialogRef = inject('dialogRef')
+const isSaveBtn = ref(false)
 const inputValue = ref('0')
 const measureList = ref([])
 const displayValue = computed(() => inputValue.value || '0')
@@ -88,6 +99,10 @@ const removeLast = () => {
   }
 }
 
+const saveWeight = () =>{
+
+}
+
 const onReset = () => {
   inputValue.value = '0'
 }
@@ -103,11 +118,14 @@ const refreshMeasures = () => {
 }
 
 const getMeasureList = async () =>{
-    measureList.value = await ApiSystems.getBagWeightHistList()
+    //measureList.value = await ApiSystems.getBagWeightHistList()
 }
 
 onMounted( () =>{
-    console.log('dialogRef', dialogRef.value?.data?.form)
+    //console.log('dialogRef', dialogRef.value?.data?.form)
+    if ( dialogRef.value?.data?.form.isBtn === 'S') {
+        isSaveBtn.value = true
+    }
     const param = {
         areaCd: dialogRef.value?.data?.form.areaCd,
         storageCd: dialogRef.value?.data?.form.storageCd
@@ -242,5 +260,19 @@ onMounted( () =>{
 :deep(.measure-table .p-datatable-tbody > tr > td:first-child) {
   color: #14a3a3;
   font-weight: 600;
+}
+.bottom-btns {
+  display: flex;
+  gap: 10px;
+}
+
+/* 버튼 기본: 2개일 때 */
+.bottom-btns .action-btn {
+  flex: 1;
+}
+
+/* 버튼 3개일 때 */
+.bottom-btns.three .action-btn {
+  flex: 1;
 }
 </style>

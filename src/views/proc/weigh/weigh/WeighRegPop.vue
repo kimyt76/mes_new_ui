@@ -89,7 +89,9 @@
           :data="currentTabList"
           :colHeaders="hotHeaders"
           :columns="hotColumns"
-          :colWidths="[50,   // 선택
+          :colWidths="[
+                30,   // 순서
+                50,   // 선택
                 120,  // 품목코드
                 385,  // 품목명
                 50,   // 성상
@@ -120,9 +122,10 @@
     <div class="flex items-center justify-end gap-3">
       <Button v-if="isStarted"  label="칭량시작" @click="openLookupPopup('S')" />
       <Button v-if="!isStarted" label="저장" @click="saveInfo('S')" />
-      <Button label="바코드출력" icon="pi pi-barcode" />
+      <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
       <Button label="공정기획서" @click="downloadProc" />
       <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
+      <Button v-if="isComplate" label="창량완료" @click="complateWeight" />
     </div>
   </div>
 </template>
@@ -133,7 +136,9 @@ import { toNumber } from '@/util/common'
 import { useDialog } from 'primevue'
 // PrimeVue
 import { ApiProc } from '@/api/apiProc'
+import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
+import { handleApiError } from '@/util/errorHandler'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
@@ -146,9 +151,18 @@ import ProcStartPop from '../../common/ProcStartPop.vue'
 import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
+
+const complateWeight = () =>{
+    if ( form.procStatus === '21' ){
+        isComplate.value =true
+    }
+}
+
+const {vSuccess, vWarning, vInfo} = useAlertStore()
 const hotTable = ref(null)
 const dialogRef = inject('dialogRef')
 const isStarted = ref(true)
+const isComplate = ref(false)
 const dialog = useDialog()
 const { userId} = useAuthStore()
 const form = reactive({
@@ -163,6 +177,7 @@ const form = reactive({
     poNo:'',
     etc: '',
 
+    isBtn: 'W',
     areaCd: '',
     barcode: '',
     workProcId: '',
@@ -174,6 +189,7 @@ const form = reactive({
 const ALL_TAB = 'ALL'
 /** ✅ 필드명 매핑 */
 const FIELD = {
+  DIST_ORDER: 'distOrder',
   SUNGSANG: 'appearance',     // 성상
   SANGGUBUN: 'phase',   // 상구분
   WEIGH_YN: 'weighYn',      // 완료(Y/N)
@@ -188,8 +204,7 @@ const LOOKUP_PROP = {
 }
 const matUseDataList = ref([])
 
-
-/** ✅ 성상 옵션 */
+/**성상 옵션 */
 const sungsangOptions = computed(() => {
   const set = new Set()
   for (const r of matUseDataList.value) {
@@ -199,7 +214,7 @@ const sungsangOptions = computed(() => {
   return Array.from(set)
 })
 
-/** ✅ 성상 체크 상태 */
+/**성상 체크 상태 */
 const sungsangCheckedMap = reactive({})
 watch(sungsangOptions, (opts) => {
   for (const ss of opts) {
@@ -236,18 +251,18 @@ watch(sangGubunOptions, (opts) => {
 
   /** ✅ 현재 탭 + 성상 필터 적용 리스트 */
   const currentTabList = computed(() => {
-  const tab = activeSangGubun.value
-  const allowedSs = new Set(
-    Object.entries(sungsangCheckedMap)
-      .filter(([, v]) => v === true)
-      .map(([k]) => k)
+    const tab = activeSangGubun.value
+    const allowedSs = new Set(
+        Object.entries(sungsangCheckedMap)
+        .filter(([, v]) => v === true)
+        .map(([k]) => k)
   )
 
   return matUseDataList.value.filter(r => {
     const sg = String(r?.[FIELD.SANGGUBUN] ?? '')
     const ss = String(r?.[FIELD.SUNGSANG] ?? '')
     const tabOk = (tab === ALL_TAB) ? true : (sg === tab)
-    const ssOk = allowedSs.size ? allowedSs.has(ss) : true
+    const ssOk = ss === '' ? true : (allowedSs.size ? allowedSs.has(ss) : true)
     return tabOk && ssOk
   })
 })
@@ -270,29 +285,13 @@ const allChecked = computed({
 })
 
 /** =========================
- * ✅ 요청하신 헤더(16개)
+ * 요청하신 헤더(16개)
  * ========================= */
-const hotHeaders = ref([
-  '선택',
-  '품목코드',
-  '품목명',
-  '성상',
-  '상구분',
-  '지시량',
-  '칭량',
-  '용기무게',
-  '-',
-  '총량',
-  '사용시험번호',
-  '완료',
-  '칭량자',
-  '-',
-  '확인자',
-  '-'
-])
+const hotHeaders = ref(
+    [  '', '선택',  '품목코드',  '품목명',  '성상',  '상구분',  '지시량',  '칭량',  '용기무게',  '-',  '총량',  '사용시험번호',  '완료',  '칭량자',  '-',  '확인자',  '-'])
 
 /** =========================
- * ✅ 돋보기 아이콘 렌더러(Handsontable)
+ * 돋보기 아이콘 렌더러(Handsontable)
  * - BaseHotTable이 renderer를 그대로 전달해준다는 전제
  * - 안 되면 BaseHotTable 내부에서 renderer 허용해줘야 함
  * ========================= */
@@ -309,6 +308,7 @@ function magnifierRenderer(instance, td) {
  * - 완료는 weighYn(Y/N) checkbox
  * ========================= */
 const hotColumns = ref([
+  { data: FIELD.DIST_ORDER,  readOnly: true, className: 'htCenter' },                 // 0 순서
   { data: FIELD.SELECTED, type: 'checkbox', className: 'htCenter' },                 // 1 선택
   { data: 'itemCd', readOnly: true, className: 'htCenter'  },                       // 2 품목코드
   { data: 'itemName', readOnly: true },                       // 3 품목명
@@ -327,7 +327,23 @@ const hotColumns = ref([
   { data: LOOKUP_PROP.CONFIRM, readOnly: true, renderer: magnifierRenderer },  // 16 '-' (확인자 조회)
 ])
 
-/** ✅ 변경 이벤트(weighYn boolean 방어 포함) */
+
+const saveInfo = async() =>{
+    //예외체크
+
+    try{
+        const params = {
+            procWeigh : form,
+            weightBomList : matUseDataList.value
+        }
+        const res = await ApiProc.saveWeighInfo(params)
+        vSuccess(res.message)
+    }catch(err){
+        handleApiError(err)
+    }
+}
+
+/** 변경 이벤트(weighYn boolean 방어 포함) */
 const handleAfterChange = (changes, source) => {
   if (!changes || source === 'loadData') return
 
@@ -341,11 +357,11 @@ const handleAfterChange = (changes, source) => {
       else if (newVal === false) currentTabList.value[rowIndex][FIELD.WEIGH_YN] = 'N'
     }
 
-    if (prop === 'weighQty' || prop === 'containerWeight') {
+    if (prop === 'weighQty' || prop === 'bagWeight') {
       const weighQty = toNumber(row.weighQty)
-      const containerWeight = toNumber(row.containerWeight)
+      const bagWeight = toNumber(row.bagWeight)
 
-      const total = weighQty + containerWeight
+      const total = weighQty + bagWeight
       row.totalQty = total
       // 화면 반영 보장
       //if (hot) hot.setDataAtRowProp(rowIndex, 'totalQty', total, 'calcTotalQty')
@@ -367,8 +383,6 @@ const handleCellClickFromHot = (event, coords, td) => {
   const rowData = currentTabList.value[coords.row]
   if (!rowData) return
   if (!coords || coords.row < 0 || coords.col < 0) return
-
-
 
   const now = Date.now()
 
@@ -477,7 +491,6 @@ const findTargetRowForItemCd = (clickedRow) => {
 
   return null
 }
-
 
 const lastMouseDown = ref({
   row: -1,
@@ -594,40 +607,31 @@ const openLookupPopup = (type, row = null) => {
 const applyPopupResultToRow = (type, row, data) => {
     if (type === 'ITEM_CODE') {
         // 예시: 바코드 팝업에서 넘겨주는 값
-        row.barcodeNo = data.barcodeNo ?? row.barcodeNo
-        row.lotNo = data.lotNo ?? row.lotNo
-        row.itemCd = data.itemCd ?? row.itemCd
-        row.itemName = data.itemName ?? row.itemName
-        row.orderQty = data.orderQty ?? row.orderQty
-        row.testNo = data.testNo ?? row.testNo
-
-        const orderQty = toNumber(row.orderQty)
-        const bagWeight = toNumber(row.bagWeight)
-
+        console.log('data from ITEM_CODE popup', data)
+        row.weighQty = data.weighQty ?? row.weighQty
+        row.testNo = data.testNos ?? row.testNos
     } else if (type === 'CONTAINER_WEIGHT') {
         // 예시: 용기무게 선택 팝업 반환값
         row.bagWeight = data.weight ?? row.weight
     } else if (type === 'WEIGH_USER') {
         // 예시: 작업자 선택 팝업 반환값
-        console.log('data', data)
         row.weigher = data.workerName ?? row.workerName
     } else if (type === 'CONFIRM_USER') {
         // 예시: 확인자 선택 팝업 반환값
         row.confirmer = data.workerName ?? row.workerName
     } else if (type === 'CONTAINER_WEIGHT1') {
-        console.log('data.inputValue', data.inputValue)
         row.bagWeight = data ?? row.weight
     }
 }
-
 
 /** ✅ 데이터 정규화 */
 const normalizeRows = (rows) => {
   return (rows ?? []).map(r => ({
     ...r,
+    distOrder: Number(r?.distOrder ?? r?.dist_order ?? idx + 1),
     [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
     [FIELD.WEIGH_YN]: r?.[FIELD.WEIGH_YN] ?? 'N',
-    containerWeight: r?.containerWeight ?? 0,
+    bagWeight: r?.bagWeight ?? 0,
     totalQty: r?.totalQty ?? 0,
     testNo: r?.testNo ?? '',
     weighUser: r?.weighUser ?? '',
@@ -635,15 +639,79 @@ const normalizeRows = (rows) => {
   }))
 }
 
-const saveInfo = () =>{
-
-}
-
 /** 버튼들 */
 const refresh = async () => {
     await loadWeighInfo()
 }
 
+const counterMap = {}
+
+const printWeighLabel = async () => {
+    //필터링
+    const filtered = currentTabList.value.filter(item =>
+        item[FIELD.SELECTED] === true &&
+        item.itemCd !== 'JRW00215' &&
+        item.itemCd !== 'JRMSC00011'
+    )
+
+    if (filtered.length === 0) {
+        return vWarning('바코드를 출력할 품목을 선택해주세요.')
+    }
+
+    const selectedList = filtered.map(item => ({
+        ...item,
+        distOrder: Number(item?.[FIELD.DIST_ORDER] ?? 0),
+        workProcId: form.workProcId
+    }))
+
+  // 팝업 열기
+  const win = window.open('', '_blank')
+
+  if (!win) {
+    return vWarning('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.')
+  }
+
+  try {
+    const pdfBlob = await ApiProc.printWeighLabel(selectedList)
+    const url = URL.createObjectURL(pdfBlob)
+    win.location.href = url
+    // 메모리 해제 (조금 늦게)
+    setTimeout(() => {
+      URL.revokeObjectURL(url)
+    }, 10000)
+
+  } catch (err) {
+    if (win && !win.closed) {
+      win.close()
+    }
+    return handleApiError(err)
+  }
+}
+
+onMounted(async () => {
+    await loadWeighInfo()
+})
+const createWeighInfoParams = () => ({
+    workProcId: dialogRef.value.data.workProcId,
+    itemCd: dialogRef.value.data.itemCd,
+})
+const fetchWeighInfo = async () => {
+    const params = createWeighInfoParams()
+    return await ApiProc.getWeighInfo(params)
+}
+const bindWeighInfo = (data) => {
+    Object.assign(form, data.procWeigh || {})
+    matUseDataList.value = data.weightBomList || []
+    isStarted.value = data.procWeigh?.procStatus === '00'
+}
+const loadWeighInfo = async () => {
+    const data = await fetchWeighInfo()
+    bindWeighInfo(data)
+}
+
+/**
+ * 엑셀 다운로드
+ */
 const downloadExcel = () => {
   const rows = currentTabList.value.map(row => ({
     품목코드: row.itemCd ?? '',
@@ -667,31 +735,8 @@ const downloadExcel = () => {
   XLSX.writeFile(wb, '칭량_처방_리스트.xlsx')
 }
 
-const createWeighInfoParams = () => ({
-    workProcId: dialogRef.value.data.workProcId,
-    itemCd: dialogRef.value.data.itemCd,
-})
 
-const fetchWeighInfo = async () => {
-    const params = createWeighInfoParams()
-    return await ApiProc.getWeighInfo(params)
-}
-
-const bindWeighInfo = (data) => {
-    Object.assign(form, data.procWeigh || {})
-    matUseDataList.value = data.weightBomList || []
-    isStarted.value = data.procWeigh?.procStatus === '00'
-}
-
-const loadWeighInfo = async () => {
-    const data = await fetchWeighInfo()
-    bindWeighInfo(data)
-}
-onMounted(async () => {
-    await loadWeighInfo()
-})
-
-
+//공정검사서 다운로드
 const downloadProc = () =>{
 
 }
@@ -732,4 +777,5 @@ td .custom-cell {
   background: #2f6fff; /* 원하는 색 */
   color: white;
 }
+
 </style>
