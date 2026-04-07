@@ -226,7 +226,7 @@ export const ApiQc = {
 
 
 
-    // 시험번호별 내욕조회
+    // 시험번호별 내역조회
     getItemTestNoList: async(params) =>{
         try{
             const res = await API_URL.post('/itemTest/getItemTestNoList', params)
@@ -246,6 +246,17 @@ export const ApiQc = {
             throw err.response
         }
     },
+
+    getItemTestNoInfoList: async(id) =>{
+        try{
+            const res = await API_URL.get(`/itemTest/getItemTestNoInfoList/${id}`)
+
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
 
     updateItemTestNoInfo: async(params) =>{
         return await API_URL.post('/itemTest/updateItemTestNoInfo', params)
