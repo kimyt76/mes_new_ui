@@ -101,9 +101,19 @@ export const  ApiSystems = {
   saveStorageInfo: async (params) => {
     return await API_URL.post('/storage/saveStorageInfo', params)
   },
+
   getStorageCodeList: async () =>{
     try {
       const res =  await API_URL.get(`/storage/getStorageCodeList`)
+      return res.data;
+
+    } catch (error) {
+      throw error.response;
+    }
+  },
+  getAreaStorageList: async (cd) =>{
+    try {
+      const res =  await API_URL.get(`/storage/getAreaStorageList/${cd}`)
       return res.data;
 
     } catch (error) {
