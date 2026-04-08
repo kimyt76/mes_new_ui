@@ -70,7 +70,6 @@
       </div>
     </div>
   </div>
-
   <!-- 상구분 탭 + HotTable -->
   <div class="w-full mt-3">
     <Tabs v-model:value="activeSangGubun">
@@ -90,29 +89,29 @@
           :colHeaders="hotHeaders"
           :columns="hotColumns"
           :colWidths="[
-                30,   // 순서
+                50,   // 순서
                 50,   // 선택
-                120,  // 품목코드
-                385,  // 품목명
-                50,   // 성상
+                150,  // 품목코드
+                400,  // 품목명
+                60,   // 성상
                 60,   // 상구분
-                90,   // 지시량
-                90,   // 칭량
+                100,   // 지시량
+                100,   // 칭량
                 90,   // 용기무게
                 45,   // -
                 100,   // 총량
-                110,  // 사용시험번호
+                130,  // 사용시험번호
                 50,   // 완료
-                90,  // 칭량자
+                100,  // 칭량자
                 45,   // -
-                90,  // 확인자
+                100,  // 확인자
                 45    // -
             ]"
           :rowHeaders="false"
           :height="470"
           :afterChange="handleAfterChange"
           :afterOnCellMouseDown="handleCellClickFromHot"
-          :stretchH="'all'"
+          :stretchH="'none'"
         />
       </TabPanel>
     </Tabs>
@@ -348,7 +347,7 @@ const handleAfterChange = (changes, source) => {
   if (!changes || source === 'loadData') return
 
   for (const [rowIndex, prop, oldVal, newVal] of changes) {
-    const row = currentTabList.value[rowIndex]
+    const row = matUseDataList.value[rowIndex]
     if (!row) continue
 
     if (prop === FIELD.WEIGH_YN) {
@@ -358,13 +357,30 @@ const handleAfterChange = (changes, source) => {
     }
 
     if (prop === 'weighQty' || prop === 'bagWeight') {
-      const weighQty = toNumber(row.weighQty)
-      const bagWeight = toNumber(row.bagWeight)
+        const weighQty = toNumber(row.weighQty)
+        const bagWeight = toNumber(row.bagWeight)
 
-      const total = weighQty + bagWeight
-      row.totalQty = total
-      // 화면 반영 보장
-      //if (hot) hot.setDataAtRowProp(rowIndex, 'totalQty', total, 'calcTotalQty')
+        let total = 0
+
+        const hasWeigh = weighQty !== null && weighQty !== undefined && weighQty !== ''
+        const hasBag = bagWeight !== null && bagWeight !== undefined && bagWeight !== ''
+
+        if (hasWeigh && hasBag) {
+            total = weighQty + bagWeight
+        } else if (hasWeigh) {
+            total = weighQty
+        } else if (hasBag) {
+            total = bagWeight
+        } else {
+            total = 0
+        }
+
+        row.totalQty = total
+
+        const hot = hotTable.value?.hotInstance || hotTable.value
+        if (hot?.setDataAtRowProp) {
+            hot.setDataAtRowProp(rowIndex, 'totalQty', total, 'calcTotalQty')
+        }
     }
   }
 }
@@ -395,14 +411,14 @@ const handleCellClickFromHot = (event, coords, td) => {
 
   // 같은 itemCd가 여러 건이면 testNo 없는 다음 row를 찾아 팝업에 전달
   if (coords.col === itemCdColIndex || coords.col === itemNameColIndex) {
-    const targetRow = findTargetRowForItemCd(rowData)
+    //const targetRow = findTargetRowForItemCd(rowData)
 
-    if (!targetRow) {
-        // 같은 itemCd가 모두 사용된 상태
-        return
-    }
-
-    openLookupPopup('ITEM_CODE', targetRow)
+    // if (!targetRow) {
+    //     // 같은 itemCd가 모두 사용된 상태
+    //     return
+    // }
+    //openLookupPopup('ITEM_CODE', targetRow)
+    openLookupPopup('ITEM_CODE', rowData)
     return
   }
 
@@ -460,20 +476,20 @@ const handleCellClickFromHot = (event, coords, td) => {
  * - 모두 사용된 상태면 클릭한 row 그대로 반환
  */
 const findTargetRowForItemCd = (clickedRow) => {
-  if (!clickedRow?.itemCd) return clickedRow
+    if (!clickedRow?.itemCd) return clickedRow
 
-  const sameItemRows = matUseDataList.value.filter(
-    (r) => String(r.itemCd ?? '') === String(clickedRow.itemCd ?? '')
-  )
+    const sameItemRows = matUseDataList.value.filter(
+        (r) => String(r.itemCd ?? '') === String(clickedRow.itemCd ?? '')
+    )
 
-  if (sameItemRows.length <= 1) {
-    return !String(clickedRow.testNo ?? '').trim() ? clickedRow : null
-  }
+    if (sameItemRows.length <= 1) {
+        return !String(clickedRow.testNo ?? '').trim() ? clickedRow : null
+    }
 
-  const clickedIndex = sameItemRows.findIndex((r) => r === clickedRow)
-  if (clickedIndex === -1) {
-    return sameItemRows.find((r) => !String(r.testNo ?? '').trim()) || null
-  }
+    const clickedIndex = sameItemRows.findIndex((r) => r === clickedRow)
+    if (clickedIndex === -1) {
+        return sameItemRows.find((r) => !String(r.testNo ?? '').trim()) || null
+    }
 
   // 현재 row 포함, 뒤쪽부터 먼저 탐색
   for (let i = clickedIndex; i < sameItemRows.length; i++) {
@@ -497,43 +513,15 @@ const lastMouseDown = ref({
   col: -1,
   time: 0,
 })
+
 const calcTotalQty = (row) => {
   const weighQty = Number(row.weighQty || 0)
   const bagWeight = Number(row.bagWeight || 0)
-  return weighQty + bagWeight
-}
 
-const handleAfterSelection = (row, column) =>{
-    if (row < 0 || column < 0) return
-
-    const bagWeightColIndex = hotColumns.value.findIndex(
-        col => col.data === 'bagWeight'
-    )
-
-    if (column !== bagWeightColIndex) return
-
-    const selectedRow = currentTabList.value[row]
-    if (!selectedRow) return
-
-    const now = Date.now()
-
-    const isSameCell =
-        lastSelectedCell.value.row === row &&
-        lastSelectedCell.value.col === column
-
-    const isDoubleSelect = isSameCell && now - lastSelectedCell.value.time < 300
-
-    if (isDoubleSelect) {
-        openLookupPopup('CONTAINER_WEIGHT1', selectedRow)
-        lastSelectedCell.value = { row: -1, col: -1, time: 0 }
-        return
-    }
-
-    lastSelectedCell.value = {
-        row,
-        col: column,
-        time: now,
-    }
+  if (weighQty && bagWeight) return weighQty + bagWeight
+  if (weighQty) return weighQty
+  if (bagWeight) return bagWeight
+  return 0
 }
 
 /** 팝업 호출() */
@@ -626,17 +614,21 @@ const applyPopupResultToRow = (type, row, data) => {
 
 /** ✅ 데이터 정규화 */
 const normalizeRows = (rows) => {
-  return (rows ?? []).map(r => ({
-    ...r,
-    distOrder: Number(r?.distOrder ?? r?.dist_order ?? idx + 1),
-    [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
-    [FIELD.WEIGH_YN]: r?.[FIELD.WEIGH_YN] ?? 'N',
-    bagWeight: r?.bagWeight ?? 0,
-    totalQty: r?.totalQty ?? 0,
-    testNo: r?.testNo ?? '',
-    weighUser: r?.weighUser ?? '',
-    weighConfirmUser: r?.weighConfirmUser ?? '',
-  }))
+  return (rows ?? []).map((r, idx) => {
+    const row = {
+      ...r,
+      distOrder: Number(r?.distOrder ?? r?.dist_order ?? idx + 1),
+      [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
+      [FIELD.WEIGH_YN]: r?.[FIELD.WEIGH_YN] ?? 'N',
+      bagWeight: r?.bagWeight ?? 0,
+      testNo: r?.testNo ?? '',
+      weighUser: r?.weighUser ?? '',
+      weighConfirmUser: r?.weighConfirmUser ?? '',
+    }
+
+    row.totalQty = calcTotalQty(row)
+    return row
+  })
 }
 
 /** 버튼들 */
@@ -701,7 +693,7 @@ const fetchWeighInfo = async () => {
 }
 const bindWeighInfo = (data) => {
     Object.assign(form, data.procWeigh || {})
-    matUseDataList.value = data.weightBomList || []
+    matUseDataList.value = normalizeRows(data.weightBomList || [])
     isStarted.value = data.procWeigh?.procStatus === '00'
 }
 const loadWeighInfo = async () => {
