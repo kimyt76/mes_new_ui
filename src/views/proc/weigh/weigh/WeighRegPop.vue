@@ -14,7 +14,7 @@
             <th class="cellBorder cellHeader">지시일자</th>
             <td class="cellBorder">{{ form.procOrderDate }}</td>
             <th class="cellBorder cellHeader">지시량</th>
-            <td class="cellBorder">{{ form.orderQty }}</td>
+            <td class="cellBorder">{{ form.orderQty }} kg</td>
             <th class="cellBorder cellHeader">칭량일자</th>
             <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">칭량처</th>
@@ -43,7 +43,7 @@
 
       <div>
         <FloatLabel variant="on">
-          <InputText id="barcode" v-model="form.barcode" style="width: 180px" />
+          <InputText id="barcode" v-model="form.barcode" :disabled="form.procStatus === '00'" style="width: 180px" />
           <label for="barcode">바코드(시험번호)</label>
         </FloatLabel>
       </div>
@@ -120,11 +120,12 @@
   <div class="w-full mt-5">
     <div class="flex items-center justify-end gap-3">
       <Button v-if="isStarted"  label="칭량시작" @click="openLookupPopup('S')" />
-      <Button v-if="!isStarted" label="저장" @click="saveInfo('S')" />
+      <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo('S')" />
       <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
       <Button label="공정기획서" @click="downloadProc" />
       <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
-      <Button v-if="isComplate" label="창량완료" @click="complateWeight" />
+      <Button v-if="isComplate" label="창량완료" @click="completeWeight" />
+      <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
   </div>
 </template>
@@ -132,7 +133,7 @@
 <script setup>
 import BaseHotTable from '@/components/BaseHotTable.vue'
 import { toNumber } from '@/util/common'
-import { useDialog } from 'primevue'
+import { useConfirm, useDialog } from 'primevue'
 // PrimeVue
 import { ApiProc } from '@/api/apiProc'
 import { useAlertStore } from '@/stores/alert'
@@ -149,13 +150,6 @@ import BagWeightPop from '../../common/BagWeightPop.vue'
 import ProcStartPop from '../../common/ProcStartPop.vue'
 import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
-
-
-const complateWeight = () =>{
-    if ( form.procStatus === '21' ){
-        isComplate.value =true
-    }
-}
 
 const {vSuccess, vWarning, vInfo} = useAlertStore()
 const hotTable = ref(null)
@@ -176,6 +170,8 @@ const form = reactive({
     poNo:'',
     etc: '',
 
+    batchStatus: '',
+    procStatus: '',
     isBtn: 'W',
     areaCd: '',
     barcode: '',
@@ -188,7 +184,7 @@ const form = reactive({
 const ALL_TAB = 'ALL'
 /** ✅ 필드명 매핑 */
 const FIELD = {
-  DIST_ORDER: 'distOrder',
+  DIST_ORDER: 'orderDist',
   SUNGSANG: 'appearance',     // 성상
   SANGGUBUN: 'phase',   // 상구분
   WEIGH_YN: 'weighYn',      // 완료(Y/N)
@@ -326,10 +322,35 @@ const hotColumns = ref([
   { data: LOOKUP_PROP.CONFIRM, readOnly: true, renderer: magnifierRenderer },  // 16 '-' (확인자 조회)
 ])
 
+const confirm = useConfirm()
+const completeWeight = async () =>{
+    confirm.require({
+        header: '칭량완료 확인',
+        message: '칭량을 완료하고, 제조출고를 진행하시겠습니까?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            try{
+                console.log('form.workBatchId', form.workBatchId)
+                const params = {
+                    procStatus: '12',
+                    batchStatus: '12',
+                    workProcId: form.workProcId,
+                    workBatchId: form.workBatchId,
+                    procCd: form.procCd,
+                }
+                //console.log('params', params)
+                const res = await ApiProc.completeWeight(params)
+                vSuccess('정상적으로 칭량완료 처리하였습니다!')
+                closeDialog()
+            }catch(err){
+                handleApiError(err)
+            }
+        }
+    });
+}
 
 const saveInfo = async() =>{
     //예외체크
-
     try{
         const params = {
             procWeigh : form,
@@ -337,8 +358,16 @@ const saveInfo = async() =>{
         }
         const res = await ApiProc.saveWeighInfo(params)
         vSuccess(res.message)
+        checkWeighFinish()
     }catch(err){
         handleApiError(err)
+    }
+}
+
+const checkWeighFinish = () =>{
+    console.log('finishedCount', finishedCount.value)
+    if ( form.procStatus === '11' && totalMatCount.value === finishedCount.value ){
+        isComplate.value =true
     }
 }
 
@@ -595,9 +624,9 @@ const openLookupPopup = (type, row = null) => {
 const applyPopupResultToRow = (type, row, data) => {
     if (type === 'ITEM_CODE') {
         // 예시: 바코드 팝업에서 넘겨주는 값
-        console.log('data from ITEM_CODE popup', data)
         row.weighQty = data.weighQty ?? row.weighQty
         row.testNo = data.testNos ?? row.testNos
+        row.weighYn = 'Y'
     } else if (type === 'CONTAINER_WEIGHT') {
         // 예시: 용기무게 선택 팝업 반환값
         row.bagWeight = data.weight ?? row.weight
@@ -617,7 +646,7 @@ const normalizeRows = (rows) => {
   return (rows ?? []).map((r, idx) => {
     const row = {
       ...r,
-      distOrder: Number(r?.distOrder ?? r?.dist_order ?? idx + 1),
+      orderDist: Number(r?.orderDist ?? r?.dist_order ?? idx + 1),
       [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
       [FIELD.WEIGH_YN]: r?.[FIELD.WEIGH_YN] ?? 'N',
       bagWeight: r?.bagWeight ?? 0,
@@ -652,7 +681,7 @@ const printWeighLabel = async () => {
 
     const selectedList = filtered.map(item => ({
         ...item,
-        distOrder: Number(item?.[FIELD.DIST_ORDER] ?? 0),
+        orderDist: Number(item?.[FIELD.DIST_ORDER] ?? 0),
         workProcId: form.workProcId
     }))
 
@@ -695,6 +724,7 @@ const bindWeighInfo = (data) => {
     Object.assign(form, data.procWeigh || {})
     matUseDataList.value = normalizeRows(data.weightBomList || [])
     isStarted.value = data.procWeigh?.procStatus === '00'
+    checkWeighFinish()
 }
 const loadWeighInfo = async () => {
     const data = await fetchWeighInfo()
@@ -731,6 +761,10 @@ const downloadExcel = () => {
 //공정검사서 다운로드
 const downloadProc = () =>{
 
+}
+
+const closeDialog = () =>{
+    dialogRef.value?.close()
 }
 </script>
 

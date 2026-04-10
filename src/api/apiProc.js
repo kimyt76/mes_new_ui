@@ -20,13 +20,12 @@ export const ApiProc = {
   },
 
 
+
   // 칭량
   getWeighList: async(params) => {
     try{
       const res = await API_URL.post('/procWeigh/getWeighList', params)
-
       return res.data
-
     }catch(err){
       throw err.response
     }
@@ -52,13 +51,47 @@ export const ApiProc = {
             throw err.response
         }
   },
+  startProcWeigh: async(params) => {
+    return await API_URL.post(`/procWeigh/startProcWeigh`, params)
+  },
+  saveWeighList: async(params) => {
+    return await API_URL.post(`/procWeigh/saveWeighList`, params)
+  },
+  getStockTestNoList: async(params) => {
+    try{
+      const res = await API_URL.post('/procWeigh/getStockTestNoList', params)
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  completeWeight: async(params) => {
+    return await API_URL.post(`/procWeigh/completeWeight`, params)
+  },
 
 
 
   //제조
- getMatList: async(params) => {
-      return await API_URL.post('/procMat/getMatList', params)
+  getMatList: async(params) => {
+    try{
+      const res = await API_URL.post('/procMat/getMatList', params)
+
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
   },
+  getMakeInfo: async (params) => {
+    try {
+        const res = await API_URL.post('/procMat/getMakeInfo', params)
+        return res.data
+    } catch (err) {
+        throw err.response
+    }
+  },
+
+
 
 
   //코팅

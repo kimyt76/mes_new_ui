@@ -84,10 +84,10 @@
         :tableStyle="{ minWidth: '600px' }"
         showGridlines
       >
-        <Column field="no"      header="No" :style="{ width: '40px', textAlign:'center' }"   />
-        <Column field="testNo"  header="시험번호" :style="{ width: '110px', textAlign:'center' }" />
-        <Column field="inDate"  header="입고일"  :style="{ width: '110px', textAlign:'center' }" />
-        <Column field="expiryDate" header="사용기한"  :style="{ width: '110px', textAlign:'center' }" />
+        <Column field="no"          header="No"         :style="{ width: '40px', textAlign:'center' }"   />
+        <Column field="testNo"      header="시험번호"   :style="{ width: '110px', textAlign:'center' }" />
+        <Column field="inDate"      header="입고일"     :style="{ width: '110px', textAlign:'center' }" />
+        <Column field="expiryDate"  header="사용기한"   :style="{ width: '110px', textAlign:'center' }" />
         <!-- 가변 컬럼 -->
         <Column
             v-for="col in dynamicColumns"
@@ -116,10 +116,11 @@
 </template>
 
 <script setup>
+import { ApiProc } from '@/api/apiProc'
 import { ApiQc } from '@/api/apiQc'
 import { ApiStock } from '@/api/apiStock'
 import { useAlertStore } from '@/stores/alert'
-import { todayKST } from '@/util/common'
+import { isEmpty, todayKST } from '@/util/common'
 import { useDialog } from 'primevue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -137,9 +138,13 @@ const barcodeInputRef = ref(null)
 /** 상단 품목 정보 */
 const itemCd = ref('')
 const itemName = ref('')
+const weighId = ref('')
+const workProcId = ref('')
+const storageCd = ref('')
 const orderQty = ref(0)
 /** 바코드 입력 */
 const barcode = ref('')
+const deleteWeighItems = ref([])
 const storageList = ref([])
 /** 좌측 입력 테이블 */
 const stockItemList = ref([])
@@ -156,15 +161,15 @@ const totalWeighQty = computed(() => {
 //   return stockItemList.value.reduce((acc, cur) => acc + (Number(cur.orderQty) || 0), 0)
 // })
 
-
 //좌측 테스트번호로 조회
 const searchByBarcode = async () => {
   const testNo = String(barcode.value ?? '').trim()
   if (!testNo) return
 
   const res = await ApiQc.getItemTestNoInfo(testNo)
+
   const r = res?.data ?? res
-  if (!r) return
+  if (!r) return vInfo('조회 결과가 없습니다.')
   if ( new Date(todayKST()) > new Date(r.expiryDate)) {
     vWarning('사용기한이 지난 원자재입니다.')
     return
@@ -183,6 +188,9 @@ const searchByBarcode = async () => {
     lotNo: r.lotNo ?? '',
     orderQty: Number(orderQty.value ?? 0),
     weighQty: 0,
+    weighId: weighId.value ?? '',
+    workProcId: workProcId.value ?? '',
+    storageCd:  r.storageCd ?? storageCd.value ?? '',
   })
 
   barcode.value = ''
@@ -208,7 +216,6 @@ const openWeighQtyPopup = (row) =>{
             }
         },
         onClose: (weight) => {
-            console.log('weight', weight)
             if (weight !== undefined) {
                 row.weighQty = weight.data
                 onChangeRow(row)
@@ -230,17 +237,25 @@ const formatQty = (value) => {
 }
 
 /** 칭량량 변경 시 호출 */
-const onChangeRow = (row) => {
+const onChangeRow = async (row) => {
   // 여기서 행 단위로 total 계산이나 유효성 체크 가능
-  // 예: row.totalQty = (Number(row.weighQty)||0) + (Number(row.containerWeight)||0)
-  // 지금은 상단 computed 합계가 자동 갱신됨
+//   if ( (Number(totalWeighQty.value)||0) > (Number(orderQty.value)||0) ) {
+//     vWarning('지시량보다 칭량량이 많습니다.')
+//      return
+//   }
+
+    saveInfo()
 }
 
 /** 행 삭제 */
 const removeRow = (idx) => {
-  stockItemList.value.splice(idx, 1)
-  // no 다시 정렬
-  stockItemList.value.forEach((r, i) => (r.no = i + 1))
+    const row = stockItemList.value[idx]
+
+    if (row.weighInvId) {
+        deleteWeighItems.value.push(row.weighInvId)
+    }
+    stockItemList.value.splice(idx, 1)
+    stockItemList.value.forEach((r, i) => (r.no = i + 1))
 }
 
 /** 바코드 초기화 */
@@ -249,7 +264,7 @@ const resetBarcode = () => {
 }
 
 /** 저장 */
-const saveInfo = () => {
+const saveInfo = async () => {
   // 저장 로직 구현
   const testNosArray = stockItemList.value.map(item => item.testNo)
 
@@ -258,14 +273,31 @@ const saveInfo = () => {
     return
   }
 
-
   const params = {
+    weighInfo : {
+        itemCd: itemCd.value,
+        itemName: itemName.value,
+        weighId: weighId.value,
+        workProcId: workProcId.value,
+        storageCd: storageCd.value,
+    },
+    weighList : stockItemList.value,
+    deleteWeighItems: deleteWeighItems.value,
+  }
+
+  const params1 = {
     weighQty: totalWeighQty.value,
     testNos : testNosArray.join(',')
   }
 
-  dialogRef.value.close(params)
+  try{
+    const res = await ApiProc.saveWeighList(params)
+    deleteWeighItems.value = []
+  }catch(err){
+    handleApiError(err)
+  }
 
+  dialogRef.value.close(params1)
 }
 
 /** 닫기 */
@@ -283,6 +315,7 @@ const loadInventoryList = async (areaCd) => {
 
   storageList.value = res.storageList || []
   stockItemHistList.value = res.stockItemHistList || []
+  console.log('stockItemHistList.value ', stockItemHistList.value )
 
   dynamicColumns.value = storageList.value.map((item) => ({
     field: String(item.storageCd).toUpperCase(),
@@ -290,6 +323,7 @@ const loadInventoryList = async (areaCd) => {
   }))
 }
 
+let tmpTestNo = ref('')
 onMounted(async () => {
   setTimeout(() => {
     barcodeInputRef.value?.$el?.querySelector('input')?.focus()
@@ -301,14 +335,30 @@ onMounted(async () => {
 
   itemCd.value = rowData.itemCd ?? ''
   itemName.value = rowData.itemName ?? ''
-
+  weighId.value = rowData.weighId ?? ''
   orderQty.value = Number(rowData.orderQty ?? 0)
-//console.log('orderQty.value', orderQty.value)
+  tmpTestNo.value = rowData.testNo ?? ''
+
+
+  if (!isEmpty(tmpTestNo.value)) {
+    await getStockTestNoList()
+  }
+
   const areaCd = formData.areaCd ?? ''
-  const storageCd = formData.storageCd ?? ''
+  workProcId.value = formData.workProcId ?? ''
+  storageCd.value = formData.storageCd ?? ''
 
   await loadInventoryList(areaCd)
 })
+
+const getStockTestNoList = async () =>{
+     const params = {
+        testNos: tmpTestNo.value,
+        weighId: weighId.value
+    }
+    console.log('params', params)
+    stockItemList.value = await ApiProc.getStockTestNoList(params)
+}
 
 </script>
 

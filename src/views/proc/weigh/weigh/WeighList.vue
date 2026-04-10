@@ -134,6 +134,7 @@ const selectRowClick = (id, itemCd, procStatus) =>{
             procStatus: procStatus,
         },
         onClose:(event) => {
+            srhList()
         },
     })
 }
