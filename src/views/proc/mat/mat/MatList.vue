@@ -60,24 +60,24 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaName"    header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
-        <Column field="weighDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'right'}" >
+        <Column field="areaCd"          header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
+        <Column field="procOrderDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.weighDate }}
+                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                    {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'right'}" ></Column>
-        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
+        <Column field="poNo"        header="PO No"    :style="{ width: '120px', textAlign: 'center'}" ></Column>
+        <Column field="makeNo"      header="제조번호"  :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'center'}" />
+        <Column field="itemName"    header="품목명"    :style="{ width: '380px'}" bodyClass="break-words"  ></Column>
         <Column field="clientName"  header="납품처명"  :style="{ width: '200px'}" />
-        <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="orderQty"    header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="procStatus"   header="제조상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="batchStatus"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatus"   header="제조상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -88,15 +88,14 @@ import { ApiProc } from '@/api/apiProc';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref, shallowRef } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import MatRegPop from './MatRegPop.vue';
 
 const dialog = useDialog()
 const dt = ref(null);
 const matList = ref([])
-const processStates = ref([])
+const procStatuss = ref([])
 const areaCds = ref([])
-const currentComponent = shallowRef(null)
 
 const form = reactive({
   strDate: '',
@@ -106,12 +105,11 @@ const form = reactive({
   itemCd: '',
   itemName: '',
   procStatus: '',
-  processState: '',
 
   proseccCd : 'PRC002',
 })
 
-const selectRowClick = (id) =>{
+const selectRowClick = (id, itemCd, procStatus) =>{
     dialog.open(MatRegPop, {
         props:{
             header: '제조지시 및 기록서',
@@ -119,9 +117,9 @@ const selectRowClick = (id) =>{
             maximizable: false,
             draggable: false,
             style: {
-                width: '90vw',          // 🔹 팝업 가로 폭
-                maxWidth: '1800px',
-                height: '800px',
+                width: '85vw',          // 🔹 팝업 가로 폭
+                maxWidth: '1700px',
+                height: '850px',
                 overflow: 'hidden'
             },
             pt: {
@@ -129,8 +127,15 @@ const selectRowClick = (id) =>{
                 content: { style: { overflow: 'hidden' } }
             },
         },
-        data: id,
+        data: {
+            workProcId: id,
+            itemCd : itemCd,
+            procStatus: procStatus,
+        },
         onClose:(event) => {
+            if(event){
+                srhList()
+            }
         },
     })
 }
@@ -144,12 +149,11 @@ const srhList = async () =>{
     matList.value = await ApiProc.getMatList(params);
 }
 
-
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    procStatus.value = await ApiCommon.getCodeList('PROC_STATUS')
+    procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "21", "22", "99"];
-    procStatus.value = procStatus.value.filter(v => want.includes(v.code));
+    procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
 
     form.endDate = todayKST()
     form.strDate = minMonth(form.endDate)
@@ -185,6 +189,13 @@ const downloadExcel = () =>{
   text-align: center;
   font-family: monaco, Consolas;
   padding: 8px;
+}
+::v-deep(.break-words) {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  /* text-decoration: underline;
+  cursor: pointer; */
 }
 
 </style>

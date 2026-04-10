@@ -186,7 +186,7 @@
                 tableStyle="width:100%; table-layout: fixed;"
                 class="my-table mt-2"
             >
-                <Column field="distOrder" header="" :style="{ width:'40px', textAlign:'center' }" />
+                <Column field="orderDist" header="" :style="{ width:'40px', textAlign:'center' }" />
                 <Column field="testMethod"header="검사항목" :pt="{ columnHeaderContent:'justify-center' }">
                     <template #body="{ data }">
                         <span>{{ data.inspItem }}</span>

@@ -38,10 +38,10 @@
                 <InputText v-model="slotProps.data.testResult" style="width: 100%;"/>
             </template>
         </Column>
-        <Column field="distOrder"   header="표시순서"  :style="{ width: '90px', textAlign:'center'}" >
+        <Column field="orderDist"   header="표시순서"  :style="{ width: '90px', textAlign:'center'}" >
             <template #body="slotProps">
                 <InputNumber
-                   v-model="slotProps.data.distOrder"
+                   v-model="slotProps.data.orderDist"
                    :inputStyle="{ width: '40px', 'text-align': 'center' }"
                    />
             </template>
@@ -101,7 +101,7 @@ const addRow = (selectItem = [], addBlank = true) => {
     qcTestTypeMethodList.value = []
   }
 
-  let sortNum = qcTestTypeMethodList.value.length > 0 ? Math.max(...qcTestTypeMethodList.value.map(row => row.distOrder)) + 1 : 1
+  let sortNum = qcTestTypeMethodList.value.length > 0 ? Math.max(...qcTestTypeMethodList.value.map(row => row.orderDist)) + 1 : 1
 
   // 항상 마지막에 빈 row 추가
   qcTestTypeMethodList.value.push({
@@ -110,16 +110,16 @@ const addRow = (selectItem = [], addBlank = true) => {
     testMethod: '',
     testSpec: '',
     testResult: '',
-    distOrder: sortNum
+    orderDist: sortNum
   })
-  //renumberDistOrder()
+  //renumberorderDist()
 }
 
-// const renumberDistOrder = () => {
+// const renumberorderDist = () => {
 //   if (!Array.isArray(qcTestTypeMethodList.value)) return
 
 //   qcTestTypeMethodList.value.forEach((row, index) => {
-//     row.distOrder = index + 1
+//     row.orderDist = index + 1
 //   })
 // }
 

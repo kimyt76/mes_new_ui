@@ -74,7 +74,7 @@ const areaCds = ref([])
 const allStorages = ref([]);
 const filteredStorages = computed(() => {
     if (!form.areaCd) return [];
-    return allStorages.value.filter(s => s.areaCd === form.areaCd);
+    return allStorages.value.filter(s => s.areaCd === form.areaCd && s.m1Yn === 'Y');
 });
 const storages = computed(() => filteredStorages.value);
 
@@ -86,6 +86,8 @@ const form = reactive({
     lotNo: '',
     itemName: '',
 
+    procCd: '',
+    itemCd: '',
     workProcId: '',
     workBatchId: '',
     workOrderId: '',
@@ -103,6 +105,8 @@ const saveInfo = () => {
         accept: async () => {
             try {
                 const param = {
+                    procCd: form.procCd,
+                    itemCd: form.itemCd,
                     workProcId: form.workProcId,
                     workBatchId: form.workBatchId,
                     storageCd: form.storageCd,
@@ -110,7 +114,7 @@ const saveInfo = () => {
                     batchStatus: '11',
                 }
 
-                const res = await ApiProc.updateProcStatus(param)
+                const res = await ApiProc.startProcWeigh(param)
                 vSuccess(res.message)
                 closeDialog()
             } catch (err) {

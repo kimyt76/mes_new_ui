@@ -316,7 +316,7 @@ const form = reactive({
 })
 
 const methodColumns = [
-  { field: 'distOrder',     header: 'No', width: '50px', align: 'center', editable: false },
+  { field: 'orderDist',     header: 'No', width: '50px', align: 'center', editable: false },
   { field: 'testItem',      header: '검사항목', width: '100px', editor: 'text', align: 'center' },
   { field: 'testMethod',    header: '시험방법', width: '320px', editor: 'textarea', multiline: true },
   { field: 'testSpec',      header: '시험기준', width: '210px', editor: 'textarea', multiline: true },
@@ -327,7 +327,7 @@ const methodColumns = [
 ]
 
 const validators = {
-  distOrder: (value) => {
+  orderDist: (value) => {
     const num = Number(value)
     if (Number.isNaN(num) || num < 0) return false
     return num
@@ -448,7 +448,7 @@ const addRows = (rows)  =>{
 
     const mappedRows = rows.map((row, idx) => ({
         testTypeMethodId: row.testTypeMethodId ?? null,
-        distOrder: startOrder+idx+1,
+        orderDist: startOrder+idx+1,
         testItem: row.testItem ?? '',
         testMethod: row.testMethod ?? '',
         testSpec: row.testSpec ?? '',
@@ -466,7 +466,7 @@ const addRows = (rows)  =>{
 const addRow = () => {
   const newRow = {
     testTypeMethodId: null,
-    distOrder: qcTestTypeMethodList.value.length + 1,
+    orderDist: qcTestTypeMethodList.value.length + 1,
     testItem: '',
     testMethod: '',
     testSpec: '',
@@ -485,7 +485,7 @@ const addRow = () => {
 const resetOrder = () => {
   qcTestTypeMethodList.value = qcTestTypeMethodList.value.map((row, idx) => ({
     ...row,
-    distOrder: idx + 1
+    orderDist: idx + 1
   }))
 }
 

@@ -14,7 +14,7 @@
         showGridlines
         @row-click="addPop"
         >
-        <Column field="distOrder"   header="순번"      :style="{ width: '60px' ,textAlign:'center'}" />
+        <Column field="orderDist"   header="순번"      :style="{ width: '60px' ,textAlign:'center'}" />
         <Column field="testItem"    header="검사항목"  :style="{ width: '550px'}" />
         <Column field="testMethod"  header="검사방법"  :style="{ width: '300px',textAlign:'center'}" />
         <Column field="testTiming"  header="점검시기"  :style="{ width: '130px',textAlign:'center'}" />
