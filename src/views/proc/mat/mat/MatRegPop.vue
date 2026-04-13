@@ -61,14 +61,18 @@
                         {{ totalCount }}  중 {{ checkedCount }} 개 완료
                     </div>
                     <div>
-                        <span class="hint">** 저장시 완료 체크된 행만 저장됩니다.</span>
+                        <span class="hint">** 저장 후 새로고침을 하셔야 데이터가 업데이트됩니다.</span>
                     </div>
                     <div>
                         <Button label="새로고침" @click="loadMakeInfo"/>
                     </div>
                 </div>
                 <div>
-                    <TabView v-model:activeIndex="phaseActiveIndex" @update:activeIndex="handlePhaseTabChange" class="phase-tabs">
+                    <TabView
+                       :key="phaseTabRenderKey"
+                       :activeIndex="phaseActiveIndex"
+                        @update:activeIndex="handlePhaseTabChange"
+                        class="phase-tabs">
                         <TabPanel
                             v-for="tab in phaseTabs"
                             :key="tab"
@@ -116,6 +120,8 @@
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import BaseHotTable from '@/components/BaseHotTable.vue';
+import { useAlertStore } from '@/stores/alert';
+import { handleApiError } from '@/util/errorHandler';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
@@ -123,6 +129,7 @@ import WorkerPop from '../../common/WorkerPop.vue';
 import MakeQtyPopup from './MakeQtyPopup.vue';
 import ProcMakeStartPop from './ProcMakeStartPop.vue';
 
+const { vSuccess, vInfo, vWarning} = useAlertStore()
 const weighId = ref('')
 const hotTable = ref(null)
 const dialog = useDialog()
@@ -130,12 +137,22 @@ const dialogRef = inject('dialogRef')
 const isStarted = ref(false)
 const isComplate = ref(false)
 const matUseDataList = ref([])
+const activePhase = computed(() => phaseTabs.value[phaseActiveIndex.value] || 'ALL')
+const phaseTabs = computed(() => {
+  const phases = [...new Set(
+    (matUseDataList.value || []).map(row => row.phase)
+  )]
+
+  return ['ALL', ...phases]
+})
+
 const totalCount = computed(() => {
   return Array.isArray(matUseDataList.value) ? matUseDataList.value.length : 0
 })
 const checkedCount = computed(() => {
   return matUseDataList.value.filter((row) => row.makeYn === 'Y').length
 })
+const phaseTabRenderKey = ref(0)
 const phaseActiveIndex = ref(0)
 const form = reactive({
     makeNo: '',
@@ -186,41 +203,52 @@ const hotColumns = ref([
 ])
 
 const handlePhaseTabChange = (nextIndex) => {
-    console.log('nextIndex', nextIndex)
-  if (canMoveToPhase(nextIndex)) {
-    phaseActiveIndex.value = nextIndex
-  }
+    if (canMoveToPhase(nextIndex)) {
+        phaseActiveIndex.value = nextIndex
+    } else {
+        // 탭 헤더 표시 원복용 강제 재렌더
+        phaseTabRenderKey.value++
+    }
 }
 
 const canMoveToPhase = (nextIndex) => {
-    const tabs = phaseTabs.value || []
-    const currentIndex = phaseActiveIndex.value
+  const tabs = phaseTabs.value || []
+  const currentIndex = phaseActiveIndex.value
 
-    const currentPhase = tabs[currentIndex]
-    const nextPhase = tabs[nextIndex]
+  // 같은 탭 또는 뒤로 이동은 허용
+  if (nextIndex <= currentIndex) return true
 
-    // 같은 탭 또는 뒤로 이동은 허용
-    if (nextIndex <= currentIndex) return true
+  // ALL로 가는 건 허용
+  const nextPhase = tabs[nextIndex]
+  if (nextPhase === 'ALL') return true
 
-    // ALL 은 항상 허용
-    if (currentPhase === 'ALL' || nextPhase === 'ALL') return true
+  // 현재 위치부터 목표 직전까지 전부 완료 체크
+  for (let i = currentIndex; i < nextIndex; i++) {
+    const phase = tabs[i]
 
-    // 현재 phase의 목록
-    const currentPhaseRows = (matUseDataList.value || []).filter(
-        row => row.phase === currentPhase
+    // ALL은 스킵
+    if (phase === 'ALL') continue
+
+    const rows = (matUseDataList.value || []).filter(
+      row => row.phase === phase
     )
-    // 데이터 없으면 이동 허용
-    if (currentPhaseRows.length === 0) return true
 
-    // 하나라도 미완료면 차단
-    const hasIncomplete = currentPhaseRows.some(row => row.makeYn !== 'Y')
+    // 데이터 없으면 다음 phase 검사
+    if (rows.length === 0) continue
+
+    const hasIncomplete = rows.some(row => row.makeYn !== 'Y')
 
     if (hasIncomplete) {
-        alert(`${currentPhase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
-        return false
+      alert(`${phase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
+      return false
     }
+  }
 
   return true
+}
+
+const handleAfterChange = () =>{
+
 }
 
 const handleCellClickFromHot = (event, coords, td) => {
@@ -279,7 +307,7 @@ const applyQrToList = async () => {
     )
 
     if (!targetRow) {
-        alert(`해당 QR(${id})와 일치하는 원료가 없습니다.`)
+        vInfo(`해당 QR(${id})와 일치하는 원료가 없습니다.`)
         return
     }
 
@@ -296,16 +324,6 @@ const applyQrToList = async () => {
     // 입력값 초기화
     //weighId.value = ''
 }
-
-const activePhase = computed(() => phaseTabs.value[phaseActiveIndex.value] || 'ALL')
-
-const phaseTabs = computed(() => {
-  const phases = [...new Set(
-    (matUseDataList.value || []).map(row => row.phase)
-  )]
-
-  return ['ALL', ...phases]
-})
 
 const currentTabList = computed(() => {
   if (activePhase.value === 'ALL') return matUseDataList.value || []
@@ -411,12 +429,10 @@ const applyPopupResultToRow = (type, row, data) => {
 }
 
 const complateMake = () =>{
-
-}
-
-const barcodePrint = () =>{
-
-
+    if ( totalCount.value !== checkedCount.value){
+        vInfo('투입되지 않은 품목이 있습니다.')
+        return
+    }
 
 
 }
