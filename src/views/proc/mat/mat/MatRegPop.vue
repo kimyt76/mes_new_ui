@@ -50,7 +50,10 @@
             <TabPanel value="0">
                 <div class="flex items-center gap-3 mb-2">
                     <FloatLabel variant="on">
-                        <InputText id="on_label1" v-model="form.weighNo" />
+                        <InputText id="on_label1"
+                          v-model="weighId"
+                          @keyup.enter="applyQrToList"
+                        />
                         <label for="on_label1">QR코드(칭량번호)</label>
                     </FloatLabel>
                     <div class="count">
@@ -88,8 +91,7 @@
             </TabPanel>
             <TabPanel value="1">
                 <p class="m-0">
-                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
-                    ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
+
                 </p>
             </TabPanel>
         </TabPanels>
@@ -99,7 +101,7 @@
 <div class="w-full mt-3">
     <div class="flex items-center justify-end gap-3">
         <Button v-if="isStarted"  label="제조시작" @click="openLookupPopup('S')" />
-        <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
+        <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo"></Button>
         <Button label="바코드출력" icon="pi pi-barcode" @click="barcodePrint" />
         <Button label="공정기록서(제조투입)" @click="downloadProcTest('P')"/>
         <Button label="공정기록서(공정기록)" @click="downloadProcTest('R')"/>
@@ -115,7 +117,10 @@ import { ApiProc } from '@/api/apiProc';
 import BaseHotTable from '@/components/BaseHotTable.vue';
 import { useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
+import WorkerPop from '../../common/WorkerPop.vue';
+import MakeQtyPopup from './MakeQtyPopup.vue';
 
+const weighId = ref('')
 const hotTable = ref(null)
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
@@ -172,7 +177,7 @@ const hotColumns = ref([
   { data: 'makeYn', type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N', className: 'htCenter' },
   { data: 'maker', className: 'htCenter' },
   { data: LOOKUP_PROP.MAKER, readOnly: true, renderer: magnifierRenderer },
-  { data: 'make_confirmer', className: 'htCenter' },
+  { data: 'makeConfirmer', className: 'htCenter' },
   { data: LOOKUP_PROP.MAKE_CONFIRM, readOnly: true, renderer: magnifierRenderer },
 ])
 
@@ -188,15 +193,22 @@ const handleCellClickFromHot = (event, coords, td) => {
 
     const now = Date.now()
 
-    const  makeerLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.MAKER)
+    const  makeQtyColIndex = hotColumns.value.findIndex(col => col.data === 'makeQty')
+    const  makerLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.MAKER)
     const  makeconfirmLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.MAKE_CONFIRM)
 
+    if (coords.col === makeQtyColIndex) {
+        const isMakeQtyPopupTarget = rowData.itemCd === 'JRW00215' || rowData.itemCd === 'JRMSC00011'
+
+        if (!isMakeQtyPopupTarget) return
+        openLookupPopup('makeQty', rowData)
+        return
+    }
         // 2. 칭량자 돋보기 클릭
-    if (coords.col === makeerLookupColIndex) {
+    if (coords.col === makerLookupColIndex) {
         openLookupPopup('MAKE_USER', rowData)
         return
     }
-
     // 3. 확인자 돋보기 클릭
     if (coords.col === makeconfirmLookupColIndex) {
         openLookupPopup('CONFIRM_USER', rowData)
@@ -209,16 +221,53 @@ const handleAfterChange = (changes, source) =>{
     console.log('source',  source)
 }
 
-const normalizePhase = (phase) => {
-  const value = String(phase ?? '').trim()
-  return value === '' ? '미분류' : value
+/** yyyy-MM-dd HH:mm:ss */
+const getNowDateTime = () => {
+  const d = new Date()
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  const ss = String(d.getSeconds()).padStart(2, '0')
+  return `${hh}:${mm}:${ss}`
+}
+
+const applyQrToList = async () => {
+    const inputValue = String(weighId.value ?? '').trim()
+    if (!inputValue) return
+
+    const id = Number(inputValue)
+
+    // row.id 와 비교
+    const targetRow = matUseDataList.value.find(
+        row => Number(row.weighId) === id
+    )
+
+    if (!targetRow) {
+        alert(`해당 QR(${id})와 일치하는 원료가 없습니다.`)
+        return
+    }
+
+    // 자동 등록
+    targetRow.makeQty = Number(targetRow.orderQty ?? 0)
+    targetRow.makeTime = getNowDateTime()
+    targetRow.makeYn = 'Y'
+
+    // 필요하면 투입자도 같이 세팅
+    // targetRow.maker = loginUserName
+    await nextTick()
+
+    // Handsontable 강제 렌더링
+    const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
+    hotInstance?.render()
+
+    // 입력값 초기화
+    //weighId.value = ''
 }
 
 const activePhase = computed(() => phaseTabs.value[phaseActiveIndex.value] || 'ALL')
 
 const phaseTabs = computed(() => {
   const phases = [...new Set(
-    (matUseDataList.value || []).map(row => normalizePhase(row.phase))
+    (matUseDataList.value || []).map(row => row.phase)
   )]
 
   return ['ALL', ...phases]
@@ -228,7 +277,7 @@ const currentTabList = computed(() => {
   if (activePhase.value === 'ALL') return matUseDataList.value || []
 
   return (matUseDataList.value || []).filter(
-    row => normalizePhase(row.phase) === activePhase.value
+    row => row.phase === activePhase.value
   )
 })
 
@@ -237,8 +286,70 @@ const saveInfo = () =>{
 }
 
 
-const openLookupPopup = (type) =>{
+const openLookupPopup = (type, row) =>{
+    let title = ''
+    let componentPop = ''
 
+    const rowTargetTypes = ['makeQty','MAKE_USER', 'CONFIRM_USER']
+    const shouldPassRow = rowTargetTypes.includes(type)
+
+    if(type === 'MAKE_USER'){
+        title = '투입자 선택'
+        componentPop = WorkerPop
+    } else if(type === 'CONFIRM_USER'){
+        title = '확인자 선택'
+        componentPop = WorkerPop
+    } else if(type === 'makeQty'){
+        title = '투입량 입력'
+        componentPop = MakeQtyPopup
+    } else if(type === 'S'){
+        title = '제조 시작'
+        componentPop = 'MakeStartPopup'
+    }
+
+    dialog.open(componentPop,{
+        props:{
+            header: title,
+            modal: true,
+            maximizable: false,
+            draggable: false,
+        },
+        data: {
+            form,
+            ...(shouldPassRow ? { row } : {}),
+            type,
+        },
+        onClose:(event) => {
+            if (!event?.data) {
+                if (!shouldPassRow) {
+                    loadMakeInfo()
+                }
+                return
+            }
+            // row를 넘긴 팝업이면 선택된 row에 값 반영
+            if (shouldPassRow && row) {
+                applyPopupResultToRow(type, row, event.data)
+                return
+            }
+            // 그 외 팝업은 기존 처리
+            loadMakeInfo()
+        },
+    })
+}
+
+const applyPopupResultToRow = (type, row, data) => {
+    if (type === 'makeQty') {
+        // 예시: 용기무게 선택 팝업 반환값
+        console.log('data', data)
+        console.log('data.makeQt', data.makeQty)
+        row.makeQty = data ?? row.orderQty
+    } else if (type === 'MAKE_USER') {
+        // 예시: 작업자 선택 팝업 반환값
+        row.maker = data.workerName ?? row.workerName
+    } else if (type === 'CONFIRM_USER') {
+        // 예시: 확인자 선택 팝업 반환값
+        row.makeConfirmer = data.workerName ?? row.workerName
+    }
 }
 
 const complateMake = () =>{
@@ -263,18 +374,27 @@ const fetchMakeInfo = async () => {
     return await ApiProc.getMakeInfo(params)
 }
 const createMakeInfoParams = () => ({
-    workProcId: dialogRef.value.data.workProcId,
+    workBatchId: dialogRef.value.data.workBatchId,
     itemCd: dialogRef.value.data.itemCd,
 })
 const bindMakeInfo = (data) => {
-    console.log('data', data)
     Object.assign(form, data.procMake || {})
-    matUseDataList.value = data.bomList || []
-    isStarted.value = data.procWeigh?.procStatus === '00'
+    matUseDataList.value = data.makeBomList || []
+
+    if (data.procMake?.procStatus === '00' && data.procMake?.batchStatus ==='12'){
+        isStarted.value = true
+    }
+    checkComplete()
+}
+
+const checkComplete = () =>{
+    if ( form.procStatus === '21' && totalCount.value === checkedCount.value ){
+        isComplate.value =true
+    }
 }
 
 const closeDialog = () => {
-    dialogRef.close();
+    dialogRef.value.close();
 }
 </script>
 
