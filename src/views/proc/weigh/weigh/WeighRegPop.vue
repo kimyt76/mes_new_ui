@@ -358,14 +358,13 @@ const saveInfo = async() =>{
         }
         const res = await ApiProc.saveWeighInfo(params)
         vSuccess(res.message)
-        checkWeighFinish()
+        checkComplete()
     }catch(err){
         handleApiError(err)
     }
 }
 
-const checkWeighFinish = () =>{
-    console.log('finishedCount', finishedCount.value)
+const checkComplete = () =>{
     if ( form.procStatus === '11' && totalMatCount.value === finishedCount.value ){
         isComplate.value =true
     }
@@ -724,7 +723,7 @@ const bindWeighInfo = (data) => {
     Object.assign(form, data.procWeigh || {})
     matUseDataList.value = normalizeRows(data.weightBomList || [])
     isStarted.value = data.procWeigh?.procStatus === '00'
-    checkWeighFinish()
+    checkComplete()
 }
 const loadWeighInfo = async () => {
     const data = await fetchWeighInfo()
