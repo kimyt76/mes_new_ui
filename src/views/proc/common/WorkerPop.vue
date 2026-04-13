@@ -26,10 +26,15 @@ const selectItem = ref(null)
 const workerList = ref([])
 
 onMounted( async () => {
-  console.log('dialogRef.value.data.form', dialogRef.value.data.form)
-    let procCd = dialogRef.value?.data?.form?.procCd
-    console.log('procCd', procCd)
-  const res = await ApiProc.getWorkerList(procCd)
+  let procCd = dialogRef.value?.data?.form?.procCd
+  let areaCd = dialogRef.value?.data?.form?.areaCd
+
+  const params = {
+    procCd: procCd,
+    areaCd: areaCd
+  }
+
+  const res = await ApiProc.getWorkerList(params)
   workerList.value = res.data
 });
 

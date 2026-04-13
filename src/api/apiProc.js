@@ -4,8 +4,8 @@ import { API_URL } from '.'
 export const ApiProc = {
 
     /**  공통 */
-  getWorkerList: async(id) => {
-      return  await API_URL.get(`/procCommon/getWorkerList/${id}`)
+  getWorkerList: async(params) => {
+      return  await API_URL.post('/procCommon/getWorkerList',params)
   },
   getBagWeightList: async() => {
       return  await API_URL.get(`/procCommon/getBagWeightList`)
