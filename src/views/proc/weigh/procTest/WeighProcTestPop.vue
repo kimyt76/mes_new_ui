@@ -324,9 +324,7 @@ const openPop = (row, type) =>{
 
     if (  type === 'equipment'  ) {
         title = '설비 선택'
-
         if ( isEmpty(tab1.storageCd)  ) return vInfo('창고를 선택해주세요.')
-
         cd = tab1.storageCd
         currntComponet = EquipmentPop
     }else if (  type === 'worker'  ) {
@@ -337,7 +335,6 @@ const openPop = (row, type) =>{
         title = '점검시간 설정'
         currntComponet = TiemPop
     }
-
 
     dialog.open(currntComponet, {
         props: {
