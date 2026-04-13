@@ -63,7 +63,7 @@
         <Column field="areaCd"          header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                <div @click="selectRowClick(slotProps.data.workBatchId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
@@ -128,7 +128,7 @@ const selectRowClick = (id, itemCd, procStatus) =>{
             },
         },
         data: {
-            workProcId: id,
+            workBatchId: id,
             itemCd : itemCd,
             procStatus: procStatus,
         },
