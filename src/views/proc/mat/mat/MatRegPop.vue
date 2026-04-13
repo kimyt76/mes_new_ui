@@ -16,11 +16,11 @@
             <th class="cellBorder cellHeader">지시량</th>
             <td class="cellBorder">{{ form.orderQty }}</td>
             <th class="cellBorder cellHeader">제조설비</th>
-            <td class="cellBorder" colspan="3"></td>
+            <td class="cellBorder" colspan="3">{{ form.workEquipmentCd }}</td>
         </tr>
         <tr>
             <th class="cellBorder cellHeader">제조일자</th>
-            <td class="cellBorder">{{ form.makeDate }}</td>
+            <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">제조량</th>
             <td class="cellBorder">0 kg</td>
             <th class="cellBorder cellHeader">생산수율</th>
@@ -52,6 +52,7 @@
                     <FloatLabel variant="on">
                         <InputText id="on_label1"
                           v-model="weighId"
+                          :disabled="form.procStatus === '00'"
                           @keyup.enter="applyQrToList"
                         />
                         <label for="on_label1">QR코드(칭량번호)</label>
@@ -67,7 +68,7 @@
                     </div>
                 </div>
                 <div>
-                    <TabView v-model:activeIndex="phaseActiveIndex" class="phase-tabs">
+                    <TabView v-model:activeIndex="phaseActiveIndex" @update:activeIndex="handlePhaseTabChange" class="phase-tabs">
                         <TabPanel
                             v-for="tab in phaseTabs"
                             :key="tab"
@@ -102,7 +103,7 @@
     <div class="flex items-center justify-end gap-3">
         <Button v-if="isStarted"  label="제조시작" @click="openLookupPopup('S')" />
         <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo"></Button>
-        <Button label="바코드출력" icon="pi pi-barcode" @click="barcodePrint" />
+        <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
         <Button label="공정기록서(제조투입)" @click="downloadProcTest('P')"/>
         <Button label="공정기록서(공정기록)" @click="downloadProcTest('R')"/>
         <Button v-if="isComplate" label="제조완료" @click="complateMake" />
@@ -115,10 +116,12 @@
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import BaseHotTable from '@/components/BaseHotTable.vue';
+import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
 import WorkerPop from '../../common/WorkerPop.vue';
 import MakeQtyPopup from './MakeQtyPopup.vue';
+import ProcMakeStartPop from './ProcMakeStartPop.vue';
 
 const weighId = ref('')
 const hotTable = ref(null)
@@ -143,6 +146,7 @@ const form = reactive({
     prodDate: '',
     storageName:'',
     storageCd:'',
+    workEquipmentCd: '',
     poNo:'',
     etc: '',
 
@@ -165,7 +169,7 @@ const magnifierRenderer = (instance, td) => {
 }
 
 const hotHeaders = ref(['No', '구분',  '품목코드',  '품목명',  '소요량',  '투입량',  '투입일시',  '완료',  '투입자',  '-',  '확인자', '-' ])
-const colWidths = ref([50, 50, 130, 450, 120, 120, 200, 55, 120, 50, 120, 50])
+const colWidths = ref([50, 50, 140, 470, 120, 120, 170, 55, 120, 50, 120, 50])
 const hotColumns = ref([
   { data: 'orderDist', readOnly: true, className: 'htCenter' },
   { data: 'phase', readOnly: true, className: 'htCenter' },
@@ -180,6 +184,44 @@ const hotColumns = ref([
   { data: 'makeConfirmer', className: 'htCenter' },
   { data: LOOKUP_PROP.MAKE_CONFIRM, readOnly: true, renderer: magnifierRenderer },
 ])
+
+const handlePhaseTabChange = (nextIndex) => {
+    console.log('nextIndex', nextIndex)
+  if (canMoveToPhase(nextIndex)) {
+    phaseActiveIndex.value = nextIndex
+  }
+}
+
+const canMoveToPhase = (nextIndex) => {
+    const tabs = phaseTabs.value || []
+    const currentIndex = phaseActiveIndex.value
+
+    const currentPhase = tabs[currentIndex]
+    const nextPhase = tabs[nextIndex]
+
+    // 같은 탭 또는 뒤로 이동은 허용
+    if (nextIndex <= currentIndex) return true
+
+    // ALL 은 항상 허용
+    if (currentPhase === 'ALL' || nextPhase === 'ALL') return true
+
+    // 현재 phase의 목록
+    const currentPhaseRows = (matUseDataList.value || []).filter(
+        row => row.phase === currentPhase
+    )
+    // 데이터 없으면 이동 허용
+    if (currentPhaseRows.length === 0) return true
+
+    // 하나라도 미완료면 차단
+    const hasIncomplete = currentPhaseRows.some(row => row.makeYn !== 'Y')
+
+    if (hasIncomplete) {
+        alert(`${currentPhase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
+        return false
+    }
+
+  return true
+}
 
 const handleCellClickFromHot = (event, coords, td) => {
     // coords: { row, col }
@@ -216,13 +258,8 @@ const handleCellClickFromHot = (event, coords, td) => {
     }
 }
 
-const handleAfterChange = (changes, source) =>{
-    console.log('changes',  changes)
-    console.log('source',  source)
-}
-
 /** yyyy-MM-dd HH:mm:ss */
-const getNowDateTime = () => {
+const getNowDateTime = async () => {
   const d = new Date()
   const hh = String(d.getHours()).padStart(2, '0')
   const mm = String(d.getMinutes()).padStart(2, '0')
@@ -247,18 +284,15 @@ const applyQrToList = async () => {
     }
 
     // 자동 등록
-    targetRow.makeQty = Number(targetRow.orderQty ?? 0)
-    targetRow.makeTime = getNowDateTime()
+    const res = await ApiProc.getWeighQty(weighId.value)
+
+    targetRow.makeQty = res?? 0
+    targetRow.makeTime = await getNowDateTime()
     targetRow.makeYn = 'Y'
-
-    // 필요하면 투입자도 같이 세팅
-    // targetRow.maker = loginUserName
-    await nextTick()
-
+    //await nextTick()
     // Handsontable 강제 렌더링
     const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
     hotInstance?.render()
-
     // 입력값 초기화
     //weighId.value = ''
 }
@@ -281,14 +315,25 @@ const currentTabList = computed(() => {
   )
 })
 
-const saveInfo = () =>{
-
+const saveInfo = async () =>{
+    //예외체크
+    try{
+        const params = {
+            procMake : form,
+            makeBomList : matUseDataList.value
+        }
+        const res = await ApiProc.saveMakeInfo(params)
+        vSuccess(res.message)
+        checkComplete()
+    }catch(err){
+        handleApiError(err)
+    }
 }
-
 
 const openLookupPopup = (type, row) =>{
     let title = ''
     let componentPop = ''
+    let itemList = []
 
     const rowTargetTypes = ['makeQty','MAKE_USER', 'CONFIRM_USER']
     const shouldPassRow = rowTargetTypes.includes(type)
@@ -304,7 +349,19 @@ const openLookupPopup = (type, row) =>{
         componentPop = MakeQtyPopup
     } else if(type === 'S'){
         title = '제조 시작'
-        componentPop = 'MakeStartPopup'
+        componentPop = ProcMakeStartPop
+    }else if(type === 'P'){
+        title = '바코드 출력'
+        componentPop = QrCodePop
+
+        itemList.push({
+            itemCd: form.itemCd,
+            itemName: form.itemName,
+            lotNo: form.lotNo,
+            testNo: form.testNo,
+            qty: 0,
+            printCnt: 1,
+        })
     }
 
     dialog.open(componentPop,{
@@ -318,6 +375,7 @@ const openLookupPopup = (type, row) =>{
             form,
             ...(shouldPassRow ? { row } : {}),
             type,
+            itemList,
         },
         onClose:(event) => {
             if (!event?.data) {
@@ -357,6 +415,9 @@ const complateMake = () =>{
 }
 
 const barcodePrint = () =>{
+
+
+
 
 }
 
