@@ -15,8 +15,15 @@
         <Column field="expiryDate"  header="사용기한"   :style="{ width: '120px',textAlign:'center'}" />
         <Column field="qty"         header="수량"       :style="{ width: '100px' ,textAlign:'right'}">
             <template #body="slotProps">
-                {{ Number(slotProps.data.qty).toLocaleString() }}
-            </template>
+                    <InputNumber
+                        v-model="slotProps.data.qty"
+                        class="w-full"
+                        :min="1"
+                        :maxFractionDigits="0"
+                        :useGrouping="true"
+                        :inputStyle="{ width: '70px', 'text-align': 'right' }"
+                    />
+                </template>
         </Column>
         <Column field="printCnt"        header="인쇄매수"   :style="{ width: '70px'}"  >
                 <template #body="slotProps">
