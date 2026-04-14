@@ -284,7 +284,7 @@ const model = ref([
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/matOut'
+                        to: '/proc/weigh/weighTran'
                     },
                     {
                         label: '자재불출',
