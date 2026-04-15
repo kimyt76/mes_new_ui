@@ -119,7 +119,7 @@ const home = ref({
     icon: 'pi pi-home'
 });
 const items = ref([
-    { label: '칭량공정' },
+    { label: '코팅공정' },
     { label: '제조출고' },
     { label: '제조출고목록' },
 ]);
