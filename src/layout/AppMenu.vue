@@ -347,7 +347,7 @@ const model = ref([
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/coating/coatingMatOut'
+                        to: '/proc/coating/coatingTran'
                     },
                 ]
             },
@@ -368,7 +368,7 @@ const model = ref([
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/charge/chargeMatOut'
+                        to: '/proc/charge/chargeTran'
                     },
                 ]
             },
@@ -389,7 +389,7 @@ const model = ref([
                     {
                         label: '제조출고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/packingMatOut'
+                        to: '/proc/packing/packingTran'
                     },
                 ]
             },
