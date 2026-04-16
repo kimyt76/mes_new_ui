@@ -159,13 +159,7 @@ export const ApiLab = {
     }
   },
   saveNewMaterialInfo: async(params) =>{
-    try{
-      const res =  await API_URL.post('/newMaterial/saveNewMaterialInfo', params)
-
-      return res.data
-    }catch(err) {
-      throw new Error(err.response?.data);
-    }
+    return  await API_URL.post('/newMaterial/saveNewMaterialInfo', params)
   },
   getNewMaterialListMapping: async(id) => {
     try{
@@ -177,14 +171,7 @@ export const ApiLab = {
     }
   },
   saveNewMaterialMapping: async(params) =>{
-    try{
-      const res =  await API_URL.post('/newMaterial/saveNewMaterialMapping', params)
-
-      return res.data
-    }catch(err) {
-      const message = err.response?.data?.message
-      throw new Error(message);
-    }
+    return  await API_URL.post('/newMaterial/saveNewMaterialMapping', params)
   },
 
   //샘플 리스트

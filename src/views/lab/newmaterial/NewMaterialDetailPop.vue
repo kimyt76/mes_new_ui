@@ -231,7 +231,6 @@ const saveInfo = async (type) =>{
                 vInfo("이관할 품목코드를 선택해주세요.")
                 return
             }
-
             const res = await ApiLab.saveNewMaterialMapping(params)
             vSuccess("이관 되었습니다.")
         }else{
@@ -278,8 +277,6 @@ onMounted( async () =>{
   const dialogEl = document.querySelector('.p-dialog')
 
   if (dialogEl) {
-    console.log('Dialog width:', dialogEl.offsetWidth)
-    console.log('Dialog height:', dialogEl.offsetHeight)
   }
 
     if ( !isEmpty(dialogRef.value.data) ){
