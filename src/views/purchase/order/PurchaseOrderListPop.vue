@@ -23,6 +23,10 @@
               <InputText v-model="form.itemCd" style="width: 150px" />
               <label>품목코드</label>
             </FloatLabel>
+            <FloatLabel variant="on">
+              <InputText v-model="form.customerName" style="width: 150px" />
+              <label>거래처</label>
+            </FloatLabel>
             <Button
               label="검색"
               icon="pi pi-search"
@@ -55,6 +59,7 @@
         <Column field="purOrderDateSeq" header="발주일자No" :style="{ width: '130px', textAlign: 'center' }" />
         <Column field="itemCd" header="품목코드" :style="{ width: '110px', textAlign: 'center' }" />
         <Column field="itemName" header="품목명" :style="{ width: '300px', textAlign: 'left' }" />
+        <Column field="customerName" header="거래처" :style="{ width: '200px', textAlign: 'left' }" />
         <Column field="spec" header="규격" :style="{ width: '90px', textAlign: 'center' }" />
         <Column field="qty" header="수량" :style="{ width: '90px', textAlign: 'center' }">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
@@ -100,6 +105,7 @@ const form = reactive({
     itemTypeCd : '',
     itemCd:'',
     itemName:'',
+    customerName:'',
 })
 
 const searchList = async () =>{
