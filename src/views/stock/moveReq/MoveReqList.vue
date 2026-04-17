@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd"
                    :options="areaCds"
@@ -110,6 +107,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import { ApiSystems } from '@/api/apiSystem';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -133,10 +131,9 @@ const progressStatuss = ref([
     { code: 'I', codeNm: '진행' },
     { code: 'E', codeNm: '종료' },
 ])
-
 const form = reactive({
-    strDate: null,
-    endDate: null,
+    strDate: minMonth(todayKST(), 3),
+    endDate: addMonth(todayKST(), 1),
     areaCd: null,
     progressStatus: null,
     srcStorageCd: null,
@@ -144,6 +141,10 @@ const form = reactive({
     itemName: null,
     itemCd: null,
 })
+
+const handleDateChange = () =>{
+
+}
 
 
 const moveReq = () =>{
@@ -177,9 +178,6 @@ const srhList = async () =>{
 }
 
 onMounted( async () =>{
-    form.strDate = minMonth(todayKST(), 3)
-    form.endDate =  addMonth(todayKST(), 1)
-
     areaCds.value = await ApiCommon.getCodeList('area')
     allStorages.value = await ApiSystems.getStorageCodeList()
 })

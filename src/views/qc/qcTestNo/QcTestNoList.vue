@@ -4,8 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-                <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-                <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+                <DateRangePicker
+                    v-model:startDate="form.strDate"
+                    v-model:endDate="form.endDate"
+                    @change="handleDateChange"
+                />
                 <FloatLabel variant="on">
                     <Select v-model="form.itemTypeCd" :options="itemTypeCds"
                     optionLabel="codeNm"
@@ -82,6 +85,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -97,8 +101,8 @@ const selectedItem = ref([])
 const itemTypeCds = ref([])
 const itemTestNoList = ref([])
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: todayKST(),
+    endDate: todayKST(),
     itemTypeCd: '',
     itemName: '',
     itemCd: '',
@@ -106,6 +110,10 @@ const form = reactive({
     testNo: '',
     shelfDate: '',
 })
+
+const handleDateChange = () =>{
+
+}
 
 const srhList = async () =>{
     const params = {
@@ -170,9 +178,6 @@ const downloadExcel = () =>{
 
 onMounted( async () =>{
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
-
-    form.strDate = todayKST()
-    form.endDate = todayKST()
 })
 
 const home = ref({

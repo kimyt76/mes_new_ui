@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.tranCd" :options="tranCds"
                    optionLabel="codeNm"
@@ -88,6 +85,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import { ApiSystems } from '@/api/apiSystem';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -99,18 +97,20 @@ const selectedItem = ref([])
 const adjustList = ref([])
 const tranCds = ref([])
 const allStorages = ref([]); // 전체 창고(18건)
-
 const totalCount = computed(() => {
   return Array.isArray(adjustList.value) ? adjustList.value.length : 0
 })
-
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 2),
+    endDate: addMonth(todayKST(), 1),
     storageCd: '',
     itemName: '',
     itemCd:'',
 })
+
+const handleDateChange = () =>{
+
+}
 
 const selectRowClick = (id) =>{
     let title = ''
@@ -143,9 +143,6 @@ const srhList = async () =>{
 }
 
 onMounted( async () =>{
-    form.strDate = minMonth(todayKST(), 2)
-    form.endDate = addMonth(todayKST(), 1)
-
     allStorages.value = await ApiSystems.getStorageCodeList()
     tranCds.value = (await ApiCommon.getCodeList('tran_cd')).filter(i => ['P','Q', 'R','S','T','U','V','W', 'X'].includes(i.code)  )
 })

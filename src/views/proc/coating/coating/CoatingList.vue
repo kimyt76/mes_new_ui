@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd" :options="areaCds"
                    optionLabel="codeNm"
@@ -69,7 +66,7 @@
         <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
         <Column field="procOrderDate"   header="코팅지시일"  :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workProcId)" class="clickable-cell" style="text-decoration: underline; point">
+                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd)" class="clickable-cell" style="text-decoration: underline; point">
                     {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
@@ -81,7 +78,7 @@
         <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="batchStatus"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="procStatus"   header="코팅상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
@@ -91,12 +88,15 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import MoveReqPop from '../../common/MoveReqPop.vue';
+import CoatingPop from './CoatingPop.vue';
+
 
 const { vInfo, vWarning} = useAlertStore()
 const selectedItem = ref([])
@@ -104,42 +104,54 @@ const dialog = useDialog()
 const dt = ref(null);
 const coatingList = ref([])
 const procStatuss = ref([])
+const batchStatus = ref([])
 const areaCds = ref([])
 
 const form = reactive({
-  strDate: '',
-  endDate: '',
+  strDate: minMonth(todayKST()),
+  endDate: todayKST(),
   areaCd: '',
   itemCd: '',
   itemName: '',
   clientName: '',
   processState: '',
 
-  proseccCd : 'PRC003',
+  procCd : 'PRC003',
 })
 
-const selectRowClick = (id) =>{
-    // dialog.open(MatRegPop, {
-    //     props:{
-    //         header: '코팅지시 및 기록',
-    //         modal: true,
-    //         maximizable: false,
-    //         draggable: false,
-    //         style: {
-    //             width: '90vw',          // 🔹 팝업 가로 폭
-    //             maxWidth: '1800px',
-    //             height: '800px',
-    //             overflow: 'hidden'
-    //         },
-    //         pt: {
-    //             root: { style: { overflow: 'hidden' } },
-    //             content: { style: { overflow: 'hidden' } }
-    //         },
-    //     },
-    //     data: id,
-    //     onClose:(event) => {
-    //     },
-    // })
+const handleDateChange = () =>{
+
+}
+
+const selectRowClick = (id, cd) =>{
+    dialog.open(CoatingPop, {
+        props:{
+            header: '코팅지시 및 기록',
+            modal: true,
+            maximizable: false,
+            draggable: false,
+            style: {
+                width: '88vw',
+                maxWidth: '1600px',
+                height: '90vh'
+            },
+            contentStyle: {
+                overflow: 'hidden',
+                padding: '0'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            },
+        },
+        data:{
+            workProcId: id,
+            procCd: form.procCd,
+            itemCd: cd
+        },
+        onClose:(event) => {
+        },
+    })
 }
 
 const moveReq = () =>{
@@ -185,9 +197,6 @@ onMounted( async () => {
     const want = ["00", "31", "32", "99"];
     procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
     console.log(procStatuss.value);
-
-    form.endDate = todayKST()
-    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({
@@ -196,7 +205,7 @@ const home = ref({
 const items = ref([
     { label: '공정관리' },
     { label: '코팅' },
-    { label: '코팅 작업지시목록' },
+    { label: '코팅 작업지시 목록' },
 ]);
 
 const downloadExcel = () =>{

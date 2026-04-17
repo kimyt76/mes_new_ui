@@ -76,8 +76,8 @@ const dialog = useDialog()
 const dt = ref(null);
 const procTranList = ref([])
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: todayKST(),
+    endDate: minMonth(todayKST()),
     itemCd: '',
     itemName: '',
     procCd: 'PRC001'
@@ -94,7 +94,7 @@ const srhList = async () =>{
 const openPop = (id) =>{
     dialog.open( TranPop,{
         props:{
-            header: '제조출고',
+            header: '제조출고 상세정보',
             modal: true,
             draggable: false,
             width: '800px',
@@ -111,8 +111,6 @@ const openPop = (id) =>{
 }
 
 onMounted(() => {
-    form.endDate = todayKST()
-    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({

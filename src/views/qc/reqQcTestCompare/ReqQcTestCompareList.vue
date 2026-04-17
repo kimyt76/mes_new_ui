@@ -4,8 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-                <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-                <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+                <DateRangePicker
+                    v-model:startDate="form.strDate"
+                    v-model:endDate="form.endDate"
+                    @change="handleDateChange"
+                />
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
                     <InputText v-model="form.itemName" class="w-full" />
@@ -77,6 +80,7 @@
 
 <script setup>
 import { ApiQc } from '@/api/apiQc';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -91,11 +95,15 @@ const dialog = useDialog()
 const selectedTestItem = ref('ALL')
 const methodList = ref([])
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 2),
+    endDate: todayKST(),
     itemName: '',
     itemCd: '',
 })
+
+const handleDateChange = () =>{
+
+}
 
 const testItemOptions = computed(() => {
     const names = methodList.value
@@ -147,8 +155,7 @@ const srhList = async () =>{
 }
 
 onMounted( () => {
-    form.strDate = minMonth(todayKST(), 2)
-    form.endDate = todayKST()
+
 })
 
 const downloadExcel = () =>{

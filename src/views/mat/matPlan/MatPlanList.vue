@@ -5,15 +5,10 @@
     <Toolbar class="mt-2 mb-2 w-full">
         <template #start>
         <div class="flex flex-wrap gap-3 items-end">
-            <DatePicker
-            :showIcon="true"
-            v-model="form.strDate"
-            class="w-11rem"
-            />
-            <DatePicker
-            :showIcon="true"
-            v-model="form.endDate"
-            class="w-11rem"
+             <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
             />
             <FloatLabel  variant="on">
                 <InputText v-model="form.itemCd" class="w-13rem" />
@@ -118,6 +113,7 @@
 
 <script setup>
 import { ApiMat } from '@/api/apiMat';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { addMonth, isEmpty, minMonth, removeBracketPrefix, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -138,12 +134,16 @@ const endYns = ref([
 ]);
 
 const form = reactive({
-  strDate: '',
-  endDate: '',
+  strDate: minMonth(todayKST()),
+  endDate: addMonth(todayKST(), 2),
   itemName: '',
   itemCd: '',
   endYn: ''
 })
+
+const handleDateChange = () =>{
+
+}
 
 const home = ref({
     icon: 'pi pi-home'
@@ -158,8 +158,6 @@ const srchMatPlanList = async () => {
 
 onMounted( async () => {
 
-  form.endDate = addMonth(todayKST(), 2)
-  form.strDate = minMonth(todayKST())
 });
 
 

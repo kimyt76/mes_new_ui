@@ -22,9 +22,9 @@
             <th class="cellBorder cellHeader">제조일자</th>
             <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">제조량</th>
-            <td class="cellBorder">0 kg</td>
+            <td class="cellBorder">{{   }} kg</td>
             <th class="cellBorder cellHeader">생산수율</th>
-            <td class="cellBorder">0%</td>
+            <td class="cellBorder">{{}} %</td>
             <th class="cellBorder cellHeader">생산처</th>
             <td class="cellBorder">{{ form.storageName }}</td>
         </tr>
@@ -95,9 +95,14 @@
                 </div>
             </TabPanel>
             <TabPanel value="1">
-                <p class="m-0">
+                <DataTable
 
-                </p>
+                >
+                <Column field="itemCd"    header="공성"  :style="{ width: '100px'}" />
+                <Column field="itemCd"    header="공정구분"  :style="{ width: '100px'}" />
+                <Column field="itemCd"    header="제조공정"  :style="{ width: '100px'}" />
+                <Column field="itemCd"    header="적요"  :style="{ width: '100px'}" />
+            </DataTable>
             </TabPanel>
         </TabPanels>
     </Tabs>
@@ -139,7 +144,7 @@ const isComplate = ref(false)
 const matUseDataList = ref([])
 const activePhase = computed(() => phaseTabs.value[phaseActiveIndex.value] || 'ALL')
 const phaseTabs = computed(() => {
-  const phases = [...new Set(
+const phases = [...new Set(
     (matUseDataList.value || []).map(row => row.phase)
   )]
 
@@ -312,11 +317,13 @@ const applyQrToList = async () => {
     }
 
     // 자동 등록
-    const res = await ApiProc.getWeighQty(weighId.value)
+    const makeQty = await ApiProc.getWeighQty(weighId.value)
 
-    targetRow.makeQty = res?? 0
+    targetRow.makeQty = makeQty?? 0
     targetRow.makeTime = await getNowDateTime()
     targetRow.makeYn = 'Y'
+
+    //const res = await ApiProc.insertRowMake(targetRow)
     //await nextTick()
     // Handsontable 강제 렌더링
     const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()

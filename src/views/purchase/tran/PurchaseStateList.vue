@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-                <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input"/>
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd"
                  :options="areaCds"
@@ -63,7 +60,7 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="인쇄" icon="pi pi-print"  outlined @click="print"></Button>
+    <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     <Button label="바코드" icon="pi pi-barcode"  outlined @click="barcodePrint"></Button>
 </div>
@@ -125,6 +122,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchase } from '@/api/apiPurchase';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useCodeList } from '@/composable/useCodeList';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -137,9 +135,11 @@ const selectedItem = ref([])
 const dt = ref(null)
 const areaCds = ref([])
 const purchaseList = ref([])
+const testStates = ref([])
+const passStates = ref([])
 const form  = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 2),
+    endDate: addMonth(todayKST(), 1),
     areaCd: null,
     itemTypeCd: null,
     itemName: '',
@@ -156,6 +156,22 @@ const srhList = async () =>{
 
     purchaseList.value = await ApiPurchase.getPurchaseDetailList(params)
 
+}
+
+const handleDateChange = () =>{
+
+}
+
+const printOut = async () =>{
+    const params = {
+        ...form
+    }
+
+    // PDF 새창(미리보기) + 인쇄 다이얼로그
+    const win = window.open("", "_blank"); // 먼저 열어두고
+    const pdfBlob = await ApiPurchase.printOut(params);
+    const url = URL.createObjectURL(new Blob([pdfBlob], { type: "application/pdf" }));
+    win.location.href = url;
 }
 
 const barcodePrint = () =>{
@@ -180,9 +196,6 @@ const barcodePrint = () =>{
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('AREA');
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
-
-    form.endDate = addMonth(todayKST(), 1);
-    form.strDate = minMonth(todayKST(), 2)
 });
 
 const home = ref({

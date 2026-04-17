@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <InputText id="on_label1" v-model="form.clientName" style="width: 200px" />
                 <label for="on_label1">고객사명</label>
@@ -66,7 +63,8 @@
 
 <script setup>
 import { ApiBase } from '@/api/apiBase';
-import { isEmpty } from '@/util/common';
+import DateRangePicker from '@/components/DateRangePicker.vue';
+import { isEmpty, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { reactive, ref } from 'vue';
@@ -76,8 +74,8 @@ const dialog = useDialog()
 const clientList = ref([])
 const dt = ref(null)
 const form  =reactive({
-  strDate: '',
-  endDate: '',
+  strDate: todayKST(),
+  endDate: todayKST(),
   clientName : '',
   saleManagerName: '',
   businessNo: '',
@@ -90,6 +88,9 @@ const srhList = async () =>{
     clientList.value = await ApiBase.getClientList(params)
 }
 
+const handleDateChange = () =>{
+
+}
 const selectRowClick = (id) =>{
     let title = '고객사 등록'
 

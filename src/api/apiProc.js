@@ -2,7 +2,6 @@ import { API_URL } from '.'
 
 //공정 API
 export const ApiProc = {
-
     /**  공통 */
   getWorkerList: async(params) => {
       return  await API_URL.post('/procCommon/getWorkerList',params)
@@ -10,15 +9,21 @@ export const ApiProc = {
   getBagWeightList: async() => {
       return  await API_URL.get(`/procCommon/getBagWeightList`)
   },
-
   getEquipmentList: async(id) => {
       return  await API_URL.get(`/procCommon/getEquipmentList/${id}`)
   },
-
   updateProcStatus: async(params) => {
     return await API_URL.post(`/procCommon/updateProcStatus`, params)
   },
 
+    getProcTranList: async(params) => {
+        try{
+            const res = await API_URL.post('/procCommon/getProcTranList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
 
   // 칭량
@@ -70,7 +75,6 @@ export const ApiProc = {
   },
 
 
-
   //제조
   getMatList: async(params) => {
     try{
@@ -90,7 +94,24 @@ export const ApiProc = {
         throw err.response
     }
   },
+ startProcMake: async(params) => {
+    return await API_URL.post(`/procMat/startProcMake`, params)
+  },
+  getWeighQty: async(id) => {
+    try{
+      const res = await API_URL.get(`/procMat/getWeighQty/${id}`)
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+saveMakeInfo: async(params) => {
+    return await API_URL.post('/procMat/saveMakeInfo', params)
+  },
 
+  insertRowMake: async(params) => {
+    return await API_URL.post('/procMat/insertRowMake', params)
+  },
 
 
 
@@ -105,7 +126,16 @@ export const ApiProc = {
       throw err.response
     }
   },
+  getCoatingInfo: async(params) => {
+    try{
+      const res = await API_URL.post('/procCoating/getCoatingInfo', params)
 
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
 
   //충전
   getChargeList: async(params) => {

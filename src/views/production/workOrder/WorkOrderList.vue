@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작일자</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료일자</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd"
                  :options="areaCds"
@@ -94,6 +91,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiWorkOrder } from '@/api/apiWorkOrder';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
@@ -110,13 +108,17 @@ const areaCds = ref([])
 const workOrderList = ref([])
 const dt = ref(null)
 const form  =reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth( todayKST(), 2),
+    endDate: addMonth( todayKST(), 1),
     areaCd: '',
     itemName: '',
     itemCd: '',
     clientName: '',
 })
+
+const handleDateChange = () =>{
+
+}
 
 const srhList = async () =>{
     selectItems.value = []
@@ -183,10 +185,6 @@ const selectRowClick = (id) =>{
 onMounted( async () =>{
     areaCds.value = (await ApiCommon.getCodeList('area'))
       .filter(i => !['A003'].includes(i.code))
-
-    form.strDate = minMonth( todayKST(), 2)
-    form.endDate = addMonth( todayKST(), 1)
-    //srhList()
 })
 
 const home = ref({

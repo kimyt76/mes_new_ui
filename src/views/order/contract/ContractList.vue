@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <InputText id="on_label" v-model="form.itemName" style="width: 180px"/>
                 <label for="on_label">품목명</label>
@@ -106,6 +103,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiOrder } from '@/api/apiOrders';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -120,10 +118,9 @@ const statusTypes = ref([])
 const vatTypes = ref([])
 const orderTypes = ref([])
 const currentComponent = shallowRef(null)
-
 const form = reactive({
-  strDate: '',
-  endDate: '',
+  strDate: minMonth(todayKST()),
+  endDate:  todayKST(),
   itemCd: '',
   itemName: '',
   managerName: '',
@@ -167,6 +164,10 @@ const selectRowClick = (id) =>{
     })
 }
 
+const handleDateChange = () =>{
+
+}
+
 // form
 const srhList = async () =>{
     const params = {
@@ -184,9 +185,6 @@ onMounted( async () => {
     statusTypes.value = await ApiCommon.getCodeList('status_type')
     orderTypes.value = await ApiCommon.getCodeList('order_type')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
-
-    form.endDate = todayKST()
-    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({

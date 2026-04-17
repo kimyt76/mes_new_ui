@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd" :options="areaCds"
                    optionLabel="codeNm"
@@ -86,6 +83,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -97,10 +95,9 @@ const dt = ref(null);
 const weighList = ref([])
 const procStatuss = ref([])
 const areaCds = ref([])
-
 const form = reactive({
-  strDate: '',
-  endDate: '',
+  strDate: minMonth(todayKST(), 3),
+  endDate: todayKST(),
   areaCd: '',
   makeNo: '',
   itemCd: '',
@@ -109,6 +106,10 @@ const form = reactive({
   processState: '',
 
 })
+
+const handleDateChange = () =>{
+
+}
 
 const selectRowClick = (id, itemCd, procStatus) =>{
     dialog.open(WeighRegPop, {
@@ -153,9 +154,6 @@ onMounted( async () => {
     procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "11", "12", "99"];
     procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
-
-    form.strDate = minMonth(todayKST(), 3)
-    form.endDate = todayKST()
 })
 
 const home = ref({

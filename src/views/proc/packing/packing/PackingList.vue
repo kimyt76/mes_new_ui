@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd" :options="areaCds"
                    optionLabel="codeNm"
@@ -80,7 +77,7 @@
         <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="processState" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="batchStatus" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
         <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'right'}" />
         <Column field="procStatus"   header="포장상태"   :style="{ width: '80px', textAlign: 'right'}" />
     </DataTable>
@@ -90,6 +87,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -99,12 +97,12 @@ const selectedItem = ref([])
 const dialog = useDialog()
 const dt = ref(null);
 const packingList = ref([])
-const processStates = ref([])
+const batchStatus = ref([])
+const procStatus = ref([])
 const areaCds = ref([])
-
 const form = reactive({
-  strDate: '',
-  endDate: '',
+  strDate: minMonth(todayKST()),
+  endDate: todayKST(),
   areaCd: '',
   itemCd: '',
   itemName: '',
@@ -114,6 +112,10 @@ const form = reactive({
 
   proseccCd : 'PRC005',
 })
+
+const handleDateChange = () =>{
+
+}
 
 const selectRowClick = (id) =>{
     // dialog.open(MatRegPop, {
@@ -163,9 +165,6 @@ onMounted( async () => {
     procStatus.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "51", "52", "99"];
     procStatus.value = procStatus.value.filter(v => want.includes(v.code));
-
-    form.endDate = todayKST()
-    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({

@@ -4,8 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-                <DatePicker v-model="form.strDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
-                <DatePicker v-model="form.endDate" showIcon fluid iconDisplay="input" inputId="icondisplay" style="width: 130px"/>
+                <DateRangePicker
+                    v-model:startDate="form.strDate"
+                    v-model:endDate="form.endDate"
+                    @change="handleDateChange"
+                />
                 <FloatLabel variant="on">
                     <Select v-model="form.areaCd" :options="areaCds"
                     optionLabel="codeNm"
@@ -106,6 +109,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
@@ -127,8 +131,8 @@ const retestYns = ref([
     { code: 'N', codeNm: '입고검사' },
 ])
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 3),
+    endDate: todayKST(),
     areaCd: '',
     retestYn: '',
     itemTypeCd: '',
@@ -139,6 +143,10 @@ const form = reactive({
 
     menuType: 'O'
 })
+
+const handleDateChange = () =>{
+
+}
 
 const srhList = async () =>{
     const params = {
@@ -205,9 +213,6 @@ onMounted(async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
     passStates.value = await ApiCommon.getCodeList('pass_state')
-
-    form.strDate = minMonth(todayKST(), 3)
-    form.endDate = todayKST()
 })
 
 const downloadExcel = () =>{

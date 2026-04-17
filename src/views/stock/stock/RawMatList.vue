@@ -4,15 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
-
+                <DateRangePicker
+                    v-model:startDate="form.strDate"
+                    v-model:endDate="form.endDate"
+                    @change="handleDateChange"
+                />
                 <FloatLabel variant="on">
                 <Select v-model="form.itemGrp1" :options="itemGrp1s"
                    optionLabel="codeNm"
@@ -113,15 +109,16 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { addMonth, todayKST } from '@/util/common';
+import DateRangePicker from '@/components/DateRangePicker.vue';
+import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { onMounted, reactive, ref } from 'vue';
 
 const dt = ref(null);
 const itemGrp1s = ref([])
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 3),
+    endDate: todayKST(),
     itemGrp1: '',
     itemTypeCd : '',
     areaCd: '',
@@ -129,7 +126,10 @@ const form = reactive({
     itemCd: '',
 })
 const rawMatList = ref([])
-// form
+const handleDateChange = () =>{
+
+}
+
 const srhList = async () =>{
     const params = {
         ...form
@@ -140,9 +140,6 @@ const srhList = async () =>{
 
 onMounted( async () => {
     itemGrp1s.value = await ApiCommon.getCodeList('item_grp1')
-
-    form.endDate = todayKST()
-    form.strDate = addMonth(form.endDate, -3)
 })
 
 const home = ref({

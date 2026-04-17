@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd"
                    :options="areaCds"
@@ -112,7 +109,8 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { addDay, addMonth, todayKST } from '@/util/common';
+import DateRangePicker from '@/components/DateRangePicker.vue';
+import { addDay, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { computed, onMounted, reactive, ref } from 'vue';
 
@@ -123,8 +121,8 @@ const totalCount = computed(() => {
   return Array.isArray(rawMatList.value) ? rawMatList.value.length : 0
 })
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 3),
+    endDate: todayKST(),
     itemGrp1: '',
     itemTypeCd : '',
     areaCd: '',
@@ -133,6 +131,9 @@ const form = reactive({
     stdDate: todayKST(),
 })
 
+const handleDateChange = () =>{
+
+}
 const srhList = async () =>{
     const params = {
         ...form
@@ -148,9 +149,6 @@ const searchDateAdd = (day) =>{
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-
-    form.endDate = todayKST()
-    form.strDate = addMonth(form.endDate, -3)
 })
 
 const home = ref({

@@ -4,14 +4,11 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.strDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">시작</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
-                <DatePicker v-model="form.endDate" inputId="on_label" showIcon iconDisplay="input" />
-                <label for="on_label">종료</label>
-            </FloatLabel>
+            <DateRangePicker
+                v-model:startDate="form.strDate"
+                v-model:endDate="form.endDate"
+                @change="handleDateChange"
+            />
             <FloatLabel variant="on">
                 <Select v-model="form.areaCd" :options="areaCds"
                    optionLabel="codeNm"
@@ -115,6 +112,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -140,8 +138,8 @@ const endYns = ref([
     { codeNm: '종결', code: 'Y' },
 ])
 const form = reactive({
-    strDate: '',
-    endDate: '',
+    strDate: minMonth(todayKST(), 1),
+    endDate: todayKST(),
     itemTypeCd: 'M1',
     itemCd: '',
     itemName: '',
@@ -150,6 +148,10 @@ const form = reactive({
     inYn: '',
     endYn: '',
 })
+
+const handleDateChange = () =>{
+
+}
 
 const selectRowClick = (id, purOrderId) =>{
     let title = ''
@@ -222,9 +224,6 @@ const printOut = async () => {
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('AREA');
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
-
-    form.endDate = todayKST()
-    form.strDate = minMonth(form.endDate)
 })
 
 const home = ref({
