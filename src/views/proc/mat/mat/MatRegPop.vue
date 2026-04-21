@@ -22,9 +22,9 @@
             <th class="cellBorder cellHeader">제조일자</th>
             <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">제조량</th>
-            <td class="cellBorder">{{   }} kg</td>
+            <td class="cellBorder">{{ form.prodQty  }} kg</td>
             <th class="cellBorder cellHeader">생산수율</th>
-            <td class="cellBorder">{{}} %</td>
+            <td class="cellBorder">{{ form.prodYield}} %</td>
             <th class="cellBorder cellHeader">생산처</th>
             <td class="cellBorder">{{ form.storageName }}</td>
         </tr>
@@ -169,6 +169,8 @@ const form = reactive({
     storageName:'',
     storageCd:'',
     workEquipmentCd: '',
+    prodQty: '',
+    prodYield: '',
     poNo:'',
     etc: '',
 
