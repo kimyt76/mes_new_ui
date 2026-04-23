@@ -5,7 +5,7 @@
 
     <div class="mt-3">
         <FloatLabel variant="on">
-            <InputNumber
+            <InputText
                 ref="barcodeInputRef"
                 v-model="barcode"
                 @keyup.enter="searchByBarcode"
@@ -18,16 +18,34 @@
     <div class="mt-2">
         <DataTable
             :value="workUseList"
+            show-gridlines
             class="my-table"
         >
-         <Column field="testNo"     header="시험번호"   :style="{ width: '100px', textAlign: 'center'}" ></Column>
-         <Column field="itemCd"     header="종목코드"   :style="{ width: '120px', textAlign: 'center'}" ></Column>
-         <Column field="lotNo"      header="로트번호"   :style="{ width: '200px', textAlign: 'center'}" ></Column>
+         <Column field="no"         header="NO"   :style="{ width: '30px', textAlign: 'center'}" ></Column>
+         <Column field="testNo"     header="시험번호"   :style="{ width: '110px', textAlign: 'center'}" ></Column>
+         <Column field="itemCd"     header="종목코드"   :style="{ width: '140px', textAlign: 'center'}" ></Column>
+         <Column field="lotNo"      header="로트번호"   :style="{ width: '220px', textAlign: 'center'}" ></Column>
          <Column field="reqQty"     header="예상소요량" :style="{ width: '100px', textAlign: 'center'}" ></Column>
-         <Column field="useQty"     header="사용량"     :style="{ width: '90px', textAlign: 'center'}" ></Column>
-         <Column field="badQty"     header="원불량"     :style="{ width: '90px', textAlign: 'center'}" ></Column>
-         <Column field="workBadQty" header="작업불량"   :style="{ width: '90px', textAlign: 'center'}" ></Column>
-         <Column field="totUsQty"   header="총사용량"   :style="{ width: '100px', textAlign: 'center'}" ></Column>
+         <Column field="useQty"     header="사용량" >
+            <template #body="{ data }">
+                <InputNumber v-model="data.useQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }"  @update:modelValue="calcTot(data)"/>
+            </template>
+        </Column>
+         <Column field="badQty"     header="원불량" >
+            <template #body="{ data }">
+                <InputNumber v-model="data.badQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }"  @update:modelValue="calcTot(data)"/>
+            </template>
+        </Column>
+         <Column field="workBadQty" header="작업불량" >
+            <template #body="{ data }">
+                <InputNumber v-model="data.workBadQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }" @update:modelValue="calcTot(data)"/>
+            </template>
+        </Column>
+         <Column field="totUsQty"   header="총사용량" >
+            <template #body="{ data }">
+                <InputNumber v-model="data.totUsQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }"  readonly/>
+            </template>
+        </Column>
         </DataTable>
     </div>
 
@@ -39,38 +57,127 @@
 
 <script setup>
 import { ApiProc } from '@/api/apiProc';
+import { ApiQc } from '@/api/apiQc';
+import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, ref } from 'vue';
 
+const { vWarning, vInfo, vSuccess} = useAlertStore()
 const barcodeInputRef = ref(null)
 const barcode = ref('')
-const prodUseList = ref([])
 const dialogRef = inject('dialogRef')
 const workUseList = ref([])
 const title = ref('')
 
-const saveInfo = async () => {
-    await ApiProc.saveProdUseList(prodUseList.value)
+const calcTot = (row) => {
+    const use = Number(row.useQty) || 0
+    const bad = Number(row.badQty) || 0
+    const workBad = Number(row.workBadQty) || 0
 
+    if (  use <  bad + workBad  ) {
+        vWarning('사용량보다 불량값이 큽니다.')
+        row.totUsQty = 0
+        return
+    }
+
+    row.totUsQty = use - bad - workBad
+}
+
+const saveInfo = async () => {
+    if (!workUseList.value.length) {
+        vWarning('저장할 데이터가 없습니다.')
+        return
+    }
+
+    try{
+        const totalReqQty = workUseList.value.reduce((sum, row) => sum + (Number(row.reqQty) || 0), 0)
+        const totalUseQty = workUseList.value.reduce((sum, row) => sum + (Number(row.useQty) || 0), 0)
+        const totalBadQty = workUseList.value.reduce((sum, row) => sum + (Number(row.badQty) || 0), 0)
+        const totalWorkBadQty = workUseList.value.reduce((sum, row) => sum + (Number(row.workBadQty) || 0), 0)
+        const totUseQty =  totalUseQty-totalBadQty-totalWorkBadQty
+
+        const firstTestNo = workUseList.value[0]?.testNo || ''
+        const rowCount = workUseList.value.length
+        const rowData = dialogRef.value?.data?.row || {}
+
+        const summaryRow = {
+            testNos: rowCount > 1 ? `${firstTestNo} 외 ${rowCount - 1}건` : firstTestNo,
+            reqQty: totalReqQty,
+            useQty: totalUseQty,
+            badQty: totalBadQty,
+            workBadQty: totalWorkBadQty,
+            totUseQty: totUseQty,
+            //row 정보
+            itemCd: dialogRef.value.data.itemCd,
+            specInfo: rowData.specInfo,
+            exAppearance: rowData.exAppearance,
+            packingSpecValue: rowData.packingSpecValue,
+            packingSpecUnit: rowData.packingSpecUnit,
+            workProcId: rowData.workProcId,
+            workBatchId: rowData.workBatchId,
+        }
+
+        const params = {
+            prodInfo: summaryRow,
+            prodUseList: workUseList.value
+        }
+
+         //부모로 전달전에 prod 업데이트
+        const res = await ApiProc.saveProdInfo(params)
+        // 부모로 집계 데이터 전달
+        dialogRef.value.close(summaryRow)
+    }catch(err){
+        handleApiError(err)
+    }
 }
 
 const searchByBarcode = async () =>{
-console.log(' barcode.value.length',  barcode.value.length)
-    if ( barcode.value.length == 11) {
-        prodUseList.value = await ApiProc.getProdUseTestNo(barcode.value)
+    const code = barcode.value?.trim()
+
+    if (code?.length !== 11) return
+
+    const exists = workUseList.value.some(item => item.testNo === code)
+    if (exists) {
+        vWarning('이미 추가된 시험번호입니다.')
+        barcode.value = ''
+        return
+    }
+
+    try{
+        const res = await ApiQc.getItemTestNoInfo(barcode.value)
+        if (!res) {
+            vWarning('조회 결과가 없습니다.')
+            return
+        }
+        workUseList.value.push({
+            no: workUseList.value.length + 1,
+            testNo: res.testNo,
+            itemCd: res.itemCd,
+            lotNo: res.lotNo,
+            reqQty: res.qty,
+            useQty: 0,
+            badQty: 0,
+            workBadQty: 0,
+            totUsQty: 0,
+        })
+
+        barcode.value = ''
+    }catch(err){
+        handleApiError(err)
     }
 }
 
 onMounted( async () =>{
-    let workProcId = dialogRef.value.data.row.workProcId
+    let prodInfoId = dialogRef.value.data.row.prodInfoId
     title.value = '['+dialogRef.value.data.itemCd+'] '+ dialogRef.value.data.itemName
 
     setTimeout(() => {
         barcodeInputRef.value?.$el?.querySelector('input')?.focus()
     }, 100)
 
-    if (!isEmpty(workProcId)) {
-        prodUseList.value = await ApiProc.getProdUseId(workProcId)
+    if (!isEmpty(prodInfoId)) {
+        workUseList.value = await ApiProc.getProdUseList(prodInfoId)
     }
 })
 
