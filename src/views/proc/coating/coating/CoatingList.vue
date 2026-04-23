@@ -66,7 +66,7 @@
         <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
         <Column field="procOrderDate"   header="코팅지시일"  :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd)" class="clickable-cell" style="text-decoration: underline; point">
+                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
@@ -78,9 +78,9 @@
         <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="batchStatus"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="procStatus"   header="코팅상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatusName"   header="코팅상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -108,7 +108,7 @@ const batchStatus = ref([])
 const areaCds = ref([])
 
 const form = reactive({
-  strDate: minMonth(todayKST()),
+  strDate: minMonth(todayKST(), 2),
   endDate: todayKST(),
   areaCd: '',
   itemCd: '',
@@ -147,9 +147,10 @@ const selectRowClick = (id, cd) =>{
         data:{
             workProcId: id,
             procCd: form.procCd,
-            itemCd: cd
+            itemCd: cd,
         },
         onClose:(event) => {
+            srhList()
         },
     })
 }
@@ -181,7 +182,6 @@ const moveReq = () =>{
     })
 }
 
-
 // form
 const srhList = async () =>{
     const params = {
@@ -196,7 +196,6 @@ onMounted( async () => {
     procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "31", "32", "99"];
     procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
-    console.log(procStatuss.value);
 })
 
 const home = ref({
