@@ -230,10 +230,10 @@ const sangGubunOptions = computed(() => {
   return [ALL_TAB, ...Array.from(set).sort()]
 })
 
-// ✅ 초기 탭: ALL
+//초기 탭: ALL
 const activeSangGubun = ref(ALL_TAB)
 
-// ✅ 옵션이 바뀌어도 active 탭이 유효하게 유지
+//옵션이 바뀌어도 active 탭이 유효하게 유지
 watch(sangGubunOptions, (opts) => {
   if (!opts.length) {
     activeSangGubun.value = ALL_TAB
