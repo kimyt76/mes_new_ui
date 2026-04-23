@@ -1,93 +1,82 @@
 <template>
-    <div class="work-popup-wrap">
-        <Card class="work-card">
-            <template #content>
-                <div class="work-form">
-                    <!-- 1줄: 날짜 / 시작시간 / 종료시간 -->
-                    <div class="form-row row-time">
-                        <div class="field-item date-field">
-                            <label class="field-label">작업일자</label>
-                            <SingleDatePicker
-                                v-model="form.workDate"
-                                class="w-full"
-                            />
-                        </div>
-
-                        <div class="field-item time-field">
-                            <label class="field-label">시작시간</label>
-                            <DatePicker
-                                v-model="form.workStartTime"
-                                timeOnly
-                                showIcon
-                                hourFormat="12"
-                                appendTo="body"
-                                :manualInput="false"
-                                class="w-full"
-                            />
-                        </div>
-
-                        <div class="field-item time-field">
-                            <label class="field-label">종료시간</label>
-                            <DatePicker
-                                v-model="form.workEndTime"
-                                timeOnly
-                                showIcon
-                                hourFormat="12"
-                                appendTo="body"
-                                :manualInput="false"
-                                class="w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- 2줄: 작업인원 / label1 / label2 -->
-                    <div class="form-row row-qty">
-                        <div class="field-item">
-                            <FloatLabel variant="on">
-                                <InputNumber
-                                    v-model="form.workerCnt"
-                                    inputId="workerCnt"
-                                    class="w-full"
-                                    :suffix="workerSuffix"
-                                />
-                                <label for="workerCnt">작업인원</label>
-                            </FloatLabel>
-                        </div>
-
-                        <div class="field-item">
-                            <FloatLabel variant="on">
-                                <InputNumber
-                                    v-model="form.useQty"
-                                    inputId="useQty"
-                                    class="w-full"
-                                    :suffix="qtySuffix1"
-                                />
-                                <label for="useQty">{{ label }}</label>
-                            </FloatLabel>
-                        </div>
-
-                        <div class="field-item">
-                            <FloatLabel variant="on">
-                                <InputNumber
-                                    v-model="form.prodQty"
-                                    inputId="prodQty"
-                                    class="w-full"
-                                    :suffix="qtySuffix2"
-                                />
-                                <label for="matUseQty">{{ label2 }}</label>
-                            </FloatLabel>
-                        </div>
-                    </div>
-
-                    <!-- 3줄: 버튼 -->
-                    <div class="button-row">
-                        <Button label="저장" icon="pi pi-check" @click="saveInfo"/>
-                        <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
-                    </div>
-                </div>
-            </template>
-        </Card>
-    </div>
+<Card style="width: 35rem; height: 12rem;">
+    <template #content>
+        <div class="grid mt-2">
+            <div class="col-4">
+                <FloatLabel variant="on"  class="w-full">
+                    <SingleDatePicker
+                        v-model="form.workDate"
+                        fluid
+                    />
+                    <label >작업일자</label>
+                </FloatLabel>
+            </div>
+            <div class="col-4">
+                <FloatLabel variant="on" class="w-full">
+                    <DatePicker
+                        v-model="form.workStartTime"
+                        timeOnly
+                        showIcon
+                        hourFormat="12"
+                        appendTo="body"
+                        :manualInput="false"
+                        fluid
+                    />
+                    <label>시작시간</label>
+                </FloatLabel>
+            </div>
+            <div class="col-4">
+                <FloatLabel variant="on" class="w-full">
+                    <DatePicker
+                        v-model="form.workEndTime"
+                        timeOnly
+                        showIcon
+                        hourFormat="12"
+                        appendTo="body"
+                        :manualInput="false"
+                        fluid
+                    />
+                    <label>종료시간</label>
+                </FloatLabel>
+            </div>
+            <div class="col-4">
+                <FloatLabel variant="on" class="w-full">
+                    <InputNumber
+                        v-model="form.workerCnt"
+                         fluid
+                        :suffix="workerSuffix"
+                    />
+                    <label>작업인원</label>
+                </FloatLabel>
+            </div>
+            <div class="col-4">
+                <FloatLabel variant="on" class="w-full">
+                    <InputNumber
+                        v-model="form.useQty"
+                        fluid
+                        :suffix="qtySuffix1"
+                    />
+                    <label>{{ label }}</label>
+                </FloatLabel>
+            </div>
+            <div class="col-4">
+                <FloatLabel variant="on"  class="w-full">
+                    <InputNumber
+                        v-model="form.prodQty"
+                        fluid
+                        :suffix="qtySuffix2"
+                    />
+                    <label>{{ label2 }}</label>
+                </FloatLabel>
+            </div>
+        </div>
+         <!-- 3줄: 버튼 -->
+        <div class="flex justify-end gap-2 mt-2">
+            <Button label="저장" icon="pi pi-check" @click="saveInfo"/>
+            <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+        </div>
+    </template>
+</Card>
 </template>
 
 <script setup>
@@ -158,91 +147,5 @@ const closeDialog = () => {
 </script>
 
 <style scoped>
-.work-popup-wrap {
-    width: 36rem;
-    max-width: 92vw;
-}
 
-.work-card {
-    width: 100%;
-    border-radius: 14px;
-    box-shadow: none;
-}
-
-.work-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding: 0;
-}
-
-.form-row {
-    display: grid;
-    gap: 0.65rem;
-}
-
-.row-time {
-    grid-template-columns: 1.35fr 1fr 1fr;
-    align-items: end;
-}
-
-.row-qty {
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: end;
-}
-
-.field-item {
-    width: 100%;
-}
-
-.field-label {
-    display: block;
-    margin-bottom: 0.35rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #495057;
-    line-height: 1.2;
-}
-
-.button-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 0.15rem;
-}
-
-:deep(.p-card) {
-    box-shadow: none;
-}
-
-:deep(.p-card-content) {
-    padding: 0.45rem 0.5rem 0.35rem;
-}
-
-:deep(.p-inputtext),
-:deep(.p-inputnumber),
-:deep(.p-datepicker),
-:deep(.p-inputnumber-input) {
-    width: 100%;
-}
-
-:deep(.p-inputnumber-input) {
-    text-align: left;
-}
-
-:deep(.p-floatlabel input) {
-    width: 100%;
-}
-
-:deep(.p-dialog-content) {
-    padding: 0.5rem 0.65rem 0.7rem !important;
-}
-
-:deep(.p-datepicker-input) {
-    width: 100%;
-}
-
-:deep(.p-button) {
-    padding-top: 0.55rem;
-    padding-bottom: 0.55rem;
-}
 </style>
