@@ -116,6 +116,7 @@ const saveInfo = () => {
         accept: async () => {
             try {
                 const param = {
+                    areaCd: form.areaCd,
                     procCd: form.procCd,
                     itemCd: form.itemCd,
                     workProcId: form.workProcId,
