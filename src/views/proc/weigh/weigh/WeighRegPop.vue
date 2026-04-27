@@ -419,6 +419,9 @@ const handleAfterChange = (changes, source) => {
  * Handsontable hook 인자( event, coords, td )를 넘겨준다고 가정
  * ========================= */
 const handleCellClickFromHot = (event, coords, td) => {
+
+    if  ( isStarted.value ) return
+
   // coords: { row, col }
   if (!coords || coords.row == null || coords.col == null) return
   if (coords.row < 0) return // 헤더 클릭 제외
