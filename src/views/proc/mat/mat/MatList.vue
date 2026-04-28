@@ -116,12 +116,12 @@ const selectRowClick = (id, itemCd, procStatus) =>{
         props:{
             header: '제조지시 및 기록서',
             modal: true,
-            maximizable: false,
-            draggable: false,
+            maximizable: true,
+            draggable: true,
             style: {
-                width: '85vw',          // 🔹 팝업 가로 폭
-                maxWidth: '1700px',
-                height: '850px',
+                width: '90vw',          // 🔹 팝업 가로 폭
+                maxWidth: '2000px',
+                height: '900px',
                 overflow: 'hidden'
             },
             pt: {
