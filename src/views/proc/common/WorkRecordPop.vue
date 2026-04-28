@@ -80,12 +80,14 @@
 </template>
 
 <script setup>
+import { ApiProc } from '@/api/apiProc';
 import SingleDatePicker from '@/components/SingleDatePicker.vue';
 import { todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef');
-
+const workRecordList = ref([])
 const label = ref('사용량');
 const label2 = ref('수량');
 
@@ -100,6 +102,10 @@ const form = reactive({
     workerCnt: '',
     useQty: '',
     prodQty: '',
+
+    itemCd : '',
+    workRecordId : '',
+    workProcId : '',
 });
 
 const formatHHmm = (date) => {
@@ -108,20 +114,37 @@ const formatHHmm = (date) => {
   return `${hh}:${mm}`;
 };
 
+const saveInfo = async () =>{
+    try{
 
-const saveInfo = () =>{
-    console.log('workStartTime',  formatHHmm(form.workStartTime))
-    console.log('workEndTime',  formatHHmm(form.workEndTime))
+        workRecordList.value.push({
+            workDate : form.workDate,
+            workStartTime: formatHHmm(form.workStartTime),
+            workEndTime: formatHHmm(form.workEndTime),
+            workerCnt : form.workerCnt,
+            useQty : form.useQty,
+            prodQty : form.prodQty,
+            itemCd : form.itemCd,
+            workProcId : form.workProcId,
+            workRecordId : form.workRecordId,
+        })
 
-    dialogRef.value.close({
-        ...form,
-        workStartTime: formatHHmm(form.workStartTime),
-        workEndTime: formatHHmm(form.workEndTime),
-    });
+        const res = await ApiProc.saveWorkRecordInfo(workRecordList.value)
+
+        dialogRef.value.close({
+            ...form,
+            workStartTime: formatHHmm(form.workStartTime),
+            workEndTime: formatHHmm(form.workEndTime),
+        });
+    }catch(err){
+        handleApiError(err)
+    }
 }
 
 onMounted(() => {
-    const procCd = dialogRef.value?.data?.form?.procCd;
+    const procCd = dialogRef.value?.data?.form?.procCd
+    form.workProcId = dialogRef.value?.data?.form?.workProcId;
+    form.itemCd = dialogRef.value?.data?.form?.itemCd;
 
     if (procCd === 'PROC003') {
         label.value = '반제품사용량';
