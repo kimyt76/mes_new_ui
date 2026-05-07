@@ -85,11 +85,12 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiLab } from '@/api/apiLab';
+import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
+const {vSuccess, vWarning} = useAlertStore()
 const emit = defineEmits(['saved','close-visible'])
-
 const functionList = ref([])
 const countries = ref([])
 const limitCountry = ref([])
@@ -114,23 +115,24 @@ const props = defineProps({
 })
 
 const saveInfo = async () =>{
-    const params = {
-        ...form,
-        limitCountries : limitCountry.value,
-        bannedCountries: banCountry.value,
+    if ( isEmpty(form.functionCd) ) {
+        vWarning('function을 선택해주세요.')
+        return
     }
 
     try{
+        const params = {
+            ...form,
+            limitCountries : limitCountry.value,
+            bannedCountries: banCountry.value,
+        }
         const msg = await ApiLab.saveIngredientInfo(params)
-
         emit('saved', msg)
         emit('close-dialog')
     }catch(err){
         vError(err.message)
     }
-
 }
-
 
 onMounted( async () =>{
     functionList.value =  await ApiCommon.getCodeList('fn_Cd')
@@ -147,6 +149,6 @@ onMounted( async () =>{
 
 </script>
 
-<style lang="scss" scoped>
+<style  scoped>
 
 </style>
