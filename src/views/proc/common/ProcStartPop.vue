@@ -115,7 +115,7 @@ const saveInfo = () => {
                 }
 
                 const res = await ApiProc.startProcWeigh(param)
-                vSuccess(res.message)
+                vSuccess("칭량 작업이 시작되었습니다.")
                 closeDialog()
             } catch (err) {
                 handleApiError(err)
