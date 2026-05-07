@@ -153,8 +153,8 @@ const selectRowClick = (id) => {
             maximizable: false,
             draggable: true,
             style: {
-                width: '90vw',          // 🔹 팝업 가로 폭
-                maxWidth: '1800px',
+                width: '81vw',          // 🔹 팝업 가로 폭
+                maxWidth: '1400px',
                 height: '900px',
                 maxHeight: '90vh',
             },

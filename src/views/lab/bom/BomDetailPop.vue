@@ -114,7 +114,7 @@
     </template>
 </Card>
 
-<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
+<div class="flex justify-content-between align-items-center mr-4 mb-1 mt-2">
     <h5 class="m-0">- 원료구성정보</h5>
     <div class="flex justify-end gap-2">
     <Button
@@ -140,12 +140,12 @@
     />
     </div>
 </div>
-<div class="w-full" ref="tableWrapper">
+<div class="w-full recipe-table-area">
     <DataTable
         v-model:selection="selectedRow"
         :value="recipeList"
-        dataKey="orderDist"
-        scrollHeight="300px"
+        dataKey="bomItecmId"
+        scrollHeight="350px"
         show-gridlines
         scrollable
         selectionMode="single"
@@ -157,7 +157,6 @@
             <Column header="No."    :rowspan="2"  />
             <Column header="Phase"  :rowspan="2"  />
             <Column header="실생"    :colspan="3" />
-            <Column header="표준"    :colspan="3" />
             <Column header="적요"    :rowspan="2" />
             <Column header="-"      :rowspan="2" />
         </Row>
@@ -166,20 +165,15 @@
             <Column header="품목코드"   field="realItemCd"   :style="{ width: '130px' }" />
             <Column header="품목명"     field="realItemName" :style="{ width: '500px' }"  />
             <Column header="함량"       field="realContens" :style="{ width: '80px' }"  />
-            <!-- 표준 -->
-            <Column header="품목코드"   field="stdItemCd"   :style="{ width: '130px' }" />
-            <Column header="품목명"     field="stdItemName" :style="{ width: '500px' }"  />
-            <Column header="함량"       field="stdContens" :style="{ width: '80px' }"  />
         </Row>
     </ColumnGroup>
-        <Column field="orderDist"       header="No."        :style="{ width: '40px'}" >
-        </Column>
-        <Column field="phase"           header="Phase"   style="text-align: center;"  :style="{ width: '30px'}" bodyClass="break-words" >
+        <Column field="orderDist"       header="No."    :style="{ width: '40px'}" ></Column>
+        <Column field="phase"           header="Phase"  :style="{ width: '30px'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
                     class="w-full"
-                    style="text-align: center !important;"
+                    style="text-align: center;"
                     />
             </template>
         </Column>
@@ -195,7 +189,7 @@
                 <div style="text-align: center; font-weight: bold;" class="footer-cell">합계</div>
             </template>
         </Column>
-        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" >
+        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}"  style="text-align: left;" bodyClass="break-words">
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.realItemName"
@@ -204,7 +198,7 @@
                     />
             </template>
         </Column>
-        <Column field="realContent"     header="함량"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" >
+        <Column field="realContent"     header="함량"    :style="{ width: '50px'}"  style="text-align: left;" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.realContent"
@@ -221,42 +215,6 @@
                 {{ totalRealContent.toFixed(2) }}
                 </div>
             </template>
-        </Column>
-        <Column field="stdItemCd"       header="품목코드"  :style="{ width: '120px'}" >
-            <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.stdItemCd"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
-            </template>
-        </Column>
-        <Column field="stdItemName"     header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" >
-            <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.stdItemName"
-                    class="w-full"
-                    style="text-align: left;"
-                    />
-            </template>
-        </Column>
-        <Column field="stdContent"      header="함량"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" >
-            <template #body="slotProps">
-                <InputNumber
-                    v-model="slotProps.data.stdContent"
-                    class="w-full"
-                    :min="0"
-                    :maxFractionDigits="8"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '50px', 'text-align': 'right' }"
-                    />
-            </template>
-            <!-- 👇 여기 합계 footer -->
-                <template #footer>
-                    <div style="text-align: right; width: 50px; padding-right: 4px;" class="footer-cell">
-                        {{ totalStdContent.toFixed(2) }}
-                    </div>
-                </template>
         </Column>
         <Column field="etc" header="적요"    :style="{ width: '240px'}" style="text-align: center;" >
             <template #body="slotProps">
@@ -275,7 +233,7 @@
     </DataTable>
 </div>
 
-<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-4">
+<div class="proc-title flex justify-content-between align-items-center mr-4 mb-1 mt-8">
     <h5 class="m-0">- 제조공정도</h5>
     <Button
         label="추가+"
@@ -283,6 +241,7 @@
         class="p-button-xm"
     />
 </div>
+
 <div class="w-full">
     <DataTable
         :value="bomProcList"
@@ -291,8 +250,8 @@
         show-gridlines
         class="my-table fixed-datatable"
     >
-        <Column field="orderDist"   header="No."        :style="{ width: '20px'}" />
-        <Column field="phase"       header="공정구분"   :style="{ width: '70px', textAligh:'center'}" bodyClass="break-words"  >
+        <Column field="orderDist"   header="No."    :style="{ width: '20px'}" />
+        <Column field="phase"       header="공정"   :style="{ width: '60px', textAligh:'center'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
@@ -301,29 +260,15 @@
                     />
             </template>
         </Column>
-        <Column field="procGb"        header="제조부"     :style="{ width: '90px', textAligh:'center'}" bodyClass="break-words"  >
+        <Column field="procType"       header="제조구분"  :style="{ width: '100px', textAligh:'center'}"  >
             <template #body="slotProps">
-                <Select
-                    v-model="slotProps.data.procGb"
-                    :options="procGbs"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
-                    />
-            </template>
-        </Column>
-        <Column field="procType"       header="제조구분"      :style="{ width: '90px', textAligh:'center'}" bodyClass="break-words" >
-            <template #body="slotProps">
-                <Select
+                <InputText
                     v-model="slotProps.data.procType"
-                    :options="procTypes"
-                    optionLabel="codeNm"
-                    optionValue="code"
                     class="w-full"
                     />
             </template>
         </Column>
-        <Column field="matProc"  header="제조공정"    :style="{ width: '470px', textAligh:'left'}" bodyClass="break-words">
+        <Column field="matProc"  header="제조공정"    :style="{ width: '400px', textAligh:'center'}" >
             <template #body="slotProps">
                 <Textarea
                     v-model="slotProps.data.matProc" rows="2" style="resize: none;"
@@ -331,79 +276,71 @@
                 />
             </template>
         </Column>
-        <Column field="ho"  header="HO"    :style="{ width: '70px'}" bodyClass="break-words"  >
+        <Column field="ho"  header="H"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.ho"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="pd"  header="PD"    :style="{ width: '70px'}" bodyClass="break-words" >
+        <Column field="pd"  header="P"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.pd"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="d1"  header="D1"    :style="{ width: '70px'}" bodyClass="break-words"  >
+        <Column field="d1"  header="D1"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.d1"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="d2"  header="D2"    :style="{ width: '70px'}" bodyClass="break-words"  >
+        <Column field="d2"  header="D2"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.d2"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="t"  header="T"    :style="{ width: '70px'}" bodyClass="break-words" >
+        <Column field="t"  header="T"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.t"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="m"  header="M"    :style="{ width: '70px'}" bodyClass="break-words" >
+        <Column field="m"  header="M"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.m"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="etc"         header="적요"        :style="{ width: '180px'}" bodyClass="break-words">
+        <Column field="m"  header="P2"    :style="{ width: '70px'}"  >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.p2"
+                    class="w-full"
+                    />
+            </template>
+        </Column>
+        <Column field="m"  header="RT"    :style="{ width: '70px'}"  >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.rt"
+                    class="w-full"
+                    />
+            </template>
+        </Column>
+        <Column field="etc"         header="적요" :style="{ width: '150px'}" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -447,22 +384,13 @@ const totalRealContent = computed(() =>
   ),
 )
 
-const totalStdContent = computed(() =>
-  recipeList.value.reduce(
-    (sum, row) => sum + (Number(row.stdContent) || 0),
-    0,
-  ),
-)
-
 const  { userId } = useAuthStore()
-const {   vSuccess, vInfo} = useAlertStore()
+const { vSuccess, vInfo } = useAlertStore()
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const currentComponet = shallowRef(null)
-const prodTypes = ref([])
-const procGbs = ref([])
-const procTypes = ref([])
 const approvalStates = ref([])
+const prodTypes = ref([])
 const recipeList = ref([])
 const bomProcList = ref([])
 const form = reactive({
@@ -496,6 +424,8 @@ const saveInfo = async () =>{
             bomInfo : form,
             bomRecipeList : recipeList.value,
             bomProcList : bomProcList.value,
+            deleteBomRecipe : deleteBomRecipe.value,
+            deleteBomProc : deleteBomProc.value,
         }
 
         const res = await ApiLab.saveBomInfo(params)
@@ -613,9 +543,6 @@ const addRowPop = (obj) =>{
         realItemCd: o.realItemCd || '',
         realItemName: o.realItemName || '',
         realContent: o.realContent || 0,
-        stdItemCd: o.stdItemCd || '',
-        stdItemName: o.stdItemName || '',
-        stdContent: o.stdContent || 0,
       }))
     )
   }
@@ -645,9 +572,6 @@ const addRowR = (obj)=>{
         realItemCd: o.itemCd || '',
         realItemName: o.itemName || '',
         realContent: o.content || 0,
-        stdItemCd: o.itemCd || '',
-        stdItemName: o.itemName || '',
-        stdContent: o.content || 0,
       }))
     )
 
@@ -659,9 +583,6 @@ const addRowR = (obj)=>{
       realItemCd: '',
       realItemName: '',
       realContent: '',
-      stdItemCd: '',
-      stdItemName: '',
-      stdContent: '',
     })
   }
 
@@ -686,15 +607,16 @@ const addRowP = ()=>{
     bomProcList.value.push({
       orderDist: nextNo++,
       phase: '',
-      krIngredientName: '',
-      enIngredientName: '',
-      mat_proc: '',
-      ho: 0,
-      pd: 0,
-      d1: 0,
-      d2: 0,
-      t: 0,
-      m: 0,
+      procType: '',
+      matProc: '',
+      h: '',
+      p: '',
+      d1: '',
+      d2: '',
+      t: '',
+      m: '',
+      p2: '',
+      rt: '',
       etc: '',
   });
    // 5) orderDist 재정렬 (1부터)
@@ -703,25 +625,41 @@ const addRowP = ()=>{
   })
 }
 
-const removeRowR = (index) =>{
-    recipeList.value.splice(index,1)
-    // 5) orderDist 재정렬 (1부터)
+const deleteBomRecipe = ref([])
+const deleteBomProc = ref([])
+
+const removeRowR = (index) => {
+    const row = recipeList.value[index]
+
+    // 1. id가 존재할 때만 삭제 리스트에 추가 (신규 row는 id 없을 수 있음)
+    if (row?.bomItemId) {
+        deleteBomRecipe.value.push(row.bomItemId)
+    }
+    // 2. 실제 리스트에서 제거
+    recipeList.value.splice(index, 1)
+    // 3. orderDist 재정렬
     recipeList.value.forEach((row, idx) => {
         row.orderDist = idx + 1
     })
 }
-const removeRowP = (index) =>{
-    bomProcList.value.splice(index,1)
-    // 5) orderDist 재정렬 (1부터)
+
+const removeRowP = (index) => {
+    const row = bomProcList.value[index]
+
+    if (row?.bomProcId) {
+        deleteBomProc.value.push(row.bomProcId)
+    }
+
+    bomProcList.value.splice(index, 1)
+
     bomProcList.value.forEach((row, idx) => {
         row.orderDist = idx + 1
     })
 }
+
 onMounted( async () =>{
     prodTypes.value = await ApiLab.getProdTypeList()
     approvalStates.value = await ApiCommon.getCodeList('approval_state')
-    procGbs.value = await ApiCommon.getCodeList('proc_gb')
-    procTypes.value = await ApiCommon.getCodeList('proc_type')
     form.bomId = dialogRef.value.data
 
     if ( !isEmpty(form.bomId)){
@@ -767,8 +705,8 @@ const closeDialog = () =>{
 }
 
 .footer-cell {
-  color: black;                 /* 글자색 */
-  height: 15px;                /* ★ 높이 조절 */
+  color: black;              /* 글자색 */
+  height: 15px;                /* 높이 조절 */
   line-height: 15px;           /* 가운데 정렬 */
   font-weight: bold;
   font-size: medium;
@@ -780,6 +718,19 @@ const closeDialog = () =>{
   color: white !important;
   font-weight: bold;
   height: 35px;
+}
+
+.recipe-table-area {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 12px;
+}
+
+.proc-title {
+    position: relative;
+    z-index: 5;
+    background: #fff;
+    padding-top: 4px;
 }
 
 </style>
