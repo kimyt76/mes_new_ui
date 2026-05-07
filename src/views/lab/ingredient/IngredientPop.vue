@@ -115,6 +115,10 @@ const props = defineProps({
 })
 
 const saveInfo = async () =>{
+    if ( isEmpty(form.krIngredientName) ) {
+        vWarning('한국어 성분명을 입력해주세요.')
+        return
+    }
     if ( isEmpty(form.functionCd) ) {
         vWarning('function을 선택해주세요.')
         return
