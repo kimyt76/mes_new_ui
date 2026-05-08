@@ -22,11 +22,6 @@
             autofocus
         />
       <Button label="초기화" class="ml-2" outlined @click="resetBarcode" />
-
-      <div class="qty-summary">
-        <div>칭량량 : <b>{{ formatQty(totalWeighQty) }} kg</b></div>
-        <div>지시량 : <b>{{ formatQty(orderQty) }} kg</b></div>
-      </div>
     </div>
 
     <!-- ✅ 오른쪽 : 재고현황 타이틀 -->
@@ -96,7 +91,7 @@
             :header="col.header"
             :style="{ width: '140px', minWidth: '140px' }"
             >
-            <<template #body="{ data }">
+            <template #body="{ data }">
                 <div class="text-right">{{ formatQty(data[col.field]) }}</div>
             </template>
         </Column>
@@ -239,10 +234,10 @@ const formatQty = (value) => {
 /** 칭량량 변경 시 호출 */
 const onChangeRow = async (row) => {
   // 여기서 행 단위로 total 계산이나 유효성 체크 가능
-//   if ( (Number(totalWeighQty.value)||0) > (Number(orderQty.value)||0) ) {
-//     vWarning('지시량보다 칭량량이 많습니다.')
-//      return
-//   }
+  if ( (Number(totalWeighQty.value)||0) > (Number(orderQty.value)||0) ) {
+    vWarning('지시량보다 칭량량이 많습니다.')
+     return
+  }
 
     saveInfo()
 }
