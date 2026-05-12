@@ -22,6 +22,11 @@
             autofocus
         />
       <Button label="초기화" class="ml-2" outlined @click="resetBarcode" />
+
+      <div class="qty-summary">
+        <div>칭량량 : <b>{{ formatQty(totalWeighQty) }} kg</b></div>
+        <div>지시량 : <b>{{ formatQty(orderQty) }} kg</b></div>
+      </div>
     </div>
 
     <!-- ✅ 오른쪽 : 재고현황 타이틀 -->
