@@ -1,11 +1,10 @@
 <template>
-    <div class="coating-pop-wrap">
-        <div class="coating-pop-scale">
-        <div class="coating-pop-body">
+    <div class="pop-wrap">
+        <div class="pop-scale">
+        <div class="pop-body">
             <!-- 1. 작업지시 정보 -->
             <div class="section-block">
                 <div class="section-label">1. 작업지시 정보</div>
-
                 <table class="info-table">
                     <colgroup>
                         <col class="th-col" />
@@ -73,7 +72,6 @@
                     </tbody>
                 </table>
             </div>
-
             <!-- 2. 투입자재 정보 -->
             <div class="section-block">
                 <div class="section-label">2. 투입자재 정보</div>
@@ -100,7 +98,6 @@
                             <Column header="작업불량"   field="workBadQty"  :style="{ width: '120px' }" :colspan="2" />
                         </Row>
                     </ColumnGroup>
-
                     <Column field="no"          :style="{ width: '40px', textAlign: 'center' }"></Column>
                     <Column field="testNos"     :style="{ width: '110px' , textAlign: 'center'}">
                         <template #body="slotProps">
@@ -120,18 +117,17 @@
                         </template>
                     </Column>
                     <Column field="matName"     :style="{ width: '280px' }"></Column>
-                    <Column field="specInfo"    :style="{ width: '90px' , textAlign: 'center'}"></Column>
-                    <Column field="exAppearance" :style="{ width: '170px' , textAlign: 'center'}"></Column>
-                    <Column field="reqQty"      :style="{ width: '120px' , textAlign: 'right'}"></Column>
-                    <Column field="unit"        :style="{ width: '50px', textAlign: 'center' }"></Column>
-                    <Column field="totUseQty"   :style="{ width: '120px' , textAlign: 'right'}"></Column>
-                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"></Column>
-                    <Column field="badQty"      :style="{ width: '120px', textAlign: 'right' }"></Column>
-                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"></Column>
-                    <Column field="workBadQty"  :style="{ width: '120px' , textAlign: 'right'}"></Column>
+                    <Column field="specInfo"    :style="{ width: '90px' , textAlign: 'center'}"/>
+                    <Column field="exAppearance" :style="{ width: '170px' , textAlign: 'center'}"/>
+                    <Column field="reqQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
+                    <Column field="unit"        :style="{ width: '50px', textAlign: 'center' }"/>
+                    <Column field="useQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
+                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
+                    <Column field="badQty"      :style="{ width: '120px', textAlign: 'right' }"/>
+                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
+                    <Column field="workBadQty"  :style="{ width: '120px' , textAlign: 'right'}"/>
                 </DataTable>
             </div>
-
             <!-- 3, 4 하단 -->
             <div class="bottom-wrap">
                 <!-- 3. 작업수행 정보 -->
@@ -142,7 +138,6 @@
                             <Button label="신규등록" size="small" @click="openPop('W')" />
                         </div>
                     </div>
-
                     <div class="section-body">
                         <DataTable
                             :value="workRecordList"
@@ -150,23 +145,21 @@
                             show-gridlines
                             class="my-table work-table"
                         >
-                            <Column field="no"          header="NO"             :style="{ width: '40px', textAlign: 'center' }"></Column>
-                            <Column field="workDate"    header="작업일자"       :style="{ width: '120px', textAlign: 'center' }"></Column>
-                            <Column field="workStartTime" header="작업시작시간" :style="{ width: '140px', textAlign: 'center' }"></Column>
-                            <Column field="workEndTime" header="작업종료시간"   :style="{ width: '140px', textAlign: 'center' }"></Column>
-                            <Column field="workerCnt"   header="작업인원(명)"   :style="{ width: '120px', textAlign: 'center' }"></Column>
-                            <Column field="useQty"      header="반제품사용량(kg)" :style="{ width: '130px', textAlign: 'center' }"></Column>
-                            <Column field="prodQty"     header="코팅수량(ea)"     :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="no"          header="NO"                 :style="{ width: '40px', textAlign: 'center' }"></Column>
+                            <Column field="workDate"    header="작업일자"           :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="workStartTime" header="작업시작시간"     :style="{ width: '140px', textAlign: 'center' }"></Column>
+                            <Column field="workEndTime" header="작업종료시간"       :style="{ width: '140px', textAlign: 'center' }"></Column>
+                            <Column field="workerCnt"   header="작업인원(명)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="useQty"      header="반제품사용량(kg)"   :style="{ width: '130px', textAlign: 'center' }"></Column>
+                            <Column field="prodQty"     header="코팅수량(ea)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
                         </DataTable>
                     </div>
                 </div>
-
                 <!-- 4. 종합정보 -->
                 <div class="section-box summary-section">
                     <div class="section-header">
                         <div class="section-label">4. 종합정보</div>
                     </div>
-
                     <div class="section-body">
                         <table class="summary-table">
                             <colgroup>
@@ -183,11 +176,11 @@
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">Lot. 수율</th>
-                                    <td class="cellBorder">{{ itemInfo.stdYield }} % 이상</td>
+                                    <td class="cellBorder">기준 {{ itemInfo.stdYield }} % 이상</td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">총사용량</th>
-                                    <td class="cellBorder">{{ workOrderInfo.totUseQty || 0 }} kg</td>
+                                    <td class="cellBorder">{{ workOrderInfo.useQty || 0 }} kg</td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">생산수량</th>
@@ -207,7 +200,7 @@
         <div class="coating-pop-footer flex gap-2">
             <Button v-if="isStarted" label="작업시작" @click="openPop('S')" />
             <!-- <Button v-if="!isStarted" label="저장" @click="saveInfo" /> -->
-            <Button label="기록서" @click="openPop('D')" />
+            <Button label="기록서" @click="downloadExcel" />
             <Button label="바코드" @click="openPop('B')" />
             <Button v-if="!isStarted" label="작업완료" @click="workComplete" />
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
@@ -267,16 +260,6 @@ const itemInfo = reactive({
     stdYield: '',
 });
 
-// 종합정보
-const workOrderInfo = reactive({
-    totUseQty: '',
-    managerName: '',
-    prodYield: '',
-    prodQty: '',
-    etc: '',
-    memo: '',
-});
-
 // 투입자재정보
 const createProdRow = (i = 0) => ({
     no: i + 1,
@@ -287,7 +270,7 @@ const createProdRow = (i = 0) => ({
     packingSpecValue: '',
     packingSpecUnit: '',
     reqQty: '',
-    totUseQty: '',
+    useQty: '',
     badQty: '',
     workBadQty: '',
     unit: '',
@@ -308,12 +291,42 @@ const createWorkRecordRow = (i = 0) => ({
     wokRecordId: '',
 });
 
+// 종합정보
+const workOrderInfo = reactive({
+    totUseQty: '',
+    managerName: '',
+    prodYield: '',
+    prodQty: '',
+    etc: '',
+    memo: '',
+});
+
+// 기록서 엑셀 다운로드
+const downloadExcel = async () =>{
+    const params = {
+        itemCd : itemInfo.itemCd,
+        procCd : 'PRC003',
+        workProcId : form.workProcId,
+    }
+
+    try {
+        const blob = await ApiProc.downloadRecord(params)
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${workOrderInfo.makeNo}_[벌크제풐]_${form.itemName}.xlsx`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    } catch {
+        vError('엑셀 다운로드 실패')
+    }
+}
 
 const saveInfo = () => {
 
 };
 
-
+//투입정보
 const selectRowClick = (row) => {
     dialog.open(ProdUsePop, {
         props: {
@@ -340,13 +353,15 @@ const selectRowClick = (row) => {
         }
         ,onClose: (event) =>{
             if (event) {
-                console.log('event', event)
                 row.testNos = event.data.testNos
                 row.reqQty = event.data.reqQty
-                row.totUseQty = event.data.totUseQty
+                row.useQty = event.data.useQty
                 row.badQty = event.data.badQty
                 row.workBadQty = event.data.workBadQty
+
+                workOrderInfo.useQty = event.data.totUseQty
             }
+            callCoatingInfo()
         }
     })
 }
@@ -357,12 +372,6 @@ const popupConfig = {
         component: ProcCoatingStartPop,
         width: '700px',
         height: '400px'
-    },
-    D: {
-        title: '기록서',
-        component: '',   // 실제 컴포넌트로 교체
-        width: '1200px',
-        height: '800px'
     },
     B: {
         title: '바코드',
@@ -392,7 +401,7 @@ const openPop = (type) => {
         qty: 0,
         printCnt: 1,
     })
-console.log('form', form)
+
     dialog.open(config.component, {
         props: {
             header: config.title,
@@ -416,42 +425,38 @@ console.log('form', form)
             itemList,
         },
         onClose: (event) =>{
-            if( type === 'T' ){
-                //투입자재 정보 매핑
-            } else if ( type === 'S' ){
+            if ( type === 'S' ){
                 //재조회
                 callCoatingInfo()
-            } else if ( type === 'D' ){
-                //기록서
-            } else if ( type === 'B' ){
-                //바코드
             } else if ( type === 'W' ){
-                //
-                const data = event?.data || event;
-                console.log('data', data)
-                if (data) {
-                    const emptyIndex = workRecordList.value.findIndex(
-                        row => !row.workDate && !row.workStartTime && !row.workEndTime
-                    );
+                //작업수행 정보
+                // const data = event?.data || event;
+                // if (data) {
+                //     const emptyIndex = workRecordList.value.findIndex(
+                //         row => !row.workDate && !row.workStartTime && !row.workEndTime
+                //     );
 
-                    const newRow = {
-                        no: emptyIndex > -1 ? emptyIndex + 1 : workRecordList.value.length + 1,
-                        workDate: data.workDate,
-                        workStartTime: data.workStartTime,
-                        workEndTime: data.workEndTime,
-                        workerCnt: data.workerCnt,
-                        useQty: data.useQty,
-                        prodQty: data.prodQty,
-                        workProcId: form.workProcId,
-                        itemCd: form.itemCd,
-                    };
+                //     const newRow = {
+                //         no: emptyIndex > -1 ? emptyIndex + 1 : workRecordList.value.length + 1,
+                //         workDate: data.workDate,
+                //         workStartTime: data.workStartTime,
+                //         workEndTime: data.workEndTime,
+                //         workerCnt: data.workerCnt,
+                //         useQty: data.useQty,
+                //         prodQty: data.prodQty,
+                //         workProcId: form.workProcId,
+                //         itemCd: form.itemCd,
+                //     };
 
-                    if (emptyIndex > -1) {
-                        workRecordList.value[emptyIndex] = newRow;
-                    } else {
-                        workRecordList.value.push(newRow);
-                    }
-                }
+                //     workOrderInfo.prodQty = data.prodQty
+
+                //     if (emptyIndex > -1) {
+                //         workRecordList.value[emptyIndex] = newRow;
+                //     } else {
+                //         workRecordList.value.push(newRow);
+                //     }
+                // }
+                callCoatingInfo()
             }
         }
     })
@@ -484,8 +489,6 @@ const workComplete = () =>{
             }
         }
     });
-
-
 }
 
 const checkComplete = () =>{
@@ -514,7 +517,7 @@ const callCoatingInfo = async () =>{
         itemCd: dialogRef.value.data.itemCd
     };
 
-    const res = await ApiProc.getCoatingInfo(params);
+    const res = await ApiProc.getProcProdInfo(params);
 
     Object.assign(itemInfo, res.itemInfo)
     Object.assign(workOrderInfo, res.workOrderProcInfo)
@@ -546,16 +549,17 @@ const closeDialog = () => {
 </script>
 
 <style scoped>
-.coating-pop-wrap {
+.pop-wrap {
     height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     font-size: 15px;
     background: #fff;
 }
 /* 전체 내용을 2% 축소 */
-.coating-pop-scale {
+.pop-scale {
     width: 102.05%;
     height: 102.05%;
     transform: scale(0.98);
@@ -563,7 +567,7 @@ const closeDialog = () => {
     display: flex;
     flex-direction: column;
 }
-.coating-pop-body {
+.pop-body {
     flex: 1 1 auto;
     overflow: hidden;
     padding: 8px 12px 6px;

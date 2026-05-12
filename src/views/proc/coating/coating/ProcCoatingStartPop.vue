@@ -141,7 +141,6 @@ const saveInfo = () => {
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     const popupForm = dialogRef.value?.data?.form
-console.log('popupForm', popupForm)
 
     if (popupForm) {
         Object.assign(form, popupForm)
