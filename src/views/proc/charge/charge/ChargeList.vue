@@ -61,26 +61,25 @@
         class="my-table"
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem" style="text-align: center;" />
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'right'}" ></Column>
-        <Column field="areaName"    header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
-        <Column field="weighDate"   header="충전지시일"  :style="{ width: '110px', textAlign: 'right'}" >
+        <Column field="poNo"            header="PO No"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
+        <Column field="procOrderDate"   header="충전지시일"  :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.weighDate }}
+                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                    {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
         </Column>
-        <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
-        <Column field="orderQty"    header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="lotNo"           header="LOT번호"  :style="{ width: '180px', textAlign: 'center'}" />
+        <Column field="makeNo"          header="제조번호"  :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="itemCd"          header="품목코드"  :style="{ width: '100px', textAlign: 'center'}" />
+        <Column field="itemName"        header="품목명"    :style="{ width: '440px'}" bodyClass="break-words"  ></Column>
+        <Column field="orderQty"        header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="batchStateus" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="processState" header="작업상태"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="procStatus"   header="충전상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="moveReqYn"       header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatusName"  header="충전상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -93,6 +92,7 @@ import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
+import ChargePop from './ChargePop.vue';
 
 const selectedItem = ref([])
 const dialog = useDialog()
@@ -109,35 +109,42 @@ const form = reactive({
   clientName: '',
   procState: '',
 
-  proseccCd : 'PRC004',
+  procCd : 'PRC004',
 })
 
 const handleDateChange = () =>{
 
 }
 
-const selectRowClick = (id) =>{
-    // dialog.open(MatRegPop, {
-    //     props:{
-    //         header: '충전지시 및 기록',
-    //         modal: true,
-    //         maximizable: false,
-    //         draggable: false,
-    //         style: {
-    //             width: '90vw',          // 🔹 팝업 가로 폭
-    //             maxWidth: '1800px',
-    //             height: '800px',
-    //             overflow: 'hidden'
-    //         },
-    //         pt: {
-    //             root: { style: { overflow: 'hidden' } },
-    //             content: { style: { overflow: 'hidden' } }
-    //         },
-    //     },
-    //     data: id,
-    //     onClose:(event) => {
-    //     },
-    // })
+const selectRowClick = (id, cd) =>{
+    dialog.open(ChargePop, {
+        props:{
+            header: '충전지시 및 기록',
+            modal: true,
+            maximizable: false,
+            draggable: false,
+            style: {
+                width: '88vw',
+                maxWidth: '1600px',
+                height: '90vh'
+            },
+            contentStyle: {
+                overflow: 'hidden',
+                padding: '0'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            },
+        },
+       data:{
+            workProcId: id,
+            procCd: form.procCd,
+            itemCd: cd,
+        },
+        onClose:(event) => {
+        },
+    })
 }
 
 const moveReq = () =>{
