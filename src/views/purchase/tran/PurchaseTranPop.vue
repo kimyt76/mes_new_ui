@@ -90,6 +90,8 @@
         :value="purchaseItemList"
         class="my-table"
         show-gridlines
+        scrollable
+        scrollHeight="270px"
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column field="itemCd"    header="품목코드"  :style="{ width: '100px'}" />
