@@ -60,7 +60,7 @@
         <Column field="areaCd"          header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workBatchId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
@@ -83,12 +83,14 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { useAlertStore } from '@/stores/alert';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import MatRegPop from './MatRegPop.vue';
 
+const { vWarning} = useAlertStore()
 const dialog = useDialog()
 const dt = ref(null);
 const matList = ref([])
@@ -111,7 +113,12 @@ const handleDateChange = () =>{
 }
 
 
-const selectRowClick = (id, itemCd, procStatus) =>{
+const selectRowClick = (row) =>{
+    // if ( row.batchStatus > '12') {
+    //     vWarning('칭량이 완료된 건만 제조작업이 가능합니다.')
+    //     return;
+    // }
+
     dialog.open(MatRegPop, {
         props:{
             header: '제조지시 및 기록서',
@@ -130,9 +137,9 @@ const selectRowClick = (id, itemCd, procStatus) =>{
             },
         },
         data: {
-            workBatchId: id,
-            itemCd : itemCd,
-            procStatus: procStatus,
+            workBatchId: row.workBatchId,
+            itemCd : row.itemCd,
+            procStatus: row.procStatus,
         },
         onClose:(event) => {
             if(event){

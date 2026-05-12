@@ -1,6 +1,16 @@
 <template>
 <div class="w-full mt-3">
     <table cellspacing="0" width="100%">
+        <colgroup>
+            <col style="width:10%"> <!-- th -->
+            <col style="width:15%"> <!-- td -->
+            <col style="width:10%">
+            <col style="width:15%">
+            <col style="width:10%">
+            <col style="width:15%">
+            <col style="width:15%">
+            <col style="width:10%">
+        </colgroup>
       <tbody>
         <tr>
             <th class="cellBorder cellHeader">제조번호</th>
@@ -14,7 +24,7 @@
             <th class="cellBorder cellHeader">지시일자</th>
             <td class="cellBorder">{{ form.procOrderDate }}</td>
             <th class="cellBorder cellHeader">지시량</th>
-            <td class="cellBorder">{{ form.orderQty }}</td>
+            <td class="cellBorder">{{ form.orderQty }} kg</td>
             <th class="cellBorder cellHeader">제조설비</th>
             <td class="cellBorder" colspan="3">{{ form.workEquipmentCd }}</td>
         </tr>
@@ -22,101 +32,199 @@
             <th class="cellBorder cellHeader">제조일자</th>
             <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">제조량</th>
-            <td class="cellBorder">{{ form.prodQty  }} kg</td>
+            <td class="cellBorder">{{ form.prodQty || 0}} kg</td>
             <th class="cellBorder cellHeader">생산수율</th>
-            <td class="cellBorder">{{ form.prodYield}} %</td>
+            <td class="cellBorder">{{ form.prodYield }} %</td>
             <th class="cellBorder cellHeader">생산처</th>
             <td class="cellBorder">{{ form.storageName }}</td>
         </tr>
         <tr>
-            <th class="cellBorder cellHeader">PO NO</th>
-            <td class="cellBorder">{{ form.poNo }}</td>
-            <th class="cellBorder cellHeader">비고</th>
-            <td class="cellBorder" colspan="5">
-                <Textarea v-model="form.etc" rows="1" class="w-full mt-1" style="resize: none;"/>
+            <th class="cellBorder cellHeader">작업자</th>
+            <td class="cellBorder">
+                <InputText
+                    v-model="makeEtcInfo.maker"
+                    class="w-full"
+                />
             </td>
+            <th class="cellBorder cellHeader">확인자</th>
+            <td class="cellBorder">
+                <InputText
+                    v-model="makeEtcInfo.confirmer"
+                    class="w-full"
+                />
+            </td>
+            <th class="cellBorder cellHeader">고객사</th>
+            <td class="cellBorder" colspan="3">{{ form.clientName }}</td>
         </tr>
       </tbody>
     </table>
 </div>
-<!-- 탭 -->
-<div>
-    <Tabs value="0">
-        <TabList>
-            <Tab value="0">원료투입</Tab>
-            <Tab value="1">공정기록</Tab>
-        </TabList>
-        <TabPanels>
-            <TabPanel value="0">
-                <div class="flex items-center gap-3 mb-2">
-                    <FloatLabel variant="on">
-                        <InputText id="on_label1"
-                          v-model="weighId"
-                          :disabled="form.procStatus === '00'"
-                          @keyup.enter="applyQrToList"
+
+<!-- 원료투입 영역 -->
+<div class="material-section">
+    <div class="section-header">
+        <div class="section-title">원료투입</div>
+    </div>
+    <div class="section-line"></div>
+
+    <div class="material-toolbar">
+        <FloatLabel variant="on">
+            <InputText
+                id="on_label1"
+                v-model="weighId"
+                :disabled="form.procStatus === '00'"
+                @keyup.enter="applyQrToList"
+            />
+            <label for="on_label1">QR코드(칭량번호)</label>
+        </FloatLabel>
+
+        <div class="count">
+            {{ totalCount }} 중 {{ checkedCount }} 개 완료
+        </div>
+
+        <div class="ml-auto mr-2">
+            <div class="flex items-center justify-end gap-2">
+                <Button v-if="isStarted" label="제조시작" @click="openLookupPopup('S')" />
+                <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
+                <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
+                <Button label="제조공정기록서" @click="downloadMatProc" />
+                <Button v-if="isComplate" label="제조완료" @click="complateMake" />
+                <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+            </div>
+        </div>
+    </div>
+
+    <!-- phase 탭 -->
+    <div class="phase-tab-wrap">
+        <button
+            v-for="(tab, index) in phaseTabs"
+            :key="tab"
+            type="button"
+            class="phase-tab"
+            :class="{ active: phaseActiveIndex === index }"
+            @click="handlePhaseTabChange(index)"
+        >
+            {{ tab }}
+        </button>
+    </div>
+
+    <div class="make-body-wrap">
+        <!-- 왼쪽 원료투입 테이블 -->
+        <div class="make-left">
+            <div class="table-scroll">
+                <BaseHotTable
+                    ref="hotTable"
+                    :data="currentTabList"
+                    :colHeaders="hotHeaders"
+                    :colWidths="colWidths"
+                    :columns="hotColumns"
+                    :afterChange="handleAfterChange"
+                    :afterOnCellMouseDown="handleCellClickFromHot"
+                    :stretchH="'all'"
+                    :height="520"
+                />
+            </div>
+        </div>
+
+        <!-- 제조 공정 -->
+        <div class="process-box process-flow">
+            <div class="process-title">제조 공정</div>
+            <Textarea v-model="makeEtcInfo.matProc" class="process-textarea" />
+        </div>
+
+        <!-- 조작조건 -->
+        <div class="process-box process-condition">
+            <div class="process-title">조작조건</div>
+            <Textarea v-model="makeEtcInfo.manipulate" class="process-textarea" />
+        </div>
+
+        <!-- 공정시간 -->
+        <div class="process-box process-time">
+            <div class="process-title">공정시간</div>
+            <Textarea v-model="makeEtcInfo.processTime" class="process-textarea" />
+        </div>
+
+        <!-- 생산 관리 -->
+        <div class="make-right">
+            <div class="right-box prod-box">
+                <div class="right-title">생산 관리</div>
+                <div class="right-content prod-content">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputNumber
+                            v-model="form.prodQty"
+                            class="w-full"
+                            suffix=" kg"
                         />
-                        <label for="on_label1">QR코드(칭량번호)</label>
+                        <label>제조량</label>
                     </FloatLabel>
-                    <div class="count">
-                        {{ totalCount }}  중 {{ checkedCount }} 개 완료
-                    </div>
-                    <div>
-                        <span class="hint">** 저장 후 새로고침을 하셔야 데이터가 업데이트됩니다.</span>
-                    </div>
-                    <div>
-                        <Button label="새로고침" @click="loadMakeInfo"/>
+
+                    <div class="mixer-guide">
+                        <span>H : Homo mixer</span>
+                        <span>P : Paddle</span>
+                        <span>D1 : Homo Disper Mixer</span>
+                        <span>D2 : Agi Disper Mixer</span>
+                        <span>T : 온도조건</span>
+                        <span>M : 시간</span>
+                        <span>P2 : Hand Mixer</span>
+                        <span>RT : 상온</span>
                     </div>
                 </div>
-                <div>
-                    <TabView
-                       :key="phaseTabRenderKey"
-                       :activeIndex="phaseActiveIndex"
-                        @update:activeIndex="handlePhaseTabChange"
-                        class="phase-tabs">
-                        <TabPanel
-                            v-for="tab in phaseTabs"
-                            :key="tab"
-                            :header="tab"
-                        >
-                        <div>
-                            <BaseHotTable
-                                ref="hotTable"
-                                :data="currentTabList"
-                                :colHeaders="hotHeaders"
-                                :colWidths="colWidths"
-                                :columns="hotColumns"
-                                :afterChange="handleAfterChange"
-                                :afterOnCellMouseDown="handleCellClickFromHot"
-                                :stretchH="'none'"
+            </div>
+
+            <div class="right-box special-box">
+                <div class="right-title">특이사항</div>
+                <Textarea v-model="makeEtcInfo.significant" class="right-textarea" />
+            </div>
+
+            <div class="right-box modify-box">
+                <div class="right-title">수정사항</div>
+                <Textarea v-model="makeEtcInfo.modifyNote" class="right-textarea" />
+            </div>
+            <div class="right-box filter-box">
+                <div class="right-title">여과포 정보</div>
+                <div class="filter-content">
+                    <div class="filter-field">
+                        <FloatLabel variant="on" class="filter-input">
+                            <InputText
+                                v-model="makeEtcInfo.filterCnt"
+                                class="w-full"
                             />
-                        </div>
-                        </TabPanel>
-                    </TabView>
+                            <label>여과포숫자</label>
+                        </FloatLabel>
+                        <span class="unit-text">mesh</span>
+                    </div>
+                    <div class="filter-radio-row">
+                        <FloatLabel variant="on" class="filter-input">
+                            <InputText
+                                v-model="makeEtcInfo.filterType"
+                                class="w-full"
+                            />
+                            <label>여과포종류</label>
+                        </FloatLabel>
+                    </div>
+
+                    <div class="filter-field damage-field">
+                        <FloatLabel variant="on" class="filter-input">
+                            <InputText
+                                v-model="makeEtcInfo.filterDamage"
+                                class="w-full"
+                            />
+                            <label>여과포손상</label>
+                        </FloatLabel>
+                    </div>
+
+                    <div class="filter-field">
+                        <FloatLabel variant="on" class="filter-input full">
+                            <InputText
+                                v-model="makeEtcInfo.substanceCheck"
+                                class="w-full"
+                            />
+                            <label>이물질확인</label>
+                        </FloatLabel>
+                    </div>
                 </div>
-            </TabPanel>
-            <TabPanel value="1">
-                <DataTable
-
-                >
-                <Column field="itemCd"    header="공성"  :style="{ width: '100px'}" />
-                <Column field="itemCd"    header="공정구분"  :style="{ width: '100px'}" />
-                <Column field="itemCd"    header="제조공정"  :style="{ width: '100px'}" />
-                <Column field="itemCd"    header="적요"  :style="{ width: '100px'}" />
-            </DataTable>
-            </TabPanel>
-        </TabPanels>
-    </Tabs>
-</div>
-
-<div class="w-full mt-3">
-    <div class="flex items-center justify-end gap-3">
-        <Button v-if="isStarted"  label="제조시작" @click="openLookupPopup('S')" />
-        <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo"></Button>
-        <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
-        <Button label="공정기록서(제조투입)" @click="downloadProcTest('P')"/>
-        <Button label="공정기록서(공정기록)" @click="downloadProcTest('R')"/>
-        <Button v-if="isComplate" label="제조완료" @click="complateMake" />
-        <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+            </div>
+        </div>
     </div>
 </div>
 
@@ -129,12 +237,11 @@ import { useAlertStore } from '@/stores/alert';
 import { handleApiError } from '@/util/errorHandler';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useDialog } from 'primevue';
-import { computed, inject, onMounted, reactive, ref } from 'vue';
-import WorkerPop from '../../common/WorkerPop.vue';
+import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue';
 import MakeQtyPopup from './MakeQtyPopup.vue';
 import ProcMakeStartPop from './ProcMakeStartPop.vue';
 
-const { vSuccess, vInfo, vWarning} = useAlertStore()
+const { vSuccess, vInfo, vError } = useAlertStore()
 const weighId = ref('')
 const hotTable = ref(null)
 const dialog = useDialog()
@@ -142,36 +249,41 @@ const dialogRef = inject('dialogRef')
 const isStarted = ref(false)
 const isComplate = ref(false)
 const matUseDataList = ref([])
-const activePhase = computed(() => phaseTabs.value[phaseActiveIndex.value] || 'ALL')
-const phaseTabs = computed(() => {
-const phases = [...new Set(
-    (matUseDataList.value || []).map(row => row.phase)
-  )]
+const phaseActiveIndex = ref(0)
 
-  return ['ALL', ...phases]
+const phaseTabs = computed(() => {
+    const phases = [...new Set(
+        (matUseDataList.value || [])
+            .map(row => row.phase)
+            .filter(phase => phase)
+    )]
+
+    return ['ALL', ...phases]
 })
+
+const activePhase = computed(() => phaseTabs.value[phaseActiveIndex.value] || 'ALL')
 
 const totalCount = computed(() => {
-  return Array.isArray(matUseDataList.value) ? matUseDataList.value.length : 0
+    return Array.isArray(matUseDataList.value) ? matUseDataList.value.length : 0
 })
+
 const checkedCount = computed(() => {
-  return matUseDataList.value.filter((row) => row.makeYn === 'Y').length
+    return (matUseDataList.value || []).filter((row) => row.makeYn === 'Y').length
 })
-const phaseTabRenderKey = ref(0)
-const phaseActiveIndex = ref(0)
+
 const form = reactive({
     makeNo: '',
-    itemCd:'',
+    itemCd: '',
     itemName: '',
     procOrderDate: '',
     orderQty: 0,
     prodDate: '',
-    storageName:'',
-    storageCd:'',
+    storageName: '',
+    storageCd: '',
     workEquipmentCd: '',
     prodQty: '',
     prodYield: '',
-    poNo:'',
+    poNo: '',
     etc: '',
 
     isBtn: 'W',
@@ -181,125 +293,114 @@ const form = reactive({
     workBatchId: '',
     procCd: 'PRC002',
 })
-const LOOKUP_PROP = {
-  MAKER: '__lookup_weighUser',     // 칭량자 돋보기
-  MAKE_CONFIRM: '__lookup_confirmUser',   // 확인자 돋보기
-}
-const magnifierRenderer = (instance, td) => {
-    td.innerHTML = `<span style="cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:100%;">
-    <i class="pi pi-search"></i>
-    </span>`
-    td.style.textAlign = 'center'
-}
 
-const hotHeaders = ref(['No', '구분',  '품목코드',  '품목명',  '소요량',  '투입량',  '투입일시',  '완료',  '투입자',  '-',  '확인자', '-' ])
-const colWidths = ref([50, 50, 140, 470, 120, 120, 170, 55, 120, 50, 120, 50])
+const makeEtcInfo = reactive({
+    makeEtcId: '',
+    workProcId: '',
+    itemCd: '',
+    bomVer: '',
+    matProc: '',
+    manipulate: '',
+    processTime: '',
+    note: '',
+    significant: '',
+    maker: '',
+    confirmer: '',
+    filterCnt: '',
+    filterType: '',
+    filterDamage: '',
+    substanceCheck: '',
+})
+
+const hotHeaders = ref(['No', '구분', '품목코드', '품목명', '소요량', '투입량', '투입자확인'])
+const colWidths = ref([50, 50, 120, 320, 110, 110, 110])
 const hotColumns = ref([
-  { data: 'orderDist', readOnly: true, className: 'htCenter' },
-  { data: 'phase', readOnly: true, className: 'htCenter' },
-  { data: 'itemCd', readOnly: true, className: 'htCenter' },
-  { data: 'itemName', readOnly: true },
-  { data: 'orderQty', type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight', readOnly: true },
-  { data: 'makeQty', type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight' },
-  { data: 'makeTime', className: 'htCenter' },
-  { data: 'makeYn', type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N', className: 'htCenter' },
-  { data: 'maker', className: 'htCenter' },
-  { data: LOOKUP_PROP.MAKER, readOnly: true, renderer: magnifierRenderer },
-  { data: 'makeConfirmer', className: 'htCenter' },
-  { data: LOOKUP_PROP.MAKE_CONFIRM, readOnly: true, renderer: magnifierRenderer },
+    { data: 'orderDist', readOnly: true, className: 'htCenter' },
+    { data: 'phase', readOnly: true, className: 'htCenter' },
+    { data: 'itemCd', readOnly: true, className: 'htCenter' },
+    { data: 'itemName', readOnly: true },
+    { data: 'orderQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight', readOnly: true },
+    { data: 'makeQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },
+    { data: 'maker', className: 'htCenter', type: 'text', editor: 'text', readOnly: false},
 ])
 
-const handlePhaseTabChange = (nextIndex) => {
-    if (canMoveToPhase(nextIndex)) {
-        phaseActiveIndex.value = nextIndex
-    } else {
-        // 탭 헤더 표시 원복용 강제 재렌더
-        phaseTabRenderKey.value++
-    }
+const currentTabList = computed(() => {
+    if (activePhase.value === 'ALL') return matUseDataList.value || []
+
+    return (matUseDataList.value || []).filter(
+        row => row.phase === activePhase.value
+    )
+})
+
+const handlePhaseTabChange = async (nextIndex) => {
+    if (phaseActiveIndex.value === nextIndex) return
+
+    if (!canMoveToPhase(nextIndex)) return
+
+    phaseActiveIndex.value = nextIndex
+    await nextTick()
+
+    const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
+    hotInstance?.render()
 }
 
 const canMoveToPhase = (nextIndex) => {
-  const tabs = phaseTabs.value || []
-  const currentIndex = phaseActiveIndex.value
+    const tabs = phaseTabs.value || []
+    const currentIndex = phaseActiveIndex.value
 
-  // 같은 탭 또는 뒤로 이동은 허용
-  if (nextIndex <= currentIndex) return true
+    if (nextIndex <= currentIndex) return true
+    if (tabs[nextIndex] === 'ALL') return true
 
-  // ALL로 가는 건 허용
-  const nextPhase = tabs[nextIndex]
-  if (nextPhase === 'ALL') return true
-
-  // 현재 위치부터 목표 직전까지 전부 완료 체크
-  for (let i = currentIndex; i < nextIndex; i++) {
-    const phase = tabs[i]
-
-    // ALL은 스킵
-    if (phase === 'ALL') continue
-
-    const rows = (matUseDataList.value || []).filter(
-      row => row.phase === phase
-    )
-
-    // 데이터 없으면 다음 phase 검사
-    if (rows.length === 0) continue
-
-    const hasIncomplete = rows.some(row => row.makeYn !== 'Y')
-
-    if (hasIncomplete) {
-      alert(`${phase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
-      return false
+    if (tabs[currentIndex] === 'ALL') {
+        if (nextIndex === 1) return true
+        return checkPrevPhaseCompleted(1, nextIndex)
     }
-  }
 
-  return true
+    return checkPrevPhaseCompleted(currentIndex, nextIndex)
 }
 
-const handleAfterChange = () =>{
+const checkPrevPhaseCompleted = (startIndex, nextIndex) => {
+    const tabs = phaseTabs.value || []
+    const nextPhase = tabs[nextIndex]
+
+    for (let i = startIndex; i < nextIndex; i++) {
+        const phase = tabs[i]
+        if (!phase || phase === 'ALL') continue
+
+        const rows = (matUseDataList.value || []).filter(row => row.phase === phase)
+        if (rows.length === 0) continue
+
+        const hasIncomplete = rows.some(row => row.makeYn !== 'Y')
+
+        if (hasIncomplete) {
+            vInfo(`${phase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
+            return false
+        }
+    }
+
+    return true
+}
+
+const handleAfterChange = () => {
 
 }
 
 const handleCellClickFromHot = (event, coords, td) => {
-    // coords: { row, col }
     if (!coords || coords.row == null || coords.col == null) return
-    if (coords.row < 0) return // 헤더 클릭 제외
+    if (coords.row < 0) return
 
-    // 현재 탭에서 보이는 row(필터 적용 후)
     const rowData = currentTabList.value[coords.row]
     if (!rowData) return
     if (!coords || coords.row < 0 || coords.col < 0) return
 
-    const now = Date.now()
-
-    const  makeQtyColIndex = hotColumns.value.findIndex(col => col.data === 'makeQty')
-    const  makerLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.MAKER)
-    const  makeconfirmLookupColIndex = hotColumns.value.findIndex(col => col.data === LOOKUP_PROP.MAKE_CONFIRM)
+    const makeQtyColIndex = hotColumns.value.findIndex(col => col.data === 'makeQty')
 
     if (coords.col === makeQtyColIndex) {
         const isMakeQtyPopupTarget = rowData.itemCd === 'JRW00215' || rowData.itemCd === 'JRMSC00011'
 
         if (!isMakeQtyPopupTarget) return
         openLookupPopup('makeQty', rowData)
-        return
     }
-        // 2. 칭량자 돋보기 클릭
-    if (coords.col === makerLookupColIndex) {
-        openLookupPopup('MAKE_USER', rowData)
-        return
-    }
-    // 3. 확인자 돋보기 클릭
-    if (coords.col === makeconfirmLookupColIndex) {
-        openLookupPopup('CONFIRM_USER', rowData)
-        return
-    }
-}
-
-/** yyyy-MM-dd HH:mm:ss */
-const getNowDateTime = async () => {
-  const d = new Date()
-  const hh = String(d.getHours()).padStart(2, '0')
-  const mm = String(d.getMinutes()).padStart(2, '0')
-  const ss = String(d.getSeconds()).padStart(2, '0')
-  return `${hh}:${mm}:${ss}`
 }
 
 const applyQrToList = async () => {
@@ -308,7 +409,6 @@ const applyQrToList = async () => {
 
     const id = Number(inputValue)
 
-    // row.id 와 비교
     const targetRow = matUseDataList.value.find(
         row => Number(row.weighId) === id
     )
@@ -318,66 +418,45 @@ const applyQrToList = async () => {
         return
     }
 
-    // 자동 등록
     const makeQty = await ApiProc.getWeighQty(weighId.value)
+    targetRow.makeQty = makeQty ?? 0
 
-    targetRow.makeQty = makeQty?? 0
-    targetRow.makeTime = await getNowDateTime()
-    targetRow.makeYn = 'Y'
-
-    //const res = await ApiProc.insertRowMake(targetRow)
-    //await nextTick()
-    // Handsontable 강제 렌더링
     const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
     hotInstance?.render()
-    // 입력값 초기화
-    //weighId.value = ''
 }
 
-const currentTabList = computed(() => {
-  if (activePhase.value === 'ALL') return matUseDataList.value || []
+const saveInfo = async () => {
 
-  return (matUseDataList.value || []).filter(
-    row => row.phase === activePhase.value
-  )
-})
-
-const saveInfo = async () =>{
-    //예외체크
-    try{
+    try {
         const params = {
-            procMake : form,
-            makeBomList : matUseDataList.value
+            procMake: form,
+            makeBomList: matUseDataList.value,
+            makeEtcInfo: makeEtcInfo,
         }
         const res = await ApiProc.saveMakeInfo(params)
         vSuccess(res.message)
         checkComplete()
-    }catch(err){
+    } catch (err) {
         handleApiError(err)
     }
 }
 
-const openLookupPopup = (type, row) =>{
+const openLookupPopup = (type, row) => {
     let title = ''
     let componentPop = ''
     let itemList = []
 
-    const rowTargetTypes = ['makeQty','MAKE_USER', 'CONFIRM_USER']
+    const rowTargetTypes = ['makeQty']
     const shouldPassRow = rowTargetTypes.includes(type)
 
-    if(type === 'MAKE_USER'){
-        title = '투입자 선택'
-        componentPop = WorkerPop
-    } else if(type === 'CONFIRM_USER'){
-        title = '확인자 선택'
-        componentPop = WorkerPop
-    } else if(type === 'makeQty'){
+    if (type === 'makeQty') {
         title = '투입량 입력'
         componentPop = MakeQtyPopup
-    } else if(type === 'S'){
+    } else if (type === 'S') {
         title = '제조 시작'
         componentPop = ProcMakeStartPop
-    }else if(type === 'P'){
+    } else if (type === 'P') {
+        if (isStarted.value) return vInfo('제조시작을 먼저 진행해주세요.')
         title = '바코드 출력'
         componentPop = QrCodePop
 
@@ -391,8 +470,8 @@ const openLookupPopup = (type, row) =>{
         })
     }
 
-    dialog.open(componentPop,{
-        props:{
+    dialog.open(componentPop, {
+        props: {
             header: title,
             modal: true,
             maximizable: false,
@@ -404,19 +483,19 @@ const openLookupPopup = (type, row) =>{
             type,
             itemList,
         },
-        onClose:(event) => {
+        onClose: (event) => {
             if (!event?.data) {
                 if (!shouldPassRow) {
                     loadMakeInfo()
                 }
                 return
             }
-            // row를 넘긴 팝업이면 선택된 row에 값 반영
+
             if (shouldPassRow && row) {
                 applyPopupResultToRow(type, row, event.data)
                 return
             }
-            // 그 외 팝업은 기존 처리
+
             loadMakeInfo()
         },
     })
@@ -424,29 +503,29 @@ const openLookupPopup = (type, row) =>{
 
 const applyPopupResultToRow = (type, row, data) => {
     if (type === 'makeQty') {
-        // 예시: 용기무게 선택 팝업 반환값
-        console.log('data', data)
-        console.log('data.makeQt', data.makeQty)
         row.makeQty = data ?? row.orderQty
     } else if (type === 'MAKE_USER') {
-        // 예시: 작업자 선택 팝업 반환값
         row.maker = data.workerName ?? row.workerName
     } else if (type === 'CONFIRM_USER') {
-        // 예시: 확인자 선택 팝업 반환값
         row.makeConfirmer = data.workerName ?? row.workerName
     }
 }
 
-const complateMake = () =>{
-    if ( totalCount.value !== checkedCount.value){
+const complateMake = () => {
+    if (totalCount.value !== checkedCount.value) {
         vInfo('투입되지 않은 품목이 있습니다.')
-        return
     }
+
+
+
+
+
+
 
 
 }
 
-onMounted( async () =>{
+onMounted(async () => {
     await loadMakeInfo()
 })
 
@@ -459,53 +538,377 @@ const fetchMakeInfo = async () => {
     const params = createMakeInfoParams()
     return await ApiProc.getMakeInfo(params)
 }
+
 const createMakeInfoParams = () => ({
     workBatchId: dialogRef.value.data.workBatchId,
     itemCd: dialogRef.value.data.itemCd,
 })
+
 const bindMakeInfo = (data) => {
     Object.assign(form, data.procMake || {})
     matUseDataList.value = data.makeBomList || []
 
-    if (data.procMake?.procStatus === '00' && data.procMake?.batchStatus ==='12'){
+    Object.assign(makeEtcInfo, data.makeEtcInfo )
+    makeEtcInfo.workProcId = form.workProcId
+
+    if (phaseActiveIndex.value >= phaseTabs.value.length) {
+        phaseActiveIndex.value = 0
+    }
+
+    //if (data.procMake?.procStatus === '00' && data.procMake?.batchStatus < '21') {
+    if ( data.procMake?.batchStatus < '21') {
         isStarted.value = true
     }
     checkComplete()
 }
 
-const checkComplete = () =>{
-    if ( form.procStatus === '21' && totalCount.value === checkedCount.value ){
-        isComplate.value =true
+const checkComplete = () => {
+    if (form.procStatus === '21' && totalCount.value === checkedCount.value) {
+        isComplate.value = true
+    }
+}
+
+const downloadMatProc = async () =>{
+    const params = {
+        itemCd : form.itemCd,
+        itemName : form.itemName,
+        procCd : 'PRC002',
+        workProcId : form.workProcId,
+    }
+
+    try {
+        const blob = await ApiProc.downloadMatProc(params)
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+         console.log('workOrderInfo.makeNo', form.makeNo)
+         console.log('form.itemName:', form.itemName)
+
+        a.download =`${form?.makeNo || ''}_[벌크제품]_${form?.itemName || ''}.xlsx`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    } catch {
+        vError('엑셀 다운로드 실패')
     }
 }
 
 const closeDialog = () => {
-    dialogRef.value.close();
+    dialogRef.value.close()
 }
 </script>
 
 <style scoped>
 .cellBorder {
-  border-top: 0.5px solid #ccc;
-  border-bottom: 0.5px solid #ccc;
-  border-left: 0.5px solid #ccc;
-  border-right: 0.5px solid #ccc;
+  border: 0.5px solid #ccc;
   text-align: center;
   vertical-align: middle;
 }
+
 .cellHeader {
   background-color: #f0f0f0;
   font-weight: bold;
   width: 150px;
   height: 30px;
 }
-.handsontable THEAD TH {
-  background: #d9d9d9;
-  border-color: #000000;
+
+.top-etc-textarea {
+  height: 30px !important;
+  min-height: 30px !important;
+  resize: none;
 }
+
+.material-section {
+  margin-top: 5px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+}
+
+.section-title {
+  color: #10b981;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-bottom: 2px solid #10b981;
+}
+
+.section-line {
+  height: 1px;
+  background: #d7dee8;
+  margin-bottom: 12px;
+}
+
+.material-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 8px;
+}
+
+.count {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.phase-tab-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.phase-tab {
+  min-width: 80px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-bottom: 0;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+}
+
+.phase-tab.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.phase-tab:hover {
+  background: #dbeafe;
+}
+
+.hint {
+  margin-left: 30px;
+  font-weight: 500;
+  color: #2b63c6;
+  font-size: 13px;
+}
+
+.make-body-wrap {
+  display: flex;
+  width: 100%;
+  height: 545px;
+  gap: 0;
+  align-items: stretch;
+}
+
+.make-left {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  border: 1px solid #999;
+  border-right: 1px solid #999;
+  background: #fff;
+}
+
+.table-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+
+}
+
+:deep(.handsontable),
+:deep(.ht_master),
+:deep(.wtHolder),
+:deep(.wtHider),
+:deep(.wtSpreader) {
+  /* height: 100% !important; */
+}
+
+.process-box {
+  flex: 0 0 180px;
+  height: 100%;
+  border: 1px solid #999;
+  border-left: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.process-flow {
+  flex-basis: 300px; /* 제조 공정 */
+}
+
+.process-condition {
+  flex-basis: 160px; /* 조작조건 */
+}
+
+.process-time {
+  flex-basis: 80px; /* 공정시간 */
+  text-align: center;
+}
+
+.process-flow {
+  border-left: 0;
+}
+
+.process-title,
+.right-title {
+  min-height: 34px;
+  height: 34px;
+  padding: 6px 8px;
+  background: #c4b3ad;
+  color: #000;
+  font-weight: 600;
+  border-bottom: 1px solid #999;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.process-textarea {
+  flex: 1;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  resize: none;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.make-right {
+  flex: 0 0 200px;
+  height: 100%;
+  display: grid;
+
+  /* 여기 숫자만 바꾸면 각 영역 높이 조정 가능 */
+  grid-template-rows:
+    var(--prod-box-height, 190px)
+    var(--special-box-height, 110px)
+    var(--modify-box-height, 100px)
+    var(--filter-box-height, 145px);
+
+  border: 1px solid #999;
+  border-left: 0;
+  background: #fff;
+}
+
+.right-box {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #999;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.right-box:last-child {
+  border-bottom: 0;
+}
+
+.right-content {
+  min-height: 0;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.prod-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+}
+
+.mixer-guide {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #334155;
+}
+
+.right-textarea {
+  flex: 1;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.filter-content {
+  min-height: 0;
+  height: 100%;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.filter-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-input.full {
+  width: 100%;
+}
+
+.unit-text {
+  min-width: 34px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.filter-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-left: 2px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.damage-field {
+  align-items: center;
+}
+
+:deep(.handsontable thead th) {
+  background: #c4b3ad !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+  border-color: #999 !important;
+  height: 34px !important;
+  vertical-align: middle !important;
+}
+
+:deep(.handsontable td) {
+  border-color: #ddd !important;
+}
+
 td .custom-cell {
   background-color: rgb(245 245 245);
 }
+
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -515,38 +918,4 @@ td .custom-cell {
   justify-content: center;
   z-index: 9999;
 }
-.count {
-  margin-left: 30px;
-  font-weight: 500;
-  font-size: 15px;
-}
-.hint {
-  margin-left: 30px;
-  font-weight: 500;
-  color: #2b63c6;
-  font-size: 13px;
-}
-
-
-:deep(.phase-tabs .p-tabview-nav li .p-tabview-nav-link) {
-  background: #f1f5f9;
-  color: #64748b;
-  border-radius: 6px 6px 0 0;
-  margin-right: 6px;
-  padding: 8px 16px;
-  font-weight: 500;
-}
-
-/* 선택된 탭 */
-:deep(.phase-tabs .p-tabview-nav li.p-tabview-selected .p-tabview-nav-link) {
-  background: #10b981;   /* 초록 */
-  color: #ffffff;
-  font-weight: 700;
-}
-
-/* hover 효과 */
-:deep(.phase-tabs .p-tabview-nav li .p-tabview-nav-link:hover) {
-  background: #0163e2;
-}
-
 </style>
