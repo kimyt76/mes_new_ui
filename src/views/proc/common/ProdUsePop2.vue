@@ -15,7 +15,9 @@
         </FloatLabel>
     </div>
 
-    <div class="mt-2">
+<div class="flex gap-1 mt-2">
+    <!-- 좌측 -->
+    <div class="basis-[60%] min-w-0">
         <DataTable
             :value="workUseList"
             show-gridlines
@@ -48,8 +50,42 @@
         </Column>
         </DataTable>
     </div>
+    <!-- 우측 재고현황 테이블 -->
+    <div class="basis-[40%] min-w-0 overflow-x-auto">
+        <DataTable
+            class="my-table"
+            :value="stockItemHistList"
+            scrollable
+            scrollHeight="420px"
+            :tableStyle="{ minWidth: '600px' }"
+            showGridlines
+        >
+            <Column field="no"          header="No"         :style="{ width: '40px', textAlign:'center' }"   />
+            <Column field="testNo"      header="시험번호"   :style="{ width: '110px', textAlign:'center' }" />
+            <Column field="inDate"      header="입고일"     :style="{ width: '110px', textAlign:'center' }" />
+            <Column field="expiryDate"  header="사용기한"   :style="{ width: '110px', textAlign:'center' }" />
+            <!-- 가변 컬럼 -->
+            <Column
+                v-for="col in dynamicColumns"
+                :key="col.field"
+                :field="col.field"
+                :header="col.header"
+                :style="{ width: '140px', minWidth: '140px' }"
+                >
+                <template #body="{ data }">
+                    <div class="text-right">{{ formatQty(data[col.field]) }}</div>
+                </template>
+            </Column>
+            <Column field="totQty" header="합계" >
+            <template #body="{ data }">
+                <div class="text-right">{{ formatQty(data.totQty) }}</div>
+            </template>
+            </Column>
+        </DataTable>
+    </div>
+</div>
 
-    <div class="flex justify-end mt-3 gap-2">
+    <div class="flex justify-start mt-3 gap-2">
         <Button label="저장" icon="pi pi-check" @click="saveInfo"/>
         <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
@@ -58,17 +94,23 @@
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import { ApiQc } from '@/api/apiQc';
+import { ApiStock } from '@/api/apiStock';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, ref } from 'vue';
 
 const { vWarning, vInfo, vSuccess} = useAlertStore()
+const dynamicColumns = ref([]) // { field, header } 목록
+const stockItemHistList = ref([])
+const storageList = ref([])
+
 const barcodeInputRef = ref(null)
 const barcode = ref('')
 const dialogRef = inject('dialogRef')
 const workUseList = ref([])
 const title = ref('')
+let procCd = ref('')
 
 const calcTot = (row) => {
     const use = Number(row.useQty) || 0
@@ -116,7 +158,6 @@ const saveInfo = async () => {
             packingSpecUnit: rowData.packingSpecUnit,
             workProcId: rowData.workProcId,
             workBatchId: rowData.workBatchId,
-            procCd: 'PRC003',
         }
 
         const params = {
@@ -169,8 +210,27 @@ const searchByBarcode = async () =>{
     }
 }
 
+const loadInventoryList = async (areaCd) => {
+  const params = {
+    itemCd: dialogRef.value.data.itemCd,
+    areaCd,
+  }
+
+  const res = await ApiStock.getStockItemHistList(params)
+
+  storageList.value = res.storageList || []
+  stockItemHistList.value = res.stockItemHistList || []
+  console.log('stockItemHistList.value ', stockItemHistList.value )
+
+  dynamicColumns.value = storageList.value.map((item) => ({
+    field: String(item.storageCd).toUpperCase(),
+    header: item.storageName
+  }))
+}
+
 onMounted( async () =>{
     let prodInfoId = dialogRef.value.data.row.prodInfoId
+    procCd = dialogRef.value.data.procCd
     title.value = '['+dialogRef.value.data.itemCd+'] '+ dialogRef.value.data.itemName
 
     setTimeout(() => {
@@ -180,6 +240,9 @@ onMounted( async () =>{
     if (!isEmpty(prodInfoId)) {
         workUseList.value = await ApiProc.getProdUseList(prodInfoId)
     }
+
+    //우측 재고리스트
+    await loadInventoryList(dialogRef.value.data.areaCd)
 })
 
 const closeDialog = () =>{
