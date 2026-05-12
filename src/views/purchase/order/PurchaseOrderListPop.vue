@@ -135,7 +135,7 @@ const selectedRow = async () => {
     }else{
         emit('selected', selectedItem.value)
     }
-
+    selectedItem.value = []
 
 
 }
