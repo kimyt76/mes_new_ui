@@ -123,6 +123,7 @@ const selectedRow = () =>{
         return;
     }
     emit('selected', selectedItem.value);
+    selectedItem.value = []
 }
 
 
