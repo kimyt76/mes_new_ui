@@ -30,7 +30,7 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.procStatus" :options="procStatuss"
+                <Select v-model="form.procStatus" :options="processStates"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 100px"
@@ -61,25 +61,25 @@
         class="my-table"
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem" style="text-align: center;" />
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'right'}" ></Column>
-        <Column field="areaName"    header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
-        <Column field="weighDate"   header="코팅지시일"  :style="{ width: '110px', textAlign: 'right'}" >
+        <Column field="poNo"            header="PO No"      :style="{ width: '120px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
+        <Column field="procOrderDate"   header="포장지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.weighDate }}
+                <div @click="selectRowClick(slotProps.data)" style="text-decoration: underline; cursor: pointer;">
+                    {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
         </Column>
-        <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="makeNo"       header="제조번호"  :style="{ width: '150px', textAlign: 'right'}" />
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'right'}" />
+        <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="makeNo"      header="제조번호"  :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'center'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
-        <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="orderQty"    header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="batchStatus" header="배치상태"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="moveReqYn"    header="이동요청"   :style="{ width: '80px', textAlign: 'right'}" />
-        <Column field="procStatus"   header="포장상태"   :style="{ width: '80px', textAlign: 'right'}" />
+        <Column field="batchStatus" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="moveReqYn"   header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatus"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -92,13 +92,13 @@ import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
+import PackingPop from './PackingPop.vue';
 
 const selectedItem = ref([])
 const dialog = useDialog()
 const dt = ref(null);
 const packingList = ref([])
-const batchStatus = ref([])
-const procStatus = ref([])
+const processStates = ref([])
 const areaCds = ref([])
 const form = reactive({
   strDate: minMonth(todayKST()),
@@ -117,28 +117,31 @@ const handleDateChange = () =>{
 
 }
 
-const selectRowClick = (id) =>{
-    // dialog.open(MatRegPop, {
-    //     props:{
-    //         header: '포장지시 및 기록',
-    //         modal: true,
-    //         maximizable: false,
-    //         draggable: false,
-    //         style: {
-    //             width: '90vw',          // 🔹 팝업 가로 폭
-    //             maxWidth: '1800px',
-    //             height: '800px',
-    //             overflow: 'hidden'
-    //         },
-    //         pt: {
-    //             root: { style: { overflow: 'hidden' } },
-    //             content: { style: { overflow: 'hidden' } }
-    //         },
-    //     },
-    //     data: id,
-    //     onClose:(event) => {
-    //     },
-    // })
+const selectRowClick = (row) =>{
+
+
+    dialog.open(PackingPop, {
+        props:{
+            header: '포장지시 및 기록',
+            modal: true,
+            maximizable: false,
+            draggable: false,
+            style: {
+                width: '90vw',          // 🔹 팝업 가로 폭
+                maxWidth: '1800px',
+                height: '800px',
+                overflow: 'auto'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'auto' } }
+            },
+        },
+        data: row,
+        onClose:(event) => {
+            srhList();
+        },
+    })
 }
 
 const moveReq = () =>{
@@ -158,13 +161,14 @@ const srhList = async () =>{
     }
     // api
     packingList.value = await ApiProc.getPackingList(params);
+    console.log(packingList.value)
 }
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    procStatus.value = await ApiCommon.getCodeList('PROC_STATUS')
+    processStates.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "51", "52", "99"];
-    procStatus.value = procStatus.value.filter(v => want.includes(v.code));
+    processStates.value = processStates.value.filter(v => want.includes(v.code));
 })
 
 const home = ref({
@@ -172,8 +176,8 @@ const home = ref({
 });
 const items = ref([
     { label: '공정관리' },
-    { label: '충전' },
-    { label: '충전 작업지시목록' },
+    { label: '포장' },
+    { label: '포장 작업지시목록' },
 ]);
 
 const downloadExcel = () =>{
