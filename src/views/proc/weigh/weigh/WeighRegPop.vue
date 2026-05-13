@@ -309,11 +309,11 @@ const hotColumns = ref([
   { data: 'itemName', readOnly: true },                       // 3 품목명
   { data: FIELD.SUNGSANG, readOnly: true , className: 'htCenter' },                   // 4 성상
   { data: FIELD.SANGGUBUN, readOnly: true, className: 'htCenter'  },                  // 5 상구분
-  { data: 'orderQty' , type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight', readOnly: true },                                        // 6 지시량
-  { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight' },                                       // 7 칭량
-  { data: 'bagWeight' , type: 'numeric', numericFormat: { pattern: '0,0.000' }, className: 'htRight'},                                // 8 용기무게
+  { data: 'orderQty' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight', readOnly: true },                                        // 6 지시량
+  { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },                                       // 7 칭량
+  { data: 'bagWeight' , type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight'},                                // 8 용기무게
   { data: LOOKUP_PROP.CONTAINER, readOnly: true, renderer: magnifierRenderer }, // 9 '-' (용기무게 조회)
-  { data: 'totalQty', readOnly: true , type: 'numeric', numericFormat: { pattern: '0,0.000' },className: 'htRight'},                       // 10 총량
+  { data: 'totalQty', readOnly: true , type: 'numeric', numericFormat: { pattern: '0,0.00000' },className: 'htRight'},                       // 10 총량
   { data: 'testNo', readOnly: true , className: 'htCenter'},                         // 11 사용시험번호
   { data: FIELD.WEIGH_YN, type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N' , className: 'htCenter'}, // 12 완료
   { data: 'weigher', className: 'htCenter' },                      // 13 칭량자
@@ -324,13 +324,14 @@ const hotColumns = ref([
 
 const confirm = useConfirm()
 const completeWeight = async () =>{
+    if (totalMatCount.value !== finishedCount.value) return vWarning('모든 품목의 칭량이 완료되어야 칭량완료 처리할 수 있습니다.')
+
     confirm.require({
         header: '칭량완료 확인',
         message: '칭량을 완료하고, 제조출고를 진행하시겠습니까?',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
             try{
-                console.log('form.workBatchId', form.workBatchId)
                 const params = {
                     procStatus: '12',
                     batchStatus: '12',
@@ -627,7 +628,7 @@ const applyPopupResultToRow = (type, row, data) => {
     if (type === 'ITEM_CODE') {
         // 예시: 바코드 팝업에서 넘겨주는 값
         row.weighQty = data.weighQty ?? row.weighQty
-        row.testNo = data.testNos ?? row.testNos
+        row.testNo = data.testNo ?? row.testNo
         row.weighYn = 'Y'
     } else if (type === 'CONTAINER_WEIGHT') {
         // 예시: 용기무게 선택 팝업 반환값
