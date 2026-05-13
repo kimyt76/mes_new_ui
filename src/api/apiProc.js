@@ -176,7 +176,9 @@ export const ApiProc = {
     insertRowMake: async(params) => {
         return await API_URL.post('/procMat/insertRowMake', params)
     },
-
+    completeMake: async(params) => {
+        return await API_URL.post(`/procMat/completeMake`, params)
+    },
     downloadMatProc: async (params) => {
         try {
             const res = await API_URL.post('/procMat/downloadMatProc',params,{
