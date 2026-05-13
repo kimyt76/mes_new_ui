@@ -244,7 +244,7 @@ const onChangeRow = async (row) => {
      return
   }
 
-    saveInfo()
+  saveInfo()
 }
 
 /** 행 삭제 */
@@ -280,6 +280,8 @@ const saveInfo = async () => {
         weighId: weighId.value,
         workProcId: workProcId.value,
         storageCd: storageCd.value,
+        weighQty: totalWeighQty.value,
+        testNo: testNosArray.join(','),
     },
     weighList : stockItemList.value,
     deleteWeighItems: deleteWeighItems.value,
@@ -287,7 +289,7 @@ const saveInfo = async () => {
 
   const params1 = {
     weighQty: totalWeighQty.value,
-    testNos : testNosArray.join(',')
+    testNo : testNosArray.join(',')
   }
 
   try{
