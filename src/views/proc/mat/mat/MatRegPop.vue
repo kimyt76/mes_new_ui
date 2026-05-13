@@ -236,21 +236,25 @@ import BaseHotTable from '@/components/BaseHotTable.vue';
 import { useAlertStore } from '@/stores/alert';
 import { handleApiError } from '@/util/errorHandler';
 import QrCodePop from '@/views/common/QrCodePop.vue';
-import { useDialog } from 'primevue';
-import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue';
+import { useConfirm, useDialog } from 'primevue';
+import { computed, inject, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import MakeQtyPopup from './MakeQtyPopup.vue';
 import ProcMakeStartPop from './ProcMakeStartPop.vue';
 
 const { vSuccess, vInfo, vError } = useAlertStore()
 const weighId = ref('')
-const hotTable = ref(null)
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const isStarted = ref(false)
 const isComplate = ref(false)
 const matUseDataList = ref([])
 const phaseActiveIndex = ref(0)
-
+const hotTable = ref(null)
+const totalMakeQty = computed(() => {
+    return matUseDataList.value.reduce((sum, row) => {
+        return sum + (Number(row.makeQty) || 0);
+    }, 0);
+});
 const phaseTabs = computed(() => {
     const phases = [...new Set(
         (matUseDataList.value || [])
@@ -268,7 +272,7 @@ const totalCount = computed(() => {
 })
 
 const checkedCount = computed(() => {
-    return (matUseDataList.value || []).filter((row) => row.makeYn === 'Y').length
+    return (matUseDataList.value || []).filter((row) => row.makeQty > 0).length
 })
 
 const form = reactive({
@@ -291,6 +295,7 @@ const form = reactive({
     barcode: '',
     workProcId: '',
     workBatchId: '',
+    testNo: '',
     procCd: 'PRC002',
 })
 
@@ -323,6 +328,10 @@ const hotColumns = ref([
     { data: 'makeQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },
     { data: 'maker', className: 'htCenter', type: 'text', editor: 'text', readOnly: false},
 ])
+
+watch(totalMakeQty, (val) => {
+    form.prodQty = val;
+}, { immediate: true });
 
 const currentTabList = computed(() => {
     if (activePhase.value === 'ALL') return matUseDataList.value || []
@@ -425,7 +434,19 @@ const applyQrToList = async () => {
     hotInstance?.render()
 }
 
+const checkVavlid = () =>{
+    if (totalCount.value !== checkedCount.value) {
+        vInfo('작업자를 등록하세요!!')
+        return false
+    }
+    if (totalCount.value !== checkedCount.value) {
+        vInfo('확인자를 입력하세요!!.')
+        return false
+    }
+}
+
 const saveInfo = async () => {
+    if (!checkVavlid()) return
 
     try {
         const params = {
@@ -510,19 +531,37 @@ const applyPopupResultToRow = (type, row, data) => {
         row.makeConfirmer = data.workerName ?? row.workerName
     }
 }
-
+const confirm = useConfirm()
 const complateMake = () => {
+    if (!checkVavlid()) return
+
     if (totalCount.value !== checkedCount.value) {
         vInfo('투입되지 않은 품목이 있습니다.')
+        return false
     }
 
-
-
-
-
-
-
-
+    confirm.require({
+        header: '제조완료 확인',
+        message: '제조을 완료하고, 제조출고를 진행하시겠습니까?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+            try{
+                const params = {
+                    procStatus: '22',
+                    batchStatus: '22',
+                    workProcId: form.workProcId,
+                    workBatchId: form.workBatchId,
+                    procCd: form.procCd,
+                    testNo: form.testNo,
+                }
+                const res = await ApiProc.completeMake(params)
+                vSuccess('정상적으로 제조완료 처리하였습니다!')
+                closeDialog()
+            }catch(err){
+                handleApiError(err)
+            }
+        }
+    });
 }
 
 onMounted(async () => {
@@ -541,6 +580,7 @@ const fetchMakeInfo = async () => {
 
 const createMakeInfoParams = () => ({
     workBatchId: dialogRef.value.data.workBatchId,
+    workProcId: dialogRef.value.data.workProcId,
     itemCd: dialogRef.value.data.itemCd,
 })
 
@@ -551,11 +591,12 @@ const bindMakeInfo = (data) => {
     Object.assign(makeEtcInfo, data.makeEtcInfo )
     makeEtcInfo.workProcId = form.workProcId
 
+
+
     if (phaseActiveIndex.value >= phaseTabs.value.length) {
         phaseActiveIndex.value = 0
     }
-
-    //if (data.procMake?.procStatus === '00' && data.procMake?.batchStatus < '21') {
+console.log('data.procMake?.batchStatus ',  data.procMake?.batchStatus )
     if ( data.procMake?.batchStatus < '21') {
         isStarted.value = true
     }
@@ -581,9 +622,6 @@ const downloadMatProc = async () =>{
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-         console.log('workOrderInfo.makeNo', form.makeNo)
-         console.log('form.itemName:', form.itemName)
-
         a.download =`${form?.makeNo || ''}_[벌크제품]_${form?.itemName || ''}.xlsx`
         a.click()
         window.URL.revokeObjectURL(url)
