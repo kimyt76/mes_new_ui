@@ -138,6 +138,7 @@ const selectRowClick = (row) =>{
         },
         data: {
             workBatchId: row.workBatchId,
+            workProcId: row.workProcId,
             itemCd : row.itemCd,
             procStatus: row.procStatus,
         },
