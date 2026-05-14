@@ -16,6 +16,10 @@ export const ApiProc = {
         return await API_URL.post(`/procCommon/updateProcStatus`, params)
     },
 
+    getWorkRecordInfo: async(id) => {
+        return  await API_URL.get(`/procCommon/getWorkRecordInfo/${id}`)
+    },
+
     /**
      *  작업수행정보 저장
      * @param {*} params

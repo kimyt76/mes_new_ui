@@ -116,7 +116,6 @@ const formatHHmm = (date) => {
 
 const saveInfo = async () =>{
     try{
-
         workRecordList.value.push({
             workDate : form.workDate,
             workStartTime: formatHHmm(form.workStartTime),
@@ -141,10 +140,11 @@ const saveInfo = async () =>{
     }
 }
 
-onMounted(() => {
+onMounted( async () => {
     const procCd = dialogRef.value?.data?.form?.procCd
     form.workProcId = dialogRef.value?.data?.form?.workProcId;
     form.itemCd = dialogRef.value?.data?.form?.itemCd;
+    form.workRecordId = dialogRef.value?.data?.workRecordId;
 
     if (procCd === 'PROC003') {
         label.value = '반제품사용량';
@@ -162,11 +162,34 @@ onMounted(() => {
         qtySuffix1.value = ' EA';
         qtySuffix2.value = ' EA';
     }
+
+    if (form.workRecordId) {
+        const res = await ApiProc.getWorkRecordInfo(form.workRecordId)
+
+        Object.assign(form, {
+            ...res.data,
+            workStartTime: toTimeDate(res.data.workStartTime),
+            workEndTime: toTimeDate(res.data.workEndTime),
+        })
+    }
 });
 
 const closeDialog = () => {
     dialogRef.value.close();
 };
+
+const toTimeDate = (timeStr) => {
+    if (!timeStr) return null
+
+    const [hh, mm, ss] = timeStr.split(':')
+
+    const date = new Date()
+    date.setHours(Number(hh))
+    date.setMinutes(Number(mm))
+    date.setSeconds(Number(ss || 0))
+
+    return date
+}
 </script>
 
 <style scoped>

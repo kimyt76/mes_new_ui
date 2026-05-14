@@ -39,7 +39,7 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.prodQty || 0 }} EA</td>
                             <th class="cellBorder cellHeader" rowspan="2">폭 너비(mm) 및<br />겔 Sheet 적층수</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ itemInfo.sheetSpec || 0 }}<br />
@@ -141,9 +141,10 @@
                     <div class="section-body">
                         <DataTable
                             :value="workRecordList"
-                            dataKey="workProcId"
+                            dataKey="workRecordId"
                             show-gridlines
                             class="my-table work-table"
+                            @row-click="selectRow"
                         >
                             <Column field="no"          header="NO"                 :style="{ width: '40px', textAlign: 'center' }"></Column>
                             <Column field="workDate"    header="작업일자"           :style="{ width: '120px', textAlign: 'center' }"></Column>
@@ -212,6 +213,7 @@
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import { useAlertStore } from '@/stores/alert';
+import { isEmpty } from '@/util/common';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
@@ -322,12 +324,18 @@ const downloadExcel = async () =>{
     }
 }
 
-const saveInfo = () => {
+let workRecordId = ref('')
+const selectRow = (row) => {
+    workRecordId.value = row.data.workRecordId;
+    if ( isEmpty(workRecordId.value) ) return
 
-};
+    openPop('W')
+}
 
 //투입정보
 const selectRowClick = (row) => {
+    if (isStarted.value) return
+
     dialog.open(ProdUsePop, {
         props: {
             header: '사용량 입력',
@@ -387,12 +395,13 @@ const popupConfig = {
     }
 }
 
+
+
 const openPop = (type) => {
     const config = popupConfig[type]
     if (!config?.component) return
 
     let itemList = []
-
     itemList.push({
         itemCd: itemInfo.itemCd,
         itemName: itemInfo.itemName,
@@ -423,39 +432,14 @@ const openPop = (type) => {
         data: {
             form,
             itemList,
+            workRecordId : workRecordId.value,
         },
         onClose: (event) =>{
             if ( type === 'S' ){
                 //재조회
                 callCoatingInfo()
             } else if ( type === 'W' ){
-                //작업수행 정보
-                // const data = event?.data || event;
-                // if (data) {
-                //     const emptyIndex = workRecordList.value.findIndex(
-                //         row => !row.workDate && !row.workStartTime && !row.workEndTime
-                //     );
-
-                //     const newRow = {
-                //         no: emptyIndex > -1 ? emptyIndex + 1 : workRecordList.value.length + 1,
-                //         workDate: data.workDate,
-                //         workStartTime: data.workStartTime,
-                //         workEndTime: data.workEndTime,
-                //         workerCnt: data.workerCnt,
-                //         useQty: data.useQty,
-                //         prodQty: data.prodQty,
-                //         workProcId: form.workProcId,
-                //         itemCd: form.itemCd,
-                //     };
-
-                //     workOrderInfo.prodQty = data.prodQty
-
-                //     if (emptyIndex > -1) {
-                //         workRecordList.value[emptyIndex] = newRow;
-                //     } else {
-                //         workRecordList.value.push(newRow);
-                //     }
-                // }
+                workRecordId.value = ''
                 callCoatingInfo()
             }
         }

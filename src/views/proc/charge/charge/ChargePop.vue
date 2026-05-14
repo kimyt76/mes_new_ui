@@ -40,7 +40,7 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.prodQty || 0 }} EA</td>
                             <th class="cellBorder cellHeader" rowspan="2">LOT<br />표기</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ workOrderInfo.lotNo || 0 }}<br />
@@ -144,11 +144,12 @@
                     <div class="section-body">
                         <DataTable
                             :value="workRecordList"
-                            dataKey="workProcId"
+                            dataKey="workRecordId"
                             show-gridlines
                             class="my-table work-table"
+                            @row-click="selectRow"
                         >
-                            <Column field="no"          header="NO"                 :style="{ width: '40px', textAlign: 'center' }"></Column>
+                            <Column field="no"          header="NO"               :style="{ width: '40px', textAlign: 'center' }"></Column>
                             <Column field="workDate"    header="작업일자"           :style="{ width: '120px', textAlign: 'center' }"></Column>
                             <Column field="workStartTime" header="작업시작시간"     :style="{ width: '140px', textAlign: 'center' }"></Column>
                             <Column field="workEndTime" header="작업종료시간"       :style="{ width: '140px', textAlign: 'center' }"></Column>
@@ -304,30 +305,12 @@ const workOrderInfo = reactive({
     memo: '',
 });
 
-// 기록서 엑셀 다운로드
-const downloadExcel = async () =>{
-    const params = {
-        itemCd : itemInfo.itemCd,
-        procCd : 'PRC004',
-        workProcId : form.workProcId,
-    }
-
-    try {
-        const blob = await ApiProc.downloadRecord(params)
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${workOrderInfo.makeNo}_[충전제풐]_${form.itemName}.xlsx`
-        a.click()
-        window.URL.revokeObjectURL(url)
-    } catch {
-        vError('엑셀 다운로드 실패')
-    }
+let workRecordId = ref('')
+const selectRow = (row) => {
+    workRecordId.value = row.data.workRecordId;
+    if ( isEmpty(workRecordId.value) ) return
+    openPop('W')
 }
-
-const saveInfo = () => {
-
-};
 
 //투입정보
 const selectRowClick = (row) => {
@@ -428,6 +411,7 @@ const openPop = (type) => {
         data: {
             form,
             itemList,
+            workRecordId : workRecordId.value,
         },
         onClose: (event) =>{
             if ( type === 'S' ){
@@ -521,9 +505,32 @@ onMounted( () => {
     callChargeInfo()
 });
 
+// 기록서 엑셀 다운로드
+const downloadExcel = async () =>{
+    const params = {
+        itemCd : itemInfo.itemCd,
+        procCd : 'PRC004',
+        workProcId : form.workProcId,
+    }
+
+    try {
+        const blob = await ApiProc.downloadRecord(params)
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${workOrderInfo.makeNo}_[충전제풐]_${form.itemName}.xlsx`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    } catch {
+        vError('엑셀 다운로드 실패')
+    }
+}
+
 const closeDialog = () => {
     dialogRef.value.close();
 };
+
+
 </script>
 
 <style scoped>
