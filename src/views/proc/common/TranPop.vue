@@ -66,19 +66,18 @@
         :value="itemTranList"
         class="my-table"
         show-gridlines
+        scrollable
+        scroll-height="500px"
         >
-        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '100px'}" />
+        <Column selectionMode="multiple" headerStyle="width: 2rem" style="text-align: center;"></Column>
+        <Column field="itemCd"    header="품목코드"  :style="{ width: '100px', textAlign: 'center'}" />
         <Column field="itemName"  header="품목명"    :style="{ width: '300px'}" bodyClass="break-words"></Column>
         <Column field="lotNo"      header="로트(제조)번호"      :style="{ width: '120px'}"/>
-        <Column field="testNo"      header="시험번호"      :style="{ width: '120px'}"/>
-        <Column field="qty"        header="수량"    :style="{ width: '80px'}"  >
+        <Column field="testNo"      header="시험번호"      :style="{ width: '120px', textAlign: 'center' }"/>
+        <Column field="qty"        header="수량"    :style="{ width: '80px', textAlign: 'right'}"  >
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
         <Column field="etc"        header="비고"    :style="{ width: '150px'}">
-            <template #body="slotProps">
-                <InputText v-model="slotProps.data.etc" class="w-full" />
-            </template>
         </Column>
 <!--
         <Column field="actions"        header="-"    :style="{ width: '20px'}" style="text-align: center;" >
