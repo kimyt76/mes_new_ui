@@ -76,8 +76,8 @@ const dialog = useDialog()
 const dt = ref(null);
 const procTranList = ref([])
 const form = reactive({
-    strDate: todayKST(),
-    endDate: minMonth(todayKST()),
+    strDate: minMonth(todayKST(), 2),
+    endDate: todayKST(),
     itemCd: '',
     itemName: '',
     procCd: 'PRC001'
