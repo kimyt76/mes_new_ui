@@ -120,7 +120,7 @@ import { ApiProc } from '@/api/apiProc'
 import { ApiQc } from '@/api/apiQc'
 import { ApiStock } from '@/api/apiStock'
 import { useAlertStore } from '@/stores/alert'
-import { isEmpty, todayKST } from '@/util/common'
+import { formatQty, isEmpty, todayKST } from '@/util/common'
 import { useDialog } from 'primevue'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -229,12 +229,6 @@ watch(barcode, (newVal) => {
         searchByBarcode();
     }
 });
-
-/** 숫자 표시 포맷 (최대 6자리) */
-const formatQty = (value) => {
-  const v = Number(value ?? 0)
-  return v.toLocaleString('ko-KR', { maximumFractionDigits: 6 })
-}
 
 /** 칭량량 변경 시 호출 */
 const onChangeRow = async (row) => {

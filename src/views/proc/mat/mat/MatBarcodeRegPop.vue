@@ -115,6 +115,7 @@
 </template>
 
 <script setup>
+import { formatQty } from '@/util/common'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -162,12 +163,6 @@ const totalOrderQty = computed(() => {
 
 const searchByBarcode = () =>{
 
-}
-
-/** 숫자 표시 포맷 (최대 6자리) */
-const formatQty = (value) => {
-  const v = Number(value ?? 0)
-  return v.toLocaleString('ko-KR', { maximumFractionDigits: 6 })
 }
 
 /** 칭량량 변경 시 호출 */
