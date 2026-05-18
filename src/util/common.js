@@ -77,6 +77,13 @@ export function todayKST () {
   return date.toISOString().split('T')[0] // YYYY-MM-DD 형식
 }
 
+/** 숫자 표시 포맷 (최대 6자리) */
+export function formatQty(value){
+  const v = Number(value ?? 0)
+  return v.toLocaleString('ko-KR', { maximumFractionDigits: 6 })
+}
+
+
 export function formatDate (value) {
   if (!value) return ''
   const d = new Date(value)
