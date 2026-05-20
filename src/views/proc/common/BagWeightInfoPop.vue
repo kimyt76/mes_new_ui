@@ -25,12 +25,12 @@
         </div>
 
         <div class="bottom-btns" :class="{ three: isSaveBtn }">
-            <Button
+            <!-- <Button
                 v-if="isSaveBtn"
                 label="저장"
                 class="action-btn confirm-btn"
                 @click="saveWeight"
-            />
+            /> -->
             <Button
                 label="입력"
                 class="action-btn confirm-btn"
@@ -99,9 +99,9 @@ const removeLast = () => {
   }
 }
 
-const saveWeight = () =>{
+// const saveWeight = () =>{
 
-}
+// }
 
 const onReset = () => {
   inputValue.value = '0'
