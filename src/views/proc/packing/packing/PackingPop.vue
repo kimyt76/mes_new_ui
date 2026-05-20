@@ -40,7 +40,7 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.prodQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
                             <th class="cellBorder cellHeader" rowspan="2">LOT<br />표기</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ workOrderInfo.lotNo || 0 }}<br />
@@ -73,7 +73,7 @@
                 <div class="section-label">2. 투입자재 정보</div>
                 <DataTable
                     :value="prodList"
-                    dataKey="itemCd"
+                    dataKey="prodUseId"
                     show-gridlines
                     class="my-table material-table"
                     scrollable
@@ -154,8 +154,8 @@
                             <Column field="workStartTime" header="작업시작시간"     :style="{ width: '140px', textAlign: 'center' }"></Column>
                             <Column field="workEndTime" header="작업종료시간"       :style="{ width: '140px', textAlign: 'center' }"></Column>
                             <Column field="workerCnt"   header="작업인원(명)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
-                            <Column field="useQty"      header="반제품사용량(kg)"   :style="{ width: '130px', textAlign: 'center' }"></Column>
-                            <Column field="prodQty"     header="코팅수량(ea)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="useQty"      header="포장품사용량(ea)"   :style="{ width: '130px', textAlign: 'center' }"></Column>
+                            <Column field="prodQty"     header="포장수량(ea)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
                         </DataTable>
                     </div>
                 </div>
@@ -206,7 +206,7 @@
             <!-- <Button v-if="!isStarted" label="저장" @click="saveInfo" /> -->
             <Button label="기록서" @click="downloadExcel" />
             <Button label="바코드" @click="openPop('B')" />
-            <Button v-if="!isStarted" label="작업완료" @click="workComplete" />
+            <Button  v-if="btnStatus !== '00' && btnStatus !== '32'" label="작업완료" @click="workComplete" />
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </div>
@@ -218,12 +218,10 @@ import { ApiProc } from '@/api/apiProc';
 import { useAlertStore } from '@/stores/alert';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import ProdUsePop2 from '../../common/ProdUsePop2.vue';
 import WorkRecordPop from '../../common/WorkRecordPop.vue';
 import ProcPackingStartPop from './ProcPackingStartPop.vue';
-
-ProcPackingStartPop
 
 const { vWarning, vSuccess, vInfo } = useAlertStore()
 const dialog = useDialog();
@@ -307,6 +305,50 @@ const workOrderInfo = reactive({
     memo: '',
 });
 
+/**
+ * 총 사용량
+ */
+const totalUseQty = computed(() => {
+    return workRecordList.value.reduce((sum, row) => {
+        return sum + Number(row.useQty || 0)
+    }, 0)
+})
+
+/**
+ * 총 생산수량
+ */
+const totalProdQty = computed(() => {
+    return workRecordList.value.reduce((sum, row) => {
+        return sum + Number(row.prodQty || 0)
+    }, 0)
+})
+
+/**
+ * 생산수율
+ */
+const totalProdYield = computed(() => {
+    if (totalUseQty.value === 0) return 0
+    return (
+        (totalProdQty.value / totalUseQty.value) * 100
+    ).toFixed(2)
+})
+
+/**
+ * 리스트 값 변경 시
+ * workOrderInfo 값 자동 갱신
+ */
+watch(
+    [totalUseQty, totalProdQty, totalProdYield],
+    ([useQty, prodQty, prodYield]) => {
+        workOrderInfo.useQty = useQty
+        workOrderInfo.prodQty = prodQty
+        workOrderInfo.prodYield = prodYield
+    },
+    {
+        immediate: true
+    }
+)
+
 let workRecordId = ref('')
 const selectRow = (row) => {
     workRecordId.value = row.data.workRecordId;
@@ -336,10 +378,10 @@ const selectRowClick = (row) => {
         },
         data:{
             row,
-            itemCd: form.itemCd,
-            itemName: form.itemName,
             areaCd: form.areaCd,
             procCd: form.procCd,
+            workBatchId: form.workBatchId,
+            workProcId: form.workProcId,
         }
         ,onClose: (event) =>{
             if (event) {
@@ -351,7 +393,7 @@ const selectRowClick = (row) => {
 
                 workOrderInfo.useQty = event.data.totUseQty
             }
-            callChargeInfo()
+            callPackingInfo()
         }
     })
 }
@@ -360,8 +402,8 @@ const popupConfig = {
     S: {
         title: '포장시작',
         component: ProcPackingStartPop,
-        width: '700px',
-        height: '400px'
+        width: '520px',
+        height: '390px'
     },
     B: {
         title: '바코드',
@@ -432,21 +474,21 @@ const workComplete = () =>{
     if(!checkComplete()) return
 
     confirm.require({
-        header: '충전완료 확인',
-        message: '충전을을 완료하고, 제조출고를 진행하시겠습니까?',
+        header: '포장완료 확인',
+        message: '포장작업을 완료하시겠습니까?',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
             try{
                 const params = {
-                    procStatus: '32',
-                    batchStatus: '32',
+                    procStatus: '52',
+                    batchStatus: '52',
                     workProcId: form.workProcId,
                     workBatchId: form.workBatchId,
                     procCd: form.procCd,
                 }
                 //console.log('params', params)
-                const res = await ApiProc.completeCoating(params)
-                vSuccess('정상적으로 충전완료 처리하였습니다!')
+                const res = await ApiProc.completePacking(params)
+                vSuccess('정상적으로 포장작업을 완료하였습니다!')
                 closeDialog()
             }catch(err){
                 handleApiError(err)
@@ -474,10 +516,12 @@ const fillRows = (list = [], rowCount, createRow) => {
     }));
 };
 
+const btnStatus = ref('')
+
 const callPackingInfo = async () =>{
     const params = {
         workProcId: dialogRef.value.data.workProcId,
-        procCd: dialogRef.value.data.procCd,
+        procCd: form.procCd,
         itemCd: dialogRef.value.data.itemCd
     };
 
@@ -497,9 +541,12 @@ const callPackingInfo = async () =>{
     form.itemName = itemInfo.itemName
     form.itemCd = itemInfo.itemCd
 
+    btnStatus.value = workOrderInfo.procStatus
 
     if (workOrderInfo.procStatus === '00'){
         isStarted.value = true
+    }else if (workOrderInfo.procStatus === '32'){
+        isComplete.value = true
     }
 }
 

@@ -77,9 +77,9 @@
         <Column field="orderQty"    header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="batchStatus" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="moveReqYn"   header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="procStatus"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatusName"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>

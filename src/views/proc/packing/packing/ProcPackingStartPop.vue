@@ -73,9 +73,8 @@ import { ApiProc } from '@/api/apiProc';
 import { ApiSystems } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
-import { handleApiError } from '@/util/errorHandler';
 import { useConfirm } from 'primevue';
-import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
+import { computed, inject, onMounted, reactive, ref } from 'vue';
 
 const confirm = useConfirm()
 const { vSuccess, vWarning, vInfo} = useAlertStore()
@@ -110,7 +109,7 @@ const form = reactive({
 
 const saveInfo = () => {
     if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
-
+    if ( isEmpty(form.managerName)) return vWarning('담당자를 등록하세요')
     confirm.require({
         header: '포장시작확인',
         message: '해당 작업을 시작하시겠습니까?\n내용을 다시 한 번 확인해 주세요.\n시작 후에는 취소할 수 없습니다.',
@@ -124,7 +123,7 @@ const saveInfo = () => {
                     workProcId: form.workProcId,
                     workBatchId: form.workBatchId,
                     storageCd: form.storageCd,
-                    managerId: form.managerId,
+                    managerId: form.managerName,
                     procStatus: '51',
                     batchStatus: '51',
                 }
@@ -139,24 +138,6 @@ const saveInfo = () => {
     });
 }
 
-watch(() => form.storageCd, async (newVal, oldVal) => {
-    if (newVal === oldVal) return
-    form.equipmentCd = null
-    equipmentCds.value = []
-    if (!newVal) return
-
-    try {
-        const res = await ApiProc.getEquipmentList(newVal)
-        equipmentCds.value = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-            ? res.data
-            : []
-    } catch (err) {
-        console.error(err)
-        equipmentCds.value = []
-    }
-})
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     const popupForm = dialogRef.value?.data?.form
