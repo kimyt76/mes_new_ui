@@ -39,7 +39,7 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.prodQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
                             <th class="cellBorder cellHeader" rowspan="2">폭 너비(mm) 및<br />겔 Sheet 적층수</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ itemInfo.sheetSpec || 0 }}<br />
@@ -77,7 +77,7 @@
                 <div class="section-label">2. 투입자재 정보</div>
                 <DataTable
                     :value="prodList"
-                    dataKey="itemCd"
+                    dataKey="prodUseId"
                     show-gridlines
                     class="my-table material-table"
                 >
@@ -89,8 +89,8 @@
                         </Row>
                         <Row>
                             <Column header="시험번호"   field="testNos"      :style="{ width: '110px' }" />
-                            <Column header="재료명"     field="matName"     :style="{ width: '280px' }" />
-                            <Column header="규격"       field="specInfo"    :style="{ width: '90px' }" />
+                            <Column header="재료명"     field="matName"     :style="{ width: '220px' }" />
+                            <Column header="규격"       field="specInfo"    :style="{ width: '150px' }" />
                             <Column header="성상 및 특성" field="exAppearance" :style="{ width: '170px' }" />
                             <Column header="예상소요량" field="reqQty"       :style="{ width: '120px' }" :colspan="2" />
                             <Column header="총사용량"   field="totUseQty"   :style="{ width: '120px' }" :colspan="2" />
@@ -116,8 +116,8 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="matName"     :style="{ width: '280px' }"></Column>
-                    <Column field="specInfo"    :style="{ width: '90px' , textAlign: 'center'}"/>
+                    <Column field="matName"     :style="{ width: '220px' }"></Column>
+                    <Column field="specInfo"    :style="{ width: '150px' , textAlign: 'center'}"/>
                     <Column field="exAppearance" :style="{ width: '170px' , textAlign: 'center'}"/>
                     <Column field="reqQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
                     <Column field="unit"        :style="{ width: '50px', textAlign: 'center' }"/>
@@ -126,6 +126,7 @@
                     <Column field="badQty"      :style="{ width: '120px', textAlign: 'right' }"/>
                     <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
                     <Column field="workBadQty"  :style="{ width: '120px' , textAlign: 'right'}"/>
+                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
                 </DataTable>
             </div>
             <!-- 3, 4 하단 -->
@@ -135,7 +136,7 @@
                     <div class="section-header">
                         <div class="section-label">3. 작업수행 정보</div>
                         <div class="section-actions">
-                            <Button label="신규등록" size="small" @click="openPop('W')" />
+                            <Button v-if="!isComplete" label="신규등록" size="small" @click="openPop('W')" />
                         </div>
                     </div>
                     <div class="section-body">
@@ -200,10 +201,9 @@
         <!-- 하단 버튼 -->
         <div class="coating-pop-footer flex gap-2">
             <Button v-if="isStarted" label="작업시작" @click="openPop('S')" />
-            <!-- <Button v-if="!isStarted" label="저장" @click="saveInfo" /> -->
             <Button label="기록서" @click="downloadExcel" />
             <Button label="바코드" @click="openPop('B')" />
-            <Button v-if="!isStarted" label="작업완료" @click="workComplete" />
+            <Button  v-if="btnStatus !== '00' && btnStatus !== '32'" label="작업완료" @click="workComplete" />
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </div>
@@ -216,7 +216,7 @@ import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import WorkRecordPop from '../../common/WorkRecordPop.vue';
 import ProcCoatingStartPop from './ProcCoatingStartPop.vue';
 import ProdUsePop from './ProdUsePop.vue';
@@ -225,6 +225,7 @@ const { vWarning, vSuccess, vInfo } = useAlertStore()
 const dialog = useDialog();
 const dialogRef = inject('dialogRef');
 const isStarted = ref(false)
+const isComplete = ref(false)
 const prodList = ref([])
 const workRecordList = ref([])
 const form = reactive({
@@ -303,26 +304,49 @@ const workOrderInfo = reactive({
     memo: '',
 });
 
-// 기록서 엑셀 다운로드
-const downloadExcel = async () =>{
-    const params = {
-        itemCd : itemInfo.itemCd,
-        procCd : 'PRC003',
-        workProcId : form.workProcId,
-    }
+/**
+ * 총 사용량
+ */
+const totalUseQty = computed(() => {
+    return workRecordList.value.reduce((sum, row) => {
+        return sum + Number(row.useQty || 0)
+    }, 0)
+})
 
-    try {
-        const blob = await ApiProc.downloadRecord(params)
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${workOrderInfo.makeNo}_[벌크제풐]_${form.itemName}.xlsx`
-        a.click()
-        window.URL.revokeObjectURL(url)
-    } catch {
-        vError('엑셀 다운로드 실패')
+/**
+ * 총 생산수량
+ */
+const totalProdQty = computed(() => {
+    return workRecordList.value.reduce((sum, row) => {
+        return sum + Number(row.prodQty || 0)
+    }, 0)
+})
+
+/**
+ * 생산수율
+ */
+const totalProdYield = computed(() => {
+    if (totalUseQty.value === 0) return 0
+    return (
+        (totalProdQty.value / totalUseQty.value) * 100
+    ).toFixed(2)
+})
+
+/**
+ * 리스트 값 변경 시
+ * workOrderInfo 값 자동 갱신
+ */
+watch(
+    [totalUseQty, totalProdQty, totalProdYield],
+    ([useQty, prodQty, prodYield]) => {
+        workOrderInfo.useQty = useQty
+        workOrderInfo.prodQty = prodQty
+        workOrderInfo.prodYield = prodYield
+    },
+    {
+        immediate: true
     }
-}
+)
 
 let workRecordId = ref('')
 const selectRow = (row) => {
@@ -334,8 +358,7 @@ const selectRow = (row) => {
 
 //투입정보
 const selectRowClick = (row) => {
-    if (isStarted.value) return
-
+    if (isStarted.value || isComplete.value) return
     dialog.open(ProdUsePop, {
         props: {
             header: '사용량 입력',
@@ -356,18 +379,17 @@ const selectRowClick = (row) => {
         },
         data:{
             row,
-            itemCd: form.itemCd,
-            itemName: form.itemName,
+            workBatchId: form.workBatchId,
+            workProcId: form.workProcId,
         }
         ,onClose: (event) =>{
+            if (isEmpty(event.data)) return
             if (event) {
                 row.testNos = event.data.testNos
                 row.reqQty = event.data.reqQty
                 row.useQty = event.data.useQty
                 row.badQty = event.data.badQty
                 row.workBadQty = event.data.workBadQty
-
-                workOrderInfo.useQty = event.data.totUseQty
             }
             callCoatingInfo()
         }
@@ -394,8 +416,6 @@ const popupConfig = {
         height: '250px'
     }
 }
-
-
 
 const openPop = (type) => {
     const config = popupConfig[type]
@@ -435,13 +455,10 @@ const openPop = (type) => {
             workRecordId : workRecordId.value,
         },
         onClose: (event) =>{
-            if ( type === 'S' ){
-                //재조회
-                callCoatingInfo()
-            } else if ( type === 'W' ){
+            if ( type === 'W' ){
                 workRecordId.value = ''
-                callCoatingInfo()
             }
+            callCoatingInfo()
         }
     })
 };
@@ -453,7 +470,7 @@ const workComplete = () =>{
 
     confirm.require({
         header: '코팅완료 확인',
-        message: '코팅을을 완료하고, 제조출고를 진행하시겠습니까?',
+        message: '코팅작업을 완료하시겠습니까?',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
             try{
@@ -466,7 +483,7 @@ const workComplete = () =>{
                 }
                 //console.log('params', params)
                 const res = await ApiProc.completeCoating(params)
-                vSuccess('정상적으로 코팅완료 처리하였습니다!')
+                vSuccess('정상적으로 코팅작업을 완료하였습니다!')
                 closeDialog()
             }catch(err){
                 handleApiError(err)
@@ -494,6 +511,8 @@ const fillRows = (list = [], rowCount, createRow) => {
     }));
 };
 
+const btnStatus = ref('')
+
 const callCoatingInfo = async () =>{
     const params = {
         workProcId: dialogRef.value.data.workProcId,
@@ -517,9 +536,12 @@ const callCoatingInfo = async () =>{
     form.itemName = itemInfo.itemName
     form.itemCd = itemInfo.itemCd
 
+    btnStatus.value = workOrderInfo.procStatus
 
     if (workOrderInfo.procStatus === '00'){
         isStarted.value = true
+    }else if (workOrderInfo.procStatus === '32'){
+        isComplete.value = true
     }
 }
 
@@ -530,6 +552,29 @@ onMounted( () => {
 const closeDialog = () => {
     dialogRef.value.close();
 };
+
+
+// 기록서 엑셀 다운로드
+const downloadExcel = async () =>{
+    const params = {
+        itemCd : itemInfo.itemCd,
+        procCd : 'PRC003',
+        workProcId : form.workProcId,
+    }
+
+    try {
+        const blob = await ApiProc.downloadRecord(params)
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${workOrderInfo.makeNo}_[벌크제풐]_${form.itemName}.xlsx`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    } catch {
+        vError('엑셀 다운로드 실패')
+    }
+}
+
 </script>
 
 <style scoped>
