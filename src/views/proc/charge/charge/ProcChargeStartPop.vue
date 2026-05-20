@@ -110,6 +110,7 @@ const form = reactive({
 
 const saveInfo = () => {
     if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
+    if ( isEmpty(form.managerName)) return vWarning('담당자를 등록하세요')
 
     confirm.require({
         header: '충전시작확인',
@@ -124,11 +125,11 @@ const saveInfo = () => {
                     workProcId: form.workProcId,
                     workBatchId: form.workBatchId,
                     storageCd: form.storageCd,
-                    managerId: form.managerId,
+                    managerId: form.managerName,
                     procStatus: '41',
                     batchStatus: '41',
                 }
-console.log('param',   param)
+
                 const res = await ApiProc.startProcCharge(param)
                 vSuccess('충전작업이 가능합니다.')
                 closeDialog()
