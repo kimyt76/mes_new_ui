@@ -39,7 +39,6 @@ export const ApiProc = {
     getProcProdInfo: async(params) => {
         try{
             const res = await API_URL.post('/procCommon/getProcProdInfo', params)
-
             return res.data
 
         }catch(err){
@@ -220,9 +219,6 @@ export const ApiProc = {
     completeCoating: async(params) => {
         return await API_URL.post(`/procCoating/completeCoating`, params)
     },
-
-
-
 
 
     //충전
