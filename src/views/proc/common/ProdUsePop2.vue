@@ -43,9 +43,9 @@
                 <InputNumber v-model="data.workBadQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }" @update:modelValue="calcTot(data)"/>
             </template>
         </Column>
-         <Column field="totUsQty"   header="총사용량" >
+         <Column field="totUseQty"   header="총사용량" >
             <template #body="{ data }">
-                <InputNumber v-model="data.totUsQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }"  readonly/>
+                <InputNumber v-model="data.totUseQty" inputClass="text-center" :inputStyle="{ width: '90px', 'text-align': 'right' }"  readonly/>
             </template>
         </Column>
         </DataTable>
@@ -96,7 +96,7 @@ import { ApiProc } from '@/api/apiProc';
 import { ApiQc } from '@/api/apiQc';
 import { ApiStock } from '@/api/apiStock';
 import { useAlertStore } from '@/stores/alert';
-import { isEmpty } from '@/util/common';
+import { formatQty, isEmpty } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, ref } from 'vue';
 
@@ -119,11 +119,11 @@ const calcTot = (row) => {
 
     if (  use <  bad + workBad  ) {
         vWarning('사용량보다 불량값이 큽니다.')
-        row.totUsQty = 0
+        row.totUseQty = 0
         return
     }
 
-    row.totUsQty = use - bad - workBad
+    row.totUseQty = use - bad - workBad
 }
 
 const saveInfo = async () => {
@@ -137,7 +137,7 @@ const saveInfo = async () => {
         const totalUseQty = workUseList.value.reduce((sum, row) => sum + (Number(row.useQty) || 0), 0)
         const totalBadQty = workUseList.value.reduce((sum, row) => sum + (Number(row.badQty) || 0), 0)
         const totalWorkBadQty = workUseList.value.reduce((sum, row) => sum + (Number(row.workBadQty) || 0), 0)
-        const totUseQty =  totalUseQty-totalBadQty-totalWorkBadQty
+        const totalTotUseQty = workUseList.value.reduce((sum, row) => sum + (Number(row.totUseQty) || 0), 0)
 
         const firstTestNo = workUseList.value[0]?.testNo || ''
         const rowCount = workUseList.value.length
@@ -146,25 +146,24 @@ const saveInfo = async () => {
         const summaryRow = {
             testNos: rowCount > 1 ? `${firstTestNo} 외 ${rowCount - 1}건` : firstTestNo,
             reqQty: totalReqQty,
-            useQty: totalUseQty,
+            useQty: totalTotUseQty,
             badQty: totalBadQty,
             workBadQty: totalWorkBadQty,
-            totUseQty: totUseQty,
+            totUseQty: totalTotUseQty,
             //row 정보
-            itemCd: dialogRef.value.data.itemCd,
+            itemCd: dialogRef.value.data.row.itemCd,
             specInfo: rowData.specInfo,
             exAppearance: rowData.exAppearance,
             packingSpecValue: rowData.packingSpecValue,
             packingSpecUnit: rowData.packingSpecUnit,
-            workProcId: rowData.workProcId,
-            workBatchId: rowData.workBatchId,
+            workProcId: dialogRef.value.data.workProcId,
+            workBatchId: dialogRef.value.data.workBatchId,
+            procCd: procCd.value,
         }
-
         const params = {
             prodInfo: summaryRow,
             prodUseList: workUseList.value
         }
-
          //부모로 전달전에 prod 업데이트
         const res = await ApiProc.saveProdInfo(params)
         // 부모로 집계 데이터 전달
@@ -201,7 +200,7 @@ const searchByBarcode = async () =>{
             useQty: 0,
             badQty: 0,
             workBadQty: 0,
-            totUsQty: 0,
+            totUseQty: 0,
         })
 
         barcode.value = ''
@@ -212,7 +211,7 @@ const searchByBarcode = async () =>{
 
 const loadInventoryList = async (areaCd) => {
   const params = {
-    itemCd: dialogRef.value.data.itemCd,
+    itemCd: dialogRef.value.data.row.itemCd,
     areaCd,
   }
 
@@ -229,16 +228,17 @@ const loadInventoryList = async (areaCd) => {
 }
 
 onMounted( async () =>{
-    let prodInfoId = dialogRef.value.data.row.prodInfoId
-    procCd = dialogRef.value.data.procCd
-    title.value = '['+dialogRef.value.data.itemCd+'] '+ dialogRef.value.data.itemName
+    let prodUseId = dialogRef.value.data.row.prodUseId
+    procCd.value = dialogRef.value.data.procCd
+
+    title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
 
     setTimeout(() => {
         barcodeInputRef.value?.$el?.querySelector('input')?.focus()
     }, 100)
 
-    if (!isEmpty(prodInfoId)) {
-        workUseList.value = await ApiProc.getProdUseList(prodInfoId)
+    if (!isEmpty(prodUseId)) {
+        workUseList.value = await ApiProc.getProdUseList(prodUseId)
     }
 
     //우측 재고리스트

@@ -95,30 +95,27 @@ const saveInfo = async () => {
         const totalUseQty = workUseList.value.reduce((sum, row) => sum + (Number(row.useQty) || 0), 0)
         const totalBadQty = workUseList.value.reduce((sum, row) => sum + (Number(row.badQty) || 0), 0)
         const totalWorkBadQty = workUseList.value.reduce((sum, row) => sum + (Number(row.workBadQty) || 0), 0)
-        const totUseQty =  totalUseQty-totalBadQty-totalWorkBadQty
+        const totalTotUsQty = workUseList.value.reduce((sum, row) => sum + (Number(row.totUsQty) || 0), 0)
 
         const firstTestNo = workUseList.value[0]?.testNo || ''
         const rowCount = workUseList.value.length
         const rowData = dialogRef.value?.data?.row || {}
-
         const summaryRow = {
             testNos: rowCount > 1 ? `${firstTestNo} 외 ${rowCount - 1}건` : firstTestNo,
             reqQty: totalReqQty,
-            useQty: totalUseQty,
+            useQty: totalTotUsQty,
             badQty: totalBadQty,
             workBadQty: totalWorkBadQty,
-            totUseQty: totUseQty,
             //row 정보
             itemCd: dialogRef.value.data.itemCd,
             specInfo: rowData.specInfo,
             exAppearance: rowData.exAppearance,
             packingSpecValue: rowData.packingSpecValue,
             packingSpecUnit: rowData.packingSpecUnit,
-            workProcId: rowData.workProcId,
-            workBatchId: rowData.workBatchId,
+            workProcId: dialogRef.value.data.workProcId,
+            workBatchId: dialogRef.value.data.workBatchId,
             procCd: 'PRC003',
         }
-
         const params = {
             prodInfo: summaryRow,
             prodUseList: workUseList.value
@@ -170,15 +167,15 @@ const searchByBarcode = async () =>{
 }
 
 onMounted( async () =>{
-    let prodInfoId = dialogRef.value.data.row.prodInfoId
-    title.value = '['+dialogRef.value.data.itemCd+'] '+ dialogRef.value.data.itemName
+    let prodUseId = dialogRef.value.data.row.prodUseId
+    title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
 
     setTimeout(() => {
         barcodeInputRef.value?.$el?.querySelector('input')?.focus()
     }, 100)
-
-    if (!isEmpty(prodInfoId)) {
-        workUseList.value = await ApiProc.getProdUseList(prodInfoId)
+console.log('prodUseId', prodUseId)
+    if (!isEmpty(prodUseId)) {
+        workUseList.value = await ApiProc.getProdUseList(prodUseId)
     }
 })
 
