@@ -230,6 +230,7 @@ watch(barcode, (newVal) => {
     }
 });
 
+
 /** 칭량량 변경 시 호출 */
 const onChangeRow = async (row) => {
   // 여기서 행 단위로 total 계산이나 유효성 체크 가능
@@ -237,8 +238,6 @@ const onChangeRow = async (row) => {
     vWarning('지시량보다 칭량량이 많습니다.')
      return
   }
-
-  saveInfo()
 }
 
 /** 행 삭제 */
