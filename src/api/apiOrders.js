@@ -63,16 +63,9 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
-  // 사용하지 않음
-  // getSeq : async() => {
-  //   try{
-  //     const seq = await API_URL.get('/order/getSeq')
-
-  //     return seq.data
-  //   }catch(err){
-  //     throw err.response
-  //   }
-  // },
+  saveApprovalComment: async(params) => {
+    return await API_URL.post('/draft/saveApprovalComment', params)
+  },
 
   getApprovalInfo : async() => {
     try{
