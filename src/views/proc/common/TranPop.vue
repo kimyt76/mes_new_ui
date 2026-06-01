@@ -108,9 +108,9 @@ const form = reactive({
     managerName: '',
     managerId: '',
     fromStorageName: '',
-    fromStorageCd: '',
+    tarStorageCd: '',
     toStorageName: '',
-    toStorageCd: '',
+    srcStorageCd: '',
     etc: '',
 
     tranId:'',
