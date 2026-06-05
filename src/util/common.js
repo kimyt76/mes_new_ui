@@ -16,6 +16,11 @@ export function toNumber(v){
   return Number(String(v).replaceAll(',', '')) || 0
 }
 
+export  function formatNumber(value){
+    if (value === null || value === undefined || value === '') return '';
+    return Number(value).toLocaleString();
+};
+
 import { format, subMonths } from 'date-fns';
 
 /**
@@ -82,7 +87,6 @@ export function formatQty(value){
   const v = Number(value ?? 0)
   return v.toLocaleString('ko-KR', { maximumFractionDigits: 6 })
 }
-
 
 export function formatDate (value) {
   if (!value) return ''
