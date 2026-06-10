@@ -110,7 +110,6 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiSystems } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { handleApiError } from '@/util/errorHandler';
@@ -185,7 +184,7 @@ const saveInfo = async () => {
       ...itemTypeYnMap, // ✅ 서버/DB 컬럼(m0Yn..m7Yn) 포함
     };
 
-    const res = await ApiSystems.saveStorageInfo(params);
+    const res = await ApiSystem.saveStorageInfo(params);
     vSuccess(res.message);
     closeDialog();
   } catch (err) {
@@ -194,7 +193,7 @@ const saveInfo = async () => {
 };
 
 const useCheck = () => {
-  ApiSystems.useCheck(form.storageCd).then((res) => {
+  ApiSystem.useCheck(form.storageCd).then((res) => {
     vInfo(res.message);
   });
 };
@@ -211,7 +210,7 @@ onMounted(async () => {
 
   // 수정(조회) 모드
   if (dialogRef?.value?.data) {
-    const res = await ApiSystems.getStorageInfo(dialogRef.value.data);
+    const res = await ApiSystem.getStorageInfo(dialogRef.value.data);
 
     // form에 기본 데이터 세팅
     Object.assign(form, res);

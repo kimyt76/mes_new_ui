@@ -236,7 +236,6 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon'
-import { ApiSystems } from '@/api/apiSystem'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
 import { isEmpty } from '@/util/common'
@@ -430,7 +429,7 @@ onMounted( async() => {
 
   //procTestList.value = await ApiCommon.getProcTestList('PRC001')
   areaCds.value = await ApiCommon.getCodeList('area')
-  storageAllRaw.value = await ApiSystems.getStorageList({})
+  storageAllRaw.value = await ApiSystem.getStorageList({})
 
   console.log('dialogRef.value.data', dialogRef.value.data)
 

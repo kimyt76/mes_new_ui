@@ -70,7 +70,6 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
-import { ApiSystems } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
@@ -166,7 +165,7 @@ onMounted( async () =>{
         Object.assign(form, popupForm)
     }
     Object.assign(form, popupForm)
-    allStorages.value = await ApiSystems.getStorageCodeList()
+    allStorages.value = await ApiSystem.getStorageCodeList()
 
     const params = {
         procCd: form.procCd,

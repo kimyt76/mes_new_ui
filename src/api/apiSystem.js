@@ -1,6 +1,6 @@
 import { API_URL } from '.';
 
-export const  ApiSystems = {
+export const  ApiSystem = {
 
   getUserList:  async (params) =>{
     try {

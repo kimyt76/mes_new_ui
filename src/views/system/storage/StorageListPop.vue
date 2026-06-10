@@ -67,7 +67,6 @@
 <script setup>
 
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiSystems } from '@/api/apiSystem';
 import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
@@ -85,7 +84,7 @@ const searchList = async () =>{
     const params = {
         ...form
     }
-    storageList.value = await ApiSystems.getStorageList(params);
+    storageList.value = await ApiSystem.getStorageList(params);
 }
 
 const selectedRow = () =>{

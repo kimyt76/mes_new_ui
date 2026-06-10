@@ -85,7 +85,6 @@
 
 <script setup>
 
-import { ApiSystems } from '@/api/apiSystem';
 import { inject, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
@@ -101,7 +100,7 @@ const searchList = async () =>{
     const params = {
         ...form
     }
-    userList.value = await ApiSystems.getUserList(params);
+    userList.value = await ApiSystem.getUserList(params);
 }
 
 const selectedRow = () =>{

@@ -159,7 +159,6 @@
 
 
 <script setup>
-import { ApiSystems } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { inject, onMounted, reactive, ref } from 'vue';
@@ -202,7 +201,7 @@ const saveInfo = async () =>{
     const params = {
       ...form
     }
-    const msg = await ApiSystems.updateUserInfo(params)
+    const msg = await ApiSystem.updateUserInfo(params)
     vSuccess(msg.data)
     closeDialog()
   }catch(err){
@@ -212,7 +211,7 @@ const saveInfo = async () =>{
 
 onMounted( async () =>{
     if ( !isEmpty(dialogRef.value.data)) {
-        const res = await ApiSystems.getUserInfo(dialogRef.value.data)
+        const res = await ApiSystem.getUserInfo(dialogRef.value.data)
         Object.assign(form, res)
         isReadOnly.value = true
     }
@@ -258,13 +257,13 @@ const validate = () => {
  * 패스워드 초기화
  */
 const passwordInit = () => {
-  ApiSystems.passwordInit(form.userId).then(res => {
+  ApiSystem.passwordInit(form.userId).then(res => {
       vSuccess(res.data)
   });
 }
 
 const userCheck = () => {
-  ApiSystems.userCheck(form.userId).then(res => {
+  ApiSystem.userCheck(form.userId).then(res => {
     vInfo(res.data)
   });
 }

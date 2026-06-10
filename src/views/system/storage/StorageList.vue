@@ -79,7 +79,6 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiSystems } from '@/api/apiSystem';
 import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -106,7 +105,7 @@ const srchList = async () => {
     const params = {
         ...form
     };
-    storageList.value = await ApiSystems.getStorageList(params);
+    storageList.value = await ApiSystem.getStorageList(params);
 };
 
 const selectRowClick = (id) => {

@@ -154,7 +154,6 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiSystems } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
@@ -202,7 +201,7 @@ const saveInfo = async () =>{
     const params = {
       ...form
     }
-    const res = await ApiSystems.saveScaleInfo(params)
+    const res = await ApiSystem.saveScaleInfo(params)
     vSuccess(res.message)
     closeDialog()
   }catch(err){
@@ -213,10 +212,10 @@ const saveInfo = async () =>{
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     useYns.value = await ApiCommon.getCodeList('use_yn')
-    storageAllRaw.value = await ApiSystems.getStorageList({})
+    storageAllRaw.value = await ApiSystem.getStorageList({})
 
     if ( !isEmpty(dialogRef.value.data)) {
-        const res = await ApiSystems.getScaleInfo(dialogRef.value.data)
+        const res = await ApiSystem.getScaleInfo(dialogRef.value.data)
         Object.assign(form, res)
     }
 })

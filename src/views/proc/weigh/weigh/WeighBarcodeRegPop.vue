@@ -310,7 +310,6 @@ const loadInventoryList = async (areaCd) => {
 
   storageList.value = res.storageList || []
   stockItemHistList.value = res.stockItemHistList || []
-  console.log('stockItemHistList.value ', stockItemHistList.value )
 
   dynamicColumns.value = storageList.value.map((item) => ({
     field: String(item.storageCd).toUpperCase(),

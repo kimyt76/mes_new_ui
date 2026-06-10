@@ -84,7 +84,6 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
-import { ApiSystems } from '@/api/apiSystem';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -143,7 +142,7 @@ const srhList = async () =>{
 }
 
 onMounted( async () =>{
-    allStorages.value = await ApiSystems.getStorageCodeList()
+    allStorages.value = await ApiSystem.getStorageCodeList()
     tranCds.value = (await ApiCommon.getCodeList('tran_cd')).filter(i => ['P','Q', 'R','S','T','U','V','W', 'X'].includes(i.code)  )
 })
 

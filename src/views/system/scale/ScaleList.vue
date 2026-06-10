@@ -91,7 +91,6 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon'
-import { ApiSystems } from '@/api/apiSystem'
 import { isEmpty } from '@/util/common'
 import { exportToExcel } from '@/util/exportToExcel'
 import { useDialog } from 'primevue'
@@ -132,7 +131,7 @@ const form = reactive({
 // ----------------------
 const srhList = async () => {
   const params = { ...form }
-  scaleList.value = await ApiSystems.getScaleList(params)
+  scaleList.value = await ApiSystem.getScaleList(params)
 }
 
 // ----------------------
@@ -171,7 +170,7 @@ onMounted(async () => {
   useYns.value = await ApiCommon.getCodeList('use_yn')
 
   //창고 전체 목록 1번만 조회
-  storageAllRaw.value = await ApiSystems.getStorageList({})
+  storageAllRaw.value = await ApiSystem.getStorageList({})
 })
 
 // ----------------------

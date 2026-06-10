@@ -71,7 +71,6 @@
 </template>
 
 <script setup>
-import { ApiSystems } from '@/api/apiSystem';
 import { isEmpty } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -99,7 +98,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    userList.value = await ApiSystems.getUserList(params);
+    userList.value = await ApiSystem.getUserList(params);
 }
 
 const selectRowClick = (id) =>{

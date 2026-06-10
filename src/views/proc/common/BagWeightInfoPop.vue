@@ -118,7 +118,7 @@ const refreshMeasures = () => {
 }
 
 const getMeasureList = async () =>{
-    //measureList.value = await ApiSystems.getBagWeightHistList()
+    //measureList.value = await ApiSystem.getBagWeightHistList()
 }
 
 onMounted( () =>{
