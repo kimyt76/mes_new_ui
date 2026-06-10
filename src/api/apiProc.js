@@ -19,6 +19,14 @@ export const ApiProc = {
     getWorkRecordInfo: async(id) => {
         return  await API_URL.get(`/procCommon/getWorkRecordInfo/${id}`)
     },
+    getProcItemList: async(ids) => {
+        try{
+            const res = await API_URL.post('/procCommon/getProcItemList', ids)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
     /**
      *  작업수행정보 저장
