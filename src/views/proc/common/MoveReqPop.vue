@@ -3,10 +3,15 @@
     <template #content>
         <!-- Row 1 -->
         <div class="grid mt-1 mb-1">
-            <div class="col-4">
+            <div class="col-4 flex align-items-center gap-2">
                 <FloatLabel variant="on">
                     <DatePicker v-model="form.moveReqDate" inputId="on_label" showIcon iconDisplay="input" />
                     <label>요청일</label>
+                </FloatLabel>
+                <span class="center-dash">-</span>
+                <FloatLabel variant="on">
+                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }" /> <!-- 크기 축소 -->
+                    <label>연번</label>
                 </FloatLabel>
             </div>
             <div class="col-4">
@@ -47,7 +52,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <Select
-                        v-model="form.destStorageCd"
+                        v-model="form.tarStorageCd"
                         :options="storages"
                         optionLabel="codeNm"
                         optionValue="code"
@@ -61,7 +66,7 @@
         <div class="grid">
             <div class="col-12">
                 <FloatLabel variant="on">
-                    <Textarea v-model="form.etc" rows="1" class="w-full" autoResize />
+                    <Textarea v-model="form.memo" rows="1" class="w-full" autoResize />
                     <label>비고</label>
                 </FloatLabel>
             </div>
@@ -81,7 +86,7 @@
         <Column selectionMode="multiple" style="width: 3em"/>
         <Column field="itemCd"      header="품목코드" style="width: 120px"/>
         <Column field="itemName"    header="품목명" style="width: 400px"/>
-        <Column field="qty"         header="수량" style="width: 100px">
+        <Column field="qty"    header="수량" style="width: 100px">
             <template #body="slotProps">
                 <InputNumber v-model="slotProps.data.qty" mode="decimal" :min="0" :max="999999" :useGrouping="false" class="w-full"/>
             </template>
@@ -120,7 +125,8 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiSystems } from '@/api/apiSystem';
+import { ApiProc } from '@/api/apiProc';
+import { ApiStock } from '@/api/apiStock';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { todayKST } from '@/util/common';
@@ -147,14 +153,16 @@ const storages = computed(() => filteredStorages.value);
 
 const form = reactive({
     moveReqDate: '',
-    areaCd: '',
+    seq: '',
+    areaCd: 'A001',
     srcStorageCd: '',
-    destStorageCd: '',
+    tarStorageCd: '',
     managerId: '',
     managerName: '',
-    etc: '',
+    memo: '',
 
     manamerName: '',
+    moveReqId: '',
     userId: userId,
 })
 
@@ -195,8 +203,23 @@ const openPop = (type) =>{
     }
 }
 
-const saveInfo = () =>{
+const saveInfo = async () =>{
+    if( form.srcStorageCd === '' || form.tarStorageCd === '' ) return vWarning('보내는 창고와 받는 창고를 선택해주세요.')
+    if( form.srcStorageCd === form.tarStorageCd ) return vWarning('보내는 창고와 받는 창고가 동일합니다.')
+    if( itemList.value.length <= 0 ) return vWarning('이동 요청할 품목을 추가해주세요.')
 
+    const params = {
+        moveReqInfo: form,
+        procItemList: itemList.value
+    }
+
+    try {
+        const res = await ApiStock.saveProcMoveReq(params)
+        vSuccess('자재이동 요청되었습니다.')
+        closeDialog()
+    } catch (error) {
+        apiErrorHandler(error)
+    }
 }
 
 const addRow = (obj) =>{
@@ -223,14 +246,20 @@ onMounted( async ()=>{
     form.managerId = userId
     form.managerName = memberNm
     areaCds.value = await ApiCommon.getCodeList('area')
-    allStorages.value = await ApiSystems.getStorageCodeList()
-
+    allStorages.value = await ApiSystem.getStorageCodeList()
+    form.seq = await ApiCommon.getNextSeq('tb_move_req', 'move_req_date',  form.moveReqDate)
+//console.log("dialogRef", dialogRef.value?.data)
     const list = dialogRef.value?.data ?? []; // 부모에서 넘어온 배열
     form.etc = Array.isArray(list)? list
         .map(row => row.itemName)        // <- row.etc (필드명 확인!)
         .filter(v => v != null && String(v).trim() !== '')
         .join('\n')
         : (list?.itemName ?? ''); // 혹시 단건으로 올 때 대비
+
+    let workProcIds = Array.isArray(list) ? list.map(row => row.workProcId).filter(id => id != null) : (list?.workProcId ? [list.workProcId] : []);
+
+    itemList.value = await ApiProc.getProcItemList(workProcIds);
+
 })
 
 const closeDialog = () => {
