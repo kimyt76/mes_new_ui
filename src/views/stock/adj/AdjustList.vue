@@ -84,6 +84,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
+import { ApiSystem } from '@/api/apiSystem';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';

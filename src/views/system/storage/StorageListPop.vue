@@ -67,6 +67,7 @@
 <script setup>
 
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiSystem } from '@/api/apiSystem';
 import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
