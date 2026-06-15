@@ -19,8 +19,8 @@
                 <label for="on_label">구역(공장)</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.progressStatus"
-                   :options="progressStatuss"
+                <Select v-model="form.moveStatus"
+                   :options="moveStatuss"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 120px"
@@ -68,8 +68,7 @@
     </div>
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
-        <Button label="이동요청"  icon="pi pi-plus"  severity="secondary" @click="moveReq"></Button>
-        <Button label="이동등록"   @click="moveInsert"></Button>
+        <Button label="이동등록"  icon="pi pi-plus"  severity="secondary" @click="moveInsert"></Button>
         <Button label="이동확인"  @click="moveConfirm"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
@@ -79,40 +78,104 @@
     <DataTable
         ref="dt"
         v-model:selection="selectedItem"
+        dataKey="moveReqId"
         :value="moveReqList"
-
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
         class="my-table"
         showGridlines
      >
-        <Column selectionMode="multiple" headerStyle="width: 2.5rem" style="text-align: center;"/>
-         <Column field="moveReqDateSeq" header="일자-No"    :style="{ width: '80px'}" />
-         <Column field="srcStorage"     header="보내는창고" :style="{ width: '80px'}" />
-         <Column field="descStorage"    header="받는창고"   :style="{ width: '80px'}" />
-         <Column field="itemName"       header="품목명"     :style="{ width: '80px'}" />
-         <Column field="reqdetail"      header="요청내용"   :style="{ width: '80px'}" />
-         <Column field="qty"            header="수량"       :style="{ width: '80px'}" />
-         <Column field="managerName"    header="담당자명"  :style="{ width: '80px'}" />
-         <Column field="progressStatus" header="진행상태"  :style="{ width: '80px'}" />
-         <Column field="move"           header="이동"       :style="{ width: '80px'}" />
-         <Column field="confirm"        header="확인"       :style="{ width: '80px'}" />
+        <Column selectionMode="multiple" headerStyle="width: 1rem" style="text-align: center;"/>
+         <Column field="moveReqDateSeq" header="일자-No"    :style="{ width: '100px', textAlign: 'center' }" >
+            <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data)" style="text-decoration: underline; cursor: pointer;">
+                    {{ slotProps.data.moveReqDateSeq }}
+                </div>
+            </template>
+        </Column>
+         <Column field="srcStorageName" header="보내는창고" :style="{ width: '100px', textAlign: 'center'}" />
+         <Column field="tarStorageName" header="받는창고"   :style="{ width: '100px', textAlign: 'center'}" />
+         <Column field="itemName"       header="품목명"     :style="{ width: '300px'}" />
+         <Column field="memo"           header="요청내용"   :style="{ width: '320px'}" />
+         <Column field="qty"            header="수량"       :style="{ width: '80px', textAlign: 'right'}" />
+         <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
+         <Column field="moveStatusName" header="진행상태"   :style="{ width: '60px', textAlign: 'center'}" >
+            <template #body="slotProps">
+                 <!-- 등록 -->
+                <span v-if="slotProps.data.moveStatus === 'Q'" @click="openMovePop(slotProps.data.moveReqId)"
+                    style="
+                        color: #1976d2;
+                        font-weight: bold;
+                        cursor: pointer;
+                        text-decoration: underline;
+                        "
+                    >[요청]
+                </span>
+                 <!-- 진행 -->
+                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMovePop(slotProps.data.moveReqId)"
+                    style="
+                        color: #1976d2;
+                        font-weight: bold;
+                        cursor: pointer;
+                        text-decoration: underline;
+                        "
+                    >[진행]
+                </span>
+                 <!-- 완료 -->
+                <span v-if="slotProps.data.moveStatus === 'C'" @click="openMovePop(slotProps.data.moveReqId)"
+                    style="
+                        color: #1976d2;
+                        font-weight: bold;
+                        cursor: pointer;
+                        text-decoration: underline;
+                        "
+                    >[완료]
+                </span>
+            </template>
+        </Column>
+         <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
+            <template #body="slotProps">
+                 <!-- 등록 -->
+                <span v-if="slotProps.data.moveStatus === 'Q' || slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveReqId)"
+                    style="
+                        color: #1976d2;
+                        font-weight: bold;
+                        cursor: pointer;
+                        text-decoration: underline;
+                        "
+                    >[등록]
+                </span>
+                <!-- 완료 -->
+                <span v-else-if="slotProps.data.moveStatus === 'C'"
+                    style="
+                        color: #999;
+                        font-weight: bold;
+                        cursor: default;
+                        "
+                    >[완료]
+                </span>
+            </template>
+        </Column>
     </DataTable>
 </div>
-
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
-import { ApiSystems } from '@/api/apiSystem';
+import { ApiSystem } from '@/api/apiSystem';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { useAlertStore } from '@/stores/alert';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
+import MoveConfirmPop from './MoveConfirmPop.vue';
+import MoveDtlPop from './MoveDtlPop.vue';
+import MoveRegPop from './MoveRegPop.vue';
 
+const { vSuccess, vInfo, vWarning} = useAlertStore()
 const dialog = useDialog()
 const totalCount = computed(() => {
   return Array.isArray(moveReqList.value) ? moveReqList.value.length : 0
@@ -126,16 +189,12 @@ const allStorages = ref([]); // 전체 창고(18건)
 //   return allStorages.value.filter(s => s.areaCd === form.areaCd);
 // });
 // const storages = computed(() => filteredStorages.value);
-const progressStatuss = ref([
-    { code: 'R', codeNm: '요청' },
-    { code: 'I', codeNm: '진행' },
-    { code: 'E', codeNm: '종료' },
-])
+const moveStatuss = ref([])
 const form = reactive({
-    strDate: minMonth(todayKST(), 3),
+    strDate: minMonth(todayKST(), 2),
     endDate: addMonth(todayKST(), 1),
     areaCd: null,
-    progressStatus: null,
+    moveStatus: null,
     srcStorageCd: null,
     descStorageCd: null,
     itemName: null,
@@ -146,11 +205,83 @@ const handleDateChange = () =>{
 
 }
 
+/**
+ * 자재이동상세 팝업 오픈
+ */
+const selectRowClick = (row) =>{
+    dialog.open(MoveDtlPop, {
+        props:{
+            header: '자재이동요청 상세',
+            modal: true,
+            draggable: true,
+        },
+        data: {
+            selectedItems: [row]
+        },
+        onClose: (evnet) =>{
+            //srhList();
+        }
 
-const moveReq = () =>{
-    dialog.open( '',{
+    })
+}
+
+
+
+
+/**
+ * 자재이동 등록
+ */
+const openMovePop = (id) =>{
+    dialog.open( MoveRegPop,{
         props:{
             header: '이동요청 등록',
+            modal: true,
+            draggable: true,
+            style: {
+                width: '1800px',
+                height: '650px'
+            },
+            maximizable: true
+        },
+        data: {
+            moveReqId: id
+        },
+        onClose: (evnet) =>{
+            srhList();
+        }
+    })
+}
+const moveInsert = () =>{
+    if( selectedItem.value.length <=0 ) return vWarning('이동 등록할 자재를 선택해주세요.')
+    if( selectedItem.value.length > 1 ) return vWarning('이동 등록은 한 건씩만 가능합니다.')
+
+    dialog.open( MoveRegPop,{
+        props:{
+            header: '이동요청 등록',
+            modal: true,
+            draggable: true,
+            style: {
+                width: '1800px',
+                height: '650px'
+            },
+            maximizable: true
+        },
+        data: {
+            moveReqId: selectedItem.value[0]?.moveReqId
+        },
+        onClose: (evnet) =>{
+            srhList();
+        }
+    })
+}
+
+/**
+ *  자재이동확인
+ */
+const openMoveConfirmPop =() =>{
+    dialog.open( MoveConfirmPop,{
+        props:{
+            header: '자재 이동 확인',
             modal: true,
             draggable: true,
 
@@ -161,14 +292,6 @@ const moveReq = () =>{
     })
 }
 
-const moveInsert = () =>{
-
-}
-
-const moveConfirm =() =>{
-
-
-}
 const srhList = async () =>{
     const params = {
         ...form
@@ -179,7 +302,9 @@ const srhList = async () =>{
 
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
-    allStorages.value = await ApiSystems.getStorageCodeList()
+    moveStatuss.value = await ApiCommon.getCodeList('MOVE_STATUS')
+    allStorages.value = await ApiSystem.getStorageCodeList()
+
 })
 
 const home = ref({
