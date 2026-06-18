@@ -124,7 +124,7 @@ const form = reactive({
     etc: '',
 
     managerName: '',
-    moveReqId: '',
+    moveStockId: '',
 })
 
 onMounted( async ()=>{
@@ -132,10 +132,10 @@ onMounted( async ()=>{
    allStorages.value = await ApiSystem.getStorageCodeList()
 
    const selectedItems = dialogRef.value?.data?.selectedItems || [];
-   const moveReqIds = selectedItems
-        .map(item => item.moveReqId)
+   const moveStockIds = selectedItems
+        .map(item => item.moveStockId)
         .filter(id => id !== undefined && id !== null && id !== '');
-const res = await ApiStock.getMoveReqInfo(moveReqIds)
+const res = await ApiStock.getMoveReqInfo(moveStockIds)
 console.log("res.value", res)
 
    Object.assign(form, res.moveReqInfo)

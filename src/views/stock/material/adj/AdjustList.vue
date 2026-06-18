@@ -55,27 +55,21 @@
         selectionMode="single"
         class="my-table"
         >
-        <Column header="No." :style="{ width: '30px', textAlign:'center'}">
-            <template #body="slotProps">
-                {{ slotProps.index + 1 + (dt?.first ?? 0) }}
-            </template>
-        </Column>
-        <Column selectionMode="multiple"    headerStyle="width: 2rem" style="text-align: center;"></Column>
-        <Column field="orderDateSeq"        header="일자"    :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="orderDate"           header="처리구분"  :style="{ width: '80px', textAlign:'center'}" />
-        <Column field="storageName"         header="창고"     :style="{ width: '80px', textAlign:'center'}" />
-        <Column field="itemName"            header="품목"    :style="{ width: '350px'}" bodyClass="break-words">
+        <Column field="tranDate"        header="일자"    :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="tranTypeCd"      header="처리구분"  :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="srcStorageName"  header="창고"     :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="itemName"        header="품목"    :style="{ width: '350px'}" bodyClass="break-words">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="managerName"     header="담당자"  :style="{ width: '90px', textAlign:'center'}" />
-        <Column field="orderQty"        header="발주수량"   :style="{ width: '80px', textAlign:'right'}">
+        <Column field="qty"             header="수량"   :style="{ width: '80px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="etc"  header="비고"  :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="managerName"     header="담당자"  :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="etc"             header="비고"  :style="{ width: '150px', textAlign:'center'}" />
     </DataTable>
 </div>
 

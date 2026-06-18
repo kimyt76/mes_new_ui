@@ -81,14 +81,18 @@
         v-model:selection="selectedItem"
         :value="itemList"
         class="my-table"
-        showGridlines=""
+        showGridlines
         >
-        <Column selectionMode="multiple" style="width: 3em"/>
-        <Column field="itemCd"      header="품목코드" style="width: 120px"/>
-        <Column field="itemName"    header="품목명" style="width: 400px"/>
-        <Column field="qty"    header="수량" style="width: 100px">
+        <Column field="itemCd"      header="품목코드" :style="{ width: '100px', textAlign: 'center' }"/>
+        <Column field="itemName"    header="품목명" :style="{ width: '400px' }"/>
+        <Column field="orderQty"    header="지시수량" :style="{ width: '100px', textAlign: 'right' }">
             <template #body="slotProps">
-                <InputNumber v-model="slotProps.data.qty" mode="decimal" :min="0" :max="999999" :useGrouping="false" class="w-full"/>
+                {{ Number(slotProps.data.orderQty).toLocaleString()}}
+            </template>
+        </Column>
+        <Column field="qty"         header="수량" :style="{ width: '100px', textAlign: 'right'}" :bodyStyle="{ padding: '0' }" :headerStyle="{ padding: '0' }">
+            <template #body="slotProps">
+                <InputNumber v-model="slotProps.data.qty" mode="decimal" :min="0" :max="999999" :useGrouping="false" :inputStyle="{ width: '100px', textAlign: 'right' }" class="w-full"/>
             </template>
         </Column>
         <Column field="etc" header="적요" style="width: 150px">
@@ -163,7 +167,8 @@ const form = reactive({
     memo: '',
 
     manamerName: '',
-    moveReqId: '',
+    moveStockId: '',
+    typeCd: 'Q',
     userId: userId,
 })
 
@@ -210,7 +215,7 @@ const saveInfo = async () =>{
     if( itemList.value.length <= 0 ) return vWarning('이동 요청할 품목을 추가해주세요.')
 
     const params = {
-        moveReqInfo: form,
+        moveStockInfo: form,
         procItemList: itemList.value
     }
 
@@ -229,6 +234,7 @@ const addRow = (obj) =>{
       itemName: o.itemName,
       qty: o.qty,
       etc: '',
+      itemTypeCd: o.itemTypeCd,
   }));
 
   if (itemList.value.length > 0) {
@@ -251,8 +257,8 @@ onMounted( async ()=>{
     form.seq = await ApiCommon.getNextSeq('tb_move_req', 'move_req_date',  form.moveReqDate)
 //console.log("dialogRef", dialogRef.value?.data)
     const list = dialogRef.value?.data ?? []; // 부모에서 넘어온 배열
-    form.etc = Array.isArray(list)? list
-        .map(row => row.itemName)        // <- row.etc (필드명 확인!)
+    form.memo = Array.isArray(list)? list
+         .map(row => `${row.makeNo}-${row.itemName}-${row.orderQty}`)      // <- row.etc (필드명 확인!)
         .filter(v => v != null && String(v).trim() !== '')
         .join('\n')
         : (list?.itemName ?? ''); // 혹시 단건으로 올 때 대비

@@ -202,7 +202,7 @@ const form = reactive({
     etc: null,
 
     moveStatus: '',
-    moveReqId: '',
+    moveStockId: '',
 })
 
 const openPop = (type) =>{
@@ -272,7 +272,7 @@ const saveInfo = async () =>{
     try{
         form.moveStatus = 'I'
         const params = {
-            moveReqInfo : form,
+            moveStockInfo : form,
             moveItemList : moveItemList.value
         }
 
@@ -299,9 +299,9 @@ watch(() => form.moveRegDate, async (newVal, oldVal) => {
 onMounted( async () => {
    try {
         isInit.value = true
-        form.moveReqId = dialogRef.value?.data?.moveReqId || null
+        form.moveStockId = dialogRef.value?.data?.moveStockId || null
 
-        const res = await ApiStock.getMoveReqInfo(form.moveReqId)
+        const res = await ApiStock.getMoveReqInfo(form.moveStockId)
 
         Object.assign(form, res.moveReqInfo)
 

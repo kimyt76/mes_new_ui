@@ -506,12 +506,17 @@ const model = ref([
                     {
                         label: '자재조정',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/adjust'
+                        to: '/stock/material/adjust'
                     },
                     {
                         label: '자재이동요청',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/moveReq'
+                        to: '/stock/material/moveReq'
+                    },
+                    {
+                        label: '자재이동',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/material/moveStock'
                     },
                 ]
             },

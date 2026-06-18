@@ -68,7 +68,7 @@
     </div>
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
-        <Button label="이동등록"  icon="pi pi-plus"  severity="secondary" @click="moveInsert"></Button>
+        <!-- <Button label="신규"  icon="pi pi-plus"  severity="secondary" @click="openNew('N')"></Button> -->
         <Button label="이동확인"  @click="moveConfirm"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
@@ -78,7 +78,7 @@
     <DataTable
         ref="dt"
         v-model:selection="selectedItem"
-        dataKey="moveReqId"
+        dataKey="moveStockId"
         :value="moveReqList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -103,7 +103,7 @@
          <Column field="moveStatusName" header="진행상태"   :style="{ width: '60px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
-                <span v-if="slotProps.data.moveStatus === 'Q'" @click="openMovePop(slotProps.data.moveReqId)"
+                <span v-if="slotProps.data.moveStatus === 'Q'" @click="openMovePop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -113,7 +113,7 @@
                     >[요청]
                 </span>
                  <!-- 진행 -->
-                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMovePop(slotProps.data.moveReqId)"
+                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMovePop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -123,7 +123,7 @@
                     >[진행]
                 </span>
                  <!-- 완료 -->
-                <span v-if="slotProps.data.moveStatus === 'C'" @click="openMovePop(slotProps.data.moveReqId)"
+                <span v-if="slotProps.data.moveStatus === 'C'" @click="openMovePop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -137,7 +137,7 @@
          <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
-                <span v-if="slotProps.data.moveStatus === 'Q' || slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveReqId)"
+                <span v-if="slotProps.data.moveStatus === 'Q' || slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -225,9 +225,6 @@ const selectRowClick = (row) =>{
     })
 }
 
-
-
-
 /**
  * 자재이동 등록
  */
@@ -244,7 +241,7 @@ const openMovePop = (id) =>{
             maximizable: true
         },
         data: {
-            moveReqId: id
+            moveStockId: id
         },
         onClose: (evnet) =>{
             srhList();
@@ -267,7 +264,7 @@ const moveInsert = () =>{
             maximizable: true
         },
         data: {
-            moveReqId: selectedItem.value[0]?.moveReqId
+            moveStockId: selectedItem.value[0]?.moveStockId
         },
         onClose: (evnet) =>{
             srhList();
@@ -304,7 +301,6 @@ onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     moveStatuss.value = await ApiCommon.getCodeList('MOVE_STATUS')
     allStorages.value = await ApiSystem.getStorageCodeList()
-
 })
 
 const home = ref({

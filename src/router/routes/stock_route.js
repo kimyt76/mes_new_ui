@@ -44,15 +44,21 @@ export default [
       },
       /* 자재조정 */
       {
-        path: 'adjust',
+        path: 'material/adjust',
         name: 'Adjust',
-        component: () => import('@/views/stock/adj/AdjustList.vue')
+        component: () => import('@/views/stock/material/adj/AdjustList.vue')
       },
       /* 자재이동요청 */
       {
-        path: 'moveReq',
+        path: 'material/moveReq',
         name: 'MoveReq',
-        component: () => import('@/views/stock/moveReq/MoveReqList.vue')
+        component: () => import('@/views/stock/material/moveReq/MoveReqList.vue')
+      },
+      /* 자재이동 */
+      {
+        path: 'material/moveStock',
+        name: 'MoveStock',
+        component: () => import('@/views/stock/material/moveStock/MoveStockList.vue')
       },
 
 
