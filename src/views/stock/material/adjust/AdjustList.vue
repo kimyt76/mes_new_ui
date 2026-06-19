@@ -56,7 +56,7 @@
         selectionMode="single"
         class="my-table"
         >
-        <Column field="tranDateSeq"     header="일자"    :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="tranDate"        header="일자"    :style="{ width: '110px', textAlign:'center'}" />
         <Column field="tranTypeName"    header="처리구분"  :style="{ width: '70px', textAlign:'center'}" />
         <Column field="srcStorageName"  header="창고"     :style="{ width: '80px', textAlign:'center'}" />
         <Column field="itemName"        header="품목"    :style="{ width: '400px'}" bodyClass="break-words">
