@@ -75,9 +75,9 @@ export const ApiStock = {
             throw err.response
         }
     },
-    getMoveStockList: async(params) => {
+    getMoveReqStockList: async(params) => {
         try{
-            const res = await API_URL.post('/moveReq/getMoveStockList', params )
+            const res = await API_URL.post('/moveReq/getMoveReqStockList', params )
 
             return res.data
         }catch(err){
@@ -87,7 +87,6 @@ export const ApiStock = {
     saveMoveItem: async(params) => {
         return await API_URL.post('/moveReq/saveMoveItem', params)
     },
-
 
     /**
      *
@@ -103,9 +102,48 @@ export const ApiStock = {
         }
     },
 
+/********************자재이동******************************************************** */
+    getMoveStockList: async(params) => {
+        try{
+            const res = await API_URL.post('/moveStock/getMoveStockList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getMoveStockInfo : async(id) => {
+        try{
+            const res = await API_URL.get(`/moveStock/getMoveStockInfo/${id}` )
+
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
 
+    /***************자재조정**************************************************************************** */
 
+    getAdjustList: async(params) => {
+        try{
+            const res = await API_URL.post('/adjust/getAdjustList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getAdjustInfo : async(id) => {
+        try{
+            const res = await API_URL.get(`/adjust/getAdjustInfo/${id}` )
+
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    saveAdjust: async(params) => {
+        return await API_URL.post('/adjust/saveAdjust', params)
+    },
 
 
 }

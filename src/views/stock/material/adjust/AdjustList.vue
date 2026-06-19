@@ -18,7 +18,7 @@
                 <label for="on_label">처리구분</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.storageCd" :options="allStorages"
+                <Select v-model="form.srcStorageCd" :options="allStorages"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 180px"
@@ -47,6 +47,7 @@
         ref="dt"
         v-model:selection="selectedItem"
         :value="adjustList"
+        dataKey="tranId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -55,18 +56,20 @@
         selectionMode="single"
         class="my-table"
         >
-        <Column field="tranDate"        header="일자"    :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="tranTypeCd"      header="처리구분"  :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="tranDateSeq"     header="일자"    :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="tranTypeName"    header="처리구분"  :style="{ width: '70px', textAlign:'center'}" />
         <Column field="srcStorageName"  header="창고"     :style="{ width: '80px', textAlign:'center'}" />
-        <Column field="itemName"        header="품목"    :style="{ width: '350px'}" bodyClass="break-words">
+        <Column field="itemName"        header="품목"    :style="{ width: '400px'}" bodyClass="break-words">
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.itemCd)" class="clickable-cell">
+                <div @click="selectRowClick(slotProps.data.tranId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
         <Column field="qty"             header="수량"   :style="{ width: '80px', textAlign:'right'}">
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+            <template #body="slotProps">
+                {{ Number(slotProps.data.qty).toLocaleString() }}
+            </template>
         </Column>
         <Column field="managerName"     header="담당자"  :style="{ width: '90px', textAlign:'center'}" />
         <Column field="etc"             header="비고"  :style="{ width: '150px', textAlign:'center'}" />
@@ -97,7 +100,8 @@ const totalCount = computed(() => {
 const form = reactive({
     strDate: minMonth(todayKST(), 2),
     endDate: addMonth(todayKST(), 1),
-    storageCd: '',
+    srcStorageCd: '',
+    srcStorageName: '',
     itemName: '',
     itemCd:'',
 })
