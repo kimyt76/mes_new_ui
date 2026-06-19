@@ -46,7 +46,7 @@ export default [
       {
         path: 'material/adjust',
         name: 'Adjust',
-        component: () => import('@/views/stock/material/adj/AdjustList.vue')
+        component: () => import('@/views/stock/material/adjust/AdjustList.vue')
       },
       /* 자재이동요청 */
       {
