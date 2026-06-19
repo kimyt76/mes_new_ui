@@ -61,6 +61,13 @@ export default [
         component: () => import('@/views/stock/material/moveStock/MoveStockList.vue')
       },
 
+      /* 제품출고 */
+      {
+        path: 'material/prodOut',
+        name: 'ProdOut',
+        component: () => import('@/views/stock/material/prodOut/ProdOutList.vue')
+      },
+
 
 
 

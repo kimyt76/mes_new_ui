@@ -518,6 +518,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/stock/material/moveStock'
                     },
+                    {
+                        label: '제품출고',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/material/prodOut'
+                    },
                 ]
             },
             {
