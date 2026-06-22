@@ -146,4 +146,28 @@ export const ApiStock = {
     },
 
 
+
+
+    /***************제조출고**************************************************************************** */
+
+    getProdOutList: async(params) => {
+        try{
+            const res = await API_URL.post('/prodOut/getProdOutList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getProdOutInfo : async(id) => {
+        try{
+            const res = await API_URL.get(`/prodOut/getProdOutInfo/${id}` )
+
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    saveProdOut: async(params) => {
+        return await API_URL.post('/prodOut/saveProdOut', params)
+    },
 }
