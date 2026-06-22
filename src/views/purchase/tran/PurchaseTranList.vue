@@ -151,7 +151,10 @@ const selectRowClick = (id) =>{
             modal: true,
             draggable: true,
             resizable: false,
-            style: { width: '120rem', maxWidth: '120rem' },
+            style: {
+                width: '1700px',
+                height: '600px'      // 기존보다 높게
+            },
             contentStyle: { height: '38rem', overflow: 'hidden' },
         },
         data: {
