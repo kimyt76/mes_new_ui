@@ -68,6 +68,7 @@
     <DataTable
         ref="dt"
         v-model:selection="selectedItem"
+        :value="purchaseList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -79,41 +80,41 @@
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="tranDateSeq"         header="일자-No"    frozen :style="{ width: '100px',textAlign:'center'}" />
-        <Column field="tranDate"            header="입고일"     frozen :style="{ width: '80px',textAlign:'center'}" />
-        <Column field="customerName"        header="거래처명"   frozen :style="{ width: '190px'}" />
-        <Column field="itemCd"              header="품목코드"   frozen:style="{ width: '80px',textAlign:'center'}" />
-        <Column field="itemName"            header="품목명"     frozen  :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;"  />
-        <Column field="testNo"              header="시험번호"  :style="{ width: '100px',textAlign:'center'}" />
+        <Column field="purDateSeq"          header="일자-No"    frozen :style="{ width: '130px',textAlign:'center'}" />
+        <Column field="purDate"             header="입고일"     frozen :style="{ width: '110px',textAlign:'center'}" />
+        <Column field="customerName"        header="거래처명"   frozen :style="{ width: '200px'}" />
+        <Column field="itemCd"              header="품목코드"   frozen :style="{ width: '110px',textAlign:'center'}" />
+        <Column field="itemName"            header="품목명"     frozen  :style="{ width: '380px'}" bodyClass="break-words" style="text-align: left;"  />
+        <Column field="testNo"              header="시험번호"  :style="{ width: '110px',textAlign:'center'}" />
         <Column field="unit"                header="규격"  :style="{ width: '90px',textAlign:'center'}" />
-        <Column field="qty"                 header="수량"   :style="{ width: '80px' ,textAlign:'right'}">
+        <Column field="qty"                 header="수량"   :style="{ width: '100px' ,textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.qty).toLocaleString() }}
             </template>
         </Column>
-        <Column field="inPrice"  header="단가"   :style="{ width: '80px',textAlign:'right'}">
+        <Column field="inPrice"  header="단가"   :style="{ width: '90px',textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.inPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="supplyPrice"  header="공급가"   :style="{ width: '80px',textAlign:'right'}">
+        <Column field="supplyPrice"  header="공급가"   :style="{ width: '110px',textAlign:'right'}">
             <template #body="slotProps">
                 {{ Number(slotProps.data.supplyPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="vatPrice"  header="부가세"   :style="{ width: '80px',textAlign:'right'}" >
+        <Column field="vatPrice"  header="부가세"   :style="{ width: '90px',textAlign:'right'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.vatPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="sumPrice"  header="합계"   :style="{ width: '80px',textAlign:'right'}" >
+        <Column field="totPrice"  header="합계"   :style="{ width: '120px',textAlign:'right'}" >
             <template #body="slotProps">
-                {{ Number(slotProps.data.sumPrice).toLocaleString() }}
+                {{ Number(slotProps.data.totPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="testState"    header="시험상태"  :style="{ width: '80px',textAlign:'center'}" />
-        <Column field="passState"    header="판정상태"  :style="{ width: '80px',textAlign:'center'}" />
-        <Column field="areaName"     header="구역"      :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="testStateName"    header="시험상태"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="passStateName"    header="판정상태"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="areaName"     header="구역"      :style="{ width: '90px',textAlign:'center'}" />
     </DataTable>
 </div>
 
@@ -127,10 +128,12 @@ import { useCodeList } from '@/composable/useCodeList';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import QrCodePop from '@/views/common/QrCodePop.vue';
+import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 
 const { codes: itemTypeCds, loading } = useCodeList("ITEM_TYPE_CD");
 
+const dialog = useDialog()
 const selectedItem = ref([])
 const dt = ref(null)
 const areaCds = ref([])
@@ -155,7 +158,6 @@ const srhList = async () =>{
     }
 
     purchaseList.value = await ApiPurchase.getPurchaseDetailList(params)
-
 }
 
 const handleDateChange = () =>{
@@ -196,6 +198,8 @@ const barcodePrint = () =>{
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('AREA');
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
+    testStates.value = await ApiCommon.getCodeList('test_state');
+    passStates.value = await ApiCommon.getCodeList('pass_state');
 });
 
 const home = ref({
