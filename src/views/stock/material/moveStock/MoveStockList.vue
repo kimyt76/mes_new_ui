@@ -76,20 +76,21 @@
         class="my-table"
         showGridlines
      >
-        <Column selectionMode="multiple" headerStyle="width: 1rem" style="text-align: center;"/>
-         <Column field="moveReqDateSeq" header="일자-No"    :style="{ width: '100px', textAlign: 'center' }" >
+        <Column field="moveStockDateSeq" header="일자-No"    :style="{ width: '110px', textAlign: 'center' }" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.moveStockId)" style="text-decoration: underline; cursor: pointer;">
-                    {{ slotProps.data.moveReqDateSeq }}
+                    {{ slotProps.data.moveStockDateSeq }}
                 </div>
             </template>
         </Column>
          <Column field="srcStorageName" header="보내는창고" :style="{ width: '100px', textAlign: 'center'}" />
          <Column field="tarStorageName" header="받는창고"   :style="{ width: '100px', textAlign: 'center'}" />
-         <Column field="itemName"       header="품목명"     :style="{ width: '300px'}" />
-         <Column field="qty"            header="수량"       :style="{ width: '80px', textAlign: 'right'}" />
+         <Column field="itemName"       header="품목명"     :style="{ width: '400px'}" />
+         <Column field="qty"            header="수량"       :style="{ width: '100px', textAlign: 'right'}" >
+             {{ Number(slotProps.data.qty).toLocaleString() }}
+        </Column>
          <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
-         <Column field="etc"            header="비고"       :style="{ width: '320px'}" />
+         <Column field="etc"            header="비고"       :style="{ width: '200px'}" />
          <Column field="moveStatusName" header="진행상태"   :style="{ width: '60px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
@@ -127,7 +128,7 @@
          <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
-                <span v-if="slotProps.data.moveStatus === 'Q' || slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
+                <span v-if="slotProps.data.moveStatus === 'Q'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -135,6 +136,16 @@
                         text-decoration: underline;
                         "
                     >[등록]
+                </span>
+                 <!-- 등록 -->
+                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
+                    style="
+                        color: #1976d2;
+                        font-weight: bold;
+                        cursor: pointer;
+                        text-decoration: underline;
+                        "
+                    >[수정]
                 </span>
                 <!-- 완료 -->
                 <span v-else-if="slotProps.data.moveStatus === 'C'"
@@ -154,6 +165,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiStock } from '@/api/apiStock.js';
 import { ApiSystem } from '@/api/apiSystem';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
@@ -163,7 +175,6 @@ import MoveStockCompfirmPop from '@/views/stock/material/moveStock/MoveStockComp
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import MoveStockPop from './MoveStockPop.vue';
-
 
 const { vSuccess, vInfo, vWarning} = useAlertStore()
 const moveStockList = ref([])
@@ -209,12 +220,6 @@ const openMovePop = (id) =>{
 }
 
 const openMoveConfirmPop = (id) =>{
-    if (id === 'B' &&  selectedItem.value.length === 0 ) {
-        return vWarning('확인할 자재이동을 선택해주세요.')
-    }else{
-        id = selectedItem.value[0].moveStockId
-    }
-
     dialog.open(MoveStockCompfirmPop, {
         props:{
             header: '자재이동 확인',
@@ -236,7 +241,7 @@ const srhList = async () => {
         ...form
     }
 
-    //moveStockList.value = await ApiStock.getMoveStockList(params)
+    moveStockList.value = await ApiStock.getMoveStockList(params)
 }
 
 const handleDateChange = () =>{

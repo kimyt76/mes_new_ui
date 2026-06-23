@@ -138,6 +138,7 @@ const form = reactive({
     tarStorageCd: '',
     etc: '',
 
+    typeCd: 'T',
     moveStockId: '',
 })
 
@@ -149,7 +150,7 @@ const saveInfo = async () =>{
     try{
         const param = {
             moveStockInfo: form,
-            moveStockList: moveStockList
+            moveItemList: moveStockList.value
         }
         const res = await ApiStock.saveMoveStockInfo(param)
         vSuccess('이동요청되었습니다.')
@@ -224,15 +225,15 @@ onMounted(async () =>{
     allStorages.value = await ApiSystem.getStorageCodeList()
 
     form.moveStockId = dialogRef.value.data.moveStockId
-console.log('form.moveStockId',  form.moveStockId)
+
      if( isEmpty(form.moveStockId)) {
          form.moveStockDate = todayKST()
-         form.seq = await ApiCommon.getNextSeq('tb_move_stock', 'move_stock_date', form.moveStockDate )
+         form.seq = await ApiCommon.getNextSeq('tb_move_stock_mst', 'move_stock_date', form.moveStockDate )
      }else{
-    //     const res = await ApiStock.getMoveStockInfo(form.moveStockId)
+        const res = await ApiStock.getMoveStockInfo(form.moveStockId)
 
-    //     Object.assign(form, res.moveStockINfo)
-    //     MoveStockList.value = res.moveStockList
+        Object.assign(form, res.moveStockInfo)
+        moveStockList.value = res.moveItemList
     }
 
 })
