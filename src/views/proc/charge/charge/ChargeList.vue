@@ -78,7 +78,7 @@
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
         <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="moveReqYn"       header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="moveStatus"      header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="procStatusName"  header="충전상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
@@ -181,7 +181,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    chargeList.value = await ApiProc.getChargeList(params);
+    chargeList.value = await ApiProc.getProcList(params);
 }
 
 onMounted( async () => {

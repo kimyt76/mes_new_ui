@@ -3,6 +3,15 @@ import { API_URL } from '.'
 //공정 API
 export const ApiProc = {
     /**  공통 */
+    getProcList: async(params) => {
+        try{
+            const res = await API_URL.post('/procCommon/getProcList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
     getWorkerList: async(params) => {
         return  await API_URL.post('/procCommon/getWorkerList',params)
     },

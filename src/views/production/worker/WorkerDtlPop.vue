@@ -14,8 +14,8 @@
                 </div>
                 <div class="col-6">
                     <FloatLabel variant="on">
-                        <Select v-model="form.processCd"
-                                :options="processCds"
+                        <Select v-model="form.procCd"
+                                :options="procCds"
                                 optionLabel="codeNm"
                                 optionValue="code" class="w-full" />
                         <label>공정</label>
@@ -70,11 +70,11 @@ const {userId} = useAuthStore()
 const { vInfo, vWarning, vSuccess} = useAlertStore()
 const dialogRef = inject('dialogRef')
 const areaCds = ref([])
-const processCds = ref([])
+const procCds = ref([])
 const useYns = ref([])
 const form = reactive({
     areaCd: '',
-    processCd: '',
+    procCd: '',
     workerName: '',
     useYn: 'Y',
     etc : '',
@@ -84,7 +84,7 @@ const form = reactive({
 
 const saveInfo = async () =>{
     if ( isEmpty(form.areaCd) ) return vWarning('구역(공장) 정보를 선택하세요!!')
-    if ( isEmpty(form.processCd) ) return vWarning('공정을 선택하세요!!')
+    if ( isEmpty(form.procCd) ) return vWarning('공정을 선택하세요!!')
     if ( isEmpty(form.workerName) ) return vWarning('작업자이름을 선택하세요!!')
 
     try {
@@ -102,7 +102,7 @@ const saveInfo = async () =>{
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     useYns.value = await ApiCommon.getCodeList('use_yn')
-    processCds.value = (await ApiCommon.getCodeList('PROCESS_CD')).filter(i => !['PRC009'].includes(i.code))
+    procCds.value = (await ApiCommon.getCodeList('PROCESS_CD')).filter(i => !['PRC009'].includes(i.code))
     if ( !isEmpty(dialogRef.value.data) ){
         const res = await ApiWorkOrder.getWorkerInfo(dialogRef.value.data)
         console.log('res', res)

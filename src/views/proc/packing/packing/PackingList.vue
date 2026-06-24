@@ -78,7 +78,7 @@
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
         <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="moveReqYn"   header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="moveStatus"   header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="procStatusName"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
@@ -110,7 +110,7 @@ const form = reactive({
   procStatus: '',
   processState: '',
 
-  proseccCd : 'PRC005',
+  procCd : 'PRC005',
 })
 
 const handleDateChange = () =>{
@@ -147,10 +147,6 @@ const selectRowClick = (row) =>{
 const moveReq = () =>{
     //selectedItem.value
 
-
-
-
-
 }
 
 
@@ -160,7 +156,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    packingList.value = await ApiProc.getPackingList(params);
+    packingList.value = await ApiProc.getProcList(params);
     console.log(packingList.value)
 }
 

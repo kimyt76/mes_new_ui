@@ -13,8 +13,8 @@
                 <label for="on_label1">생산처(공장)</label>
              </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.processCd"
-                 :options="processCds"
+                <Select v-model="form.procCd"
+                 :options="procCds"
                  optionLabel="codeNm" optionValue="code"
                 style="width: 150px"
                 />
@@ -99,12 +99,12 @@ const { vInfo, vWarning, vSuccess} = useAlertStore()
 const totalCount = computed(() => workerList.value.length)
 const dialog = useDialog()
 const areaCds = ref([])
-const processCds = ref([])
+const procCds = ref([])
 const useYns = ref([])
 const workerList = ref([])
 const form  =reactive({
     areaCd: '',
-    processCd: '',
+    procCd: '',
     workerName: '',
     useYn: '',
 })
@@ -154,7 +154,7 @@ const selectRowClick = (id) =>{
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     useYns.value = await ApiCommon.getCodeList('use_yn')
-    processCds.value = (await ApiCommon.getCodeList('PROCESS_CD')).filter(i => !['PRC009'].includes(i.code))
+    procCds.value = (await ApiCommon.getCodeList('PROCESS_CD')).filter(i => !['PRC009'].includes(i.code))
 
     srhList()
 })

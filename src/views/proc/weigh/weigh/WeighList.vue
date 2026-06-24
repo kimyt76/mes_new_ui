@@ -57,7 +57,7 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaCd"          header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
@@ -105,6 +105,7 @@ const form = reactive({
   procStatus: '',
   processState: '',
 
+  procCd: 'PRC001',
 })
 
 const handleDateChange = () =>{
@@ -146,7 +147,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    weighList.value = await ApiProc.getWeighList(params);
+    weighList.value = await ApiProc.getProcList(params);
 }
 
 onMounted( async () => {
