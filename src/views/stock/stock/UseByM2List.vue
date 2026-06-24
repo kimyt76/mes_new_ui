@@ -64,7 +64,7 @@
 <div>
     <DataTable
         ref="dt"
-        :value="subMatList"
+        :value="useByM2List"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -72,21 +72,20 @@
         showGridlines
         class="my-table"
         >
-        <Column field="rowNum"      header="No."         :style="{ width: '40px', textAlign:'center'}" />
-        <Column field="testNo"      header="시험번호"    :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="itemCd"      header="품목코드"    :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="itemName"    header="품목명"      :style="{ width: '300px'}" bodyClass="break-words"   />
-        <Column field="customerName" header="구매처명"     :style="{ width: '300px'}" bodyClass="break-words"   />
-        <Column field="expiryDate"  header="경과일수(일)"     :style="{ width: '100px', textAlign:'center'}" />
-        <Column field="inDays"      header="입고일"       :style="{ width: '110px', textAlign:'right'}"/>
-        <Column field="inPrice"      header="단가"        :style="{ width: '120px', textAlign:'right'}" >
+        <Column field="testNo"      header="시험번호"       :style="{ width: '120px', textAlign:'center'}" />
+        <Column field="itemCd"      header="품목코드"       :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="itemName"    header="품목명"         :style="{ width: '300px'}" bodyClass="break-words"   />
+        <Column field="customerName" header="구매처명"      :style="{ width: '300px'}" bodyClass="break-words"   />
+        <Column field="remainingDay" header="경과일수(일)"  :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="createDate"  header="입고일"         :style="{ width: '110px', textAlign:'right'}"/>
+        <Column field="inPrice"     header="단가"          :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
         </Column>
         <Column field="qty"      header="수량"        :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="amount"      header="금액"        :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.amount).toLocaleString() }}</template>
+        <Column field="totPrice"      header="금액"        :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.totPrice).toLocaleString() }}</template>
         </Column>
     </DataTable>
 </div>
@@ -94,17 +93,19 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiStock } from '@/api/apiStock';
 import { todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { computed, onMounted, reactive, ref } from 'vue';
 
-const subMatList = ref([])
+const dt = ref(null)
+const useByM2List = ref([])
 const areaCds = ref([])
 const totalCount = computed(() => {
-  return Array.isArray(subMatList.value) ? subMatList.value.length : 0
+  return Array.isArray(useByM2List.value) ? useByM2List.value.length : 0
 })
 const form = reactive({
-    period: '',
+    period: '2',
     areaCd: '',
     itemName: '',
     itemCd: '',
@@ -125,12 +126,14 @@ const srhList = async () =>{
     const params={
         ...form
     }
-    //subMatList.value = await ApiStock.getUseByM2List(params)
+    useByM2List.value = await ApiStock.getUseByM2List(params)
 }
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
     form.stdDate = todayKST()
+
+    srhList()
 })
 
 const home = ref({
@@ -149,7 +152,7 @@ const downloadExcel = () =>{
     console.warn("No Columns Found");
     return;
   }
-  exportToExcel(subMatList.value, "사용기한(부자재) 리스트", cols);
+  exportToExcel(useByM2List.value, "사용기한(부자재) 리스트", cols);
 }
 
 </script>
