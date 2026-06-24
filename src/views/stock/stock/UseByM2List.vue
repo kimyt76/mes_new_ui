@@ -31,26 +31,16 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <div class="flex items-center gap-2">
-            <Button
-                rounded
-                icon="pi pi-chevron-left"
-                class="tw-ml-5 p-button-sm"
-                @click="searchDateAdd(-1)"
-                />
-                <Calendar
-                ref="val_stdDate"
-                v-model="form.stdDate"
-                showIcon
-                dateFormat="yy-mm-dd"
-                placeholder="기준일자"
-                class="tw-w-32 tw-ml-3 tw-mt-1 tw-mr-3"
-                />
-                <Button
-                rounded
-                icon="pi pi-chevron-right"
-                class="tw-mr-5 p-button-sm"
-                @click="searchDateAdd(1)"
-                />
+                <Button rounded icon="pi pi-chevron-left" class="tw-ml-5 p-button-sm" @click="searchDateAdd(-1)"/>
+                    <Calendar
+                        ref="val_stdDate"
+                        v-model="form.stdDate"
+                        showIcon
+                        dateFormat="yy-mm-dd"
+                        placeholder="기준일자"
+                        class="tw-w-32 tw-ml-3 tw-mt-1 tw-mr-3"
+                    />
+                <Button rounded icon="pi pi-chevron-right" class="tw-mr-5 p-button-sm" @click="searchDateAdd(1)"/>
             </div>
 
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
@@ -77,7 +67,7 @@
         <Column field="itemName"    header="품목명"         :style="{ width: '300px'}" bodyClass="break-words"   />
         <Column field="customerName" header="구매처명"      :style="{ width: '300px'}" bodyClass="break-words"   />
         <Column field="remainingDay" header="경과일수(일)"  :style="{ width: '100px', textAlign:'center'}" />
-        <Column field="createDate"  header="입고일"         :style="{ width: '110px', textAlign:'right'}"/>
+        <Column field="createDate"  header="입고일"         :style="{ width: '110px', textAlign:'center'}"/>
         <Column field="inPrice"     header="단가"          :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
         </Column>
@@ -94,7 +84,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
-import { todayKST } from '@/util/common';
+import { addDay, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { computed, onMounted, reactive, ref } from 'vue';
 
@@ -118,6 +108,7 @@ const periods = ref([
     { code: '12', codeNm: '1년이상'},
     { code: '24', codeNm: '2년이상'},
 ])
+
 const searchDateAdd = (day) =>{
     form.stdDate = addDay(form.stdDate, day)
 }
@@ -154,7 +145,6 @@ const downloadExcel = () =>{
   }
   exportToExcel(useByM2List.value, "사용기한(부자재) 리스트", cols);
 }
-
 </script>
 
 <style  scoped>
