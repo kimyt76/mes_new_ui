@@ -111,16 +111,7 @@ export const ApiProc = {
 
 
 
-
     // 칭량
-    getWeighList: async(params) => {
-        try{
-            const res = await API_URL.post('/procWeigh/getWeighList', params)
-            return res.data
-        }catch(err){
-            throw err.response
-        }
-    },
     getWeighInfo: async (params) => {
         try {
             const res = await API_URL.post('/procWeigh/getWeighInfo', params)
@@ -162,14 +153,6 @@ export const ApiProc = {
 
 
     //제조
-    getMatList: async(params) => {
-        try{
-            const res = await API_URL.post('/procMat/getMatList', params)
-            return res.data
-        }catch(err){
-            throw err.response
-        }
-    },
     getMakeInfo: async (params) => {
         try {
             const res = await API_URL.post('/procMat/getMakeInfo', params)
@@ -221,15 +204,6 @@ export const ApiProc = {
 
 
     //코팅
-    getCoatingList: async(params) => {
-        try{
-            const res = await API_URL.post('/procCoating/getCoatingList', params)
-            return res.data
-
-        }catch(err){
-            throw err.response
-        }
-    },
     startProcCoating: async(params) => {
         return await API_URL.post('/procCoating/startProcCoating', params)
     },
@@ -239,16 +213,6 @@ export const ApiProc = {
 
 
     //충전
-    getChargeList: async(params) => {
-        try{
-            const res = await API_URL.post('/procCharge/getChargeList', params)
-
-            return res.data
-
-        }catch(err){
-            throw err.response
-        }
-    },
     startProcCharge: async(params) => {
         return await API_URL.post(`/procCharge/startProcCharge`, params)
     },
@@ -257,17 +221,7 @@ export const ApiProc = {
     },
 
 
-
-
     //포장
-    getPackingList: async(params) => {
-        try{
-            const res = await API_URL.post('/procPacking/getPackingList', params)
-            return res.data
-        }catch(err){
-        throw err.response
-        }
-    },
     startProcPacking: async(params) => {
         return await API_URL.post(`/procPacking/startProcPacking`, params)
     },
