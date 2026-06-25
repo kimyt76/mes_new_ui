@@ -1,5 +1,5 @@
 <template>
-<Card style="width: 75rem; height: 11rem;">
+<Card style="width: 75rem; height: 8rem;">
     <template #content>
         <!-- Row 1 -->
         <div class="grid mt-1 mb-1">
@@ -256,7 +256,6 @@ onMounted( async ()=>{
         form.seq = await ApiCommon.getNextSeq('tb_inv_tran_mst','tran_date', form.tranDate)
     }else{
         const res = await ApiStock.getAdjustInfo(form.tranId)
-console.log('res', res)
         Object.assign(form, res.adjustInfo)
         adjustItemList.value = res.adjustItemList
     }
