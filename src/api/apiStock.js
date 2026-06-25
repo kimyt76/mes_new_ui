@@ -25,6 +25,48 @@ export const ApiStock = {
         }
     },
 
+    /**
+     * 사용기한 원재료
+     * @param {*} params
+     * @returns
+     */
+    getUseByM1List: async(params) => {
+        try{
+            const res = await API_URL.post('/stock/getUseByM1List', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /**
+     * 사용기한 부자재
+     * @param {*} params
+     * @returns
+     */
+    getUseByM2List: async(params) => {
+        try{
+            const res = await API_URL.post('/stock/getUseByM2List', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    /**
+     *  원재료, 부자재 수불부
+     * @param {*} params
+     * @returns
+     */
+    getTranLedger: async(params) => {
+        try{
+            const res = await API_URL.post('/stock/getTranLedger', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
 /******************자재이동요청************************************************************************** */
 
     getNextRegSeq:async(params) => {
@@ -120,7 +162,13 @@ export const ApiStock = {
             throw err.response
         }
     },
+    saveMoveStockInfo: async(params) => {
+        return await API_URL.post('/moveStock/saveMoveStockInfo', params)
+    },
 
+    saveMoveStockComfirm: async(params) => {
+        return await API_URL.post('/moveStock/saveMoveStockComfirm', params)
+    },
 
     /***************자재조정**************************************************************************** */
 

@@ -46,61 +46,60 @@
         tableStyle="min-width:180rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="rowNum"          header="No."      frozen  :style="{ width: '60px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"          header="관리구분"  frozen :style="{ width: '120px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"          header="품목코드"  frozen :style="{ width: '150px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"        header="품목명"    frozen :style="{ width: '300px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="itemName"        header="납품업체"  frozen  :style="{ width: '300px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="inPrice"         header="단가"  frozen :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}">
+        <Column field="orderType"       header="관리구분"  frozen :style="{ width: '120px', textAlign:'center'}" />
+        <Column field="itemCd"          header="품목코드"  frozen :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="itemName"        header="품목명"    frozen :style="{ width: '400px'}" bodyClass="break-words"   />
+        <Column field="customerName"    header="납품업체"  frozen  :style="{ width: '300px'}" bodyClass="break-words"  />
+        <Column field="inPrice"         header="단가"  frozen  :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="orderQty"        header="기초재고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="basicQty"        header="기초재고수량"   :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.basicQty).toLocaleString() }}</template>
         </Column>
-        <Column field="orderAmt"        header="기초재고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="basicAmt"        header="기초재고금액"   :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.basicAmt).toLocaleString() }}</template>
         </Column>
-        <Column field="inQty"        header="입고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="asQty"        header="입고수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.asQty).toLocaleString() }}</template>
         </Column>
-        <Column field="inAmt"        header="입고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="asAmt"        header="입고금액"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.asAmt).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="출고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="esQty"        header="출고수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.esQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outAmt"        header="출고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '100px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="esAmt"        header="출고금액"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.esAmt).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="반품조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="psQty"        header="반품조정수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.psQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="검사샘플수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="tsQty"        header="검사샘플수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.tsQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="연구샘플수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="qsQty"        header="연구샘플수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.qsQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="실사조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="ssQty"        header="실사조정수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.ssQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="과입조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="vQty"        header="과입조정수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.vsQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="계정변경수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="wsQty"        header="계정변경수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.wsQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="매출조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="xsQty"        header="매출조정수량"   :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.xsQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="사용조정수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="usQty"        header="사용조정수량"   :style="{ width: '100px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.usQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="기말재고수량"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="finalQty"        header="기말재고수량"   :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.finalQty).toLocaleString() }}</template>
         </Column>
-        <Column field="outQty"        header="기말재고금액"  :pt="{ columnHeaderContent: 'justify-center' }" :style="{ width: '120px', textAlign:'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="finalAmt"        header="기말재고금액"   :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.finalAmt).toLocaleString() }}</template>
         </Column>
     </DataTable>
 </div>
@@ -109,6 +108,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiStock } from '@/api/apiStock';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -120,8 +120,7 @@ const form = reactive({
     strDate: minMonth(todayKST(), 3),
     endDate: todayKST(),
     itemGrp1: '',
-    itemTypeCd : '',
-    areaCd: '',
+    itemTypeCd : 'M1',
     itemName: '',
     itemCd: '',
 })
@@ -135,7 +134,8 @@ const srhList = async () =>{
         ...form
     }
     // api
-    //stockList.value = await ApiStock.getStockList(params);
+    rawMatList.value = await ApiStock.getTranLedger(params)
+    console.log('rawMatList.value', rawMatList.value)
 }
 
 onMounted( async () => {
@@ -148,7 +148,7 @@ const home = ref({
 const items = ref([
     { label: '자재관리' },
     { label: '원재료수불부' },
-    { label: '원재료수불부목록' },
+    { label: '원재료수불부 목록' },
 ]);
 
 const downloadExcel = () =>{
@@ -171,5 +171,6 @@ const downloadExcel = () =>{
   font-size: 14px;
   text-align: center;
   font-family: monaco, Consolas;
+  padding: 0.6rem 0.7rem;
 }
 </style>
