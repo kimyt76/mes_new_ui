@@ -1,6 +1,7 @@
 <template>
   <div class="w-full mt-3">
     <table cellspacing="0" width="100%">
+
       <tbody>
         <tr>
             <th class="cellBorder cellHeader">제조번호</th>
@@ -354,7 +355,7 @@ const saveInfo = async() =>{
     //예외체크
     try{
         const params = {
-            procWeigh : form,
+            workOrderInfo : form,
             weightBomList : matUseDataList.value
         }
         const res = await ApiProc.saveWeighInfo(params)
@@ -685,7 +686,8 @@ const printWeighLabel = async () => {
     const selectedList = filtered.map(item => ({
         ...item,
         orderDist: Number(item?.[FIELD.DIST_ORDER] ?? 0),
-        workProcId: form.workProcId
+        workProcId: form.workProcId,
+        procCd: form.procCd
     }))
 
   // 팝업 열기
@@ -718,15 +720,16 @@ onMounted(async () => {
 const createWeighInfoParams = () => ({
     workProcId: dialogRef.value.data.workProcId,
     itemCd: dialogRef.value.data.itemCd,
+    procCd: form.procCd,
 })
 const fetchWeighInfo = async () => {
     const params = createWeighInfoParams()
     return await ApiProc.getWeighInfo(params)
 }
 const bindWeighInfo = (data) => {
-    Object.assign(form, data.procWeigh || {})
+    Object.assign(form, data.workOrderInfo || {})
     matUseDataList.value = normalizeRows(data.weightBomList || [])
-    isStarted.value = data.procWeigh?.procStatus === '00'
+    isStarted.value = data.workOrderInfo?.procStatus === '00'
     checkComplete()
 }
 const loadWeighInfo = async () => {
@@ -805,6 +808,10 @@ td .custom-cell {
 .tab-active {
   background: #2f6fff; /* 원하는 색 */
   color: white;
+}
+.cellHeader,
+.cellBorder {
+    width: 12.5%;
 }
 
 </style>
