@@ -733,4 +733,7 @@ const closeDialog = () =>{
     padding-top: 4px;
 }
 
+::v-deep(.my-table .p-datatable-tbody > tr > td) {
+    padding: 2px 4px !important;
+}
 </style>
