@@ -43,7 +43,7 @@
         <div class="grid mb-3">
           <div class="col-4 flex align-items-center gap-2">
             <FloatLabel variant="on">
-              <DatePicker v-model="form.moveReqDate" showIcon iconDisplay="input" disabled />
+              <DatePicker v-model="form.moveStockDate" showIcon iconDisplay="input" disabled />
               <label>요청일</label>
             </FloatLabel>
             <span class="center-dash">-</span>
@@ -183,10 +183,11 @@ const moveItemList = ref([])
 
 const form = reactive({
     //고정값
-    moveReqDate: null,
+    moveStockDate: null,
     seq: null,
     managerName: null,
     srcStorageName: null,
+    tarStorageName: null,
     memo: null,
 
     //업데이트값
@@ -201,6 +202,7 @@ const form = reactive({
     areaCd: null,
     etc: null,
 
+    typeCd: 'Q',
     moveStatus: '',
     moveStockId: '',
 })
@@ -232,10 +234,12 @@ const openPop = (type) =>{
 }
 
 
+let itemCd = ref('')
 let itemName = ref('')
 let itemTypeCd = ref('')
 
 const selectRowClick = async (row) => {
+    itemCd.value = row.data.itemCd
     itemName.value = row.data.itemName
     itemTypeCd.value = row.data.itemTypeCd
 
@@ -245,7 +249,7 @@ const selectRowClick = async (row) => {
         areaCd: form.areaCd
     }
 
-    stockList.value = await ApiStock.getMoveStockList(params)
+    stockList.value = await ApiStock.getMoveReqStockList(params)
 }
 
 const selectRowDblClick = (row) =>{
@@ -255,7 +259,7 @@ const selectRowDblClick = (row) =>{
 
     moveItemList.value.push({
         testNo: row.data.testNo,
-        itemCd: row.data.itemCd,
+        itemCd: itemCd.value,
         itemName: itemName.value,
         itemTypeCd: itemTypeCd.value,
         qty: 0,
@@ -303,11 +307,10 @@ onMounted( async () => {
 
         const res = await ApiStock.getMoveReqInfo(form.moveStockId)
 
-        Object.assign(form, res.moveReqInfo)
+        Object.assign(form, res.moveStockInfo)
 
         if ( form.moveStatus === 'Q' ) {
             form.moveRegDate = todayKST()
-
             form.regSeq = await ApiStock.getNextRegSeq({moveRegDate: form.moveRegDate})
         }
         procList.value = res.procItemList

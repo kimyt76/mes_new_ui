@@ -5,7 +5,7 @@
         <div class="grid mt-1 mb-1">
             <div class="col-4 flex align-items-center gap-2">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.moveReqDate" inputId="on_label" showIcon iconDisplay="input" />
+                    <DatePicker v-model="form.moveStockDate" inputId="on_label" showIcon iconDisplay="input" />
                     <label>요청일</label>
                 </FloatLabel>
                 <span class="center-dash">-</span>
@@ -157,7 +157,7 @@ const filteredStorages = computed(() => {
 const storages = computed(() => filteredStorages.value);
 
 const form = reactive({
-    moveReqDate: '',
+    moveStockDate: '',
     seq: '',
     areaCd: 'A001',
     srcStorageCd: '',
@@ -168,6 +168,7 @@ const form = reactive({
 
     manamerName: '',
     moveStockId: '',
+    workProcIds: '',
     typeCd: 'Q',
     userId: userId,
 })
@@ -249,12 +250,12 @@ const removeRow = (index) =>{
 }
 
 onMounted( async ()=>{
-    form.moveReqDate = todayKST()
+    form.moveStockDate = todayKST()
     form.managerId = userId
     form.managerName = memberNm
     areaCds.value = await ApiCommon.getCodeList('area')
     allStorages.value = await ApiSystem.getStorageCodeList()
-    form.seq = await ApiCommon.getNextSeq('tb_move_req', 'move_req_date',  form.moveReqDate)
+    form.seq = await ApiCommon.getNextSeq('tb_move_stock_mst', 'move_stock_date',  form.moveStockDate)
 //console.log("dialogRef", dialogRef.value?.data)
     const list = dialogRef.value?.data ?? []; // 부모에서 넘어온 배열
     form.memo = Array.isArray(list)? list
@@ -264,9 +265,8 @@ onMounted( async ()=>{
         : (list?.itemName ?? ''); // 혹시 단건으로 올 때 대비
 
     let workProcIds = Array.isArray(list) ? list.map(row => row.workProcId).filter(id => id != null) : (list?.workProcId ? [list.workProcId] : []);
-
     itemList.value = await ApiProc.getProcItemList(workProcIds);
-
+    form.workProcIds = workProcIds
 })
 
 const closeDialog = () => {

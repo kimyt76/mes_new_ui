@@ -68,8 +68,8 @@
     </div>
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
-        <!-- <Button label="신규"  icon="pi pi-plus"  severity="secondary" @click="openNew('N')"></Button> -->
-        <Button label="이동확인"  @click="moveConfirm"></Button>
+        <Button label="이동등록"  icon="pi pi-plus"  severity="secondary" @click="openMovePop('N')"></Button>
+        <Button label="이동확인"  @click="openMoveConfirmPop('N')"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
 </div>
@@ -86,11 +86,11 @@
         class="my-table"
         showGridlines
      >
-        <Column selectionMode="multiple" headerStyle="width: 1rem" style="text-align: center;"/>
-         <Column field="moveReqDateSeq" header="일자-No"    :style="{ width: '100px', textAlign: 'center' }" >
+        <Column selectionMode="single" headerStyle="width: 1rem" style="text-align: center;"/>
+         <Column field="moveStockDateSeq" header="일자-No"    :style="{ width: '100px', textAlign: 'center' }" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data)" style="text-decoration: underline; cursor: pointer;">
-                    {{ slotProps.data.moveReqDateSeq }}
+                    {{ slotProps.data.moveStockDateSeq }}
                 </div>
             </template>
         </Column>
@@ -98,7 +98,11 @@
          <Column field="tarStorageName" header="받는창고"   :style="{ width: '100px', textAlign: 'center'}" />
          <Column field="itemName"       header="품목명"     :style="{ width: '300px'}" />
          <Column field="memo"           header="요청내용"   :style="{ width: '320px'}" />
-         <Column field="qty"            header="수량"       :style="{ width: '80px', textAlign: 'right'}" />
+         <Column field="qty"            header="수량"       :style="{ width: '80px', textAlign: 'right'}" >
+                <template #body="slotProps">
+                    {{ Number(slotProps.data.qty).toLocaleString() }}
+                </template>
+        </Column>
          <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
          <Column field="moveStatusName" header="진행상태"   :style="{ width: '60px', textAlign: 'center'}" >
             <template #body="slotProps">
@@ -182,7 +186,7 @@ const totalCount = computed(() => {
 })
 const areaCds  = ref([])
 const moveReqList = ref([])
-const selectedItem = ref([])
+const selectedItem = ref(null)
 const allStorages = ref([]); // 전체 창고(18건)
 // const filteredStorages = computed(() => {
 //   if (!form.areaCd) return [];
@@ -229,6 +233,11 @@ const selectRowClick = (row) =>{
  * 자재이동 등록
  */
 const openMovePop = (id) =>{
+    if ( id === 'N') {
+        if (selectedItem.value.length <= 0 ) return vWarning('등록할 목록을 선택하세요')
+        id = selectedItem.value.moveStockId
+    }
+
     dialog.open( MoveRegPop,{
         props:{
             header: '이동요청 등록',
@@ -248,34 +257,19 @@ const openMovePop = (id) =>{
         }
     })
 }
-const moveInsert = () =>{
-    if( selectedItem.value.length <=0 ) return vWarning('이동 등록할 자재를 선택해주세요.')
-    if( selectedItem.value.length > 1 ) return vWarning('이동 등록은 한 건씩만 가능합니다.')
-
-    dialog.open( MoveRegPop,{
-        props:{
-            header: '이동요청 등록',
-            modal: true,
-            draggable: true,
-            style: {
-                width: '1800px',
-                height: '650px'
-            },
-            maximizable: true
-        },
-        data: {
-            moveStockId: selectedItem.value[0]?.moveStockId
-        },
-        onClose: (evnet) =>{
-            srhList();
-        }
-    })
-}
 
 /**
  *  자재이동확인
  */
-const openMoveConfirmPop =() =>{
+const openMoveConfirmPop =(id) =>{
+    console.log('id',id )
+    if (form.moveStatus === 'Q' ) return vWarning('자재 이동후 확인이 가능합니다.')
+
+    if ( id === 'N') {
+        if (selectedItem.value.length <= 0 ) return vWarning('확인할 목록을 선택하세요')
+        id = selectedItem.value.moveStockId
+    }
+
     dialog.open( MoveConfirmPop,{
         props:{
             header: '자재 이동 확인',
@@ -283,6 +277,7 @@ const openMoveConfirmPop =() =>{
             draggable: true,
 
         },
+        data: id,
         onClose: (evnet) =>{
             srhList();
         }

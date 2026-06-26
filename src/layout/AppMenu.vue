@@ -216,7 +216,7 @@ const model = ref([
                     {
                         label: '반품조정',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/retrunAdj'
+                        to: '/purchase/retrunAdjust'
                     },
                 ]
             },

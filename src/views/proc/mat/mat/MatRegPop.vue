@@ -8,8 +8,8 @@
             <col style="width:15%">
             <col style="width:10%">
             <col style="width:15%">
-            <col style="width:15%">
             <col style="width:10%">
+            <col style="width:15%">
         </colgroup>
       <tbody>
         <tr>
@@ -450,7 +450,7 @@ const saveInfo = async () => {
 
     try {
         const params = {
-            procMake: form,
+            workOrderInfo: form,
             makeBomList: matUseDataList.value,
             makeEtcInfo: makeEtcInfo,
         }
@@ -582,22 +582,21 @@ const createMakeInfoParams = () => ({
     workBatchId: dialogRef.value.data.workBatchId,
     workProcId: dialogRef.value.data.workProcId,
     itemCd: dialogRef.value.data.itemCd,
+    procCd: form.procCd,
 })
 
 const bindMakeInfo = (data) => {
-    Object.assign(form, data.procMake || {})
+    Object.assign(form, data.workOrderInfo || {})
     matUseDataList.value = data.makeBomList || []
 
     Object.assign(makeEtcInfo, data.makeEtcInfo )
     makeEtcInfo.workProcId = form.workProcId
 
-
-
     if (phaseActiveIndex.value >= phaseTabs.value.length) {
         phaseActiveIndex.value = 0
     }
-console.log('data.procMake?.batchStatus ',  data.procMake?.batchStatus )
-    if ( data.procMake?.batchStatus < '21') {
+
+    if ( data.workOrderInfo?.batchStatus < '21') {
         isStarted.value = true
     }
     checkComplete()
@@ -956,4 +955,6 @@ td .custom-cell {
   justify-content: center;
   z-index: 9999;
 }
+
+
 </style>

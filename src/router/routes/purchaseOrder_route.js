@@ -27,4 +27,11 @@ export default [
         component: () => import('@/views/purchase/tran/PurchaseStateList.vue')
       },
 
+      {
+        path: 'retrunAdjust',
+        name: 'RetrunAdjust',
+        component: () => import('@/views/purchase/retrunAdjust/RetrunAdjustList.vue')
+      },
+
+
 ]

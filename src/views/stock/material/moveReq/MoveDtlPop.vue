@@ -63,7 +63,7 @@
         <div class="grid">
             <div class="col-12">
                 <FloatLabel variant="on">
-                    <Textarea v-model="form.etc" rows="1" class="w-full" autoResize />
+                    <Textarea v-model="form.memo" rows="1" class="w-full" autoResize />
                     <label>비고</label>
                 </FloatLabel>
             </div>
@@ -135,10 +135,9 @@ onMounted( async ()=>{
    const moveStockIds = selectedItems
         .map(item => item.moveStockId)
         .filter(id => id !== undefined && id !== null && id !== '');
-const res = await ApiStock.getMoveReqInfo(moveStockIds)
-console.log("res.value", res)
+    const res = await ApiStock.getMoveReqInfo(moveStockIds)
 
-   Object.assign(form, res.moveReqInfo)
+   Object.assign(form, res.moveStockInfo)
    itemList.value = res.procItemList
 })
 
