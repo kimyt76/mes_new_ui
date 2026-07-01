@@ -8,19 +8,19 @@
                         <Select v-model="form.itemTypeCd"
                                 :options="itemTypeCds"
                                 optionLabel="codeNm"
-                                optionValue="code" class="w-full" />
+                                optionValue="code" class="w-full" disabled/>
                         <label>품목구분</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemCd" class="w-full" />
+                        <InputText v-model="form.itemCd" class="w-full" disabled/>
                         <label>품목코드</label>
                     </FloatLabel>
                 </div>
                 <div class="col-6">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemName" class="w-full" />
+                        <InputText v-model="form.itemName" class="w-full" disabled/>
                         <label>품목명</label>
                     </FloatLabel>
                 </div>
@@ -30,14 +30,14 @@
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory1" :options="itemCategory1s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled/>
                         <label>제품유형(대분류)</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory2" :options="itemCategory2s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled/>
                         <label>제품유형(중분류)</label>
                     </FloatLabel>
                 </div>

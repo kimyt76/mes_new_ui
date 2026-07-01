@@ -8,19 +8,19 @@
                         <Select v-model="form.itemTypeCd"
                                 :options="itemTypeCds"
                                 optionLabel="codeNm"
-                                optionValue="code" class="w-full" />
+                                optionValue="code" class="w-full" disabled/>
                         <label>품목구분</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemCd" class="w-full" />
+                        <InputText v-model="form.itemCd" class="w-full" disabled/>
                         <label>품목코드</label>
                     </FloatLabel>
                 </div>
                 <div class="col-6">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemName" class="w-full" />
+                        <InputText v-model="form.itemName" class="w-full" disabled/>
                         <label>품목명</label>
                     </FloatLabel>
                 </div>
@@ -36,14 +36,14 @@
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory1" :options="itemCategory1s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled/>
                         <label>제품유형(대분류)</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory2" :options="itemCategory2s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled/>
                         <label>제품유형(중분류)</label>
                     </FloatLabel>
                 </div>
@@ -111,7 +111,6 @@
                     </FloatLabel>
                 </div>
             </div>
-
             <!-- Row 5 -->
             <div class="grid mb-5">
                 <div class="col-3">
@@ -120,7 +119,6 @@
                         <label>영업담당자</label>
                     </FloatLabel>
                 </div>
-
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputNumber v-model="form.stdYield" suffix=" %" class="w-full" />
@@ -143,21 +141,18 @@
                         <label>충전지시량</label>
                     </FloatLabel>
                 </div>
-
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.chargingCnt" class="w-full" />
                         <label>충전매수</label>
                     </FloatLabel>
                 </div>
-
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.cappingRange" class="w-full" />
                         <label>캡핑세기 측정범위</label>
                     </FloatLabel>
                 </div>
-
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.essenceStd" class="w-full" />
@@ -188,7 +183,6 @@
                 <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
             </div>
-
         </template>
     </Card>
 </template>
