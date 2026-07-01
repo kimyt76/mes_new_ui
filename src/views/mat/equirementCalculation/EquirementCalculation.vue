@@ -46,7 +46,7 @@
         </Column>
     </DataTable>
 </div>
-<div class="mt-3">
+<div>
     <DataTable
         ref="dt"
         v-model:selection="selectedItem"
@@ -66,8 +66,8 @@
         <Column field="reserveStockQty" header="발주(입고예정)"  :style="{ width: '130px', 'text-align': 'right'}" >
             <template #body="slotProps">{{ Number(slotProps.data.reserveStockQty).toLocaleString() }}</template>
         </Column>
-        <Column field="qty"             header="소요량(B)"      :style="{ width: '130px', 'text-align': 'right'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
+        <Column field="reqQty"             header="소요량(B)"      :style="{ width: '130px', 'text-align': 'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
         </Column>
         <Column field="differenceQty"   header="차이(A-B)"      :style="{ width: '130px', 'text-align': 'right'}"  >
             <template #body="slotProps">{{ Number(slotProps.data.differenceQty).toLocaleString() }}</template>

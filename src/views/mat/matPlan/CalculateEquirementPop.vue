@@ -57,8 +57,8 @@
         <Column field="realStockQty" header="재고수량(A)" :style="{ width: '140px', textAlign: 'right' }">
              <template #body="slotProps">{{ Number(slotProps.data.realStockQty).toLocaleString() }}</template>
         </Column>
-        <Column field="qty"         header="소요량(B)"      :style="{ width: '140px', textAlign: 'right' }" >
-            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
+        <Column field="reqQty"         header="소요량(B)"      :style="{ width: '140px', textAlign: 'right' }" >
+            <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
         </Column>
         <Column field="reserveStockQty" header="발주(입고예정)" :style="{ width: '140px', textAlign: 'right' }" >
              <template #body="slotProps">{{ Number(slotProps.data.reserveStockQty).toLocaleString() }}</template>
