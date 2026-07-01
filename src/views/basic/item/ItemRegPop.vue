@@ -258,20 +258,20 @@ const openPop = () =>{
 
 onMounted(async () =>{
     itemTypeCds.value = (await ApiCommon.getCodeList('ITEM_TYPE_CD'))
-        .filter(i => ['M1', 'M4'].includes(i.code));
+                        .filter(i => ['M1', 'M4'].includes(i.code));
     itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
     itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
     useYns.value = await ApiCommon.getCodeList('use_yn')
 })
 
 const itemCdCheck = async () =>{
-  const chk = await ApiItem.getItemCdCheck(form.itemCd)
+    const chk = await ApiItem.getItemCdCheck(form.itemCd)
 
-  if ( chk === 'Y' ) {
-    vWarning("중복된 품목코드입니다.")
-  }else{
-    vInfo("사용가능한 품목코드입니다.")
-  }
+    if ( chk === 'Y' ) {
+        vWarning("중복된 품목코드입니다.")
+    }else{
+        vInfo("사용가능한 품목코드입니다.")
+    }
 }
 
 const closeDialog = () => {
