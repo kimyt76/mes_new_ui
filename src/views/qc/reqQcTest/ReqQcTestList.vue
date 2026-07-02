@@ -100,7 +100,6 @@
         <Column field="testStateName"   header="시험상태"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <span
-                    class="action-link"
                     :class="slotProps.data.testState === 'REQ' ? 'action-register' : 'action-edit'"
                 >
                     {{ slotProps.data.testStateName}}
