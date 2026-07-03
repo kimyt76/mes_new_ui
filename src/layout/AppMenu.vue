@@ -289,7 +289,7 @@ const model = ref([
                     {
                         label: '자재불출',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/itemOUt'
+                        to: '/proc/weigh/weighOut'
                     },
                     {
                         label: '일일마감',
@@ -522,6 +522,11 @@ const model = ref([
                         label: '제품출고',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/stock/material/prodOut'
+                    },
+                    {
+                        label: '자재불출',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/stock/material/itemOut'
                     },
                 ]
             },

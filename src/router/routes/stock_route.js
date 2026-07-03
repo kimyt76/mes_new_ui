@@ -68,20 +68,19 @@ export default [
         component: () => import('@/views/stock/material/prodOut/ProdOutList.vue')
       },
 
+      /* 자재불출 */
+      {
+        path: 'material/itemOut',
+        name: 'ItemOut',
+        component: () => import('@/views/stock/material/itemOut/ItemOutList.vue')
+      },
 
-
-
-
-       /* 재고조사 */
+     /* 재고조사 */
       {
         path: 'inventory',
         name: 'InventoryList',
         component: () => import('@/views/stock/inventory/InventoryList.vue')
       },
-
-
-
-
 
 
 

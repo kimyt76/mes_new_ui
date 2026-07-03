@@ -11,10 +11,22 @@ export default [
         name: 'WeighProcTestList',
         component: () => import('@/views/proc/weigh/procTest/WeighProcTestList.vue')
       },
+      /**
+       * 제품출고
+       */
       {
         path: 'weigh/weighTran',
         name: 'WeighTran',
         component: () => import('@/views/proc/weigh/weighTran/WeighTranList.vue')
+      },
+
+      /**
+       * 자재불출
+       */
+      {
+        path: 'weigh/weighOut',
+        name: 'WeighOut',
+        component: () => import('@/views/proc/weigh/weighOut/WeighOutList.vue')
       },
 
 
