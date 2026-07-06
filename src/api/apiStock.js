@@ -67,6 +67,20 @@ export const ApiStock = {
         }
     },
 
+    /**
+     *  시험번호별 사용현황
+     * @param {*} params
+     * @returns
+     */
+    getTestUseList: async(params) => {
+        try{
+            const res = await API_URL.post('/stock/getTestUseList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
 /******************자재이동요청************************************************************************** */
 
     getNextRegSeq:async(params) => {
@@ -193,11 +207,7 @@ export const ApiStock = {
         return await API_URL.post('/adjust/saveAdjust', params)
     },
 
-
-
-
-    /***************제조출고**************************************************************************** */
-
+    /***************제품출고**************************************************************************** */
     getProdOutList: async(params) => {
         try{
             const res = await API_URL.post('/prodOut/getProdOutList', params)
@@ -218,4 +228,28 @@ export const ApiStock = {
     saveProdOut: async(params) => {
         return await API_URL.post('/prodOut/saveProdOut', params)
     },
+
+    /***************자재불출**************************************************************************** */
+    getItemOutList: async(params) => {
+        try{
+            const res = await API_URL.post('/invTran/getItemOutList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getItemOutInfo : async(id) => {
+        try{
+            const res = await API_URL.get(`/invTran/getItemOutInfo/${id}` )
+
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    saveItemOutInfo: async(params) => {
+        return await API_URL.post('/invTran/saveItemOutInfo', params)
+    },
+
+
 }
