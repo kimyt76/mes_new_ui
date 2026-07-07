@@ -39,23 +39,27 @@
         scrollHeight="650px"
         scrollable
         showGridlines
-        tableStyle="min-width:180rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="testNo"      header="시험번호"  frozen :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="품목코드"  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"    header="품목명"    frozen :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="itemCd"      header="사용품목코드"  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="사용품목명"  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="useDate"     header="사용일자"  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="lotNo"       header="LOt No."  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemCd"      header="사용량"  frozen :style="{ width: '150px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="testNo"        header="시험번호"         :style="{ width: '110px', textAlign: 'center' }" />
+        <Column field="itemCdM1"      header="품목코드(원료)"   :style="{ width: '110px', textAlign: 'center' }" />
+        <Column field="itemNameM1"    header="품목명(원료)"     :style="{ width: '350px'}" />
+        <Column field="itemCdM0"      header="사용품목코드"     :style="{ width: '110px', textAlign: 'center' }" />
+        <Column field="itemNameM0"    header="사용품목명"       :style="{ width: '350px'}" />
+        <Column field="procOrderDate" header="사용일자"         :style="{ width: '100px', textAlign: 'center' }" />
+        <Column field="lotNo"         header="Lot No."          :style="{ width: '150px'}" />
+        <Column field="qty"           header="사용량"           :style="{ width: '90px'}" >
+            <template #body="slotProps">
+                {{ Number(slotProps.data.qty || 0).toLocaleString() }}
+            </template>
+        </Column>
     </DataTable>
 </div>
 
 </template>
 
 <script setup>
+import { ApiStock } from '@/api/apiStock';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
@@ -78,7 +82,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    //testUseList.value = await ApiStock.getTestUseList(params);
+    testUseList.value = await ApiStock.getTestUseList(params);
 }
 
 onMounted( async () => {
