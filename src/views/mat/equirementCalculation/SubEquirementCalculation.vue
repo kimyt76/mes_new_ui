@@ -33,7 +33,7 @@
         <Column field="bomVer"      header="BOM버전"    :style="{ width: '100px'}"  />
         <Column field="itemName"    header="품목명"     :style="{ width: '380px'}"  />
         <Column field="unit"        header="단위"       :style="{ width: '50px'}"   />
-        <Column field="qty"         header="생산량"     :style="{ width: '140px'}"  >
+        <Column field="qty"         header="생산량"     :style="{ width: '140px'}" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }" >
             <template #body="slotProps">
                 <InputNumber
                     class="w-full"

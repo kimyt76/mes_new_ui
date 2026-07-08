@@ -25,7 +25,7 @@
         <Column field="bomVer"      header="BOM버전"    :style="{ width: '110px', 'text-align': 'center'}"  />
         <Column field="itemName"    header="품목명"     :style="{ width: '500px'}"  />
         <Column field="unit"        header="단위"       :style="{ width: '60px', 'text-align': 'center'}"   />
-        <Column field="qty"         header="생산량"     :style="{ width: '130px'}"  >
+        <Column field="qty"         header="생산량"     :style="{ width: '130px'}" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }" >
             <template #body="slotProps">
                 <InputNumber
                      v-model="slotProps.data.qty"
