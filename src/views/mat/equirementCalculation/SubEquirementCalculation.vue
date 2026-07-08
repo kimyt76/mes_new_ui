@@ -61,17 +61,27 @@
         scrollHeight="600px"
         showGridlines
     >
-        <Column field="itemCd"          header="품목코드"       :style="{ width: '120px'}"  />
-        <Column field="itemTypeName"    header="품목구분"       :style="{ width: '80px'}"  />
+        <Column field="itemCd"          header="품목코드"       :style="{ width: '120px', 'text-align': 'center'}"  />
+        <Column field="itemTypeName"    header="품목구분"       :style="{ width: '80px', 'text-align': 'center'}"  />
         <Column field="itemName"        header="품목명"         :style="{ width: '300px'}"  />
-        <Column field="spec"            header="규격"           :style="{ width: '50px'}"  />
-        <Column field="stockQty"        header="재고수량(A)"    :style="{ width: '130px'}"  />
-        <Column field="orderQty"        header="발주(입고예정)"  :style="{ width: '130px'}"  />
-        <Column field="calculation"     header="소요량(B)"      :style="{ width: '130px'}"  />
-        <Column field="differenceQty"   header="차이(A-B)"      :style="{ width: '130px'}"  />
-        <Column field="customrerName"   header="구매처"         :style="{ width: '200px'}"  />
-        <Column field="itemGrp1"        header="사급/자급"      :style="{ width: '100px'}"  />
-        <Column field="inPrice"         header="단가"           :style="{ width: '100px'}"  />
+        <Column field="spec"            header="규격"           :style="{ width: '50px', 'text-align': 'center'}"  />
+        <Column field="realStockQty"    header="재고수량(A)"    :style="{ width: '130px', 'text-align': 'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.realStockQty).toLocaleString() }}</template>
+        </Column>
+        <Column field="reserveStockQty" header="발주(입고예정)"  :style="{ width: '130px', 'text-align': 'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.reserveStockQty).toLocaleString() }}</template>
+        </Column>
+        <Column field="reqQty"             header="소요량(B)"      :style="{ width: '130px', 'text-align': 'right'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
+        </Column>
+        <Column field="differenceQty"   header="차이(A-B)"      :style="{ width: '130px', 'text-align': 'right'}"  >
+            <template #body="slotProps">{{ Number(slotProps.data.differenceQty).toLocaleString() }}</template>
+        </Column>
+        <Column field="customerName"   header="구매처"         :style="{ width: '200px'}"  />
+        <Column field="orderType"      header="사급/자급"      :style="{ width: '100px', 'text-align': 'center'}"  />
+        <Column field="inPrice"        header="단가"           :style="{ width: '100px', 'text-align': 'right' }" >
+            <template #body="slotProps">{{ Number(slotProps.data.inPrice).toLocaleString() }}</template>
+        </Column>
     </DataTable>
 </div>
 
@@ -84,6 +94,7 @@
     >
     <!-- 자식 컴포넌트에 이벤트 바인딩 -->
     <BomMultiListPop
+        :typeCd="typeCd"
         @selected="handleSelect"
         @close="bomDialog=false"
         />
@@ -91,6 +102,7 @@
 </template>
 
 <script setup>
+import { ApiMat } from '@/api/apiMat';
 import { getItemCds } from '@/util/common';
 import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
 import { ref } from 'vue';
@@ -99,7 +111,7 @@ const bomDialog = ref(false)
 const selectedItem = ref([])
 const itemBomList = ref([])
 const itemStockList = ref([])
-
+const typeCd = ref('M2')
 const removeRow = () =>{
     itemBomList.value.splice(index,1)
 }
@@ -113,7 +125,7 @@ const handleSelect = (rows) =>{
     addRows(rows)
 }
 
-//반제품에 대한 소요량 계산(원재료)
+//품목에 대한 소요량 계산(부자재)
 const bomCalculation = async ()=>{
     const params = {
         itemCds: getItemCds(itemBomList.value),
@@ -121,7 +133,7 @@ const bomCalculation = async ()=>{
 
     console.log('itemBomList', itemBomList.value)
 
-    //itemStockList.value = await ApiLab.getItemBomStockList(params)
+    itemStockList.value = await ApiMat.getItemStockList(itemBomList.value);
 }
 
 const allClear = () =>{
@@ -179,4 +191,6 @@ const items = ref([
   text-align: center;
   font-family: Lobo, Consolas;
 }
+
+
 </style>

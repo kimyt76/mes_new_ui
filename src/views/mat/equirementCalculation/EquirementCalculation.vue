@@ -55,6 +55,7 @@
         class="my-table"
         scrollHeight="600px"
         showGridlines
+        scrollable
     >
         <Column field="itemCd"          header="품목코드"       :style="{ width: '120px', 'text-align': 'center'}"  />
         <Column field="itemTypeName"    header="품목구분"       :style="{ width: '80px', 'text-align': 'center'}"  />

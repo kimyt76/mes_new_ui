@@ -34,8 +34,8 @@
                 :unselectOnClick="false"
                 @row-select="onRowSelect"
              >
-             <Column field="itemCd"     header="품목코드" :style="{ width: '80px', textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-             <Column field="itemName"   header="품목명"   :style="{ width: '320px' , textAlign: 'left'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
+             <Column field="itemCd"     header="품목코드" :style="{ width: '80px', textAlign: 'center'}"  />
+             <Column field="itemName"   header="품목명"   :style="{ width: '320px' , textAlign: 'left'}"  />
              </DataTable>
         </div>
         <div class="basis-[65%] h-full overflow-auto">
@@ -46,10 +46,10 @@
                 scrollHeight="700px"
                 show-gridlines
              >
-             <Column field="itemCd"     header="품목코드"   :style="{ width: '100px' , textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-             <Column field="itemName"   header="생산품목명" :style="{ width: '500px', textAlign: 'left'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-             <Column field="bomVer"     header="BOM버전"    :style="{ width: '120px' , textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-             <Column field="realContent" header="소요량(100kg당)"   :style="{ width: '130px' , textAlign: 'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
+             <Column field="itemCd"     header="품목코드"   :style="{ width: '100px' , textAlign: 'center'}"  />
+             <Column field="itemName"   header="생산품목명" :style="{ width: '500px', textAlign: 'left'}"  />
+             <Column field="bomVer"     header="BOM버전"    :style="{ width: '120px' , textAlign: 'center'}"  />
+             <Column field="realContent" header="소요량(100kg당)"   :style="{ width: '130px' , textAlign: 'center'}"  />
              </DataTable>
         </div>
     </div>
