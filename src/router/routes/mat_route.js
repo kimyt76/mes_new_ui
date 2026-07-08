@@ -14,7 +14,12 @@ export default [
       {
         path: 'itemM1Equirment',
         name: 'ItemM1Equirment',
-        component: () => import('@/views/mat/itemM1Equirment/ItemM1Equirment.vue')
+        component: () => import('@/views/mat/itemEquirment/ItemM1Equirment.vue')
+      },
+      {
+        path: 'itemM2Equirment',
+        name: 'ItemM2Equirment',
+        component: () => import('@/views/mat/itemEquirment/ItemM2Equirment.vue')
       },
 
 

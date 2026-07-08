@@ -244,6 +244,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/mat/itemM1Equirment'
                     },
+                    {
+                        label: '부자재 소요품목',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/mat/itemM2Equirment'
+                    },
                 ]
             },
             {
