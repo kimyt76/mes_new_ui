@@ -12,6 +12,11 @@ export default [
         component: () => import('@/views/mat/equirementCalculation/EquirementCalculation.vue')
       },
       {
+        path: 'equirementCalculationM2',
+        name: 'EquirementCalculationM2',
+        component: () => import('@/views/mat/equirementCalculation/SubEquirementCalculation.vue')
+      },
+      {
         path: 'itemM1Equirment',
         name: 'ItemM1Equirment',
         component: () => import('@/views/mat/itemEquirment/ItemM1Equirment.vue')

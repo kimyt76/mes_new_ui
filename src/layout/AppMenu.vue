@@ -235,9 +235,14 @@ const model = ref([
                         to: '/mat/matPlan'
                     },
                     {
-                        label: '소요량계산',
+                        label: '소요량계산(원재료)',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/mat/equirementCalculation'
+                    },
+                    {
+                        label: '소요량계산(부자재)',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/mat/equirementCalculationM2'
                     },
                     {
                         label: '원재료별 소요품목',
