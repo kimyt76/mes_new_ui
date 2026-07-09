@@ -34,10 +34,11 @@
                 <label for="on_label">진행상태</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.orderType" :options="orderTypes"
-                   optionLabel="codeNm"
-                   optionValue="code"
-                style="width: 120px"
+                <Select v-model="form.orderType"
+                    :options="orderTypes"
+                    optionLabel="codeNm"
+                    optionValue="code"
+                    style="width: 120px"
                 />
                 <label for="on_label">수주유형</label>
             </FloatLabel>
