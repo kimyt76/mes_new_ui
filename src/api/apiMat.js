@@ -36,6 +36,15 @@ export const ApiMat = {
     return await API_URL.post(`/mat/saveMatPlanList`, params)
   },
 
+  updateMatInYn: async(params) => {
+    return await API_URL.post(`/mat/updateMatInYn`, params)
+  },
+  updateEndYn: async(params) => {
+    return await API_URL.post(`/mat/updateEndYn`, params)
+  },
+
+
+
   /**
    * 소요량계산
    * @param {*} params
