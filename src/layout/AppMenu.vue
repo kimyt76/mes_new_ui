@@ -304,17 +304,17 @@ const model = ref([
                     {
                         label: '일일마감',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/dayDeadline'
+                        to: '/proc/weigh/dayClose'
                     },
                     {
                         label: '월간마감',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/monDeadline'
+                        to: '/proc/weigh/monClose'
                     },
                     {
                         label: '폐기조정',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/disposalAdjustment'
+                        to: '/proc/weigh/distposalAdjust'
                     },
                 ]
             },

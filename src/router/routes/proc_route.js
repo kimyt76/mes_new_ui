@@ -1,6 +1,8 @@
 /** 칭량관리 */
 export default [
-      /* 칭량 */
+      /**
+       * 칭량
+       */
       {
         path: 'weigh',
         name: 'WeighList',
@@ -11,22 +13,36 @@ export default [
         name: 'WeighProcTestList',
         component: () => import('@/views/proc/weigh/procTest/WeighProcTestList.vue')
       },
-      /**
-       * 제품출고
-       */
+      /* 제품출고*/
       {
         path: 'weigh/weighTran',
         name: 'WeighTran',
         component: () => import('@/views/proc/weigh/weighTran/WeighTranList.vue')
       },
 
-      /**
-       * 자재불출
-       */
+      /* 자재불출*/
       {
         path: 'weigh/weighOut',
         name: 'WeighOut',
         component: () => import('@/views/proc/weigh/weighOut/WeighOutList.vue')
+      },
+      /* 일일마감*/
+      {
+        path: 'weigh/dayClose',
+        name: 'DayClose',
+        component: () => import('@/views/proc/weigh/dayClose/DayCloseList.vue')
+      },
+      /* 월마감*/
+      {
+        path: 'weigh/monClose',
+        name: 'MonClose',
+        component: () => import('@/views/proc/weigh/monClose/MonCloseList.vue')
+      },
+      /* 폐기조정*/
+      {
+        path: 'weigh/distposalAdjust',
+        name: 'DistposalAdjust',
+        component: () => import('@/views/proc/weigh/distposalAdjust/DistposalAdjustList.vue')
       },
 
 
