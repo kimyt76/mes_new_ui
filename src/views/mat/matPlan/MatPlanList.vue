@@ -104,8 +104,28 @@
                 </template>
             </Column>
             <Column field="etc"         header="비고"           :style="{ width: '180px'}"  />
-            <Column field="matInYn"     header="원료입고완료"    :style="{ width: '110px'}"  />
-            <Column field="endYn"       header="종결여부"        :style="{ width: '90px'}"  />
+            <Column field="matInYn"     header="원료입고완료"    :style="{ width: '110px'}">
+                 <template #body="slotProps">
+                    <span
+                        :class="slotProps.data.matInYn === 'Y' ? 'text-red' : 'text-blue'"
+                        class="click-text"
+                        @click="toggleMatInYn(slotProps.data)"
+                    >
+                        {{ slotProps.data.matInYn === 'Y' ? '완료' : '미완료' }}
+                    </span>
+                </template>
+            </Column>
+            <Column field="endYn"       header="종결여부"        :style="{ width: '90px'}"  >
+                 <template #body="slotProps">
+                    <span
+                        :class="slotProps.data.endYn === 'Y' ? 'text-red' : 'text-blue'"
+                        class="click-text"
+                        @click="toggleEndYn(slotProps.data)"
+                    >
+                        {{ slotProps.data.endYn === 'Y' ? '종결' : '미종결' }}
+                    </span>
+                </template>
+            </Column>
         </DataTable>
     </div>
 
@@ -134,20 +154,40 @@ const endYns = ref([
 ]);
 
 const form = reactive({
-  strDate: minMonth(todayKST()),
+  strDate: minMonth(todayKST(), 1),
   endDate: addMonth(todayKST(), 2),
   itemName: '',
   itemCd: '',
   endYn: ''
 })
 
-const handleDateChange = () =>{
+const toggleMatInYn = async (row) => {
+    const newValue = row.matInYn === 'Y' ? 'N' : 'Y'
 
+    const params = {
+        matPlanId: row.matPlanId,
+        matInYn: newValue
+    }
+    await ApiMat.updateMatInYn(params)
+
+    row.matInYn = newValue
 }
 
-const home = ref({
-    icon: 'pi pi-home'
-});
+const toggleEndYn = async (row) => {
+    const newValue = row.endYn === 'Y' ? 'N' : 'Y'
+
+    const params = {
+        matPlanId: row.matPlanId,
+        endYn: newValue
+    }
+    await ApiMat.updateEndYn(params)
+
+    row.endYn = newValue
+}
+
+
+const handleDateChange = () =>{
+}
 
 const srchMatPlanList = async () => {
   const params = {
@@ -263,6 +303,10 @@ const calculate = (type) =>{
     })
 }
 
+const home = ref({
+    icon: 'pi pi-home'
+});
+
 const items = ref([
     { label: '제조관리' },
     { label: '제조관리' },
@@ -319,6 +363,23 @@ const downloadExcel = () =>{
   text-decoration: underline;
   cursor: pointer;
 
+}
+
+.click-text {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.text-red {
+    color: #ef4444;   /* 완료, 종결 */
+}
+
+.text-blue {
+    color: #2563eb;   /* 미완료, 미종결 */
+}
+
+.click-text:hover {
+    text-decoration: underline;
 }
 
 </style>
