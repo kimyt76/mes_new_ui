@@ -43,10 +43,7 @@
       </div>
 
       <div>
-        <FloatLabel variant="on">
-          <InputText id="barcode" v-model="form.barcode" :disabled="form.procStatus === '00'" style="width: 180px" />
-          <label for="barcode">바코드(시험번호)</label>
-        </FloatLabel>
+          <InputText id="barcode" v-model="form.barcode"  placeholder="바코드(시험번호)" style="width: 180px"  @keyup.enter="openBarcodePopup" readonly/>
       </div>
 
       <!--  현재 탭 기준 카운트 -->
@@ -557,11 +554,23 @@ const calcTotalQty = (row) => {
   return 0
 }
 
+const openBarcodePopup = () => {
+    const row = matUseDataList.value.find(r =>
+            r.itemCd === form.barcode && !String(r.testNo ?? '').trim()
+        )
+    if (!row) {
+        return vWarning('해당 품목이 리스트에 없습니다.')
+    }
+
+    openLookupPopup('ITEM_CODE', row)
+}
+
 /** 팝업 호출() */
 const openLookupPopup = (type, row = null) => {
     let title = ''
     let currentComponet = null
 
+    const popup = popupMap[type]
     // row를 넘겨야 하는 팝업 타입
     const rowTargetTypes = ['ITEM_CODE', 'CONTAINER_WEIGHT', 'WEIGH_USER', 'CONFIRM_USER', 'CONTAINER_WEIGHT1']
     const shouldPassRow = rowTargetTypes.includes(type)
@@ -762,7 +771,6 @@ const downloadExcel = () => {
 
   XLSX.writeFile(wb, '칭량_처방_리스트.xlsx')
 }
-
 
 //공정검사서 다운로드
 const downloadProc = () =>{
