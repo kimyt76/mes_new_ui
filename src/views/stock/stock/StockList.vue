@@ -98,7 +98,8 @@
     ref="dt"
     v-model:first="first"
     :value="stockList"
-    dataKey="itemCd"
+     :key="tableKey"
+    dataKey="_rowKey"
     paginator
     :rows="20"
     :rowsPerPageOptions="[20,30,40]"
@@ -109,10 +110,10 @@
     class="my-table"
   >
     <Column header="No" :style="{ width: '40px', textAlign:'center'}">
-                <template #body="slotProps">
-                    {{ slotProps.index + 1 + first }}
-                </template>
-            </Column>
+        <template #body="slotProps">
+            {{ slotProps.index + 1 + first }}
+        </template>
+    </Column>
     <Column field="itemCd" header="품목코드" frozen :style="{ width: '120px', textAlign:'center'}" />
     <Column field="itemName" header="품목명" frozen :style="{ width: '400px'}" bodyClass="break-words"/>
 
@@ -121,7 +122,7 @@
       field="testNo"
       header="시험번호"
       frozen
-      :style="{ width: '80px', textAlign:'center'}"
+      :style="{ width: '120px', textAlign:'center'}"
     />
 
     <Column
@@ -144,8 +145,8 @@
     <Column field="totQty" header="합계" :style="{ width: '90px', textAlign:'right'}">
       <template #body="slotProps">{{ formatNumber(slotProps.data.totQty) }}</template>
     </Column>
-    <Column field="saftQty" header="안전재고" :style="{ width: '90px', textAlign:'right'}">
-      <template #body="slotProps">{{ formatNumber(slotProps.data.saftQty) }}</template>
+    <Column field="safeStockQty" header="안전재고" :style="{ width: '90px', textAlign:'right'}">
+      <template #body="slotProps">{{ formatNumber(slotProps.data.safeStockQty) }}</template>
     </Column>
   </DataTable>
 </div>
@@ -179,17 +180,35 @@ const form = reactive({
   stdDate: todayKST(),
 });
 
+
+const tableKey = ref(0)
+
 const srhList = async () => {
   first.value = 0
+
+  dynamicColumns.value = []
+  stockList.value = []
+
   const params = {
     ...form,
-  };
+  }
 
-  const res = await ApiStock.getStockItemList(params);
+  const res = await ApiStock.getStockItemList(params)
+console.log('API 전체 응답:', res)
+console.log('rows:', res.rows)
+console.log('rows 개수:', res.rows?.length)
+  dynamicColumns.value = res.dynamicColumns || []
 
-  dynamicColumns.value = res.dynamicColumns || [];
-  stockList.value = res.rows || [];
-};
+  stockList.value = (res.rows || []).map((row, index) => ({
+    ...row,
+    _rowKey:
+      form.type === 'TEST'
+        ? `${row.itemCd}_${row.testNo ?? ''}_${index}`
+        : `${row.itemCd}_${index}`,
+  }))
+
+  tableKey.value++
+}
 
 watch(
   () => form.areaCd,
