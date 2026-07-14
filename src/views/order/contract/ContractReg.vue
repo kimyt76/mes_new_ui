@@ -56,7 +56,7 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <Select v-model="form.orderType" :options="orderTypes"
+                    <Select v-model="form.Type" :options="orderTypes"
                             optionLabel="codeNm" optionValue="code" class="w-full" />
                     <label>수주유형</label>
                 </FloatLabel>
@@ -93,7 +93,7 @@
         <Column field="itemCd"      header="품목코드"   :style="{ width: '80px', 'text-align': 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="spec"        header="규격"       :style="{ width: '70px', 'text-align': 'center' }" ></Column>
-        <Column field="prodType"    header="제품유형"   :style="{ width: '80px', 'text-align': 'center' }" bodyClass="break-words" >
+        <Column field="prodType"    header="제품유형"   :style="{ width: '80px', 'text-align': 'center' }" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.prodType"
