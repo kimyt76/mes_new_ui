@@ -154,6 +154,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/progressList'
                     },
+                    {
+                        label: '수주별계획일정관리',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/order/orderPlan'
+                    },
                 ]
             },
             // {

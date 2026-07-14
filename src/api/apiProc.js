@@ -150,6 +150,15 @@ export const ApiProc = {
     completeWeight: async(params) => {
         return await API_URL.post(`/procWeigh/completeWeight`, params)
     },
+    getWeighCloseList: async(params) => {
+        try{
+            const res = await API_URL.post('/procWeigh/getWeighCloseList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
 
 
     //제조

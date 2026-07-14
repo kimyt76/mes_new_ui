@@ -69,9 +69,15 @@ export default [
         component: () => import('@/views/order/client/ClientList.vue')
       },
       {
-        path: 'clientDetail/:id?',
-        name: 'ClientDetail',
-        component: () => import('@/views/order/client/ClientDetailPop.vue'),
-        props: true,
-      },
+          path: 'clientDetail/:id?',
+          name: 'ClientDetail',
+          component: () => import('@/views/order/client/ClientDetailPop.vue'),
+          props: true,
+        },
+
+        {
+          path: 'orderPlan',
+          name: 'OrderPlan',
+          component: () => import('@/views/order/orderPlan/OrderPlanList.vue')
+        },
     ]
