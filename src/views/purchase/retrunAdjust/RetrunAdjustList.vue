@@ -10,14 +10,6 @@
                 @change="handleDateChange"
             />
             <FloatLabel variant="on">
-                <Select v-model="form.tranCd" :options="tranCds"
-                   optionLabel="codeNm"
-                   optionValue="code"
-                style="width: 150px"
-                />
-                <label for="on_label">처리구분</label>
-            </FloatLabel>
-            <FloatLabel variant="on">
                 <Select v-model="form.srcStorageCd" :options="allStorages"
                    optionLabel="codeNm"
                    optionValue="code"
@@ -42,25 +34,127 @@
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
-
-
-
+<div>
+    <DataTable
+        ref="dt"
+        :value="adjustList"
+        dataKey="tranId"
+        paginator :rows="20"
+        :rowsPerPageOptions="[20,30,40]"
+        scrollHeight="700px"
+        scrollable
+        showGridlines
+        selectionMode="single"
+        class="my-table"
+        >
+        <Column field="tranDate"        header="일자"    :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="tranTypeName"    header="처리구분"  :style="{ width: '70px', textAlign:'center'}" />
+        <Column field="srcStorageName"  header="창고"     :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="itemName"        header="품목"    :style="{ width: '400px'}" bodyClass="break-words">
+            <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data.tranId)" class="clickable-cell">
+                    {{ slotProps.data.itemName }}
+                </div>
+            </template>
+        </Column>
+        <Column field="qty"             header="수량"   :style="{ width: '80px', textAlign:'right'}">
+            <template #body="slotProps">
+                {{ Number(slotProps.data.qty).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="managerName"     header="담당자"  :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="etc"             header="비고"  :style="{ width: '150px', textAlign:'center'}" />
+    </DataTable>
+</div>
 
 </template>
 
 <script setup>
+import { ApiStock } from '@/api/apiStock';
+import { ApiSystem } from '@/api/apiSystem';
+import DateRangePicker from '@/components/DateRangePicker.vue';
+import { addMonth, isEmpty, minMonth, todayKST } from '@/util/common';
+import { exportToExcel } from '@/util/exportToExcel';
+import { useDialog } from 'primevue';
+import { computed, onMounted, reactive, ref } from 'vue';
+import ReturnAdjustPop from './RetrunAdjustPop.vue';
 
 
+const dialog = useDialog()
+const adjustList = ref([])
+const allStorages = ref([]); // 전체 창고(18건)
+const totalCount = computed(() => {
+  return Array.isArray(adjustList.value) ? adjustList.value.length : 0
+})
+const form = reactive({
+    strDate: minMonth(todayKST(), 2),
+    endDate: addMonth(todayKST(), 1),
+    srcStorageCd: '',
+    srcStorageName: '',
+    itemName: '',
+    itemCd:'',
+
+    tranTypeCd: 'P', // 반품조정만 조회
+})
+
+const handleDateChange = () =>{
+
+}
+
+const selectRowClick = (id) =>{
+    let title = ''
+
+    if ( isEmpty(id) ){
+        title = '반품조정 등록'
+    } else{
+        title = '반품조정 상세'
+    }
+
+    dialog.open(ReturnAdjustPop, {
+        props: {
+            header:title,
+            modal:true,
+            draggable: true,
+        },
+        data: id,
+        onClose: (event) =>{
+            srhList()
+        }
+    })
+}
+
+const srhList = async () =>{
+    const params = {
+        ...form
+    }
+
+    adjustList.value = await ApiStock.getAdjustList(params)
+}
+
+onMounted( async () =>{
+    allStorages.value = await ApiSystem.getStorageCodeList()
+})
 
 
 const home = ref({
     icon: 'pi pi-home'
 });
 const items = ref([
-    { label: '구매' },
+    { label: '구매관리' },
     { label: '반품조정' },
     { label: '반품조정 목록' },
 ]);
+
+const downloadExcel = () =>{
+  const cols = dt.value?.columns ?? [];
+
+  if (!cols.length) {
+    console.warn("No Columns Found");
+    return;
+  }
+  exportToExcel(adjustList.value, "반품조정 리스트", cols);
+}
+
 </script>
 
 <style scoped>
@@ -71,4 +165,12 @@ const items = ref([
   text-align: center;
   font-family: monaco, Consolas;
 }
+::v-deep(.break-words) {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 </style>
