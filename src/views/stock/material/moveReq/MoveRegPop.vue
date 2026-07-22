@@ -204,6 +204,7 @@ const form = reactive({
 
     typeCd: 'Q',
     moveStatus: '',
+    confirmStatus: 'W',
     moveStockId: '',
 })
 
@@ -223,8 +224,6 @@ const openPop = (type) =>{
             }
         },
         onClose: (event) => {
-            console.log("event", event)
-            console.log("data", event.data)
             if (event) {
                 form.moveManagerId = event.data.userId
                 form.moveManagerName = event.data.memberNm

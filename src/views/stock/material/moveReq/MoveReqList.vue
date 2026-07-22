@@ -127,21 +127,27 @@
                     >[진행]
                 </span>
                  <!-- 완료 -->
-                <span v-if="slotProps.data.moveStatus === 'C'" @click="openMovePop(slotProps.data.moveStockId)"
+                <span v-if="slotProps.data.moveStatus === 'C'"
                     style="
-                        color: #1976d2;
+                        color: #999;
                         font-weight: bold;
-                        cursor: pointer;
-                        text-decoration: underline;
                         "
-                    >[완료]
+                    >완료
                 </span>
             </template>
         </Column>
          <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
-                <span v-if="slotProps.data.moveStatus === 'Q' || slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
+                <span v-if="slotProps.data.moveStatus === 'Q'"
+                    style="
+                        color: #1976d2;
+                        font-weight: bold;
+                        "
+                    > -
+                </span>
+                 <!-- 등록 -->
+                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -157,7 +163,7 @@
                         font-weight: bold;
                         cursor: default;
                         "
-                    >[완료]
+                    >완료
                 </span>
             </template>
         </Column>
@@ -263,8 +269,6 @@ const openMovePop = (id) =>{
  */
 const openMoveConfirmPop =(id) =>{
     console.log('id',id )
-    if (form.moveStatus === 'Q' ) return vWarning('자재 이동후 확인이 가능합니다.')
-
     if ( id === 'N') {
         if (selectedItem.value.length <= 0 ) return vWarning('확인할 목록을 선택하세요')
         id = selectedItem.value.moveStockId
@@ -275,9 +279,15 @@ const openMoveConfirmPop =(id) =>{
             header: '자재 이동 확인',
             modal: true,
             draggable: true,
-
+            style: {
+                width: '1800px',
+                height: '650px'
+            },
+            maximizable: true
         },
-        data: id,
+        data: {
+            moveStockId: id
+        },
         onClose: (evnet) =>{
             srhList();
         }
