@@ -313,6 +313,7 @@ const form = reactive({
     etc: '',
 
     qcTestId: '',
+    tranYn: '',
 })
 
 const methodColumns = [
