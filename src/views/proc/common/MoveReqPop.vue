@@ -147,6 +147,7 @@ const { vSuccess, vInfo, vWarning} = useAlertStore()
 const { userId, memberNm } = useAuthStore()
 const dialogRef = inject('dialogRef');
 const selectedItem = ref([])
+const deleteMoveStockItemIds = ref([])
 const itemList = ref([])
 const areaCds = ref([])
 const allStorages = ref([]); // 전체 창고(18건)
@@ -170,6 +171,7 @@ const form = reactive({
     manamerName: '',
     moveStockId: '',
     workProcIds: '',
+    moveStatus: 'Q',
     typeCd: 'Q',
     userId: userId,
 })
@@ -218,6 +220,7 @@ const saveInfo = async () =>{
 
     const params = {
         moveStockInfo: form,
+        deleteMoveStockItemIds: deleteMoveStockItemIds.value,
         procItemList: itemList.value
     }
 
@@ -237,6 +240,7 @@ const addRow = (obj) =>{
       qty: o.qty,
       etc: '',
       itemTypeCd: o.itemTypeCd,
+      moveStockItemId: 0,
   }));
 
   if (itemList.value.length > 0) {
@@ -247,6 +251,14 @@ const addRow = (obj) =>{
 }
 
 const removeRow = (index) =>{
+     const row = itemList.value[index];
+
+    // 기존 데이터인 경우 삭제 ID 저장
+    if (row?.moveStockItemId) {
+        deleteMoveStockItemIds.value.push(row.moveStockItemId);
+    }
+
+    // 화면에서 삭제
     itemList.value.splice(index, 1);
 }
 

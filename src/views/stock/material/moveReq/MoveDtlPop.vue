@@ -78,6 +78,7 @@
         >
         <Column field="itemCd"      header="품목코드" style="width: 120px"/>
         <Column field="itemName"    header="품목명" style="width: 400px"/>
+        <Column field="testNo"    header="시험번호" style="width: 110px"/>
         <Column field="qty"         header="수량" style="width: 100px">
             <template #body="slotProps">
                 {{ slotProps.data.qty }}

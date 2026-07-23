@@ -219,7 +219,7 @@ const form = reactive({
     confirmerId: userId,
     confirmerName: memberNm,
     typeCd: 'Q',
-    moveStatus: 'I',
+    moveStatus: 'C',
     confirmStatus: '',
     moveStockId: '',
 })

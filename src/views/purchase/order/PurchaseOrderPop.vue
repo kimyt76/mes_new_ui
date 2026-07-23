@@ -87,9 +87,9 @@
     </template>
 </Card>
 <div class="w-full flex gap-2 ml-2 mt-4">
-    <div>
+    <!-- <div>
         <Button label="주문서" @click="openPop('O')"/>
-    </div>
+    </div> -->
     <div>
         <Button label="품목+" @click="itemPop"/>
     </div>

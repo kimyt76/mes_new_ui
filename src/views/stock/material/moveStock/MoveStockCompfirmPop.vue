@@ -37,7 +37,7 @@
             <div class="col-4">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
-                    <InputText v-model="form.comfirmerName" class="w-full" />
+                    <InputText v-model="form.confirmerName" class="w-full" />
                     <InputIcon class="pi pi-search" @click="openPop('U')" />
                     </IconField>
                     <label>확인자</label>
@@ -58,8 +58,8 @@
             <div class="col-4">
                 <FloatLabel variant="on">
                     <Select
-                        v-model="form.comfirmYn"
-                        :options="comfirmYns"
+                        v-model="form.confirmStatus"
+                        :options="confirmStatus"
                         optionLabel="codeNm"
                         optionValue="code"
                         class="w-full"
@@ -90,7 +90,7 @@
         <Column field="itemCd"    header="품목코드" :style="{ width: '110px', textAlign: 'center'}" />
         <Column field="itemName"  header="품목명"   style="width: 440px" />
         <Column field="qty"       header="수량" :style="{ width: '110px', textAlign: 'right'}">
-            <template #body="slotProps">
+             <template #body="slotProps">
                 {{ Number(slotProps.data.qty).toLocaleString() }}
             </template>
        </Column>
@@ -103,6 +103,7 @@
 </template>
 
 <script setup>
+import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import { ApiSystem } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
@@ -119,31 +120,34 @@ const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const moveStockList = ref([])
 const allStorages = ref([])
-const comfirmYns = ref([])
+const confirmStatus = ref([])
 
 const form = reactive({
     moveStockDate: '',
     seq:'',
-    managerId:userId,
-    managerName:memberNm,
+    managerId: '',
+    managerName: '',
     srcStorageCd: '',
     tarStorageCd: '',
     etc: '',
-    comfirmYn: '',
 
-    typeCd: 'T',
+    confirmerId: '',
+    confirmerName: '',
+
+    typeCd: 'J',
+    confirmStatus: '',
     moveStockId: '',
 })
 
 const saveInfo = async () =>{
-    if( isEmpty(form.comfirmYn)) return vWarning('승인상태를 선택하세요.')
-    if( isEmpty(form.comfirmId)) return vWarning('승인자를 등록하세요.')
+    if( isEmpty(form.confirmStatus)) return vWarning('승인상태를 선택하세요.')
+    if( isEmpty(form.confirmerName)) return vWarning('승인자를 등록하세요.')
 
     try{
         const param = {
             ...form
         }
-        const res = await ApiStock.saveMoveStockComfirm(param)
+        const res = await ApiStock.saveMoveStockConfirm(param)
         vSuccess('승인되었습니다.')
         closeDialog()
 
@@ -156,13 +160,13 @@ const openPop = () =>{
     dialog.open(UserListPop, {
         props:{
             header: '승인자 검색',
-            modal,
+            modal: true,
             draggable: false
         },
         onClose: (event) =>{
             if (event.data){
-                form.managerId = event.data.userId
-                form.managerName = event.data.memberNm
+                form.confirmerId = event.data.userId
+                form.confirmerName = event.data.memberNm
             }
         }
     })
@@ -170,6 +174,7 @@ const openPop = () =>{
 
 onMounted(async () =>{
     allStorages.value = await ApiSystem.getStorageCodeList()
+    confirmStatus.value = await ApiCommon.getCodeList('CONFIRM_STATUS')
 
     form.moveStockId = dialogRef.value.data.moveStockId
     const res = await ApiStock.getMoveStockInfo(form.moveStockId)

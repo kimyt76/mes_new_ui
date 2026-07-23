@@ -89,7 +89,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" severity="success" @click="saveInfo"/>
+    <Button v-if="isSaved" label="저장" severity="success" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 
@@ -127,8 +127,9 @@ const itemDialog = ref(false)
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const moveStockList = ref([])
+const deleteMoveStockItemIds = ref([])
 const allStorages = ref([])
-
+const isSaved = ref(true)
 const form = reactive({
     moveStockDate: '',
     seq:'',
@@ -138,7 +139,9 @@ const form = reactive({
     tarStorageCd: '',
     etc: '',
 
-    typeCd: 'T',
+    areaCd:'',
+    confirmStatus:'W',
+    typeCd: 'J',
     moveStockId: '',
 })
 
@@ -150,6 +153,7 @@ const saveInfo = async () =>{
     try{
         const param = {
             moveStockInfo: form,
+            deleteMoveStockItemIds: deleteMoveStockItemIds.value,
             moveItemList: moveStockList.value
         }
         const res = await ApiStock.saveMoveStockInfo(param)
@@ -218,6 +222,14 @@ const addRow = (row) =>{
 }
 
 const removeRow = (index) =>{
+    const row = moveStockList.value[index];
+
+    // 기존 데이터인 경우 삭제 ID 저장
+    if (row?.moveStockItemId) {
+        deleteMoveStockItemIds.value.push(row.moveStockItemId);
+    }
+
+    // 화면에서 삭제
     moveStockList.value.splice(index, 1);
 }
 
@@ -234,6 +246,10 @@ onMounted(async () =>{
 
         Object.assign(form, res.moveStockInfo)
         moveStockList.value = res.moveItemList
+
+        if (form.confirmStatus  === 'C' || form.confirmStatus === 'R') {
+            isSaved.value = false
+        }
     }
 
 })

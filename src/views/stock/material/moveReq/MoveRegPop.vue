@@ -202,6 +202,7 @@ const form = reactive({
     areaCd: null,
     etc: null,
 
+    areaCd:'',
     typeCd: 'Q',
     moveStatus: '',
     confirmStatus: 'W',
