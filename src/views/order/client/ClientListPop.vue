@@ -16,7 +16,7 @@
                     <label for="on_label1">사업자번호</label>
                 </FloatLabel>
                 <FloatLabel variant="on">
-                    <InputText id="on_label1" v-model="form.managerName" style="width: 180px" />
+                    <InputText id="on_label1" v-model="form.businessManagerName" style="width: 180px" />
                     <label for="on_label1">담당자</label>
                 </FloatLabel>
                 <Button
@@ -34,6 +34,7 @@
           <div class="overflow-auto">
             <DataTable
               v-model:selection="selectedItem"
+              v-model="first"
               :value="clientList"
               dataKey="clientId"
               paginator
@@ -48,34 +49,14 @@
               selectionMode="single"
               @row-select="selectedRow"
             >
-              <Column
-                field="rowNum"
-                header="No."
-                :style="{ width: '20px'}"
-                style="text-align: center;"
-                :pt="{ columnHeaderContent: 'justify-center' }"
-              />
-              <Column
-                field="clientName"
-                header="고객사명"
-                :style="{ width: '330px'}"
-                style="text-align: left;"
-                :pt="{ columnHeaderContent: 'justify-center' }"
-              />
-              <Column
-                field="businessNo"
-                header="사업자번호"
-                :style="{ width: '120px'}"
-                style="text-align: center;"
-                :pt="{ columnHeaderContent: 'justify-center' }"
-              />
-              <Column
-                field="president"
-                header="대표자명"
-                :style="{ width: '100px'}"
-                style="text-align:  center;"
-                :pt="{ columnHeaderContent: 'justify-center' }"
-               />
+              <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+                <template #body="slotProps">
+                    {{ slotProps.index + 1 + first }}
+                </template>
+              </Column>
+              <Column field="clientName" header="고객사명" :style="{ width: '330px'}" style="text-align: left;"/>
+              <Column field="businessNo" header="사업자번호" :style="{ width: '120px'}" style="text-align: center;"/>
+              <Column field="president" header="대표자명" :style="{ width: '100px'}" style="text-align:  center;" />
             </DataTable>
           </div>
         </div>
@@ -92,14 +73,17 @@
 import { ApiBase } from '@/api/apiBase';
 import { inject, reactive, ref } from 'vue';
 
+const first = ref(0)
 const dialogRef = inject('dialogRef')
 const selectedItem = ref([])
 const clientList = ref([])
 
 const form = reactive({
   clientName: '',
-  managerName: '',
+  businessManagerName: '',
   businessNo: '',
+  managerRank2From : 'ALL',
+  managerRank2To : 'ALL',
 })
 
 const searchList = async () =>{

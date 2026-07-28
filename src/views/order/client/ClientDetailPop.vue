@@ -27,7 +27,7 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.regDate" showIcon class="w-full" />
+                    <DatePicker v-model="form.clientRegDate" showIcon class="w-full" />
                     <label>등록일자</label>
                 </FloatLabel>
             </div>
@@ -83,26 +83,6 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.businessType" class="w-full" />
-                    <label>업태</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.businessItem" class="w-full" />
-                    <label>종목</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.paymentCondition" class="w-full" />
-                    <label>결제조건</label>
-                </FloatLabel>
-            </div>
-        </div>
-        <div class="grid mb-1">
-            <div class="col-3">
-                <FloatLabel variant="on">
                     <InputText v-model="form.telNo" class="w-full"  @blur="onBlur('T')"/>
                     <label>대표전화</label>
                 </FloatLabel>
@@ -119,6 +99,20 @@
                     <label>홈페이지</label>
                 </FloatLabel>
             </div>
+        </div>
+        <div class="grid mb-1">
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <InputText v-model="form.businessType" class="w-full" />
+                    <label>업태</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <InputText v-model="form.businessItem" class="w-full" />
+                    <label>종목</label>
+                </FloatLabel>
+            </div>
             <div class="col-3">
                 <FloatLabel variant="on">
                     <Select
@@ -131,24 +125,24 @@
                     <label>책임판매업</label>
                 </FloatLabel>
             </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <InputText v-model="form.email" class="w-full" />
+                    <label>이메일</label>
+                </FloatLabel>
+            </div>
         </div>
         <div class="grid mb-1">
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <IconField iconPosition="left">
-                    <InputText v-model="form.saleManagerName" class="w-full" />
-                    <InputIcon class="pi pi-search" @click="openPop('M')" />
-                    </IconField>
-                    <label>영업담당자(정)</label>
+                    <InputText v-model="form.managerRank" class="w-full" />
+                    <label>관리등급</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <IconField iconPosition="left">
-                    <InputText v-model="form.saleManagerName" class="w-full" />
-                    <InputIcon class="pi pi-search" @click="openPop('S')" />
-                    </IconField>
-                    <label>영업담당자(부)</label>
+                    <InputText v-model="form.managerRank2" class="w-full" />
+                    <label>관리등급2</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
@@ -167,7 +161,7 @@
         <div class="grid mb-1">
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.groupsName" class="w-full" />
+                    <InputText v-model="form.groupsCode" class="w-full" />
                     <label>그룹사코드</label>
                 </FloatLabel>
             </div>
@@ -194,13 +188,132 @@
 </Card>
 
 <div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
+    <h5 class="m-0">- 결재조건</h5>
+    <div class="flex justify-end gap-2">
+        <Button label="추가+" @click="addRowC" class="p-button-xm" />
+    </div>
+</div>
+
+<div class="w-full" ref="tableWrapper">
+    <DataTable
+        :value="clientApprovalList"
+        scrollHeight="300px"
+        show-gridlines
+        scrollable
+        class="my-table fixed-datatable"
+    >
+        <Column field="approvalOption"           header="옵션"    :style="{ width: '70px' }"   >
+            <template #body="slotProps">
+                <Select
+                    v-model="slotProps.data.approvalOption"
+                    class="w-full"
+                    :options="approvalOptions"
+                    option-label="codeNm"
+                    option-value="code"
+                />
+            </template>
+        </Column>
+        <Column field="firstAmt"      header="선금(%)"  :style="{ width: '110px'}" >
+            <template #body="slotProps">
+                 <InputNumber v-model="slotProps.data.firstAmt" suffix=" %" class="w-full" />
+            </template>
+        </Column>
+        <Column field="middleAmt"    header="중도금(%)"    :style="{ width: '100px'}" >
+            <template #body="slotProps">
+                <InputNumber v-model="slotProps.data.middleAmt" suffix=" %" class="w-full" />
+            </template>
+        </Column>
+        <Column field="lastAmt"       header="잔금(출고전)"  :style="{ width: '120px'}" >
+            <template #body="slotProps">
+                <InputNumber v-model="slotProps.data.lastAmt" suffix=" %" class="w-full" />
+            </template>
+        </Column>
+        <Column field="credit"     header="신용(%)"    :style="{ width: '120px'}" >
+            <template #body="slotProps">
+                <InputNumber v-model="slotProps.data.credit" suffix=" %" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="creditPeriod"     header="신용기간"  suffix=" 일"  :style="{ width: '200px'}"  >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.creditPeriod" class="w-full" />
+            </template>
+        </Column>
+        <Column field="paymentMethod"     header="결재방식"    :style="{ width: '200px'}" >
+            <template #body="slotProps">
+                <Select
+                    v-model="slotProps.data.paymentMethod"
+                    class="w-full"
+                    :options="paymentMethods"
+                    option-label="codeNm"
+                    option-value="code"
+                />
+            </template>
+        </Column>
+        <Column field="actions" header="-" :style="{ width: '50px', textAlign: 'center' }">
+            <template #body="slotProps">
+                <i  class="pi pi-trash cursor-pointer" @click="removeRowC(slotProps.index)"></i>
+            </template>
+        </Column>
+    </DataTable>
+</div>
+
+<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
+    <h5 class="m-0">- 고객사 거래 정보</h5>
+    <div class="flex justify-end gap-2">
+        <Button label="추가+" @click="addRowD" class="p-button-xm"/>
+    </div>
+</div>
+
+<div class="w-full" ref="tableWrapper">
+    <DataTable
+        :value="clientDealList"
+        scrollHeight="300px"
+        show-gridlines
+        scrollable
+        class="my-table fixed-datatable"
+    >
+        <Column field="year"      header="년도(년)"  :style="{ width: '110px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.year" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="salesAmt"    header="매출금액"    :style="{ width: '100px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.salesAmt" class="w-full" />
+            </template>
+        </Column>
+        <Column field="dealAmt"       header="거래금액"  :style="{ width: '120px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.dealAmt" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="orderQty"     header="수주건수"    :style="{ width: '120px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.orderQty" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="managerName"     header="담당자"    :style="{ width: '200px'}"  >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.managerName" class="w-full" />
+            </template>
+        </Column>
+        <Column field="lastDealDate"     header="마지막출고일자"    :style="{ width: '200px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.lastDealDate" class="w-full" />
+            </template>
+        </Column>
+        <Column field="actions" header="-" :style="{ width: '50px', textAlign: 'center' }">
+            <template #body="slotProps">
+                <i class="pi pi-trash cursor-pointer" @click="removeRowD(slotProps.index)" ></i>
+            </template>
+        </Column>
+    </DataTable>
+</div>
+
+<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
     <h5 class="m-0">- 담당자</h5>
     <div class="flex justify-end gap-2">
-    <Button
-        label="추가+"
-        @click="addRowU"
-        class="p-button-xm"
-    />
+        <Button label="추가+" @click="addRowU" class="p-button-xm" />
     </div>
 </div>
 <div class="w-full" ref="tableWrapper">
@@ -211,61 +324,64 @@
         scrollable
         class="my-table fixed-datatable"
     >
-        <Column field="deptName"           header="부서"    :style="{ width: '100px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="businessManagerName" header="영업담당자"    :style="{ width: '100px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.deptName"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+                <InputText v-model="slotProps.data.businessManagerName" class="w-full"/>
             </template>
         </Column>
-        <Column field="managerName"      header="이름"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="regDate"             header="등록일"  :style="{ width: '100px'}" >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.managerName"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+                <DatePicker v-model="slotProps.data.regDate" class="w-full" />
             </template>
         </Column>
-        <Column field="jobPosition"    header="직책"    :style="{ width: '100px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="brandName"           header="브랜드"    :style="{ width: '120px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.jobPosition"
-                    class="w-full"
-                    style="text-align: left;"
-                    />
+                <InputText v-model="slotProps.data.brandName" class="w-full" />
             </template>
         </Column>
-        <Column field="tel"       header="연락처"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="deptName"       header="부서"  :style="{ width: '120px'}" >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.tel"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+                <InputText v-model="slotProps.data.deptName" class="w-full"/>
             </template>
         </Column>
-        <Column field="directTel"     header="직통번호"    :style="{ width: '120px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="managerName"     header="이름"    :style="{ width: '120px'}" >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.directTel"
-                    class="w-full"
-                    style="text-align: left;"
-                    />
+                <InputText v-model="slotProps.data.managerName" class="w-full"/>
             </template>
         </Column>
-        <Column field="email"     header="이메일"    :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="jobPosition"     header="직책"    :style="{ width: '100px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.email"
-                    class="w-full"
-                    style="text-align: left;"
-                    />
+                <InputText v-model="slotProps.data.jobPosition" class="w-full"/>
             </template>
         </Column>
-        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="tel"     header="연락처"    :style="{ width: '120px'}"  >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.tel" class="w-full" />
+            </template>
+        </Column>
+
+        <Column field="directTel"     header="직통전화"    :style="{ width: '120px'}"  >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.directTel" class="w-full"/>
+            </template>
+        </Column>
+
+        <Column field="email"     header="이메일"    :style="{ width: '180px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.email" class="w-full" />
+            </template>
+        </Column>
+        <Column field="homepage"     header="홈페이지"    :style="{ width: '200px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.homepage" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="workplace"     header="근무지"    :style="{ width: '100px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.workplace" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: left;" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowU(slotProps.index)"></i>
             </template>
@@ -274,12 +390,8 @@
 </div>
 
 <div class="flex justify-content-between align-items-center ml-2 mb-1 mt-4">
-    <h5 class="m-0">- 주소</h5>
-    <Button
-        label="추가+"
-        @click="addRowA"
-        class="p-button-xm"
-    />
+    <h5 class="m-0">- 사업장 주소</h5>
+        <Button label="추가+" @click="addRowA" class="p-button-xm" />
 </div>
 <div class="w-full">
     <DataTable
@@ -289,16 +401,22 @@
         show-gridlines
         class="my-table fixed-datatable"
     >
-        <Column field="address"       header="주소"     :style="{ width: '600px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="addressType"     header="구분"    :style="{ width: '200px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.address"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+                <InputText v-model="slotProps.data.addressType" class="w-full"/>
             </template>
         </Column>
-        <Column field="actions"     header="-"          :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="location"     header="소재지"    :style="{ width: '200px'}"  >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.location" class="w-full"/>
+            </template>
+        </Column>
+        <Column field="address"       header="주소"     :style="{ width: '600px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.address" class="w-full" />
+            </template>
+        </Column>
+        <Column field="actions"     header="-"          :style="{ width: '20px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowA(slotProps.index)"></i>
             </template>
@@ -322,25 +440,22 @@
         show-gridlines
         class="my-table fixed-datatable"
     >
-        <Column field="changeDate"       header="변경일"     :style="{ width: '80px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="managerName"       header="담당자"     :style="{ width: '100px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.changeDate"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+                <InputText v-model="slotProps.data.managerName"  class="w-full"/>
             </template>
         </Column>
-        <Column field="historyContents"        header="변경내용"      :style="{ width: '90px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="changeDate"       header="변경일"     :style="{ width: '100px'}" >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.historyContents"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+                <DatePicker v-model="slotProps.data.changeDate" class="w-full" />
             </template>
         </Column>
-        <Column field="actions"     header="-"          :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="historyContents"        header="변경내용"      :style="{ width: '800px'}" >
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.historyContents" class="w-full" />
+            </template>
+        </Column>
+        <Column field="actions"     header="-"  :style="{ width: '20px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowH(slotProps.index)"></i>
             </template>
@@ -359,7 +474,7 @@ import { ApiBase } from '@/api/apiBase'
 import { ApiCommon } from '@/api/apiCommon'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
-import { isEmpty } from '@/util/common'
+import { isEmpty, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import UserListPop from '@/views/system/user/UserListPop.vue'
 import { DatePicker, useDialog } from 'primevue'
@@ -372,9 +487,18 @@ const dialogRef = inject('dialogRef')
 const tradeTypes = ref([])
 const clientType = ref([])
 const responSalesBizs = ref([])
+const clientApprovalList = ref([])
+const clientDealList = ref([])
 const clientManagerList = ref([])
 const clientAddressList = ref([])
 const clientHistoryList = ref([])
+
+const deleteApprovalIds = ref([])
+const deleteDealIds = ref([])
+const deleteManagerIds = ref([])
+const deleteAddressIds = ref([])
+const deleteHistoryIds = ref([])
+
 const isBusinessType = ref(false)
 const form = reactive({
     clientId: '',
@@ -383,20 +507,17 @@ const form = reactive({
     clientType: '',
     clientTypeName: '',
     tradeType: '',
-    regDate: '',
+    clientRegDate: todayKST(),
     responSalesBiz: '',
-    establishDate: '',
+    establishDate: null,
     president: '',
     businessType: '',
     businessItem: '',
     telNo: '',
     faxNo: '',
     homepage: '',
-    addressId: '',
-    managerId: '',
-    paymentCondition: '',
-    saleManagerId: '',
-    saleManagerIdB: '',
+    managerRank: '',
+    managerRank2: '',
     groupCd: '',
     groupName: '',
     groupsCd: '',
@@ -410,8 +531,23 @@ const form = reactive({
     userId: userId,
 })
 
+const approvalOptions = ref([
+    {codeNm: '기본', code: 'B'},
+    {codeNm: '신용1', code: 'C1'},
+    {codeNm: '신용2', code: 'C2'},
+    {codeNm: '조건1', code: 'D'},
+])
+const paymentMethods = ref([
+    {codeNm: 'L/C', code: 'LC'},
+    {codeNm: 'T/T', code: 'TT'},
+    {codeNm: 'D/P', code: 'DP'},
+    {codeNm: 'D/A', code: 'DA'},
+    {codeNm: '현금', code: 'CS'},
+    {codeNm: '어음', code: 'PN'},
+    {codeNm: '국채', code: 'ND'},
+])
 
-const saveInfo = async () =>{
+const validChk = () => {
     if ( isEmpty(form.clientName)) {
         vInfo('고객사명을 입력하세요.')
         return
@@ -420,12 +556,35 @@ const saveInfo = async () =>{
         vInfo('사업자번호를 입력하세요.')
         return
     }
+    if ( isEmpty(form.establishDate)) {
+        vInfo('설립일자를 입력하세요.')
+        return
+    }
+    if ( isEmpty(form.clientRegDate)) {
+        vInfo('등록일자를 입력하세요.')
+        return
+    }
+
+
+}
+
+const saveInfo = async () =>{
+
+    if ( !validChk ) return
 
     const params = {
         clientInfo: form,
+        clientApprovalList: clientApprovalList.value,
+        clientDealList: clientDealList.value,
         clientManagerList: clientManagerList.value,
         clientAddressList: clientAddressList.value,
         clientHistoryList: clientHistoryList.value,
+
+        deleteApprovalIds: deleteApprovalIds.value,
+        deleteDealIds: deleteDealIds.value,
+        deleteManagerIds: deleteManagerIds.value,
+        deleteAddressIds: deleteAddressIds.value,
+        deleteHistoryIds: deleteHistoryIds.value,
     }
 
     try {
@@ -464,41 +623,112 @@ const openPop = (type) =>{
     })
 }
 
-const addRowU = () =>{
-    let nextId = clientManagerList.value.length
+const addRowC = () => {
+    clientApprovalList.value.push({
+        clientApprovalId: null,
+        approvalOption: '',
+        firstAmt: 0,
+        middleAmt: 0,
+        lastAmt: 0,
+        credit: '',
+        creditPeriod: '',
+        paymentMethod: '',
+        orderDist: clientApprovalList.value.length + 1,
+    })
+}
+
+const addRowD = () => {
+    clientDealList.value.push({
+        clientDealId: null,
+        year: null,
+        salesAmt: 0,
+        dealAmt: 0,
+        orderQty: 0,
+        managerName: '',
+        lastDealDate: '',
+        orderDist: clientDealList.value.length + 1,
+    })
+}
+
+const addRowU = () => {
     clientManagerList.value.push({
-        id: nextId++,
+        clientManagerId: null,
+        managerName: null,
+        businessManagerName: '',
+        regDate: '',
+        brandName: '',
         deptName: '',
-        managerName:'',
+        managerName: '',
         jobPosition: '',
         tel: '',
-        directTel : '',
-        email : '',
+        directTel: '',
+        email: '',
+        homepage: '',
+        workplace: '',
+        orderDist: clientManagerList.value.length + 1,
     })
 }
-const addRowA = () =>{
-    let nextId = clientAddressList.value.length
+
+const addRowA = () => {
     clientAddressList.value.push({
-        id: nextId++,
+        clientAddressId: null,
+        addressType: '',
+        location: '',
         address: '',
+        orderDist: clientAddressList.value.length + 1,
     })
 }
-const addRowH = () =>{
-    let nextId = clientHistoryList.value.length
+
+const addRowH = () => {
     clientHistoryList.value.push({
-        id: nextId++,
+        clientHistoryId: null,
+        managerName: '',
         changeDate: '',
         historyContents: '',
+        orderDist: clientHistoryList.value.length + 1,
     })
 }
-const removeRowU = (index) =>{
-    clientManagerList.value.splice(index, 1)
+
+/**
+ * 화면에서 행을 제거하고, DB에 저장된 행이면 삭제 ID 목록에 추가한다.
+ * 신규 행은 PK가 없으므로 화면에서만 제거된다.
+ */
+const removeRow = (listRef, index, idField, deleteIdsRef) => {
+    const row = listRef.value[index]
+
+    if (!row) return
+
+    const deleteId = row[idField]
+
+    if (!isEmpty(deleteId) && !deleteIdsRef.value.includes(deleteId)) {
+        deleteIdsRef.value.push(deleteId)
+    }
+
+    listRef.value.splice(index, 1)
+    // 삭제 후 순번 재설정
+    listRef.value.forEach((item, idx) => {
+        item.orderDist = idx + 1
+    })
 }
-const removeRowA = (index) =>{
-    clientAddressList.value.splice(index, 1)
+
+const removeRowC = (index) => {
+    removeRow(clientApprovalList, index, 'clientApprovalId', deleteApprovalIds)
 }
-const removeRowH = (index) =>{
-    clientHistoryList.value.splice(index, 1)
+
+const removeRowD = (index) => {
+    removeRow(clientDealList, index, 'clientDealId', deleteDealIds)
+}
+
+const removeRowU = (index) => {
+    removeRow(clientManagerList, index, 'clientManagerId', deleteManagerIds)
+}
+
+const removeRowA = (index) => {
+    removeRow(clientAddressList, index, 'clientAddressId', deleteAddressIds)
+}
+
+const removeRowH = (index) => {
+    removeRow(clientHistoryList, index, 'clientHistoryId', deleteHistoryIds)
 }
 
 watch(() => form.clientType, async (newVal) => {
@@ -519,6 +749,8 @@ onMounted( async () =>{
         const res = await ApiBase.getClientInfo(form.clientId)
 
         Object.assign(form, res.clientInfo)
+        clientApprovalList.value = res.clientApprovalList || []
+        clientDealList.value = res.clientDealList || []
         clientManagerList.value = res.clientManagerList || []
         clientHistoryList.value = res.clientHistoryList || []
         clientAddressList.value = res.clientAddressList || []

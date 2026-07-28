@@ -21,6 +21,22 @@
                 <InputText id="on_label1" v-model="form.saleManagerName" style="width: 180px" />
                 <label for="on_label1">영업담당자</label>
             </FloatLabel>
+            <FloatLabel variant="on">
+                 <Select v-model="form.managerRank2From" :options="managerRank"
+                   optionLabel="codeNm"
+                   optionValue="code"
+                    style="width: 120px"
+                />
+                <label for="on_label1">등급범위(시작)</label>
+            </FloatLabel>
+            <FloatLabel variant="on">
+                <Select v-model="form.managerRank2To" style="width: 120px"
+                    :options="managerRank"
+                    optionLabel="codeNm"
+                    optionValue="code"
+                    />
+                <label for="on_label1">등급범위(종료)</label>
+            </FloatLabel>
 
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
             </div>
@@ -34,6 +50,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         :value="clientList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -43,20 +60,34 @@
         tableStyle="min-width: 100rem; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="rowNum"          header="No."        style="text-align: center;"    :style="{ width: '30px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="businessNo"      header="고객사코드"  style="text-align: center;"        :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="customerName"    header="고객사명"  frozen  :style="{ width: '200px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
+        <Column field="rowNum"          header="No."        style="text-align: center;"    :style="{ width: '30px'}" "/>
+        <Column field="businessNo"      header="고객사코드"  style="text-align: center;"        :style="{ width: '110px'}" "/>
+        <Column field="businessManagerName" header="영업담당자"    style="text-align: center;"  :style="{ width: '100px'}" "/>
+        <Column field="customerName"    header="고객사명"  frozen  :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" ">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.clientId)" class="clickable-cell">
                     {{ slotProps.data.clientName }}
                 </div>
             </template>
         </Column>
-        <Column field="president"           header="대표자명"      style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="saleManagerName"     header="영업담자명"    style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="paymentCondition"    header="결제조건"      style="text-align: center;"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="firstDelaDate"       header="최초거래일자"  style="text-align: center;"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="tradeType"           header="거래구분"     style="text-align: center;"   :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
+        <Column field="president"           header="대표자명"      style="text-align: center;"  :style="{ width: '100px'}" "/>
+        <Column field="oneYearAgo"          :header="String(year1)" :style="{ width: '100px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.oneYearAgo).toLocaleString() }}</template>
+        </Column>
+        <Column field="twoYearAgo"          :header="String(year2)" :style="{ width: '100px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.twoYearAgo).toLocaleString() }}</template>
+        </Column>
+        <Column field="threeYearAgo"        :header="String(year3)" :style="{ width: '100px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.threeYearAgo).toLocaleString() }}</template>
+        </Column>
+        <Column field="firstDelaDate"       header="최초거래일자"  style="text-align: center;"  :style="{ width: '120px'}" "/>
+        <Column field="lastDelaDate"        header="최종거래일자"  style="text-align: center;"  :style="{ width: '120px'}" "/>
+        <Column field="managerRank"         header="관리등급"     style="text-align: center;"   :style="{ width: '80px'}" "/>
     </DataTable>
 </div>
 </template>
@@ -70,6 +101,7 @@ import { useDialog } from 'primevue';
 import { reactive, ref } from 'vue';
 import ClientDetailPop from './ClientDetailPop.vue';
 
+const first = ref(0)
 const dialog = useDialog()
 const clientList = ref([])
 const dt = ref(null)
@@ -79,7 +111,16 @@ const form  =reactive({
   clientName : '',
   saleManagerName: '',
   businessNo: '',
+  managerRank2From: 'ALL',
+  managerRank2To: 'ALL',
 })
+
+const managerRank = ref([
+  { codeNm: '전체', code: 'ALL' },
+  { codeNm: 'A', code: 'A' },
+  { codeNm: 'B', code: 'B' },
+  { codeNm: 'C', code: 'C' },
+])
 
 const srhList = async () =>{
     const params = {
@@ -87,6 +128,12 @@ const srhList = async () =>{
     }
     clientList.value = await ApiBase.getClientList(params)
 }
+
+const currentYear = new Date().getFullYear();
+
+const year1 = currentYear - 1;
+const year2 = currentYear - 2;
+const year3 = currentYear - 3;
 
 const handleDateChange = () =>{
 
@@ -141,7 +188,7 @@ const downloadExcel = () =>{
   if (!cols.length) {
     return;
   }
-  exportToExcel(customerList.value, "고객사 리스트", cols);
+  exportToExcel(clientList.value, "고객사 리스트", cols);
 }
 
 </script>
