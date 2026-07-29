@@ -277,17 +277,17 @@
                 <InputText v-model="slotProps.data.year" class="w-full"/>
             </template>
         </Column>
-        <Column field="salesAmt"    header="매출금액"    :style="{ width: '100px'}" >
+        <Column field="salesAmt"    header="매출금액"    :style="{ width: '100px', textAlign: 'right'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.salesAmt" class="w-full" />
             </template>
         </Column>
-        <Column field="dealAmt"       header="거래금액"  :style="{ width: '120px'}" >
+        <Column field="dealAmt"       header="거래금액"  :style="{ width: '120px', textAlign: 'right'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.dealAmt" class="w-full"/>
             </template>
         </Column>
-        <Column field="orderQty"     header="수주건수"    :style="{ width: '120px'}" >
+        <Column field="orderQty"     header="수주건수"    :style="{ width: '120px', textAlign: 'right'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.orderQty" class="w-full"/>
             </template>
