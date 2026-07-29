@@ -5,25 +5,13 @@
         <div class="grid mb-2">
             <div class="col-3 flex align-items-center gap-2">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.contractDate" show-icon />
+                    <DatePicker v-model="form.contractDate"   readonly />
                     <label>주문일자</label>
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
-                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }" /> <!-- 크기 축소 -->
+                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }" readonly/> <!-- 크기 축소 -->
                     <label>연번</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <DatePicker v-model="form.expectedDueDate" fluid  show-icon/>
-                    <label>납기예정일자</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.paymentCondition" class="w-full"  readonly/>
-                    <label>결제조건</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
@@ -33,6 +21,13 @@
                         <InputIcon class="pi pi-search"  @click="openPop('U')"/>
                     </IconField>
                     <label>담당자</label>
+                </FloatLabel>
+            </div>
+             <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.vatType" :options="vatTypes"
+                            optionLabel="codeNm" optionValue="code" class="w-full" />
+                    <label>거래유형</label>
                 </FloatLabel>
             </div>
         </div>
@@ -49,16 +44,10 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <Select v-model="form.vatType" :options="vatTypes"
-                            optionLabel="codeNm" optionValue="code" class="w-full" />
-                    <label>거래유형</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <Select v-model="form.orderType" :options="orderTypes"
-                            optionLabel="codeNm" optionValue="code" class="w-full" />
-                    <label>수주유형</label>
+                    <IconField iconPosition="left">
+                        <InputText v-model="form.clientNo" class="w-full"/>
+                    </IconField>
+                    <label>고객사 코드</label>
                 </FloatLabel>
             </div>
         </div>
@@ -73,29 +62,29 @@
         @error="(msg) => console.error(msg)"
     />
 </div>
-<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
-    <h5 class="m-0">- 품목</h5>
-    <Button
-        label="추가+"
-        @click="itemOpenPop"
-        class="p-button-xm"
-    />
-</div>
 <div class="w-full mt-2">
     <DataTable
         :value="itemList"
-        selectionMode="single"
         class="my-table"
         scroll-height="400px"
         show-gridlines
-        @row-select="selectedRow"
         >
-        <Column field="poNo"      header="PO No"  :style="{ width: '130px'}" />
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px'}" />
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words"></Column>
-        <Column field="spec"      header="규격"      :style="{ width: '70px'}"  style="text-align: center;" > ></Column>
-        <Column field="prodType"  header="제품유형"    :style="{ width: '80px', textAlign:'center'}" bodyClass="break-words" ></Column>
-        <Column field="qty"       header="수량"    :style="{ width: '70px'}"  >
+        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
+        <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
+        <Column field="spec"        header="규격"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="prodType"    header="제품유형"   :style="{ width: '150px', 'text-align': 'center' }" />
+        <Column field="orderType"   header="수주유형"   :style="{ width: '100px', 'text-align': 'center' }" :bodyStyle="{ padding: '0'}" >
+            <template #body="slotProps">
+                <Select
+                    v-model="slotProps.data.orderType"
+                    :options="orderTypes"
+                    optionValue="code"
+                    optionLabel="codeNm"
+                    class="w-full"
+                />
+            </template>
+        </Column>
+        <Column field="qty"         header="수량"       :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.qty"
@@ -103,12 +92,12 @@
                         :min="0"
                         :maxFractionDigits="0"
                         :useGrouping="true"
-                        :inputStyle="{ width: '70px', 'text-align': 'right' }"
+                        :inputStyle="{ width: '120px', 'text-align': 'right' }"
                          @update:modelValue="() => onChangeRow(slotProps.data)"
                     />
                 </template>
         </Column>
-        <Column field="unitPrice" header="단가"    :style="{ width: '70px'}"  >
+        <Column field="unitPrice" header="단가"    :style="{ width: '120px'}"  :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.unitPrice"
@@ -116,12 +105,12 @@
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
                 />
             </template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '70px'}"  >
+        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '140px'}"  :bodyStyle="{ padding: '0'}">
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
@@ -129,11 +118,11 @@
                         :min="0"
                         :maxFractionDigits="0"
                         :useGrouping="true"
-                        :inputStyle="{ width: '100px', 'text-align': 'right' }"
+                        :inputStyle="{ width: '120px', 'text-align': 'right' }"
                     />
                 </template>
         </Column>
-        <Column field="vatPrice"        header="부가세"    :style="{ width: '60px'}" >
+        <Column field="vatPrice"        header="부가세"    :style="{ width: '120px'}" :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
@@ -141,11 +130,11 @@
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '90px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
                 />
             </template>
         </Column>
-        <Column field="totPrice"        header="합계"    :style="{ width: '70px'}" >
+        <Column field="totPrice"        header="합계"    :style="{ width: '170px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.totPrice"
@@ -153,36 +142,32 @@
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '110px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '150px', 'text-align': 'right' }"
                 />
             </template>
         </Column>
-        <Column field="degree"      header="차수"       :style="{ width: '60px', 'text-align': 'center'}" bodyClass="break-words" ></Column>
-        <Column field="statusType"  header="진행상태"   :style="{ width: '100px', 'text-align': 'center'}" bodyClass="break-words" >
+        <Column field="degree"          header="차수"       :style="{ width: '60px', 'text-align': 'center'}"></Column>
+        <Column field="deliveryReqDate" header="납기요청일"  :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
+            <template #body="slotProps">
+                <DatePicker v-model="slotProps.data.deliveryReqDate" show-icon :inputStyle="{ width: '100px', 'text-align': 'center' }"/>
+            </template>
+        </Column>
+        <Column field="statusType"  header="진행상태"   :style="{ width: '120px', textAlign:'center'}" :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <Select
                     v-model="slotProps.data.statusType"
-                    class="w-[100px]"
+                    class="w-full"
                     :options="statusTypes"
                     option-label="codeNm"
                     option-value="code"
                 />
             </template>
         </Column>
-        <Column field="etc"         header="비고"   :style="{ width: '120px', 'text-align': 'left' }" >
+        <Column field="etc"         header="비고"       :style="{ width: '130px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.etc"
-                    class="w-full"
-                />
+                <InputText v-model="slotProps.data.etc" class="w-full" />
             </template>
         </Column>
-        <Column field="actions"     header="-"      :style="{ width: '20px', 'text-align': 'center'}"  >
-            <template #body="slotProps">
-                <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
-            </template>
-        </Column>
-
     </DataTable>
 </div>
 <!-- 🔹 하단 버튼 -->
@@ -190,16 +175,6 @@
     <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
     <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
 </div>
-
-<Dialog
-    v-model:visible="itemDialog"
-    header="품목 목록"
-  >
-    <ItemListMultiPop
-        @selected = "selectedRow"
-        @close = "itemDialog = false"
-        />
-</Dialog>
 
 </template>
 
@@ -210,12 +185,12 @@ import { ApiOrder } from '@/api/apiOrders';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty, todayKST } from '@/util/common';
-import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
+import { formatDate } from '@/util/common';
 import ClientListPop from '@/views/order/client/ClientListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
-import { Dialog, useDialog } from 'primevue';
+import { useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, shallowRef } from 'vue';
+
 
 const dialog = useDialog()
 const { userId } = useAuthStore()
@@ -227,20 +202,21 @@ const itemList = ref([])
 const orderTypes = ref([])
 const vatTypes = ref([])
 const statusTypes = ref([])
-const itemDialog = ref(false)
 
 const form = reactive({
     contractDate: '',
     seq:'',
-    expectedDueDate:'',
     clientName:'',
     clientId:'',
+    clientNo:'',
     managerName:'',
     managerId:'',
-    paymentCondition:'',
     vatType:'',
-    orderType:'',
+    attachFileId: '',
 
+    etc: '',
+
+    contractId: '',
     userId: userId,
 })
 
@@ -264,24 +240,14 @@ const totalAmount = computed(() => {
 });
 
 
-const saveInfo = async () =>{
-    const formData = new FormData();
-
-    if ( itemList.value <= 0 ){
-        vInfo("품목을 등록하세요")
+const saveInfo = async () => {
+    if (itemList.value.length <= 0) {
+        vInfo('품목을 등록하세요')
         return
     }
-    // if(attachFile.value <= 0 ){
-    //     vInfo("산출물을 등록하세요")
-    //     return
-    // }
 
-    try{
-        const params = {
-            ...form
-        }
-        formData.append('contractInfo', JSON.stringify(params))
-        formData.append('itemList', JSON.stringify(itemList.value))
+    try {
+        const formData = new FormData()
 
         const deleteFiles = []
         const keptFiles = []
@@ -290,62 +256,47 @@ const saveInfo = async () =>{
             if (f.flag === 'N' && f.file instanceof File) {
                 formData.append('newFiles', f.file, f.file.name)
             } else if (f.flag === 'D') {
-                deleteFiles.push({ attachFileId: f.attachFileId, seq: f.seq })
+                deleteFiles.push({
+                    attachFileId: f.attachFileId,
+                    seq: f.seq
+                })
             } else if (f.flag === 'S') {
-                keptFiles.push({ attachFileId: f.attachFileId, seq: f.seq })
+                keptFiles.push({
+                    attachFileId: f.attachFileId,
+                    seq: f.seq
+                })
             }
         })
 
-        formData.append('keptFiles', JSON.stringify(keptFiles))
-
-        if (deleteFiles.length > 0) {
-            formData.append('deleteFiles', JSON.stringify(deleteFiles))
+        const request = {
+            contractInfo: {
+                ...form
+            },
+            itemList: itemList.value.map(row => ({
+                ...row,
+                deliveryReqDate: formatDate(row.deliveryReqDate)
+            })),
+            deleteFiles,
+            keptFiles
         }
 
+        formData.append(
+            'request',
+            new Blob(
+                [JSON.stringify(request)],
+                { type: 'application/json' }
+            )
+        )
+
         const res = await ApiOrder.updateContractInfo(formData)
+
         vSuccess(res.message)
         closeDialog()
-    }catch(err){
+    } catch (err) {
         vError(err.message)
     }
 }
 
-const selectedRow = (obj) =>{
-    if (!Array.isArray(obj)) return;
-
-    let baseSeq = itemList.value.length;
-
-    const selectItem = obj.map((o, index) => ({
-      itemCd: o.itemCd,
-      itemName: o.itemName,
-      unit: o.unit,
-      prodType: o.prodType,
-      qty: o.qty,
-      unitPrice: o.unitPrice,
-      supplyPrice: o.supplyPrice,
-      vatPrice: o.vatPrice,
-      totPrice: o.totPrice,
-      orderCnt: o.orderCnt,
-      statusType: o.statusType,
-      etc: o.etc,
-      orderDist: baseSeq + index + 1,
-  }));
-
-  if (itemList.value.length > 0) {
-    itemList.value.push(...selectItem);
-  } else {
-    itemList.value = [...selectItem];
-  }
-}
-
-const removeRow = (index) =>{
-    console.log('index', index)
-    itemList.value.splice(index,1)
-}
-
-const itemOpenPop = () =>{
-    itemDialog.value = true
-}
 const openPop = (type) =>{
     let title = ''
 
@@ -387,21 +338,17 @@ onMounted( async () =>{
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
     statusTypes.value = await ApiCommon.getCodeList('status_Type')
 
+    console.log('dialogRef.value.data', dialogRef.value.data)
 
-    if ( !isEmpty(dialogRef.value.data) ) {
-        const res = await ApiOrder.getContractInfo(dialogRef.value.data)
+    const res = await ApiOrder.getContractInfo(dialogRef.value.data)
 
-        Object.assign(form, res.contractInfo)
-        itemList.value = res.itemList
+    Object.assign(form, res.contractInfo)
+    itemList.value = res.itemList
 
-        if (res.attachFileInfo !== null) {
-            attachFile.value = initServerFiles(res.attachFileInfo)
-        } else {
-            attachFile.value = [];  // 없을 경우 초기화도 필요할 수 있음
-        }
-    }else{
-        form.contractDate = todayKST()
-        form.seq = await ApiCommon.getNextSeq('tb_contract_mst', 'contract_date',  form.contractDate)
+    if (res.attachFileInfo !== null) {
+        attachFile.value = initServerFiles(res.attachFileInfo)
+    } else {
+        attachFile.value = [];  // 없을 경우 초기화도 필요할 수 있음
     }
 })
 

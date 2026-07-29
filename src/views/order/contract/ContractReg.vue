@@ -1,5 +1,5 @@
 <template>
-<Card style="width: 100rem; height: 8rem;">
+<Card style="width: 90rem; height: 8rem;">
     <template #content>
         <!-- Row 1 -->
         <div class="grid mb-2">
@@ -16,23 +16,18 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.expectedDueDate" fluid  show-icon/>
-                    <label>납기예정일자</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.paymentCondition" class="w-full"  readonly/>
-                    <label>결제조건</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
                     <IconField iconPosition="left">
                         <InputText v-model="form.managerName" class="w-full"/>
                         <InputIcon class="pi pi-search"  @click="openPop('U')"/>
                     </IconField>
                     <label>담당자</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.vatType" :options="vatTypes"
+                            optionLabel="codeNm" optionValue="code" class="w-full" />
+                    <label>거래유형</label>
                 </FloatLabel>
             </div>
         </div>
@@ -49,16 +44,10 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <Select v-model="form.vatType" :options="vatTypes"
-                            optionLabel="codeNm" optionValue="code" class="w-full" />
-                    <label>거래유형</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <Select v-model="form.Type" :options="orderTypes"
-                            optionLabel="codeNm" optionValue="code" class="w-full" />
-                    <label>수주유형</label>
+                    <IconField iconPosition="left">
+                        <InputText v-model="form.clientCd" class="w-full"/>
+                    </IconField>
+                    <label>고객사 코드</label>
                 </FloatLabel>
             </div>
         </div>
@@ -81,27 +70,30 @@
         class="p-button-xm"
     />
 </div>
-<div class="w-full mt-2">
+<div class="table-wrapper mt-2">
     <DataTable
         :value="itemList"
-        selectionMode="single"
-        class="my-table"
-        scroll-height="400px"
+        class="my-table fixed-table"
+        scrollable
+        scrollHeight="400px"
         show-gridlines
-        @row-select="selectedRow"
         >
-        <Column field="itemCd"      header="품목코드"   :style="{ width: '80px', 'text-align': 'center' }" />
+        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
-        <Column field="spec"        header="규격"       :style="{ width: '70px', 'text-align': 'center' }" ></Column>
-        <Column field="prodType"    header="제품유형"   :style="{ width: '80px', 'text-align': 'center' }" >
+        <Column field="spec"        header="규격"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="prodType"    header="제품유형"   :style="{ width: '150px', 'text-align': 'center' }" />
+        <Column field="orderType"   header="수주유형"   :style="{ width: '100px', 'text-align': 'center' }" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.prodType"
+                <Select
+                    v-model="slotProps.data.orderType"
+                    :options="orderTypes"
+                    optionValue="code"
+                    optionLabel="codeNm"
                     class="w-full"
                 />
             </template>
         </Column>
-        <Column field="qty"         header="수량"       :style="{ width: '50px'}"  >
+        <Column field="qty"         header="수량"       :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.qty"
@@ -109,12 +101,12 @@
                         :min="0"
                         :maxFractionDigits="0"
                         :useGrouping="true"
-                        :inputStyle="{ width: '50px', 'text-align': 'right' }"
+                        :inputStyle="{ width: '120px', 'text-align': 'right' }"
                          @update:modelValue="() => onChangeRow(slotProps.data)"
                     />
                 </template>
         </Column>
-        <Column field="unitPrice" header="단가"    :style="{ width: '50px'}"  >
+        <Column field="unitPrice" header="단가"    :style="{ width: '120px'}"  :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.unitPrice"
@@ -122,12 +114,12 @@
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '50px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
                 />
             </template>
         </Column>
-        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '60px'}"  >
+        <Column field="supplyPrice"        header="공급가액"   :style="{ width: '140px'}"  :bodyStyle="{ padding: '0'}">
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
@@ -135,11 +127,11 @@
                         :min="0"
                         :maxFractionDigits="0"
                         :useGrouping="true"
-                        :inputStyle="{ width: '50px', 'text-align': 'right' }"
+                        :inputStyle="{ width: '120px', 'text-align': 'right' }"
                     />
                 </template>
         </Column>
-        <Column field="vatPrice"        header="부가세"    :style="{ width: '50px'}" >
+        <Column field="vatPrice"        header="부가세"    :style="{ width: '120px'}" :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
@@ -147,11 +139,11 @@
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '50px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
                 />
             </template>
         </Column>
-        <Column field="totPrice"        header="합계"    :style="{ width: '50px'}" >
+        <Column field="totPrice"        header="합계"    :style="{ width: '170px'}" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.totPrice"
@@ -159,12 +151,16 @@
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '50px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '150px', 'text-align': 'right' }"
                 />
             </template>
         </Column>
-        <Column field="degree"      header="차수"       :style="{ width: '50px', textAlign:'center'}" bodyClass="break-words" ></Column>
-        <Column field="statusType"  header="진행상태"   :style="{ width: '50px'}" bodyClass="break-words">
+        <Column field="deliveryReqDate" header="납기요청일"  :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
+            <template #body="slotProps">
+                <DatePicker v-model="slotProps.data.deliveryReqDate" show-icon :inputStyle="{ width: '100px', 'text-align': 'center' }"/>
+            </template>
+        </Column>
+        <Column field="statusType"  header="진행상태"   :style="{ width: '120px', textAlign:'center'}" :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <Select
                     v-model="slotProps.data.statusType"
@@ -172,16 +168,12 @@
                     :options="statusTypes"
                     option-label="codeNm"
                     option-value="code"
-                    :inputStyle="{ width: '40px', 'text-align': 'right' }"
                 />
             </template>
         </Column>
         <Column field="etc"         header="비고"       :style="{ width: '130px'}"  >
             <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.etc"
-                    class="w-full"
-                />
+                <InputText v-model="slotProps.data.etc" class="w-full" />
             </template>
         </Column>
         <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
@@ -217,7 +209,7 @@ import { ApiOrder } from '@/api/apiOrders';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { calculateVAT, isEmpty, todayKST } from '@/util/common';
+import { calculateVAT, formatDate, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 import ClientListPop from '@/views/order/client/ClientListPop.vue';
@@ -240,7 +232,7 @@ const itemDialog = ref(false)
 const form = reactive({
     contractDate: '',
     seq:'',
-    expectedDueDate: '',
+    clientCd:'',
     clientName:'',
     clientId:'',
     managerName:'',
@@ -249,6 +241,9 @@ const form = reactive({
     vatType:'',
     orderType:'',
 
+    etc:'',
+
+    contractId: '',
     userId: userId,
 })
 
@@ -322,22 +317,36 @@ const saveInfo = async () =>{
     // }
 
     try{
-        const params = {
-            ...form
+        const request = {
+            contractInfo: {
+                ...form
+            },
+            itemList: itemList.value.map(row => ({
+                ...row,
+                deliveryReqDate: formatDate(row.deliveryReqDate)
+            })),
         }
-        formData.append('contractInfo', JSON.stringify(params))
-        formData.append('itemList', JSON.stringify(itemList.value))
+
+       formData.append(
+            "request",
+            new Blob(
+                [JSON.stringify(request)],
+                { type: "application/json" }
+            )
+        )
 
         attachFile.value.forEach(file => {
-            //console.log('파일 객체 여부:',  file.file instanceof File)
             if (file.file instanceof File) {
-                formData.append('attachFile', file.file)
+                formData.append("newFiles", file.file)
             }
         })
 
+        console.log('itemList', request.itemList)
+
         const res = await ApiOrder.saveContractInfo(formData)
         vSuccess(res.message)
-        closeDialog()
+        form.contractId = res.data
+        dialogRef.value.close(form.contractId)
     }catch(err){
         handleApiError(err)
     }
@@ -352,7 +361,8 @@ const selectedRow = (obj) =>{
       itemCd: o.itemCd,
       itemName: o.itemName,
       spec: o.spec,
-      prodType: o.prodType,
+      prodType: o.itemGrp2Name,
+      orderType: o.orderType,
       qty: o.qty,
       unitPrice: o.unitPrice,
       supplyPrice: 0,
@@ -373,6 +383,10 @@ const selectedRow = (obj) =>{
 
 const removeRow = (index) =>{
     itemList.value.splice(index,1)
+
+    itemList.value.forEach((item, idx) => {
+        item.orderDist = idx + 1
+    })
 }
 
 const itemOpenPop = () =>{
@@ -421,6 +435,8 @@ onMounted( async () =>{
 
     form.contractDate = todayKST()
     form.seq = await ApiCommon.getNextSeq('tb_contract_mst', 'contract_date',  form.contractDate)
+
+
 })
 
 const closeDialog = () =>{
@@ -443,5 +459,7 @@ const closeDialog = () =>{
   font-size: 18px;
   height: 100%;
 }
-
+::v-deep(.fixed-table table) {
+    table-layout: fixed !important;
+}
 </style>

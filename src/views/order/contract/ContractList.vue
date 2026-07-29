@@ -9,6 +9,10 @@
                 v-model:endDate="form.endDate"
                 @change="handleDateChange"
             />
+             <FloatLabel variant="on">
+                <DatePicker id="on_label1" v-model="form.deliveryReqDate" showIcon />
+                <label for="on_label1">납기요청일</label>
+            </FloatLabel>
             <FloatLabel variant="on">
                 <InputText id="on_label" v-model="form.itemName" style="width: 180px"/>
                 <label for="on_label">품목명</label>
@@ -63,6 +67,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         :value="contractList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -72,20 +77,25 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="contractDateSeq" header="일자-No"  frozen :style="{ width: '120px'}" ></Column>
-        <Column field="poNo"            header="PO No"   frozen :style="{ width: '130px'}" ></Column>
-        <Column field="itemCd"          header="품목코드" frozen :style="{ width: '100px'}" />
-        <Column field="itemName"        header="품목명"   frozen :style="{ width: '380px'}" bodyClass="break-words" >
+        <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
+        <Column field="poNo"            header="PO No"    :style="{ width: '130px'}" ></Column>
+        <Column field="clientNo"        header="고객사코드"   :style="{ width: '100px'}" />
+        <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
+        <Column field="managerName"     header="담당자명"   :style="{ width: '90px', textAlign: 'center'}" />
+        <Column field="orderType"       header="수주유형"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="prodType"        header="제품유형"  :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="itemCd"          header="품목코드" :style="{ width: '100px'}" />
+        <Column field="itemName"        header="품목명"   :style="{ width: '400px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.contractId)" class="clickable-cell" style="text-decoration: underline; point">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="expectedDueDate" header="납기예정일자"   :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
-        <Column field="managerName"     header="담당자명"   :style="{ width: '90px', textAlign: 'center'}" />
-        <Column field="orderType"       header="수주유형"   :style="{ width: '70px', textAlign: 'center'}" />
         <Column field="qty"             header="수량"       :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
@@ -95,9 +105,11 @@
         <Column field="supplyPrice" header="공급가액"   :style="{ width: '120px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="prodType"         header="제품유형"  :style="{ width: '100px', textAlign:'center'}" />
-        <Column field="statusType"       header="진행상태"  :style="{ width: '80px', textAlign:'center'}" />
-        <Column field="paymentCondition" header="결재조건"  :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="deliveryReqDate"  header="납기요청일"   :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="outQty" header="출고수량"   :style="{ width: '120px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.outQty).toLocaleString() }}</template>
+        </Column>
+        <Column field="statusTypeName"   header="진행상태"  :style="{ width: '80px', textAlign:'center'}" />
     </DataTable>
 </div>
 </template>
@@ -113,6 +125,7 @@ import { onMounted, reactive, ref, shallowRef } from 'vue';
 import ContractDetailPop from './ContractDetailPop.vue';
 import ContractReg from './ContractReg.vue';
 
+const first = ref(0)
 const dialog = useDialog()
 const dt = ref(null);
 const contractList = ref([])
@@ -121,48 +134,63 @@ const vatTypes = ref([])
 const orderTypes = ref([])
 const currentComponent = shallowRef(null)
 const form = reactive({
-  strDate: minMonth(todayKST()),
+  strDate: minMonth(todayKST(), 1),
   endDate:  todayKST(),
   itemCd: '',
   itemName: '',
   managerName: '',
   customerName: '',
+  deliveryReqDate: '',
   orderType: '',
   vatType: '',
   statusType: '',
 })
 
-const selectRowClick = (id) =>{
-    let title=''
-    if (isEmpty(id) ){
-        title = '주문서 등록'
-        currentComponent.value = ContractReg
-    }else{
-        title = '주문서 상세'
-        currentComponent.value = ContractDetailPop
-    }
+const selectRowClick = (id) => {
+    const isNew = isEmpty(id)
 
-    dialog.open(currentComponent, {
-        props:{
+    const title = isNew
+        ? '주문서 등록'
+        : '주문서 상세'
+
+    currentComponent.value = isNew
+        ? ContractReg
+        : ContractDetailPop
+
+    dialog.open(currentComponent.value, {
+        props: {
             header: title,
             modal: true,
             maximizable: false,
             draggable: false,
             style: {
-                width: '90vw',          // 🔹 팝업 가로 폭
+                width: '90vw',
                 maxWidth: '1800px',
                 height: '800px',
                 overflow: 'hidden'
             },
             pt: {
-                root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
-            },
+                root: {
+                    style: {
+                        overflow: 'hidden'
+                    }
+                },
+                content: {
+                    style: {
+                        overflow: 'hidden'
+                    }
+                }
+            }
         },
         data: id,
-        onClose:(event) => {
-            srhList()
-        },
+        onClose: (event) => {
+            const savedContractId = event?.data
+            // 등록 팝업에서 저장 후 ID를 반환한 경우에만 상세 팝업 실행
+            if (isNew && !isEmpty(savedContractId)) {
+                console.log('저장된 contractId:', savedContractId)
+                selectRowClick(savedContractId)
+            }
+        }
     })
 }
 
