@@ -185,7 +185,7 @@ import { ApiOrder } from '@/api/apiOrders';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { formatDate } from '@/util/common';
+import { calculateVAT, formatDate } from '@/util/common';
 import ClientListPop from '@/views/order/client/ClientListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
@@ -239,6 +239,17 @@ const totalAmount = computed(() => {
   return totalSupplyPrice.value + totalVatPrice.value;
 });
 
+const onChangeRow = (data) =>{
+  const qty = data.qty
+  const unitPrice = data.unitPrice
+
+  const supplyPrice =
+    !isNaN(qty) && !isNaN(unitPrice) ? qty * unitPrice : 0;
+
+  data.supplyPrice = supplyPrice;
+  data.vatPrice = supplyPrice ? calculateVAT(supplyPrice) : 0;
+  data.totPrice = supplyPrice + data.vatPrice;
+}
 
 const saveInfo = async () => {
     if (itemList.value.length <= 0) {
