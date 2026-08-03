@@ -3,6 +3,7 @@ import { API_URL } from '.'
 
 export const ApiOrder = {
 
+  /**************************사양서 검토******************************************************* */
   getDraftList: async(params) => {
     try{
       const res = await API_URL.post('/draft/getDraftList', params)
@@ -26,6 +27,7 @@ export const ApiOrder = {
   saveDraftInfo: async(formData) => {
     return await API_URL.post('/draft/saveDraftInfo', formData)
   },
+
 
   getOrderList: async(params) => {
     try{
@@ -88,7 +90,7 @@ export const ApiOrder = {
   },
 
 
-  /*  주문서  */
+  /**************************주문서 관리******************************************************* */
   getContractList: async(params) => {
     try{
       const res = await API_URL.post('/contract/getContractList', params)
@@ -129,49 +131,7 @@ export const ApiOrder = {
     }
   },
 
-  /*  판매 관리  */
-  getSaleList: async(params) => {
-    try{
-      const res = await API_URL.post('/sale/getSaleList', params)
-
-      return res.data
-
-    }catch(err){
-      throw new Error(err.response?.data);
-    }
-  },
-  getSaleInfo: async(id) => {
-    try{
-      const res = await API_URL.get(`/sale/getSaleInfo/${id}`)
-
-      return res.data
-
-    }catch(err){
-      throw err.response
-    }
-  },
-  saveSaleInfo : async(param) => {
-    try{
-      const msg =  await API_URL.post('/sale/saveSaleInfo', param)
-      return msg.data
-
-    }catch(err) {
-      throw new Error(err.response?.data);
-    }
-  },
-  getSaleItemList:  async(id) => {
-    try{
-      const res = await API_URL.get(`/sale/getSaleItemList/${id}`)
-
-      return res.data
-
-    }catch(err){
-      throw err.response
-    }
-  },
-
-
-  /*  출하시지서 관리  */
+  /**************************출고지서 관리******************************************************* */
   getShipmentList: async(params) => {
     try{
       const res = await API_URL.post('/shipment/getShipmentList', params)
@@ -223,6 +183,54 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
+
+/**************************수주계획 관리******************************************************* */
+
+
+
+
+  /**************************판매 관리******************************************************* */
+  getSaleList: async(params) => {
+    try{
+      const res = await API_URL.post('/sale/getSaleList', params)
+
+      return res.data
+
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+  getSaleInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/sale/getSaleInfo/${id}`)
+
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+  saveSaleInfo : async(param) => {
+    try{
+      const msg =  await API_URL.post('/sale/saveSaleInfo', param)
+      return msg.data
+
+    }catch(err) {
+      throw new Error(err.response?.data);
+    }
+  },
+  getSaleItemList:  async(id) => {
+    try{
+      const res = await API_URL.get(`/sale/getSaleItemList/${id}`)
+
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
+
+
 
 
 

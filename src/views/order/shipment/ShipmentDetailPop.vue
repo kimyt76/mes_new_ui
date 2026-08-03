@@ -97,7 +97,6 @@ const props = defineProps({
 const selectedItem = ref([])
 const itemList = ref([])
 const itemTypeCds = ref([])
-
 const form = reactive({
     itemTypeCd: '',
     itemCd:'',

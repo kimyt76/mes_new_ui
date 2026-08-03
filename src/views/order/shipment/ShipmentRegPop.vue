@@ -272,7 +272,6 @@ const workItemOpenPop = () =>{
     workItemDialog.value = true
 }
 
-
 const selectedRow = (obj) =>{
     //품목
     if (!Array.isArray(obj)) return;
