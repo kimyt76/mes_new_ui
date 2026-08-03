@@ -218,11 +218,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/purchase/purchaseState'
                     },
-                    {
-                        label: '반품조정',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/retrunAdjust'
-                    },
+                    // {
+                    //     label: '반품조정',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/purchase/retrunAdjust'
+                    // },
                 ]
             },
         ]
