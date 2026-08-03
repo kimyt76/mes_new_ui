@@ -82,6 +82,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { minMonth, todayKST } from '@/util/common';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import WeighProcTestPop from './WeighProcTestPop.vue';

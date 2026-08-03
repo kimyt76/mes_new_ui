@@ -1,5 +1,5 @@
 <template>
-<Card style="width: 100rem; height: 15rem;">
+<Card style="width: 90rem; height: 12rem;">
     <template #content>
         <!-- Row 1 -->
         <div class="grid mb-2">
@@ -16,10 +16,55 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.dueDate" fluid  show-icon/>
-                    <label>출하예정일자</label>
+                    <DatePicker v-model="form.shipmentReqDate" show-icon  class="w-full"/>
+                    <label>납품요청일</label>
                 </FloatLabel>
             </div>
+            <div class="col-3">
+                 <FloatLabel variant="on">
+                    <InputText id="on_label1" v-model="form.shipmentTime" class="w-full" />
+                    <label for="on_label1">시간</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <InputText v-model="form.deliveryManagerName" class="w-full"/>
+                    <label>납품담당자</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                 <FloatLabel variant="on">
+                    <InputText id="on_label1" v-model="form.deliveryLocation" class="w-full"/>
+                    <label for="on_label1">납품주소(소재지)</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                 <FloatLabel variant="on">
+                    <InputText id="on_label1" v-model="form.deliveryAddress" class="w-full" />
+                    <label for="on_label1">납품주소(주소)</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.shipmentYn"
+                           :options="shipmentYns"
+                            optionLabel="codeNm"
+                            optionValue="code" class="w-full" />
+                    <label>출고확인</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.managedItem"
+                           :options="managedItems"
+                            optionLabel="codeNm"
+                            optionValue="code" class="w-full" />
+                    <label>출고확인</label>
+                </FloatLabel>
+            </div>
+        </div>
+        <!-- Row 2 -->
+        <div class="grid mb-2">
             <div class="col-6">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
@@ -29,72 +74,7 @@
                     <label>고객사</label>
                 </FloatLabel>
             </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.deliveryTelno" class="w-full"  readonly/>
-                    <label>납품지연락처</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.deliveryManagerName" class="w-full"  readonly/>
-                    <label>납품지담당자</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.releaseTime" class="w-full"  readonly/>
-                    <label>출하시간</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.releaseType" class="w-full"  readonly/>
-                    <label>출고구분</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.accountStatement" class="w-full"  readonly/>
-                    <label>거래명세서</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.tradingMethod" class="w-full"  readonly/>
-                    <label>거래방법</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <IconField iconPosition="left">
-                        <InputText v-model="form.managerName" class="w-full"/>
-                        <InputIcon class="pi pi-search"  @click="openPop('U')"/>
-                    </IconField>
-                    <label>출고요청자</label>
-                </FloatLabel>
-            </div>
-            <div class="col-3">
-                <FloatLabel variant="on">
-                    <IconField iconPosition="left">
-                        <InputText v-model="form.descStorageName" class="w-full"/>
-                        <InputIcon class="pi pi-search"  @click="openPop('U')"/>
-                    </IconField>
-                    <label>출하창고</label>
-                </FloatLabel>
-            </div>
-            <div class="col-6">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.vatType" class="w-full" />
-                    <label>납품지주소</label>
-                </FloatLabel>
-            </div>
-            <div class="col-6">
-                <FloatLabel variant="on">
-                    <Textarea v-model="form.etc" rows="1" style="resize: none;" class="w-full" />
-                    <label>특이사항</label>
-                </FloatLabel>
-            </div>
+
         </div>
     </template>
 </Card>
@@ -108,60 +88,75 @@
     />
 </div>
 <div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
-    <h5 class="m-0">- 품목</h5>
-    <Button
-        label="추가+"
-        @click="itemOpenPop"
-        class="p-button-xm"
-    />
+    <h5 class="m-0">- 출고품목</h5>
+
+    <div class="flex gap-2">
+        <Button
+            label="품목추가+"
+            @click="itemOpenPop"
+        />
+        <Button
+            label="PONO 품목추가+"
+            @click="workItemOpenPop"
+        />
+    </div>
 </div>
-<div class="w-full mt-2">
+<div class="table-wrapper mt-2">
     <DataTable
-        :value="itemList"
-        selectionMode="single"
-        class="my-table"
-        scroll-height="400px"
+        :value="shipmentItemList"
+        class="my-table fixed-table"
+        scrollable
+        scrollHeight="400px"
         show-gridlines
-        @row-select="selectedRow"
         >
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '80px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
-             <template #footer>
-                <div style="text-align: center; font-weight: bold;" class="footer-cell">합계</div>
-            </template>
+        <Column field="poNo"        header="PONO"       :style="{ width: '120px', 'text-align': 'center' }" />
+        <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
+        <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
+        <Column field="lotNo"       header="LOT"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="makeNo"      header="제조번호"   :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="qcStatus"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="stockQty"    header="재고수량"   :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
         </Column>
-        <Column field="qty"       header="수량"    :style="{ width: '50px'}"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="shipmentQty" header="출고수량"   :style="{ width: '120px'}"  :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <InputNumber
-                    v-model="slotProps.data.qty"
+                    v-model="slotProps.data.shipmentQty"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="0"
                     :useGrouping="true"
-                    :inputStyle="{ width: '50px', 'text-align': 'right' }"
-                        @update:modelValue="() => onChangeRow(slotProps.data)"
+                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
+                    @update:modelValue="() => onChangeRow(slotProps.data)"
                 />
             </template>
-            <template #footer>
-                <div style="text-align: right; width: 50px; padding-right: 4px;" class="footer-cell">
-                {{ totQty.toFixed(0) }}
-                </div>
+        </Column>
+        <Column field="pallet"    header="파렛트"       :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
+            <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
+        </Column>
+        <Column field="shipmentStatus"  header="출고상태"   :style="{ width: '120px', textAlign:'center'}" :bodyStyle="{ padding: '0'}">
+            <template #body="slotProps">
+                <Select
+                    v-model="slotProps.data.shipmentStatus"
+                    class="w-full"
+                    :options="shipmentStatusa"
+                    option-label="codeNm"
+                    option-value="code"
+                />
             </template>
         </Column>
-        <Column field="logNo"    header="Lot No."       :style="{ width: '50px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="actions"     header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
         </Column>
-
     </DataTable>
 </div>
-<!-- 🔹 하단 버튼 -->
 <div class="flex gap-2 justify-end pt-3">
     <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
 </div>
+
 
 <Dialog
     v-model:visible="itemDialog"
@@ -173,167 +168,185 @@
         />
 </Dialog>
 
+<Dialog
+    v-model:visible="workItemDialog"
+    header="품목 목록"
+    style="width: 100rem; height: 30rem"
+  >
+    <ShipmentItemListPop
+        @selected = "selectedRow1"
+        @close = "workItemDialog = false"
+        />
+</Dialog>
 </template>
-
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiOrder } from '@/api/apiOrders';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty, todayKST } from '@/util/common';
+import { todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
-import ClientListPop from '@/views/order/client/ClientListPop.vue';
-import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
-import { computed, inject, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { inject, onMounted, reactive, ref } from 'vue';
+import ShipmentItemListPop from './ShipmentItemListPop.vue';
 
 const dialog = useDialog()
 const { userId } = useAuthStore()
-const { vError, vSuccess, vWarning } = useAlertStore()
-const currentComponent = shallowRef(null)
-const totQty = computed(() =>
-  itemList.value.reduce(
-    (sum, row) => sum + (Number(row.qty) || 0),
-    0,
-  ),
-)
+const { vError, vSuccess, vWarning, vInfo } = useAlertStore()
 const attachFile = ref([])
 const dialogRef = inject('dialogRef')
-const itemList = ref([])
+const shipmentItemList = ref([])
+const shipmentStatus = ref([])
+const shipmentTypes = ref([])
 const itemDialog = ref(false)
+const workItemDialog = ref(false)
 
 const form = reactive({
-  shipmentDate: '',
-  seq:'',
-  clientName:'',
-  clientId:'',
-  managerId: '',
-  managerName: '',
-  descStorageCd:'',
-  descStorageName:'',
+    shipmentDate:todayKST(),
+    seq:'',
+    shipmentReqDate:todayKST(),
+    shipmentTime: '',
+    clientCd:'',
+    clientName:'',
+    deliveryLocation:'',
+    deliveryAddress:'',
+    deliveryManagerName:'',
+    deliveryTelno:'',
+    shipmentType:'',
+    shipmentYn:'',
+    managedItem:'',
 
-  deliveryTelno: '',
-  deliveryManagerName : '',
+    etc:'',
 
-  tradingMethod: '',
-  dueDate: '',
-  releaseTime:'',
-  releaseType: '',
-  accountStatement: '',
-  address: '',
-
-  attachFileId: '',
-
-  shipmentId: '',
-  saleIds: '',
-  userId: userId,
+    shipmentId: '',
 })
-
-// 1. 수량 합계
-const totalQty = computed(() => {
-  // .value로 실제 배열에 접근합니다.
-  return itemList.value.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-});
-
-watch(() => form.contractDate, async (newVal, oldVal) => {
-  if ( !isEmpty(newVal)) {
-    if ( oldVal !==  newVal ){
-    form.seq = await ApiCommon.getNextSeq('tb_shipment_mst','shipment_date', newVal)
-    }
-  }
-})
+const shipmentYns = ref([
+    {codeNm: '확정', code: 'Y'},
+    {codeNm: '진행', code: 'N'}
+])
+const managedItems = ref([
+    {codeNm: '여', code: 'Y'},
+    {codeNm: '부', code: 'N'}
+])
 
 const saveInfo = async () =>{
-    const formData = new FormData();
-
-    if ( itemList.value <= 0 ){
-        vInfo("품목을 등록하세요")
-        return
-    }
-    if(attachFile.value <= 0 ){
-        vInfo("산출물을 등록하세요")
-        return
-    }
 
     try{
-        const params = {
-            ...form
+        const request = {
+            shipmentInfo: {
+                ...form
+            },
+            shipmentItemList: shipmentItemList.value,
+            attachFile: attachFile.value
+
         }
-        formData.append('contractInfo', JSON.stringify(params))
-        formData.append('itemList', JSON.stringify(itemList.value))
+        formData.append(
+            "request",
+            new Blob(
+                [JSON.stringify(request)],
+                { type: "application/json" }
+            )
+        )
 
         attachFile.value.forEach(file => {
-            //console.log('파일 객체 여부:',  file.file instanceof File)
             if (file.file instanceof File) {
-            formData.append('attachFile', file.file)
+                formData.append("newFiles", file.file)
             }
         })
 
-        const msg = await ApiOrder.saveContractInfo(formData)
-        vSuccess(msg.data.message)
-        closeDialog()
+        const res = await ApiOrder.saveContractInfo(formData)
+        vSuccess(res.message)
     }catch(err){
         handleApiError(err)
+        return;
     }
-}
-
-const selectedRow = (obj) =>{
-    if (!Array.isArray(obj)) return;
-
-    let baseSeq = itemList.value.length;
-
-    const selectItem = obj.map((o, index) => ({
-      itemCd: o.itemCd,
-      itemName: o.itemName,
-      spec: o.spec,
-      prodType: o.prodType,
-      qty: o.qty,
-      unitPrice: o.unitPrice,
-      supplyPrice: 0,
-      vatPrice: 0,
-      totPrice: 0,
-      degree: o.degree,
-      statusType: o.statusType,
-      orderDist: baseSeq + index + 1,
-      poNo: o.poNo
-  }));
-
-  if (itemList.value.length > 0) {
-    itemList.value.push(...selectItem);
-  } else {
-    itemList.value = [...selectItem];
-  }
-}
-
-const removeRow = (index) =>{
-    itemList.value.splice(index,1)
 }
 
 const itemOpenPop = () =>{
     itemDialog.value = true
 }
 
-const openPop = (type) =>{
-    let title = ''
+const workItemOpenPop = () =>{
+    workItemDialog.value = true
+}
 
-    if ( type === 'C') {
-        title = '고객사 목록'
-        currentComponent.value = ClientListPop
-    }else if ( type === 'U') {
-        title = '사용자 목록'
-        currentComponent.value = UserListPop
+
+const selectedRow = (obj) =>{
+    //품목
+    if (!Array.isArray(obj)) return;
+
+    let baseSeq = itemList.value.length;
+
+    const selectItem = obj.map((o, index) => ({
+        poNo: '',
+        itemCd: o.itemCd,
+        itemName: o.itemName,
+        lotNo: '',
+        makeNo: '',
+        passState: '',
+        stockQty: 0,
+        shipmentQty: 0,
+        pallet: 0,
+        shipmentStatus: '',
+        orderDist: baseSeq + index + 1,
+    }));
+
+    if (itemList.value.length > 0) {
+        itemList.value.push(...selectItem);
+    } else {
+        itemList.value = [...selectItem];
     }
-    dialog.open (currentComponent.value, {
+
+    reOrderDist()
+}
+
+const selectedRow1 = (obj) =>{
+    //pono 품목
+    if (!Array.isArray(obj)) return;
+
+    let baseSeq = itemList.value.length;
+
+    const selectItem = obj.map((o, index) => ({
+        poNo: o.poNo,
+        itemCd: o.itemCd,
+        itemName: o.itemName,
+        lotNo: o.lotNo,
+        makeNo: o.makeNo,
+        passState: o.passState,
+        stockQty: o.stockQty,
+        shipmentQty: o.stockQty,
+        pallet: o.pallet,
+        shipmentStatus: '',
+        orderDist: baseSeq + index + 1,
+        workProcId: o.workProcId,
+    }));
+
+    if (itemList.value.length > 0) {
+        itemList.value.push(...selectItem);
+    } else {
+        itemList.value = [...selectItem];
+    }
+
+    reOrderDist()
+}
+
+const reOrderDist = () =>{
+    itemList.value.forEach((item, idx) => {
+        item.orderDist = idx + 1
+    })
+}
+
+const openPop = (type) =>{
+    dialog.open (ClientListPop.value, {
         props: {
-            header: title,
+            header: '고객사 목록',
             modal: true,
             draggable: false,
             maximizable: false,
             style: {
-            overflow: 'hidden'
+                overflow: 'hidden'
             },
             pt: {
                 root: { style: { overflow: 'hidden' } },
@@ -341,19 +354,17 @@ const openPop = (type) =>{
             }
         },
         onClose: (event) => {
-            if ( type === 'C') {
-                form.clientName = event.data.clientName
-                form.clientId = event.data.clientId
-            }else if ( type === 'U') {
-                form.managerName = event.data.memberNm
-                form.managerId = event.data.userId
-            }
+            form.clientName = event.data.clientName
+            form.clientCd = event.data.clientId
         }
     })
 }
 
 onMounted( async () =>{
-    form.shipmentDate = todayKST()
+    shipmentTypes.value = await ApiCommon.getCodeList('shipment_type')
+    shipmentStatus.value = await ApiCommon.getCodeList('shipment_status')
+
+    form.contractDate = todayKST()
     form.seq = await ApiCommon.getNextSeq('tb_shipment_mst', 'shipment_date',  form.shipmentDate)
 })
 
@@ -377,5 +388,7 @@ const closeDialog = () =>{
   font-size: 18px;
   height: 100%;
 }
-
+::v-deep(.fixed-table table) {
+    table-layout: fixed !important;
+}
 </style>

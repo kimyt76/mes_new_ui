@@ -197,7 +197,7 @@ const srchMatPlanList = async () => {
 };
 
 onMounted( async () => {
-
+    //await srchMatPlanList()
 });
 
 

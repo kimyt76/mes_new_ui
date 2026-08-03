@@ -144,6 +144,9 @@ export const ApiStock = {
         return await API_URL.post('/moveReq/saveMoveItem', params)
     },
 
+    saveMoveReqComplete: async(params) => {
+        return await API_URL.post('/moveReq/saveMoveReqComplete', params)
+    },
     /**
      *
      * @param {*} params
@@ -180,8 +183,8 @@ export const ApiStock = {
         return await API_URL.post('/moveStock/saveMoveStockInfo', params)
     },
 
-    saveMoveStockComfirm: async(params) => {
-        return await API_URL.post('/moveStock/saveMoveStockComfirm', params)
+    saveMoveStockConfirm: async(params) => {
+        return await API_URL.post('/moveStock/saveMoveStockConfirm', params)
     },
 
     /***************자재조정**************************************************************************** */

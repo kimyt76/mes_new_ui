@@ -1,6 +1,6 @@
 <template>
 <!-- 전체 팝업 카드 -->
-  <Card style="width: 63rem; height: 49rem;">
+  <Card style="width: 63rem; height: 3.5rem;">
     <template #content>
       <div class="flex flex-column h-full">
         <!-- 🔹 검색 영역 -->
@@ -14,6 +14,10 @@
                     style="width: 150px"
                     />
                     <label for="on_label1">품목구분</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                    <InputText id="on_label1" v-model="form.poNo" style="width: 180px" />
+                    <label for="on_label1">PONO</label>
                 </FloatLabel>
                 <FloatLabel variant="on">
                     <InputText id="on_label1" v-model="form.itemName" style="width: 180px" />
@@ -33,18 +37,18 @@
             </div>
           </form>
         </div>
-        <!-- 🔹 리스트 영역 (높이 제한) -->
+    </div>
+    </template>
+</Card>
+ <!-- 🔹 리스트 영역 (높이 제한) -->
         <div class="list-section mt-3">
           <div class="list-wrapper">
             <DataTable
               v-model:selection="selectedItem"
               :value="itemList"
-              dataKey="itemCd"
-              :loading="loading"
-              paginator
-              :rows="15"
+              dataKey="workProcId"
               :rowsPerPageOptions="[15,30,40]"
-              tableStyle="table-layout: fixed; width: 100%"
+              tableStyle="table-layout: fixed;"
               columnResizeMode="fit"
               class="my-table"
               scrollable
@@ -53,16 +57,22 @@
               selectionMode="multiple"
             >
               <Column selectionMode="multiple"  headerStyle="width: 2rem" style="text-align: center;"></Column>
-              <Column field="poNo"              header="PONO":style="{ width: '70px'}"style="text-align: center;"/>
-              <Column field="itemTypeName"      header="품목구분":style="{ width: '70px'}"style="text-align: center;"/>
-              <Column field="itemCd"            header="품목코드":style="{ width: '90px'}"style="text-align: center;"/>
-              <Column field="itemName"          header="품목명":style="{ width: '200px'}"style="text-align: left;"/>
-              <Column field="stockQty"      header="수량":style="{ width: '180px'}"style="text-align: left;">
+              <Column field="poNo"              header="PONO"       :style="{ width: '130px', textAlign: 'center' }"/>
+              <Column field="itemTypeName"      header="품목구분"   :style="{ width: '80px', textAlign: 'center'}"/>
+              <Column field="itemCd"            header="품목코드"   :style="{ width: '110px', textAlign: 'center'}"/>
+              <Column field="itemName"          header="품목명"     :style="{ width: '260px'}"/>
+              <Column field="lotNo"             header="LOT NO"    :style="{ width: '120px', textAlign: 'left'}"/>
+              <Column field="makeNo"            header="제조번호"   :style="{ width: '140px', textAlign: 'center'}"/>
+              <Column field="stockQty"               header="수량"      :style="{ width: '100px', textAlign: 'right'}">
+                 <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
+              </Column>
+              <Column field="pallet"            header="파렛트(예상)":style="{ width: '110px', textAlign: 'right'}">
+                 <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
+             </Column>
+             <Column field="passStateName"      header="품질"   :style="{ width: '80px', textAlign: 'center'}">
 
              </Column>
-              <Column field="pallet"      header="파렛트(예상)":style="{ width: '180px'}"style="text-align: left;"/>
-              <Column field="qcStatus"      header="품질":style="{ width: '180px'}"style="text-align: left;"/>
-              <Column field="storageName"      header="창고":style="{ width: '180px'}"style="text-align: left;"/>
+             <Column field="storageName"       header="창고"   :style="{ width: '120px', textAlign: 'center'}"/>
             </DataTable>
           </div>
         </div>
@@ -72,16 +82,12 @@
           <Button label="선택" @click="selectedRow" />
           <Button label="닫기" outlined class="ml-2" @click="emit('close')" />
         </div>
-    </div>
-    </template>
-</Card>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiItem } from '@/api/apiItem';
+import { ApiOrder } from '@/api/apiOrders';
 import { useAlertStore } from '@/stores/alert';
-import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
 const { vInfo } = useAlertStore()
@@ -100,27 +106,36 @@ const itemTypeCds = ref([])
 
 const form = reactive({
     itemTypeCd: '',
+    poNo: '',
     itemCd:'',
     itemName:'',
-})
 
-onMounted( async () =>{
-    itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
-
-    if (!isEmpty(props.itemTypeCd)) {
-        form.itemTypeCd = props.itemTypeCd
-        searchList()
-    }
+    procCd: '',
+    procStatus: '',
 })
 
 const searchList = async () =>{
-    loading.value = true
+    if( form.itemTypeCd === ''){
+        vInfo('검색 조건을 입력해주세요.');
+        return;
+    }
+
+    if (form.itemTypeCd === 'M3') {
+        form.procCd = 'PRC003'
+        form.procStatus = '32'
+    }else if (form.itemTypeCd === 'M4' || form.itemTypeCd === 'M5' || form.itemTypeCd === 'M6') {
+        form.procCd = 'PRC004'
+        form.procStatus = '42'
+    }else if (form.itemTypeCd === 'M0') {
+        form.procCd = 'PRC005'
+        form.procStatus = '52'
+    }
+
     const params = {
         ...form
     }
-    itemList.value = await ApiItem.getItemList(params);
 
-    loading.value =false
+    itemList.value = await ApiOrder.getWorkOrderItemList(params);
 }
 
 const selectedRow = () =>{
@@ -132,7 +147,10 @@ const selectedRow = () =>{
     selectedItem.value = []
 }
 
-
+onMounted( async () =>{
+    itemTypeCds.value =  (await ApiCommon.getCodeList('item_type_cd'))
+                           .filter(i => !['M1', 'M2', 'M7'].includes(i.code));
+})
 </script>
 
 <style scoped>

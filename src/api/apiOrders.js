@@ -192,16 +192,6 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
-  getSalesItemList:  async(ids) => {
-    try{
-      const res = await API_URL.get(`/shipment/getSalesItemList/${ids}`)
-
-      return res.data
-
-    }catch(err){
-      throw err.response
-    }
-  },
   saveShipmentInfo : async(param) => {
     try{
       const msg =  await API_URL.post('/shipment/saveShipmentInfo', param)
@@ -209,16 +199,6 @@ export const ApiOrder = {
 
     }catch(err) {
       throw new Error(err.response?.data);
-    }
-  },
-  getShipmentItemList: async (id) => {
-    try{
-      const res = await API_URL.get(`/shipment/getShipmentItemList/${id}`)
-
-      return res.data
-
-    }catch(err){
-      throw err.response
     }
   },
   updateShipmentInfo : async(formData) => {
@@ -235,6 +215,16 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
+  getWorkOrderItemList: async(params) => {
+    try{
+      const res = await API_URL.post('/shipment/getWorkOrderItemList', params)
+      return res.data
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+
+
 
   // 진행상태
   getProgressList: async(prams) => {

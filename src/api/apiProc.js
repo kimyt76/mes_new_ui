@@ -111,7 +111,7 @@ export const ApiProc = {
 
 
 
-    // 칭량
+    // =================================칭량 ==========================================================//
     getWeighInfo: async (params) => {
         try {
             const res = await API_URL.post('/procWeigh/getWeighInfo', params)
@@ -158,10 +158,17 @@ export const ApiProc = {
             throw err.response
         }
     },
+    getItemCloseList: async(params) => {
+        try{
+            const res = await API_URL.post('/procWeigh/getItemCloseList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
 
-
-    //제조
+    // =================================제조 ==========================================================//
     getMakeInfo: async (params) => {
         try {
             const res = await API_URL.post('/procMat/getMakeInfo', params)
@@ -212,7 +219,7 @@ export const ApiProc = {
     },
 
 
-    //코팅
+    // =================================코팅 ==========================================================//
     startProcCoating: async(params) => {
         return await API_URL.post('/procCoating/startProcCoating', params)
     },
@@ -221,7 +228,7 @@ export const ApiProc = {
     },
 
 
-    //충전
+    // =================================충전 ==========================================================//
     startProcCharge: async(params) => {
         return await API_URL.post(`/procCharge/startProcCharge`, params)
     },
@@ -230,7 +237,7 @@ export const ApiProc = {
     },
 
 
-    //포장
+    // =================================포장 ==========================================================//
     startProcPacking: async(params) => {
         return await API_URL.post(`/procPacking/startProcPacking`, params)
     },

@@ -252,7 +252,6 @@ const openPop = () =>{
             form.customerCd = event.data.customerCd
             form.customerName = event.data.customerName
         }
-
     })
 }
 
