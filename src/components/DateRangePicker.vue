@@ -12,7 +12,7 @@
           :manualInput="false"
           @update:modelValue="onStartChange"
         />
-        <label>시작일</label>
+        <label>{{ startLabel }}</label>
       </FloatLabel>
     </div>
 
@@ -28,7 +28,7 @@
           :manualInput="false"
           @update:modelValue="onEndChange"
         />
-        <label>종료일</label>
+        <label>{{ endLabel }}</label>
       </FloatLabel>
     </div>
   </div>
@@ -47,6 +47,14 @@ const props = defineProps({
   endDate: {
     type: String,
     default: ''
+  },
+  startLabel: {
+    type: String,
+    default: '시작일'
+  },
+  endLabel: {
+    type: String,
+    default: '종료일'
   }
 })
 
