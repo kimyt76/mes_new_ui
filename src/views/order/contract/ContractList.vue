@@ -91,7 +91,7 @@
         <Column field="itemCd"          header="품목코드" :style="{ width: '100px'}" />
         <Column field="itemName"        header="품목명"   :style="{ width: '400px'}" bodyClass="break-words" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.contractId)" class="clickable-cell" style="text-decoration: underline; point">
+                <div @click="selectRowClick(slotProps.data.contractId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
