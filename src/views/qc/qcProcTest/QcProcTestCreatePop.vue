@@ -14,7 +14,7 @@
             </div>
             <div>
                 <FloatLabel variant="on">
-                    <Select v-model="form.qcProcTestType"
+                    <Select v-model="form.qcTestType"
                             :options="qcProcTestTypes"
                             optionLabel="codeNm"
                             optionValue="code"
@@ -53,20 +53,20 @@ const qcProcTestTypes = ref([])
 const form = reactive({
     testerName: '',
     testerId: '',
-    qcProcTestType: '',
+    qcTestType: '',
     workBatchId: '',
     testState: 'I',
 })
 
 const saveInfo = async () =>{
-    if (  isEmpty(form.qcProcTestType) ) return vWarning("검사구분을 선택해주세요!!")
+    if (  isEmpty(form.qcTestType) ) return vWarning("검사구분을 선택해주세요!!")
     if (  isEmpty(form.testerId) ) return vWarning("검사자를 등록해주세요!!")
 
     try{
         const param = {
             ...form
         }
-
+console.log('Saving info with params:', param)
         const res = await ApiQc.createQcProcTestInfo(param)
         vSuccess(res.message)
         closeDialog()
@@ -93,8 +93,7 @@ const openPop = () =>{
 
 onMounted( async ()  =>{
     qcProcTestTypes.value = await ApiCommon.getCodeList('QC_PROC_TEST_TYPE')
-
-    form.workBatchId = dialogRef.value.data.id
+    form.workBatchId = dialogRef.value.data.workBatchId
 })
 
 const closeDialog = () =>{

@@ -71,7 +71,7 @@
         <Column field="areaCd"          header="구역" :style="{ width: '100px', textAlign: 'center' }" />
         <Column field="itemName"        header="품목명" :style="{ width: '380px'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workBatchId, slotProps.data.testState, slotProps.data.qcProcTestType)" class="clickable-cell">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell">
                     {{ slotProps.data.itemName}}
                 </div>
             </template>
@@ -88,7 +88,7 @@
                 </span>
             </template>
         </Column>
-        <Column field="testState"       header="작성싱테" :style="{ width: '90px', textAlign: 'center'}">
+        <Column field="testState"       header="작성상태" :style="{ width: '90px', textAlign: 'center'}">
             <template #body="slotProps">
                 <span class="action-link"
                     :class="getTestStateClass(slotProps.data.testState)"
@@ -150,11 +150,11 @@ const srhList = async () =>{
     workOrderList.value = await ApiQc.getQcProcTestList(params)
 }
 
-const selectRowClick = (id, state, type) =>{
+const selectRowClick = (row) =>{
     let title = ''
     let componentPop = ''
 
-    if (state === 'N') {
+    if (row.testState === 'N') {
         title = 'QC공정검사 생성'
         componentPop = QcProcTestCreatePop
     }else{
@@ -168,7 +168,7 @@ const selectRowClick = (id, state, type) =>{
         draggable: false
     }
 
-    if (state === 'I') {
+    if (row.testState === 'I') {
         dialogProps.style = {
             width: '90vw',
             maxWidth: '1800px',
@@ -184,8 +184,11 @@ const selectRowClick = (id, state, type) =>{
     dialog.open(componentPop, {
         props: dialogProps,
         data: {
-            id: id,
-            type: type,
+            qcProcTestMstId: row.qcProcTestMstId,
+            workBatchId: row.workBatchId,
+            qcType: row.qcTestType,
+            batchStatus: row.batchStatus,
+            testState: row.testState,
         },
         onClose: event => {
             srhList()
