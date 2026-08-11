@@ -170,8 +170,8 @@ const selectRowClick = (row) =>{
 
     if (row.testState === 'I') {
         dialogProps.style = {
-            width: '90vw',
-            maxWidth: '1800px',
+            width: '80vw',
+            maxWidth: '1400px',
             height: '850px',
             overflow: 'hidden'
         }

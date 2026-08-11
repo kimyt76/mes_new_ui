@@ -163,8 +163,6 @@ export const ApiQc = {
         return await API_URL.post('/qcTestType/saveQcTestTypeMethod' , params)
     },
 
-
-
     /**
      * 공정검사
      * @returns
@@ -178,7 +176,15 @@ export const ApiQc = {
             throw err.response
         }
     },
+    getQcProcTestTabInfo: async(params) =>{
+        try{
+            const res = await API_URL.post('/qcProcTest/getQcProcTestTabInfo', params)
 
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
     /**
      * 공정검사 등록
      */
@@ -186,8 +192,24 @@ export const ApiQc = {
         return await API_URL.post('/qcProcTest/createQcProcTestInfo', params)
     },
 
+    saveQcProcTestTabInfo: async(params) =>{
+        return await API_URL.post('/qcProcTest/saveQcProcTestTabInfo', params)
+    },
+    saveQcProcTestLineList: async(params) =>{
+        return await API_URL.post('/qcProcTest/saveQcProcTestLineList', params)
+    },
+    downloadQcProcTest: async (id) => {
+        try {
+            const res = await API_URL.get(`/qcProcTest/downloadQcProcTest/${id}`, {
+                responseType: 'blob'
+            })
 
-
+            return res.data
+        } catch (err) {
+            console.error('Download error:', err)
+            throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+        }
+    },
 
     /**
      * 공정검사 유형

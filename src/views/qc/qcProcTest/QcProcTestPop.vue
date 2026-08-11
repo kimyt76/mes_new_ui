@@ -448,11 +448,9 @@
                             <tbody>
                                 <tr>
                                     <th class="cellBorder cellHeader">검사시간</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
+                                    <th v-for="orderDist in 5" :key="orderDist" class="cellBorder cellHeader">
+                                        {{ getLineName(orderDist) }}
+                                    </th>
                                     <th class="cellBorder cellHeader">점검결과</th>
                                 </tr>
                                 <tr v-for="(item, index) in detailList" :key="item.orderDist">
@@ -577,11 +575,9 @@
                             <tbody>
                                 <tr>
                                     <th class="cellBorder cellHeader">검사시간</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
+                                    <th v-for="orderDist in 5" :key="orderDist" class="cellBorder cellHeader">
+                                        {{ getLineName(orderDist) }}
+                                    </th>
                                     <th class="cellBorder cellHeader">점검결과</th>
                                 </tr>
                                 <tr
@@ -653,11 +649,9 @@
                             <tbody>
                                 <tr>
                                     <th class="cellBorder cellHeader">검사시간</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
-                                    <th class="cellBorder cellHeader">()라인</th>
+                                    <th v-for="orderDist in 5" :key="orderDist" class="cellBorder cellHeader">
+                                        {{ getLineName(orderDist) }}
+                                    </th>
                                     <th class="cellBorder cellHeader">점검결과</th>
                                 </tr>
                                 <tr
@@ -715,7 +709,7 @@
 
     <div class="flex justify-end gap-2 mt-4">
         <Button label="작성완료" />
-        <Button label="공정검사서(QC)" />
+        <Button label="공정검사서(QC)" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
     </div>
 
 </template>
@@ -728,9 +722,8 @@ import { useDialog } from 'primevue'
 import { computed, inject, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import QcProcTesteLinePop from './QcProcTesteLinePop.vue'
 
-
+const { vSuccess, vError, vInfo, vWarning} = useAlertStore()
 const dialog = useDialog()
-
 const linePop = () =>{
     dialog.open(QcProcTesteLinePop, {
         props:{
@@ -750,7 +743,6 @@ const linePop = () =>{
     })
 }
 
-const { vSuccess, vError, vInfo, vWarning} = useAlertStore()
 /* =========================================================
  * 기본 정보
  * ========================================================= */
@@ -845,6 +837,16 @@ const createDefaultDetailList = () => {
 const detailList = ref(
     createDefaultDetailList()
 )
+
+const lineList = ref([])
+const getLineName = (orderDist) => {
+    const line = lineList.value.find(
+        item => Number(item.orderDist) === Number(orderDist)
+    )
+
+    return line?.lineName || '()라인'
+}
+
 /* =========================================================
  * 검체채취
  * ========================================================= */
@@ -934,7 +936,6 @@ const saveInfo = async () => {
          * ============================================= */
         else if (detailTypes.includes(activeTab.value)) {
             params.detailList = detailList.value
-                    .filter(item => item.testTime)
                     .map(item => ({
                         ...item,
                         qcProcTestMstId: form.qcProcTestMstId,
@@ -984,14 +985,10 @@ const loadTabData = async (qcProcTestMstId, testType) => {
         }
 
         const res = await ApiQc.getQcProcTestTabInfo(params)
-        console.log(
-            'Tab data loaded:',
-            res
-        )
+        console.log('Tab data loaded:',res)
         /* =============================================
          * Master
          * ============================================= */
-
         if (res?.qcProcTestMst) {
             Object.assign(form, res.qcProcTestMst)
         }
@@ -1007,7 +1004,6 @@ const loadTabData = async (qcProcTestMstId, testType) => {
         }
         /* =============================================
          * QRC
-         *
          * 데이터 있으면 서버 데이터
          * 없으면 빈 배열
          * ============================================= */
@@ -1020,7 +1016,6 @@ const loadTabData = async (qcProcTestMstId, testType) => {
         }
         /* =============================================
          * Detail
-         *
          * 데이터 있으면 서버 데이터
          * 없으면 기본 15줄
          * ============================================= */
@@ -1059,8 +1054,16 @@ const loadTabData = async (qcProcTestMstId, testType) => {
                     orderDist: savedItem.orderDist ?? defaultItem.orderDist
                 }
             })
+
+            /* =============================================
+            * line
+            * ============================================= */
+            lineList.value = res.lineList
+
+
             return
         }
+
     } catch (error) {
         console.error('Error loading tab data:', error )
         /*
@@ -1089,6 +1092,20 @@ onMounted(async () => {
         await nextTick()
     }
 )
+
+const downloadExcel =async () =>{
+  try {
+    const blob = await ApiQc.downloadQcProcTest(form.qcProcTestMstId)
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `공정검사_${form.prodName}.xlsx`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  } catch {
+    vError('엑셀 다운로드 실패')
+  }
+}
 </script>
 
 
