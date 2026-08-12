@@ -39,22 +39,43 @@ const model = ref([
                     {
                         label: '생산실적',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/order/contractList'
+                        to: '/basic/contractList'
                     },
                     {
                         label: '생산수욜',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/order/shipmentList'
-                    },
-                    {
-                        label: '생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/ingredient'
+                        to: '/basic/shipmentList'
                     },
                     {
                         label: '업체별생산량',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/order/ingredient'
+                        to: '/basic/ingredient'
+                    }
+                ]
+            },
+            {
+                label: '생산일보',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
+                    {
+                        label: '원료생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m1DailyReport'
+                    },
+                    {
+                        label: '부자재생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m2DailyReport'
+                    },
+                    {
+                        label: '완제품생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m0DailyReport'
+                    },
+                    {
+                        label: '인건비',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/laborCostDaily'
                     }
                 ]
             },
@@ -140,22 +161,22 @@ const model = ref([
                         to: '/order/contractList'
                     },
                     {
-                        label: '출하관리',
+                        label: '출고관리',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/shipmentList'
                     },
-                    {
-                        label: '판매관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/saleList'
-                    },
+                    // {
+                    //     label: '판매관리',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/order/saleList'
+                    // },
                     {
                         label: '진행관리',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/progressList'
                     },
                     {
-                        label: '수주별계획일정관리',
+                        label: '수주계획관리',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/orderPlan'
                     },
@@ -273,7 +294,7 @@ const model = ref([
                     {
                         label: '작업지시현황',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/prod/workOrderProgressList'
+                        to: '/prod/workOrderProgress'
                     },
                     {
                         label: '작업자관리',
@@ -294,7 +315,7 @@ const model = ref([
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/procTest'
+                        to: '/proc/weigh/weighProcTest'
                     },
                     {
                         label: '제조출고',
@@ -335,7 +356,7 @@ const model = ref([
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/procmat/processTest'
+                        to: '/procmat/matProcTest'
                     },
                     {
                         label: '공정조건(온도RPM)',
@@ -355,14 +376,14 @@ const model = ref([
                         to: '/proc/coating/coating'
                     },
                     {
-                        label: '공정검사',
+                        label: '작업지시(전체)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/coating/coatingProcessTest'
+                        to: '/proc/coating/coatingEentire'
                     },
                     {
-                        label: '제조출고',
+                        label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/coating/coatingTran'
+                        to: '/coating/coatingProcTest'
                     },
                 ]
             },
@@ -376,15 +397,16 @@ const model = ref([
                         to: '/proc/charge/charge'
                     },
                     {
-                        label: '공정검사',
+                        label: '작업지시(전체)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/charge/chargeProcessTest'
+                        to: '/proc/charge/chargeEentire'
                     },
                     {
-                        label: '제조출고',
+                        label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/charge/chargeTran'
+                        to: '/charge/chargeProcTest'
                     },
+
                 ]
             },
             {
@@ -397,14 +419,14 @@ const model = ref([
                         to: '/proc/packing/packing'
                     },
                     {
-                        label: '공정검사',
+                        label: '작업지시(전체)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/packingProcessTest'
+                        to: '/proc/packing/packingEentire'
                     },
                     {
-                        label: '제조출고',
+                        label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/packingTran'
+                        to: '/proc/packing/packingProcTest'
                     },
                 ]
             },
@@ -552,7 +574,7 @@ const model = ref([
                     {
                         label: '재고조사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/inventory'
+                        to: '/stock/realStock'
                     },
                     {
                         label: '실사재고',

@@ -12,6 +12,16 @@ export const ApiWorkOrder = {
       throw err.response
     }
   },
+  getWorkOrderProgressList: async(params) => {
+    try{
+      const res = await API_URL.post('/workOrder/getWorkOrderProgressList', params)
+
+      return res.data
+
+    }catch(err){
+      throw err.response
+    }
+  },
   deleteWorkOrders: async(ids) => {
       return await API_URL.delete(`/workOrder/deleteWorkOrders`, {data: ids})
   },

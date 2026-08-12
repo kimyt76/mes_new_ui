@@ -7,10 +7,11 @@ export default [
         component: () => import('@/views/production/workOrder/WorkOrderList.vue')
       },
       {
-        path:'workOrderDetail/:id?',
-        name: 'WorkOrderDetail',
-        component: () => import('@/views/production/workOrder/WorkOrderDetail.vue')
+        path: 'workOrderProgress',
+        name: 'WorkOrderProgress',
+        component: () => import('@/views/production/workOrder/WorkOrderProgressList.vue')
       },
+
       {
         path:'worker',
         name: 'WorkerList',
