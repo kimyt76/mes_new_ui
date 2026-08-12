@@ -1099,7 +1099,7 @@ const downloadExcel =async () =>{
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `공정검사_${form.prodName}.xlsx`
+    a.download = `${form.makeNo}_공정검사(QC).xlsx`
     a.click()
     window.URL.revokeObjectURL(url)
   } catch {
