@@ -92,6 +92,7 @@ import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
+import MoveReqPop from '../../common/MoveReqPop.vue';
 import PackingPop from './PackingPop.vue';
 
 const selectedItem = ref([])
@@ -145,7 +146,30 @@ const selectRowClick = (row) =>{
 }
 
 const moveReq = () =>{
-    //selectedItem.value
+        //selectedItem.value
+    if ( !selectedItem.value.length ) {
+        vWarning("이동 요청할 항목을 선택해주세요.");
+        return;
+    }
+
+    dialog.open(MoveReqPop, {
+        props:{
+            header: '이동 요청',
+            modal: true,
+            maximizable: false,
+            draggable: false,
+            style: {
+                overflow: 'hidden'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'auto' } }
+            },
+        },
+        data: selectedItem.value,
+        onClose:(event) => {
+        },
+    })
 
 }
 
