@@ -77,9 +77,9 @@ export default [
 
      /* 재고조사 */
       {
-        path: 'inventory',
-        name: 'InventoryList',
-        component: () => import('@/views/stock/inventory/InventoryList.vue')
+        path: 'realStock',
+        name: 'RealStockList',
+        component: () => import('@/views/stock/realStock/RealStockList.vue')
       },
 
 

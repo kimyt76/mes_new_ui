@@ -253,6 +253,49 @@ export const ApiStock = {
     saveItemOutInfo: async(params) => {
         return await API_URL.post('/invTran/saveItemOutInfo', params)
     },
+    saveRealStockList: async(params) => {
+        return await API_URL.post('/invTran/saveRealStockList', params)
+    },
+
+
+
+ /***************실사재고 조회**************************************************************************** */
+    getRealStockList: async(params) => {
+        try{
+            const res = await API_URL.post('/realStock/getRealStockList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getRealStockItemList: async(id) => {
+        try{
+            const res = await API_URL.get(`/realStock/getRealStockItemList/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getInvTranItemList: async(params) => {
+        try{
+            const res = await API_URL.post('/realStock/getInvTranItemList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
+    saveRealStock: async(params) => {
+        return await API_URL.post('/realStock/saveRealStock', params)
+    },
+    saveRealStockItemList: async(params) => {
+        return await API_URL.post('/realStock/saveRealStockItemList', params)
+    },
+    saveRealStockComplete: async(id) => {
+        return await API_URL.get(`/realStock/saveRealStockComplete/${id}`)
+    },
+
+
 
 
 }
