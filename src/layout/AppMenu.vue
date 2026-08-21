@@ -161,15 +161,10 @@ const model = ref([
                         to: '/order/contractList'
                     },
                     {
-                        label: '출고관리',
+                        label: '출고지시관리',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/shipmentList'
                     },
-                    // {
-                    //     label: '판매관리',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/order/saleList'
-                    // },
                     {
                         label: '진행관리',
                         icon: 'pi pi-fw pi-id-card',
@@ -182,18 +177,6 @@ const model = ref([
                     },
                 ]
             },
-            // {
-            //     label: '영업부',
-            //     icon: 'pi pi-fw pi-check-square',
-            //     items:[
-            //         {
-            //             label: '영업부 관리',
-            //             icon: 'pi pi-fw pi-id-card',
-            //             to: '/order/business'
-            //         },
-            //     ]
-            // },
-
         ]
     } ,
     {
@@ -213,11 +196,6 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/purchase/purOrderP'
                     },
-                    // {
-                    //     label: '발주현황(생산)',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/purchase/purOrderStateM'
-                    // },
                     {
                         label: '발주현황(구매)',
                         icon: 'pi pi-fw pi-id-card',
@@ -361,7 +339,7 @@ const model = ref([
                     {
                         label: '공정조건(온도RPM)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/matOut'
+                        to: '/proc/matProcCond'
                     },
 
                 ]

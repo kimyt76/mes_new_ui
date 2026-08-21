@@ -176,8 +176,8 @@ const selectRowClick = (id) => {
     const isNew = isEmpty(id)
 
     const title = isNew
-        ? '출하지시 등록'
-        : '출하지시 상세'
+        ? '출고지시 등록'
+        : '출고지시 상세'
 
     currentComponent.value = isNew
         ? ShipmentRegPop
