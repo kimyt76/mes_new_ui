@@ -6,7 +6,7 @@
             <div class="col-3 flex align-items-center gap-2">
                 <FloatLabel variant="on">
                     <DatePicker v-model="form.shipmentDate" show-icon  readonly/>
-                    <label>출하일자</label>
+                    <label>출고일자</label>
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
