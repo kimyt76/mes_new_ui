@@ -1,5 +1,5 @@
 <template>
-<Card style="width: 90rem; height: 12rem;">
+<Card style="width: 90rem; height: 15rem;">
     <template #content>
         <!-- Row 1 -->
         <div class="grid mb-2">
@@ -10,8 +10,26 @@
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
-                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }" /> <!-- 크기 축소 -->
+                    <InputNumber v-model="form.seq" :inputStyle="{ width: '50px', 'text-align': 'center' }" readonly/> <!-- 크기 축소 -->
                     <label>연번</label>
+                </FloatLabel>
+            </div>
+            <div class="col-6">
+                <FloatLabel variant="on">
+                    <IconField iconPosition="left">
+                        <InputText v-model="form.clientName" class="w-full"/>
+                        <InputIcon class="pi pi-search"  @click="openPop('C')"/>
+                    </IconField>
+                    <label>고객사</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.managedItem"
+                           :options="managedItems"
+                            optionLabel="codeNm"
+                            optionValue="code" class="w-full" />
+                    <label>관리품</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
@@ -33,6 +51,12 @@
                 </FloatLabel>
             </div>
             <div class="col-3">
+                <FloatLabel variant="on">
+                    <InputText v-model="form.deliveryTelno" class="w-full"/>
+                    <label>납품연락처</label>
+                </FloatLabel>
+            </div>
+            <div class="col-3">
                  <FloatLabel variant="on">
                     <InputText id="on_label1" v-model="form.deliveryLocation" class="w-full"/>
                     <label for="on_label1">납품주소(소재지)</label>
@@ -50,16 +74,16 @@
                            :options="shipmentYns"
                             optionLabel="codeNm"
                             optionValue="code" class="w-full" />
-                    <label>출고확인</label>
+                    <label>출고확상태</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <Select v-model="form.managedItem"
-                           :options="managedItems"
+                    <Select v-model="form.shipmentType"
+                           :options="shipmentTypes"
                             optionLabel="codeNm"
                             optionValue="code" class="w-full" />
-                    <label>출고확인</label>
+                    <label>출고조건</label>
                 </FloatLabel>
             </div>
         </div>
@@ -67,14 +91,19 @@
         <div class="grid mb-2">
             <div class="col-6">
                 <FloatLabel variant="on">
-                    <IconField iconPosition="left">
-                        <InputText v-model="form.clientName" class="w-full"/>
-                        <InputIcon class="pi pi-search"  @click="openPop('C')"/>
-                    </IconField>
-                    <label>고객사</label>
+                    <Textarea id="on_label1" v-model="form.etc" class="w-full" rows="1"  style="resize: none;" />
+                    <label for="on_label1">특이사항</label>
                 </FloatLabel>
             </div>
-
+            <div class="col-3">
+                <FloatLabel variant="on">
+                    <Select v-model="form.shipmentStatus"
+                           :options="shipmentStatus"
+                            optionLabel="codeNm"
+                            optionValue="code" class="w-full" />
+                    <label>출고유형</label>
+                </FloatLabel>
+            </div>
         </div>
     </template>
 </Card>
@@ -112,16 +141,16 @@
         <Column field="poNo"        header="PONO"       :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
-        <Column field="lotNo"       header="LOT"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
-        <Column field="makeNo"      header="제조번호"   :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="lotNo"       header="LOT"       :style="{ width: '170px', 'text-align': 'center' }" ></Column>
+        <Column field="makeNo"      header="제조번호"   :style="{ width: '170px', 'text-align': 'center' }" ></Column>
         <Column field="qcStatus"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
-        <Column field="stockQty"    header="재고수량"   :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
+        <Column field="stockQty"    header="재고수량"   :style="{ width: '100px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
         </Column>
-        <Column field="shipmentQty" header="출고수량"   :style="{ width: '120px'}"  :bodyStyle="{ padding: '0'}">
+        <Column field="qty" header="출고수량"   :style="{ width: '100px'}"  :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
                 <InputNumber
-                    v-model="slotProps.data.shipmentQty"
+                    v-model="slotProps.data.qty"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="0"
@@ -131,19 +160,8 @@
                 />
             </template>
         </Column>
-        <Column field="pallet"    header="파렛트"       :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
+        <Column field="pallet"          header="파렛트"       :style="{ width: '90px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
-        </Column>
-        <Column field="shipmentStatus"  header="출고상태"   :style="{ width: '120px', textAlign:'center'}" :bodyStyle="{ padding: '0'}">
-            <template #body="slotProps">
-                <Select
-                    v-model="slotProps.data.shipmentStatus"
-                    class="w-full"
-                    :options="shipmentStatusa"
-                    option-label="codeNm"
-                    option-value="code"
-                />
-            </template>
         </Column>
         <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
             <template #body="slotProps">
@@ -156,17 +174,6 @@
     <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
 </div>
-
-
-<Dialog
-    v-model:visible="itemDialog"
-    header="품목 목록"
-  >
-    <ItemListMultiPop
-        @selected = "selectedRow"
-        @close = "itemDialog = false"
-        />
-</Dialog>
 
 <Dialog
     v-model:visible="workItemDialog"
@@ -182,14 +189,16 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiOrder } from '@/api/apiOrders.js';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { todayKST } from '@/util/common';
+import { isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
-import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
+import ItemListPop from '@/views/stock/realStock/ItemListPop.vue';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
+import ClientListPop from '../client/ClientListPop.vue';
 import ShipmentItemListPop from './ShipmentItemListPop.vue';
 
 const dialog = useDialog()
@@ -200,7 +209,6 @@ const dialogRef = inject('dialogRef')
 const shipmentItemList = ref([])
 const shipmentStatus = ref([])
 const shipmentTypes = ref([])
-const itemDialog = ref(false)
 const workItemDialog = ref(false)
 
 const form = reactive({
@@ -208,7 +216,7 @@ const form = reactive({
     seq:'',
     shipmentReqDate:todayKST(),
     shipmentTime: '',
-    clientCd:'',
+    clientId:'',
     clientName:'',
     deliveryLocation:'',
     deliveryAddress:'',
@@ -216,24 +224,30 @@ const form = reactive({
     deliveryTelno:'',
     shipmentType:'',
     shipmentYn:'',
+    shipmentStatus:'',
     managedItem:'',
-
     etc:'',
 
     shipmentId: '',
 })
 const shipmentYns = ref([
-    {codeNm: '확정', code: 'Y'},
-    {codeNm: '진행', code: 'N'}
+    {codeNm: '진행중', code: 'N'},
+    {codeNm: '출고확정', code: 'Y'},
 ])
 const managedItems = ref([
     {codeNm: '여', code: 'Y'},
     {codeNm: '부', code: 'N'}
 ])
 
+
 const saveInfo = async () =>{
 
+    if (shipmentItemList.value.length === 0 ) return vWarning("출고품목을 등록하세요")
+    if (isEmpty(form.clientId) ) return vWarning("고객사를 입력하세요")
+
+
     try{
+        const formData = new FormData()
         const request = {
             shipmentInfo: {
                 ...form
@@ -256,8 +270,9 @@ const saveInfo = async () =>{
             }
         })
 
-        const res = await ApiOrder.saveContractInfo(formData)
-        vSuccess(res.message)
+        const res = await ApiOrder.saveShipmentInfo(formData)
+        vSuccess("정상적으로 처리되었습니다.")
+        closeDialog()
     }catch(err){
         handleApiError(err)
         return;
@@ -265,7 +280,18 @@ const saveInfo = async () =>{
 }
 
 const itemOpenPop = () =>{
-    itemDialog.value = true
+    dialog.open(ItemListPop, {
+        props: {
+            header: '재고 품목 조회',
+            modal: true,
+            draggable: false,
+        },
+        onClose: (event) =>{
+            if(event){
+                selectedRow(event.data)
+            }
+        }
+    })
 }
 
 const workItemOpenPop = () =>{
@@ -276,7 +302,7 @@ const selectedRow = (obj) =>{
     //품목
     if (!Array.isArray(obj)) return;
 
-    let baseSeq = itemList.value.length;
+    let baseSeq = shipmentItemList.value.length;
 
     const selectItem = obj.map((o, index) => ({
         poNo: '',
@@ -285,17 +311,20 @@ const selectedRow = (obj) =>{
         lotNo: '',
         makeNo: '',
         passState: '',
-        stockQty: 0,
-        shipmentQty: 0,
+        storageCd: o.storageCd,
+        stockQty: o.qty,
+        qty: o.qty,
         pallet: 0,
         shipmentStatus: '',
+        testNo: o.testNo,
+        itemTypeCd: o.itemTypeCd,
         orderDist: baseSeq + index + 1,
     }));
 
-    if (itemList.value.length > 0) {
-        itemList.value.push(...selectItem);
+    if (shipmentItemList.value.length > 0) {
+        shipmentItemList.value.push(...selectItem);
     } else {
-        itemList.value = [...selectItem];
+        shipmentItemList.value = [...selectItem];
     }
 
     reOrderDist()
@@ -305,7 +334,7 @@ const selectedRow1 = (obj) =>{
     //pono 품목
     if (!Array.isArray(obj)) return;
 
-    let baseSeq = itemList.value.length;
+    let baseSeq = shipmentItemList.value.length;
 
     const selectItem = obj.map((o, index) => ({
         poNo: o.poNo,
@@ -314,31 +343,38 @@ const selectedRow1 = (obj) =>{
         lotNo: o.lotNo,
         makeNo: o.makeNo,
         passState: o.passState,
+        storageCd: o.storageCd,
         stockQty: o.stockQty,
-        shipmentQty: o.stockQty,
+        qty: o.stockQty,
         pallet: o.pallet,
         shipmentStatus: '',
+        testNo: o.testNo,
+        itemTypeCd: o.itemTypeCd,
         orderDist: baseSeq + index + 1,
         workProcId: o.workProcId,
     }));
 
-    if (itemList.value.length > 0) {
-        itemList.value.push(...selectItem);
+    if (shipmentItemList.value.length > 0) {
+        shipmentItemList.value.push(...selectItem);
     } else {
-        itemList.value = [...selectItem];
+        shipmentItemList.value = [...selectItem];
     }
 
     reOrderDist()
 }
 
+const removeRow = (idx) =>{
+    shipmentItemList.value.splice(idx, 1)
+}
+
 const reOrderDist = () =>{
-    itemList.value.forEach((item, idx) => {
+    shipmentItemList.value.forEach((item, idx) => {
         item.orderDist = idx + 1
     })
 }
 
 const openPop = (type) =>{
-    dialog.open (ClientListPop.value, {
+    dialog.open (ClientListPop, {
         props: {
             header: '고객사 목록',
             modal: true,
@@ -354,7 +390,7 @@ const openPop = (type) =>{
         },
         onClose: (event) => {
             form.clientName = event.data.clientName
-            form.clientCd = event.data.clientId
+            form.clientId = event.data.clientId
         }
     })
 }
@@ -363,7 +399,9 @@ onMounted( async () =>{
     shipmentTypes.value = await ApiCommon.getCodeList('shipment_type')
     shipmentStatus.value = await ApiCommon.getCodeList('shipment_status')
 
-    form.contractDate = todayKST()
+    form.shipmentId = dialogRef.value.data.shipmentId
+
+    form.shipmentDate = todayKST()
     form.seq = await ApiCommon.getNextSeq('tb_shipment_mst', 'shipment_date',  form.shipmentDate)
 })
 

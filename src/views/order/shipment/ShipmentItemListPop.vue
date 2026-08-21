@@ -46,7 +46,7 @@
             <DataTable
               v-model:selection="selectedItem"
               :value="itemList"
-              dataKey="workProcId"
+              dataKey="rowId"
               :rowsPerPageOptions="[15,30,40]"
               tableStyle="table-layout: fixed;"
               columnResizeMode="fit"
@@ -135,6 +135,7 @@ const searchList = async () =>{
     }
 
     itemList.value = await ApiOrder.getWorkOrderItemList(params);
+    console.log('itemList.value',  itemList.value)
 }
 
 const selectedRow = () =>{

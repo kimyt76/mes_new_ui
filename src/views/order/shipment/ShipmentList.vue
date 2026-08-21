@@ -63,30 +63,54 @@
         class="my-table"
         >
         <Column selectionMode="multiple"  headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="shipmentDateSeq" header="등록 No"    :style="{ width: '130px'}" ></Column>
-        <Column field="shipmentReqDate" header="출고요청일"    :style="{ width: '130px'}" ></Column>
+        <Column field="shipmentDateSeq" header="등록 No"    :style="{ width: '130px', textAlign: 'center'}" >
+            <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data.shipmentId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                    {{ slotProps.data.shipmentDateSeq }}
+                </div>
+            </template>
+        </Column>
+        <Column field="shipmentReqDate" header="출고요청일"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
         <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
         <Column field="poNo"            header="PO No"    :style="{ width: '130px'}" ></Column>
         <Column field="deliveryManagerName"     header="담당자명"   :style="{ width: '90px', textAlign: 'center'}" />
-        <Column field="itemCd"          header="품목코드" :style="{ width: '100px'}" />
+        <Column field="itemCd"          header="품목코드" :style="{ width: '160px', textAlign: 'center'}" />
         <Column field="itemName"        header="품목명"   :style="{ width: '400px'}" bodyClass="break-words" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.contractId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                <div @click="selectRowClick(slotProps.data.shipmentId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.itemName }}
                 </div>
             </template>
         </Column>
-        <Column field="shipmentQty"             header="수량"       :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="qty"             header="수량"       :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="lotNo"           header="LOT"   :style="{ width: '100px'}" />
+        <Column field="lotNo"           header="LOT"   :style="{ width: '100px', textAlign: 'right'}" />
         <Column field="pallet"          header="파렛트"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="deliveryLocation"        header="도착소재지"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="shipmentType"    header="출고조건"  :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="shipmentTypeName"    header="출고조건"  :style="{ width: '150px', textAlign:'center'}" />
         <Column field="shipmentTime"    header="출고요청시간"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="printYn"         header="거래명세서출력"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="shipmentStatus"  header="출고상태"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="shipmentYn"      header="출고확인"  :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="printYn"         header="거래명세서출력"  :style="{ width: '150px', textAlign:'center'}" >
+             <template #body="slotProps">
+                <span
+                    :class="{ 'status-editable': slotProps.data.printYn === 'N' }"
+                    @click="slotProps.data.printYn === 'N' && goPrint(slotProps.data)"
+                >
+
+                    {{ slotProps.data.printYn === 'N' ? '미출력' : '출력' }}
+                </span>
+            </template>
+        </Column>
+        <Column field="shipmentStatusName"  header="출고유형"  :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="shipmentYn"      header="출고상태"  :style="{ width: '150px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span
+                    :class="{ 'status-editable': slotProps.data.shipmentYn === 'N' }"
+                >
+                    {{ slotProps.data.shipmentYn === 'Y' ? '진행중' : '출고확정' }}
+                </span>
+            </template>
+        </Column>
     </DataTable>
 </div>
 </template>
@@ -184,18 +208,20 @@ const selectRowClick = (id) => {
                 }
             }
         },
-        data: id,
+        data: {
+            shipmentId : id,
+        },
         onClose: (event) => {
-            // const savedContractId = event?.data
-            // // 등록 팝업에서 저장 후 ID를 반환한 경우에만 상세 팝업 실행
-            // if (isNew && !isEmpty(savedContractId)) {
-            //     console.log('저장된 contractId:', savedContractId)
-            //     selectRowClick(savedContractId)
-            // }
+            if ( event) {
+                srhList()
+            }
         }
     })
 }
 
+const goPrint = (row) =>{
+    alert("개발중")
+}
 const handleDateChange = () =>{
 }
 
@@ -223,8 +249,8 @@ const home = ref({
 });
 const items = ref([
     { label: '영업관리' },
-    { label: '출하지시관리' },
-    { label: '출하지시목록' },
+    { label: '출고지시관리' },
+    { label: '출고지시목록' },
 ]);
 
 const downloadExcel = () =>{
@@ -234,7 +260,7 @@ const downloadExcel = () =>{
     console.warn("No Columns Found");
     return;
   }
-  exportToExcel(shipmentList.value, "출하지시 리스트", cols);
+  exportToExcel(shipmentList.value, "출고지시 리스트", cols);
 }
 
 

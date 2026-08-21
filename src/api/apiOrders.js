@@ -175,6 +175,9 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
+  deleteShipment: async(ids) => {
+    return  await API_URL.post('/shipment/deleteShipment', ids)
+  },
   getWorkOrderItemList: async(params) => {
     try{
       const res = await API_URL.post('/shipment/getWorkOrderItemList', params)
