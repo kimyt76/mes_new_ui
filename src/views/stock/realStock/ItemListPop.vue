@@ -37,11 +37,8 @@
             <DataTable
               v-model:selection="selectedItem"
               :value="stockItemList"
-              dataKey="tranItemId"
+              dataKey="rowId"
               :loading="loading"
-              paginator
-              :rows="15"
-              :rowsPerPageOptions="[15,30,40]"
               tableStyle="table-layout: fixed; width: 100%"
               columnResizeMode="fit"
               class="my-table"
@@ -107,7 +104,8 @@ const selectedRow = () =>{
         vInfo('선택된 항목이 없습니다.');
         return;
     }
-    //emit('selected', selectedItem.value);
+
+    //console.log('selectedItem.value', selectedItem.value)
     dialogRef.value.close(
         selectedItem.value
     )
