@@ -84,6 +84,8 @@ const saveInfo = async () =>{
 
     vSuccess("등록되었습니다.")
     form.realStockMstId = res.data.realStockMstId
+    console.log('res.data.realStockMstId',  res.data.realStockMstId )
+    console.log('form.realStockMstId',  form.realStockMstId )
 
     dialogRef.value.close({
        realStockMstId: form.realStockMstId,

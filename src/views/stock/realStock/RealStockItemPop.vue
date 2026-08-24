@@ -20,6 +20,7 @@
 
 <div class="flex justify-end gap-2 mt-2">
     <Button v-if="isBtn" label="저장" severity="success" @click="saveInfo"/>
+    <Button v-if="isBtn" label="삭제" severity="danger" @click="deleteRealStock"></Button>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 </template>
@@ -70,6 +71,17 @@ const saveInfo =  async () =>{
 
         const res = await ApiStock.saveRealStockItemList(params)
         vSuccess("실사재고 품목이 등록되었습니다.")
+        closeDialog()
+    }catch(err){
+        handleApiError(err)
+    }
+}
+
+const deleteRealStock = async () =>{
+    try{
+        const res = await ApiStock.deleteRealStock(realStockMstId.value)
+        vSuccess("삭제되었습니다.")
+        closeDialog()
     }catch(err){
         handleApiError(err)
     }

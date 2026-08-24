@@ -51,7 +51,6 @@
         scrollHeight="700px"
         scrollable
         showGridlines
-        selectionMode="single"
         class="my-table"
         >
         <Column field="realStockDate"       header="일자"    :style="{ width: '110px', textAlign:'center'}" >
@@ -79,6 +78,9 @@
             <template #body="slotProps">
                 <span
                     :class="{ 'status-editable': slotProps.data.endYn === 'N' }"
+                    :style="{
+                        cursor: slotProps.data.endYn === 'N' ? 'pointer' : 'default'
+                    }"
                     @click="slotProps.data.endYn === 'N' && updateComplete(slotProps.data)"
                 >
                     {{ slotProps.data.endYn === 'Y' ? '완료' : '미완료' }}
@@ -127,16 +129,12 @@ const selectRowClick = (row) =>{
 }
 
 const updateComplete = async (row) =>{
-    console.log('realStockMstId', row.realStockMstId)
-
     try{
         const res = await ApiStock.saveRealStockComplete(row.realStockMstId)
-
+        srhList()
     }catch(err){
         handleApiError(err)
     }
-
-
 }
 
 const newPop = () =>{
@@ -147,9 +145,10 @@ const newPop = () =>{
             draggable: false,
         },
         onClose:(event)=>{
-            if(event) {
-                console.log('realStockMstId', event.data.realStockMstId)
-                stockItemPop(event.data,realStockMstId, 'N')
+            const realStockMstId = event?.data?.realStockMstId
+            console.log('realStockMstId', realStockMstId)
+            if (realStockMstId) {
+                stockItemPop(realStockMstId, 'N')
             }
         }
     } )
@@ -171,7 +170,7 @@ const stockItemPop = (id, endYn) =>{
         },
         onClose:(event)=>{
             if(event) {
-
+                srhList()
             }
         }
     } )
@@ -188,6 +187,7 @@ const srhList = async () =>{
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     allStorages.value = await ApiSystem.getStorageCodeList()
+    srhList()
 })
 
 const home = ref({
