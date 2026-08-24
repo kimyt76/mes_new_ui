@@ -294,7 +294,9 @@ export const ApiStock = {
     saveRealStockComplete: async(id) => {
         return await API_URL.get(`/realStock/saveRealStockComplete/${id}`)
     },
-
+    deleteRealStock: async(id) => {
+        return await API_URL.get(`/realStock/deleteRealStock/${id}`)
+    },
 
 
 
