@@ -186,6 +186,20 @@ export const ApiOrder = {
       throw new Error(err.response?.data);
     }
   },
+  printTransactionStatement:  async (shipmentId) => {
+    try {
+        const res = await API_URL.get(`/shipment/printTransactionStatement/${shipmentId}`,
+            {
+                responseType: 'blob'
+            }
+        )
+
+        return res
+    } catch (err) {
+        throw err.response
+    }
+},
+
 
 /**************************수주계획 관리******************************************************* */
 
