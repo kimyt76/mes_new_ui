@@ -85,7 +85,7 @@
         <Column field="qty"             header="수량"       :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="lotNo"           header="LOT"   :style="{ width: '100px', textAlign: 'right'}" />
+        <Column field="lotCnt"           header="LOT"   :style="{ width: '100px', textAlign: 'right'}" />
         <Column field="pallet"              header="파렛트"   :style="{ width: '90px', textAlign: 'center'}" />
         <Column field="deliveryLocation"    header="도착소재지"  :style="{ width: '150px', textAlign:'center'}" />
         <Column field="shipmentTypeName"    header="출고조건"  :style="{ width: '100px', textAlign:'center'}" />
@@ -97,7 +97,6 @@
                     style="cursor: pointer;"
                     @click="goPrint(slotProps.data)"
                 >
-
                     {{ slotProps.data.printYn === 'N' ? '미출력' : '출력' }}
                 </span>
             </template>
