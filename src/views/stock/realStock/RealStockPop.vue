@@ -81,8 +81,7 @@ const saveInfo = async () =>{
         ...form
     }
     const res = await ApiStock.saveRealStock(params)
-
-    vSuccess("등록되었습니다.")
+    //vSuccess("등록되었습니다.")
     form.realStockMstId = res.data.realStockMstId
     // console.log('res.data.realStockMstId',  res.data.realStockMstId )
     // console.log('form.realStockMstId',  form.realStockMstId )
