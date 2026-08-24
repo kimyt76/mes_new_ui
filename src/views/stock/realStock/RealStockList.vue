@@ -146,7 +146,7 @@ const newPop = () =>{
         },
         onClose:(event)=>{
             const realStockMstId = event?.data?.realStockMstId
-            console.log('realStockMstId', realStockMstId)
+            //console.log('realStockMstId', realStockMstId)
             if (realStockMstId) {
                 stockItemPop(realStockMstId, 'N')
             }
@@ -169,9 +169,7 @@ const stockItemPop = (id, endYn) =>{
             endYn: endYn,
         },
         onClose:(event)=>{
-            if(event) {
-                srhList()
-            }
+            srhList()
         }
     } )
 }
