@@ -161,7 +161,17 @@
             </template>
         </Column>
         <Column field="pallet"          header="파렛트"       :style="{ width: '90px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
-            <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
+            <template #body="slotProps">
+                <InputNumber
+                    v-model="slotProps.data.pallet"
+                    class="w-full"
+                    :min="0"
+                    :maxFractionDigits="0"
+                    :useGrouping="true"
+                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
+                    @update:modelValue="() => onChangeRow(slotProps.data)"
+                />
+            </template>
         </Column>
         <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
             <template #body="slotProps">

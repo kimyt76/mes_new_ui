@@ -70,12 +70,12 @@
                 </div>
             </template>
         </Column>
-        <Column field="shipmentReqDate" header="출고요청일"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
+        <Column field="shipmentReqDate" header="출고요청일"    :style="{ width: '120px', textAlign: 'center'}" ></Column>
         <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
         <Column field="poNo"            header="PO No"    :style="{ width: '130px'}" ></Column>
-        <Column field="deliveryManagerName"     header="담당자명"   :style="{ width: '90px', textAlign: 'center'}" />
+        <Column field="deliveryManagerName"     header="담당자명"   :style="{ width: '100px', textAlign: 'center'}" />
         <Column field="itemCd"          header="품목코드" :style="{ width: '160px', textAlign: 'center'}" />
-        <Column field="itemName"        header="품목명"   :style="{ width: '400px'}" bodyClass="break-words" >
+        <Column field="itemName"        header="품목명"   :style="{ width: '420px'}" bodyClass="break-words" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.shipmentId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.itemName }}
@@ -86,23 +86,24 @@
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
         <Column field="lotNo"           header="LOT"   :style="{ width: '100px', textAlign: 'right'}" />
-        <Column field="pallet"          header="파렛트"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="deliveryLocation"        header="도착소재지"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="shipmentTypeName"    header="출고조건"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="shipmentTime"    header="출고요청시간"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="printYn"         header="거래명세서출력"  :style="{ width: '150px', textAlign:'center'}" >
+        <Column field="pallet"              header="파렛트"   :style="{ width: '90px', textAlign: 'center'}" />
+        <Column field="deliveryLocation"    header="도착소재지"  :style="{ width: '150px', textAlign:'center'}" />
+        <Column field="shipmentTypeName"    header="출고조건"  :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="shipmentTime"    header="출고요청시간"  :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="printYn"         header="거래명세서"  :style="{ width: '90px', textAlign:'center'}" >
              <template #body="slotProps">
                 <span
                     :class="{ 'status-editable': slotProps.data.printYn === 'N' }"
-                    @click="slotProps.data.printYn === 'N' && goPrint(slotProps.data)"
+                    style="cursor: pointer;"
+                    @click="goPrint(slotProps.data)"
                 >
 
                     {{ slotProps.data.printYn === 'N' ? '미출력' : '출력' }}
                 </span>
             </template>
         </Column>
-        <Column field="shipmentStatusName"  header="출고유형"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="shipmentYn"      header="출고상태"  :style="{ width: '150px', textAlign:'center'}" >
+        <Column field="shipmentStatusName"  header="출고유형"  :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="shipmentYn"          header="출고상태"  :style="{ width: '90px', textAlign:'center'}" >
             <template #body="slotProps">
                 <span
                     :class="{ 'status-editable': slotProps.data.shipmentYn === 'N' }"
@@ -219,9 +220,24 @@ const selectRowClick = (id) => {
     })
 }
 
-const goPrint = (row) =>{
-    alert("개발중")
+const goPrint = async (row) => {
+    try {
+        const res = await ApiOrder.printTransactionStatement(row.shipmentId)
+        const blob = new Blob([res.data],
+            {
+                type: 'application/pdf'
+            }
+        )
+
+        const url = window.URL.createObjectURL(blob)
+        window.open(url, '_blank' )
+        srhList()
+    } catch (err) {
+        console.error(err)
+        vError('거래명세서 출력 중 오류가 발생했습니다.')
+    }
 }
+
 const handleDateChange = () =>{
 }
 
