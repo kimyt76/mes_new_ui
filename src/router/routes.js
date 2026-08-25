@@ -3,6 +3,7 @@ import AppLayout from '@/layout/AppLayout.vue'
 import basic_route from './routes/basic_route'
 import lab_route from './routes/lab_route'
 import mat_route from './routes/mat_route'
+import monitoring_route from './routes/monitoring_route'
 import order_route from './routes/order_route'
 import proc_route from './routes/proc_route'
 import production_route from './routes/production_route'
@@ -32,6 +33,12 @@ const routes = [
         name: 'LogIn',
         component: () => import('@/views/login/LogIn.vue'),
     },
+  /** /monitoring – 모니터링 */
+  {
+    path: '/monitoring',
+    component: AppLayout,
+    children: monitoring_route,
+  },
   /** /basic – 기본정보 */
   {
     path: '/basic',
