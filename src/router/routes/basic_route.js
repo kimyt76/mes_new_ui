@@ -12,6 +12,12 @@ export default [
         name: 'MatMonitoring',
         component: () => import('@/views/monitoring/MatMonitoringList.vue')
       },
+    /**충전모니터링 */
+      {
+        path: 'chargeMonitoring',
+        name: 'ChargeMonitoring',
+        component: () => import('@/views/monitoring/ChargeMonitoringList.vue')
+      },
     /**접점모니터링 */
       {
         path: 'contactMonitoring',
