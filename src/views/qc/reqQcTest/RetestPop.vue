@@ -93,6 +93,7 @@
 <script setup>
 import { ApiQc } from '@/api/apiQc';
 import { useAlertStore } from '@/stores/alert';
+import { todayKST } from '@/util/common';
 import StorageListPop from '@/views/system/storage/StorageListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
@@ -102,7 +103,7 @@ const {vSuccess , vInfo, vWarning} = useAlertStore()
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const form = reactive({
-    reqDate: '',
+    reqDate: todayKST(),
     retestYn: '',
     seq: '',
     reqTesterName: '',

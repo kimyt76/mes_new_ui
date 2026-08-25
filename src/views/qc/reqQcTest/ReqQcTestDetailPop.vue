@@ -172,7 +172,7 @@ const form = reactive({
     itemTypeName: '',
     customerName: '',
     customerCd: '',
-    expiryDate:'',
+    expiryDate:null,
 
     testState: '',
     passState: '',

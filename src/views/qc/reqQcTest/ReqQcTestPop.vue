@@ -287,8 +287,8 @@ const form = reactive({
     lotNo : '',
     makeNo: '',
     testNo: '',
-    testDate: '',
-    confirmDate: '',
+    testDate: null,
+    confirmDate: null,
 
     reqTesterId: '',
     reqTesterName: '',
@@ -309,7 +309,7 @@ const form = reactive({
     sampleQty: '',
     testQty: '',
     orderType: '',
-    expiryDate: '',
+    expiryDate: null,
     etc: '',
 
     qcTestId: '',
