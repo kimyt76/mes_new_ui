@@ -26,6 +26,11 @@ const model = ref([
                         to: '/monitoring/matMonitoring'
                     },
                     {
+                        label: '충전모니터링',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/monitoring/chargeMonitoring'
+                    },
+                    {
                         label: '접점모니터링',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/monitoring/contactMonitoring'

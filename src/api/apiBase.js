@@ -53,7 +53,7 @@ export const ApiBase = {
   },
   saveStorageInfo: async(params) => {
     try{
-      const msg = await API_URL.post(`/storage/saveStorageInfo`, params)
+      const msg = await API_URL.post('/storage/saveStorageInfo', params)
 
       return msg.data
     }catch(err){
@@ -79,7 +79,7 @@ export const ApiBase = {
     }
   },
   saveClientInfo: async(params) => {
-    return await API_URL.post(`/client/saveClientInfo`, params)
+    return await API_URL.post('/client/saveClientInfo', params)
   },
   getBusinessNoChecked: async(id) => {
     try{
@@ -90,6 +90,39 @@ export const ApiBase = {
       throw err.response
     }
   },
+
+
+/**************************생산일보***************************************/
+  getM1DailyReportList: async(params) =>{
+    try{
+      const res = await API_URL.post('/dailyReport/getM1DailyReportList', params )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  getM1DailyReportInfo: async (id) => {
+    try {
+            const res = await API_URL.get('/dailyReport/getM1DailyReportInfo', {
+            params: {
+                dailyId: id ?? null
+                }
+            })
+        return res.data
+    } catch (err) {
+        throw err.response
+    }
+  },
+  saveM1DailyReportInfo: async(params) => {
+    return await API_URL.post('/dailyReport/saveM1DailyReportInfo', params)
+  },
+
+
+
+
+
+
 
 
 }
