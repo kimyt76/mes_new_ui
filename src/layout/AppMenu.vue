@@ -9,6 +9,84 @@ const model = ref([
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
     },
     {
+        label: '모니터링',
+        items: [
+            {
+                label: '모니터링',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
+                    {
+                        label: '설비가동정보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/monitoring/equipOperationInfo'
+                    },
+                    {
+                        label: '제조모니터링',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/monitoring/matMonitoring'
+                    },
+                    {
+                        label: '접점모니터링',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/monitoring/contactMonitoring'
+                    },
+                    {
+                        label: '생산실적현황',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/monitoring/prodPerfomaceStatus'
+                    },
+                ]
+            },
+            {
+                label: '기타관리',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
+                    {
+                        label: '생산실적',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/contractList'
+                    },
+                    {
+                        label: '생산수욜',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/shipmentList'
+                    },
+                    {
+                        label: '업체별생산량',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/ingredient'
+                    }
+                ]
+            },
+            {
+                label: '생산일보',
+                icon: 'pi pi-fw pi-check-square',
+                items:[
+                    {
+                        label: '원료생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m1DailyReport'
+                    },
+                    {
+                        label: '부자재생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m2DailyReport'
+                    },
+                    {
+                        label: '완제품생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m0DailyReport'
+                    },
+                    {
+                        label: '인건비',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/laborCostDaily'
+                    }
+                ]
+            },
+        ]
+    },
+    {
         label: '기본 관리',
         items: [
             {
@@ -217,11 +295,6 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/purchase/purchaseState'
                     },
-                    // {
-                    //     label: '반품조정',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/purchase/retrunAdjust'
-                    // },
                 ]
             },
         ]
@@ -334,12 +407,12 @@ const model = ref([
                     {
                         label: '공정검사',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/procmat/matProcTest'
+                        to: '/proc/mat/matProcTest'
                     },
                     {
                         label: '공정조건(온도RPM)',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/matProcCond'
+                        to: '/proc/mat/conditon'
                     },
 
                 ]
@@ -550,14 +623,9 @@ const model = ref([
                 icon: 'pi pi-fw pi-check-square',
                 items:[
                     {
-                        label: '재고조사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/realStock'
-                    },
-                    {
                         label: '실사재고',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/actualInventory'
+                        to: '/stock/realStock'
                     },
                 ]
             },
