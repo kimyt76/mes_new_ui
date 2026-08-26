@@ -42,53 +42,6 @@ const model = ref([
                     },
                 ]
             },
-            {
-                label: '기타관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '생산실적',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/contractList'
-                    },
-                    {
-                        label: '생산수욜',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/shipmentList'
-                    },
-                    {
-                        label: '업체별생산량',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/ingredient'
-                    }
-                ]
-            },
-            {
-                label: '생산일보',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '원료생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m1DailyReport'
-                    },
-                    {
-                        label: '부자재생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m2DailyReport'
-                    },
-                    {
-                        label: '완제품생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m0DailyReport'
-                    },
-                    {
-                        label: '인건비',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/laborCostDaily'
-                    }
-                ]
-            },
         ]
     },
     {
@@ -122,17 +75,17 @@ const model = ref([
                     {
                         label: '생산실적',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/contractList'
+                        to: '/basic/prodPerformance'
                     },
                     {
                         label: '생산수욜',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/shipmentList'
+                        to: '/basic/prodYield'
                     },
                     {
                         label: '업체별생산량',
                         icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/ingredient'
+                        to: '/basic/prodCompany'
                     }
                 ]
             },
