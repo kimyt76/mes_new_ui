@@ -92,6 +92,24 @@ export const ApiBase = {
   },
 
 
+
+
+/**************************생산 실적***************************************/
+getProdPerformanc: async(params) =>{
+    try{
+      const res = await API_URL.post('/prod/getProdPerformanc', params )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+
+
+
+
+
 /**************************생산일보***************************************/
   getM1DailyReportList: async(params) =>{
     try{
