@@ -39,7 +39,7 @@ export default [
         name: 'ProdPerformance',
         component: () => import('@/views/basic/prod/ProdPerformanceList.vue')
       },
-    /**생산수욜 */
+    /**생산수율 */
       {
         path: 'prodYield',
         name: 'ProdYield',
