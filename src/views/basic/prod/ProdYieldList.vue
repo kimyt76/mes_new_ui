@@ -452,6 +452,7 @@ const barChartOptions = computed(() => ({
  * DOUGHNUT DATA
 ========================================================= */
 const doughnutChartData = computed(() => {
+
     if (!workOrderList.value.length) {
         return {
             labels: [],
@@ -460,56 +461,25 @@ const doughnutChartData = computed(() => {
     }
 
     return {
-        /*
-         * 범례 / Tooltip에는
-         * 대분류-중분류
-         */
-        labels:workOrderList.value.map(
-                item =>getChartLabel(item)
-            ),
+        labels: workOrderList.value.map(
+            item => getChartLabel(item)
+        ),
+
         datasets: [
             {
-                /*
-                 * 연간 전체수율
-                 */
                 data: workOrderList.value.map(
-                        item =>
-                            Number(item.totAvgYield|| 0)
-                    ),
+                    item => Number(item.totAvgYield || 0)
+                ),
 
-                /*
-                 * 중분류별 색상
-                 */
-                backgroundColor:
-                    workOrderList.value.map(
-                        item =>
+                backgroundColor: workOrderList.value.map(
+                    item => colorMap.value[item.prodMdName]
+                ),
 
-                            colorMap.value[
-                                item.prodMdName
-                            ]
-                    ),
-
-                /*
-                 * 흰색 경계선
-                 */
-                borderColor:'#ffffff',
-                borderWidth:3,
-
-                /*
-                 * 조각 사이 간격
-                 */
-                spacing:4,
-
-                /*
-                 * 조각 모서리
-                 */
-                borderRadius:6,
-
-                /*
-                 * 마우스 오버 시
-                 * 조각이 밖으로 이동
-                 */
-                hoverOffset:14
+                borderColor: '#ffffff',
+                borderWidth: 3,
+                spacing: 4,
+                borderRadius: 6,
+                hoverOffset: 14
             }
         ]
     }
@@ -519,287 +489,128 @@ const doughnutChartData = computed(() => {
 /* =========================================================
  * DOUGHNUT OPTIONS
 ========================================================= */
-
 const doughnutChartOptions = computed(() => ({
-
     responsive: true,
-
     maintainAspectRatio: false,
-
 
     /*
      * 가운데 구멍
      */
-    cutout:
-        '54%',
-
+    cutout:'54%',
 
     layout: {
-
         padding: {
-
             top: 15,
-
             bottom: 10,
-
             left: 15,
-
             right: 15
-
         }
-
     },
 
-
     plugins: {
-
         /* =================================================
          * 범례
         ================================================== */
         legend: {
-
             position: 'bottom',
-
-
             labels: {
-
                 usePointStyle: true,
-
                 pointStyle: 'circle',
-
                 boxWidth: 9,
-
                 boxHeight: 9,
-
                 padding: 10,
-
-
-                font: {
-
-                    size: 11
-
-                }
-
+                font: {size: 11}
             }
-
         },
-
 
         /* =================================================
          * Tooltip
         ================================================== */
         tooltip: {
-
             enabled: true,
-
-
             callbacks: {
-
                 label: (context) => {
-
-                    const value =
-                        Number(
-                            context.raw || 0
-                        )
-
-
-                    const total =
-                        context.dataset.data.reduce(
-
-                            (sum, current) =>
-
-                                sum
-                                +
-                                Number(
-                                    current || 0
-                                ),
-
-                            0
-
-                        )
-
-
-                    const percent =
-
-                        total === 0
-
-                            ? '0.0'
-
-                            : (
-
-                                value
-                                /
-                                total
-                                *
-                                100
-
-                            ).toFixed(1)
-
+                    const value =Number(context.raw || 0)
+                    const total =context.dataset.data.reduce(
+                            (sum, current) => sum + Number(current || 0), 0)
+                    const percent = total === 0 ? '0.0' : ( value / total * 100 ).toFixed(1)
 
                     return (
-                        `${context.label} : `
-                        +
-                        `${value.toLocaleString()} EA `
-                        +
-                        `(${percent}%)`
+                        `${context.label} : ` + `${value.toLocaleString()} ` + `(${percent}%)`
                     )
-
                 }
-
             }
-
         },
-
 
         /* =================================================
          * 조각 내부 %
         ================================================== */
         datalabels: {
-
-            /*
-             * 너무 작은 조각은
-             * 퍼센트 표시하지 않음
-             */
             display: (context) => {
-
                 const data =
                     context.dataset.data
 
-
                 const total =
                     data.reduce(
-
                         (sum, current) =>
-
-                            sum
-                            +
-                            Number(
-                                current || 0
-                            ),
-
+                            sum + Number(current || 0),
                         0
-
                     )
-
 
                 const value =
                     Number(
-
-                        data[
-                            context.dataIndex
-                        ]
-                        || 0
-
+                        data[context.dataIndex] || 0
                     )
 
-
-                const percent =
-
+                const share =
                     total === 0
-
                         ? 0
-
                         : value / total * 100
 
-
-                return percent >= 3
-
+                return share >= 3
             },
 
-
-            /*
-             * 34.6%
-             */
-            formatter: (
-                value,
-                context
-            ) => {
+            formatter: (value, context) => {
 
                 const data =
                     context.dataset.data
 
-
                 const total =
                     data.reduce(
-
                         (sum, current) =>
-
-                            sum
-                            +
-                            Number(
-                                current || 0
-                            ),
-
+                            sum + Number(current || 0),
                         0
-
                     )
 
-
-                const percent =
-
+                const share =
                     total === 0
-
                         ? 0
+                        : Number(value || 0) / total * 100
 
-                        : Number(
-                            value || 0
-                        )
-                        /
-                        total
-                        *
-                        100
-
-
-                return (
-                    `${percent.toFixed(1)}%`
-                )
-
+                return `${share.toFixed(1)}%`
             },
 
+            color: '#ffffff',
 
-            /*
-             * 이미지처럼 흰 글씨
-             */
-            color:
-                '#ffffff',
-
-
-            /*
-             * 퍼센트 뒤 반투명 배경
-             */
             backgroundColor:
                 'rgba(255,255,255,0.20)',
 
-
-            borderRadius:
-                5,
-
+            borderRadius: 5,
 
             padding: {
-
                 top: 4,
-
                 bottom: 4,
-
                 left: 6,
-
                 right: 6
-
             },
 
-
             font: {
-
                 size: 11,
-
                 weight: 'bold'
-
             }
-
         }
 
     }
-
 }))
 
 
