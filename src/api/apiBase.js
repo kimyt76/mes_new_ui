@@ -94,7 +94,7 @@ export const ApiBase = {
 
 
 
-/**************************생산 실적***************************************/
+/**************************생산 실적, 수율***************************************/
 getProdPerformanc: async(params) =>{
     try{
       const res = await API_URL.post('/prod/getProdPerformanc', params )

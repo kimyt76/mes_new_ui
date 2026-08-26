@@ -1,9 +1,6 @@
 <template>
 
-<Breadcrumb
-    :home="home"
-    :model="items"
-/>
+<Breadcrumb :home="home" :model="items" />
 <!-- =========================================================
      검색조건
 ========================================================= -->
@@ -43,7 +40,7 @@
         <ColumnGroup type="header">
             <Row>
                 <Column header="유형구분" :colspan="2" />
-                <Column header="월별 생산수량 내역(EA)" :colspan="13"/>
+                <Column header="월별 평균수율 내역(%)" :colspan="13"/>
             </Row>
             <Row>
                 <Column header="대분류" :style="{ width: '150px' }" />
@@ -54,7 +51,7 @@
                     :header="`${month}월`"
                     :style="{ width: '100px' }"
                 />
-                <Column header="총 생산수량" :style="{ width: '140px' }" />
+                <Column header="전체 평균수율" :style="{ width: '140px' }" />
             </Row>
         </ColumnGroup>
         <!-- 대분류 -->
@@ -65,20 +62,20 @@
         <Column
             v-for="month in 12"
             :key="`body-${month}`"
-            :field="`mon${month}Qty`"
+            :field="`mon${month}Avg`"
             :style="{
                 width: '100px',
                 textAlign: 'right'
             }"
         >
             <template #body="slotProps">
-                {{  formatNumber(slotProps.data[`mon${month}Qty`])}}
+                {{  formatNumber(slotProps.data[`mon${month}Avg`])}}
             </template>
         </Column>
         <!-- 총 생산수량 -->
-        <Column field="totProdQty" :style="{width: '140px',textAlign: 'right',fontWeight: '600'}">
+        <Column field="totAvgYield" :style="{width: '140px',textAlign: 'right',fontWeight: '600'}">
             <template #body="slotProps">
-                {{  formatNumber(slotProps.data.totProdQty)}}
+                {{  formatNumber(slotProps.data.totAvgYield)}}
             </template>
         </Column>
     </DataTable>
@@ -93,19 +90,19 @@
     <div class="chart-box bar-area">
 
         <div class="chart-title">
-            월별 생산수량
+            월별 생산수율
         </div>
         <div
             v-if="workOrderList.length > 0"
             class="bar-chart"
         >
+
             <Chart
                 type="bar"
                 :data="barChartData"
                 :options="barChartOptions"
             />
         </div>
-
 
         <div
             v-else
@@ -115,18 +112,13 @@
         </div>
 
     </div>
-
-
     <!-- =====================================================
          DOUGHNUT CHART
     ====================================================== -->
     <div class="chart-box doughnut-area">
-
         <div class="chart-title">
-            생산비율
+            생산수율
         </div>
-
-
         <div
             v-if="workOrderList.length > 0"
             class="doughnut-chart"
@@ -160,66 +152,45 @@
 
 
 <script setup>
-
-import { computed, onMounted, reactive, ref } from 'vue'
-
 import { ApiBase } from '@/api/apiBase'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-
-
+import { computed, onMounted, reactive, ref } from 'vue'
 /* =========================================================
  * 현재년도
 ========================================================= */
-
 const currentYear = new Date().getFullYear()
-
 
 /* =========================================================
  * LIST
 ========================================================= */
-
 const workOrderList = ref([])
-
 
 /* =========================================================
  * 검색조건
 ========================================================= */
-
 const form = reactive({
-
     year: currentYear
-
 })
-
 
 /* =========================================================
  * 년도 LIST
  *
  * 현재년도 ~ 2020
 ========================================================= */
-
 const years = ref(
-
     Array.from(
-
         {
             length: currentYear - 2020 + 1
         },
-
         (_, index) =>
             currentYear - index
-
     )
-
 )
-
 
 /* =========================================================
  * 차트 색상
 ========================================================= */
-
 const chartColors = [
-
     '#42A5F5',
     '#FFA726',
     '#66BB6A',
@@ -240,18 +211,13 @@ const chartColors = [
     '#FFB74D',
     '#BA68C8',
     '#4DB6AC'
-
 ]
-
 
 /* =========================================================
  * 중분류별 색상
 ========================================================= */
-
 const colorMap = computed(() => {
-
     const map = {}
-
 
     workOrderList.value.forEach(
         (item, index) => {
@@ -267,24 +233,17 @@ const colorMap = computed(() => {
                     %
                     chartColors.length
                 ]
-
         }
     )
 
-
     return map
-
 })
-
 
 /* =========================================================
  * 조회
 ========================================================= */
-
 const srhList = async () => {
-
     try {
-
         /*
          * 예)
          *
@@ -293,21 +252,10 @@ const srhList = async () => {
          * endDate : 2027-01-01
          */
         const params = {
-            year:
-                form.year,
-
-            strDate:
-                `${form.year}-01-01`,
-
-            endDate:
-                `${Number(form.year) + 1}-01-01`
-
+            year:form.year,
+            strDate: `${form.year}-01-01`,
+            endDate:`${Number(form.year) + 1}-01-01`
         }
-
-        console.log(
-            '생산실적 검색조건',
-            params
-        )
 
         const res = await ApiBase.getProdPerformanc(params)
         workOrderList.value = res|| res || []
@@ -315,7 +263,6 @@ const srhList = async () => {
         console.error( '생산실적 조회 오류', error)
         workOrderList.value = []
     }
-
 }
 
 /* =========================================================
@@ -392,7 +339,7 @@ const barChartData = computed(() => {
                             (_, index) =>
                                 Number(
                                     item[
-                                        `mon${index + 1}Qty`
+                                        `mon${index + 1}Avg`
                                     ]
                                     || 0
                                 )
@@ -461,12 +408,12 @@ const barChartOptions = computed(() => ({
                     const name =
                         context.dataset.label
 
-                    const qty =
+                    const avg =
                         Number(
                             context.raw || 0
                         ).toLocaleString()
 
-                    return `${name} : ${qty} EA`
+                    return `${name} : ${avg} %`
                 }
             }
         },
@@ -492,10 +439,8 @@ const barChartOptions = computed(() => ({
 
         y: {
             beginAtZero: true,
-
             ticks: {
-                callback: (value) =>
-                    Number(value).toLocaleString()
+                callback: (value) => Number(value).toLocaleString()
             }
         }
     }
@@ -506,7 +451,6 @@ const barChartOptions = computed(() => ({
 /* =========================================================
  * DOUGHNUT DATA
 ========================================================= */
-
 const doughnutChartData = computed(() => {
     if (!workOrderList.value.length) {
         return {
@@ -526,11 +470,11 @@ const doughnutChartData = computed(() => {
         datasets: [
             {
                 /*
-                 * 연간 총생산수량
+                 * 연간 전체수율
                  */
                 data: workOrderList.value.map(
                         item =>
-                            Number(item.totProdQty|| 0)
+                            Number(item.totAvgYield|| 0)
                     ),
 
                 /*
@@ -548,41 +492,27 @@ const doughnutChartData = computed(() => {
                 /*
                  * 흰색 경계선
                  */
-                borderColor:
-                    '#ffffff',
-
-
-                borderWidth:
-                    3,
-
+                borderColor:'#ffffff',
+                borderWidth:3,
 
                 /*
                  * 조각 사이 간격
                  */
-                spacing:
-                    4,
-
+                spacing:4,
 
                 /*
                  * 조각 모서리
                  */
-                borderRadius:
-                    6,
-
+                borderRadius:6,
 
                 /*
                  * 마우스 오버 시
                  * 조각이 밖으로 이동
                  */
-                hoverOffset:
-                    14
-
+                hoverOffset:14
             }
-
         ]
-
     }
-
 })
 
 
@@ -1025,45 +955,93 @@ const doughnutCenterPlugin = {
                 `${percent}%`
 
         }
-        const ctx =chart.ctx
+
+
+        const ctx =
+            chart.ctx
+
+
         ctx.save()
-        ctx.textAlign ='center'
-        ctx.textBaseline ='middle'
+
+
+        ctx.textAlign =
+            'center'
+
+        ctx.textBaseline =
+            'middle'
+
 
         /* =================================================
          * 제목
         ================================================== */
-        ctx.fillStyle ='#8A94A6'
-        ctx.font ='11px Arial'
+
+        ctx.fillStyle =
+            '#8A94A6'
+
+        ctx.font =
+            '11px Arial'
+
 
         /*
          * 제목이 긴 경우
          * 최대 길이 제한
          */
-        let displayTitle =String(title || '')
+        let displayTitle =
+            String(title || '')
+
 
         if (
             displayTitle.length > 15
         ) {
-            displayTitle =displayTitle.substring(0, 14)+'…'
+
+            displayTitle =
+                displayTitle.substring(
+                    0,
+                    14
+                )
+                +
+                '…'
+
         }
 
+
         ctx.fillText(
+
             displayTitle,
+
             centerX,
+
             centerY - 25
+
         )
+
 
         /* =================================================
          * 생산수량
         ================================================== */
-        ctx.fillStyle ='#334155'
-        ctx.font ='bold 18px Arial'
-        ctx.fillText(`${value.toLocaleString()} EA`,centerX, centerY)
+
+        ctx.fillStyle =
+            '#334155'
+
+        ctx.font =
+            'bold 18px Arial'
+
+
+        ctx.fillText(
+
+            `${value.toLocaleString()} EA`,
+
+            centerX,
+
+            centerY
+
+        )
+
 
         /* =================================================
          * 비율 / 유형 수
         ================================================== */
+
         ctx.fillStyle =
             '#94A3B8'
 
@@ -1072,55 +1050,37 @@ const doughnutCenterPlugin = {
 
 
         ctx.fillText(
-            subText,
-            centerX,
-            centerY + 25
-        )
 
+            subText,
+
+            centerX,
+
+            centerY + 25
+
+        )
         ctx.restore()
     }
 }
 
+
 /* =========================================================
  * Breadcrumb
 ========================================================= */
-
 const home = ref({
-
-    icon:
-        'pi pi-home'
-
+    icon:'pi pi-home'
 })
 
-
 const items = ref([
-
-    {
-        label:
-            '기본관리'
-    },
-
-    {
-        label:
-            '기타관리'
-    },
-
-    {
-        label:
-            '생산실적 목록'
-    }
-
+    {   label:'기본관리'},
+    {   label:'기타관리'},
+    {   label:'생산수율 목록'}
 ])
-
 
 /* =========================================================
  * 최초 조회
 ========================================================= */
-
 onMounted(() => {
-
     srhList()
-
 })
 
 </script>
