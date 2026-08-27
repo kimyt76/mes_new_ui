@@ -50,6 +50,18 @@
                     <label>고객사 코드</label>
                 </FloatLabel>
             </div>
+            <div class="col-3 flex align-items-center">
+                <div class="flex align-items-center gap-2">
+                    <Checkbox
+                        v-model="form.setYn"
+                        inputId="setYn"
+                        trueValue="Y"
+                        falseValue="N"
+                        binary
+                    />
+                    <label for="setYn" class="cursor-pointer">세트 여부</label>
+                </div>
+            </div>
         </div>
     </template>
 </Card>
@@ -146,7 +158,7 @@
                 />
             </template>
         </Column>
-        <Column field="degree"          header="차수"       :style="{ width: '60px', 'text-align': 'center'}"></Column>
+        <Column field="degree"          header="차수"       :style="{ width: '70px', 'text-align': 'center'}"></Column>
         <Column field="deliveryReqDate" header="납기요청일"  :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
                 <DatePicker v-model="slotProps.data.deliveryReqDate" show-icon :inputStyle="{ width: '100px', 'text-align': 'center' }"/>
@@ -213,6 +225,7 @@ const form = reactive({
     managerId:'',
     vatType:'',
     attachFileId: '',
+    setYn: '',
 
     etc: '',
 
@@ -349,10 +362,7 @@ onMounted( async () =>{
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
     statusTypes.value = await ApiCommon.getCodeList('status_Type')
 
-    console.log('dialogRef.value.data', dialogRef.value.data)
-
     const res = await ApiOrder.getContractInfo(dialogRef.value.data)
-
     Object.assign(form, res.contractInfo)
     itemList.value = res.itemList
 

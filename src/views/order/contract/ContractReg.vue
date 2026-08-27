@@ -50,6 +50,18 @@
                     <label>고객사 코드</label>
                 </FloatLabel>
             </div>
+            <div class="col-3 flex align-items-center">
+                <div class="flex align-items-center gap-2">
+                    <Checkbox
+                        v-model="form.setYn"
+                        inputId="setYn"
+                        trueValue="Y"
+                        falseValue="N"
+                        binary
+                    />
+                    <label for="setYn" class="cursor-pointer">세트 여부</label>
+                </div>
+            </div>
         </div>
     </template>
 </Card>
@@ -181,7 +193,6 @@
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
         </Column>
-
     </DataTable>
 </div>
 <!-- 🔹 하단 버튼 -->
@@ -205,7 +216,6 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiOrder } from '@/api/apiOrders';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
@@ -240,6 +250,7 @@ const form = reactive({
     paymentCondition:'',
     vatType:'',
     orderType:'',
+    setYn:'N',
 
     etc:'',
 
@@ -302,7 +313,6 @@ watch(() => form.vatType, async (newVal) => {
 
 const saveInfo = async () =>{
     const formData = new FormData();
-
     if ( itemList.value <= 0 ){
         vInfo("품목을 등록하세요")
         return
@@ -340,8 +350,6 @@ const saveInfo = async () =>{
                 formData.append("newFiles", file.file)
             }
         })
-
-        console.log('itemList', request.itemList)
 
         const res = await ApiOrder.saveContractInfo(formData)
         vSuccess(res.message)

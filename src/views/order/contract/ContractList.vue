@@ -140,7 +140,7 @@ const form = reactive({
   itemName: '',
   managerName: '',
   customerName: '',
-  deliveryReqDate: '',
+  deliveryReqDate: null,
   orderType: '',
   vatType: '',
   statusType: '',
