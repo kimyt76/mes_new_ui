@@ -78,7 +78,7 @@ const model = ref([
                         to: '/basic/prodPerformance'
                     },
                     {
-                        label: '생산수욜',
+                        label: '생산수율',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/basic/prodYield'
                     },
@@ -103,16 +103,16 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/basic/dailyReport/m2DailyReport'
                     },
-                    {
-                        label: '완제품생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m0DailyReport'
-                    },
-                    {
-                        label: '인건비',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/laborCostDaily'
-                    }
+                    // {
+                    //     label: '완제품생산일보',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/basic/dailyReport/m0DailyReport'
+                    // },
+                    // {
+                    //     label: '인건비',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/basic/dailyReport/laborCostDaily'
+                    // }
                 ]
             },
         ]
@@ -201,11 +201,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/order/shipmentList'
                     },
-                    {
-                        label: '진행관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/progressList'
-                    },
+                    // {
+                    //     label: '진행관리',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/order/progressList'
+                    // },
                     {
                         label: '수주계획관리',
                         icon: 'pi pi-fw pi-id-card',
@@ -362,11 +362,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/mat/mat'
                     },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/mat/matProcTest'
-                    },
+                    // {
+                    //     label: '공정검사',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/proc/mat/matProcTest'
+                    // },
                     {
                         label: '공정조건(온도RPM)',
                         icon: 'pi pi-fw pi-id-card',
@@ -389,11 +389,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/coating/coatingEentire'
                     },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/coating/coatingProcTest'
-                    },
+                    // {
+                    //     label: '공정검사',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/coating/coatingProcTest'
+                    // },
                 ]
             },
             {
@@ -410,11 +410,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/charge/chargeEentire'
                     },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/charge/chargeProcTest'
-                    },
+                    // {
+                    //     label: '공정검사',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/charge/chargeProcTest'
+                    // },
 
                 ]
             },
@@ -432,11 +432,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/packing/packingEentire'
                     },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/packingProcTest'
-                    },
+                    // {
+                    //     label: '공정검사',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/proc/packing/packingProcTest'
+                    // },
                 ]
             },
         ]
@@ -606,11 +606,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/system/commonMgmt'
                     },
-                    {
-                        label: '권한관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/system/auth'
-                    },
+                    // {
+                    //     label: '권한관리',
+                    //     icon: 'pi pi-fw pi-id-card',
+                    //     to: '/system/auth'
+                    // },
                     {
                         label: '창고관리',
                         icon: 'pi pi-fw pi-id-card',

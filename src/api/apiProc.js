@@ -217,6 +217,22 @@ export const ApiProc = {
             throw new Error('파일 다운로드 중 오류가 발생했습니다.')
         }
     },
+    getMatProcCondList: async(params) => {
+        try{
+            const res = await API_URL.post('/procMat/getMatProcCondList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    getConditionList: async(id) => {
+        try{
+            const res = await API_URL.get(`/procMat/getConditionList/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
 
     // =================================코팅 ==========================================================//

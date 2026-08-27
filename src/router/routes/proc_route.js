@@ -8,9 +8,10 @@ export default [
         name: 'WeighList',
         component: () => import('@/views/proc/weigh/weigh/WeighList.vue')
       },
+      /* 공정검사*/
       {
-        path: 'weigh/procTest',
-        name: 'WeighProcTestList',
+        path: 'weigh/weighProcTest',
+        name: 'WeighProcTest',
         component: () => import('@/views/proc/weigh/procTest/WeighProcTestList.vue')
       },
       /* 제품출고*/
@@ -52,6 +53,12 @@ export default [
         name: 'MatList',
         component: () => import('@/views/proc/mat/mat/MatList.vue')
       },
+      {
+        path: 'mat/conditon',
+        name: 'MatProcCond',
+        component: () => import('@/views/proc/mat/conditon/MatProcCondList.vue')
+      },
+
 
       /* 코팅 */
       {
@@ -60,9 +67,9 @@ export default [
         component: () => import('@/views/proc/coating/coating/CoatingList.vue')
       },
       {
-        path: 'coating/coatingTran',
-        name: 'CoatingTran',
-        component: () => import('@/views/proc/coating/coatingTran/CoatingTranList.vue')
+        path: 'coating/coatingEentire',
+        name: 'CoatingEentire',
+        component: () => import('@/views/proc/coating/coating/CoatingEentireList.vue')
       },
 
       /* 충전 */
@@ -71,11 +78,13 @@ export default [
         name: 'ChargeList',
         component: () => import('@/views/proc/charge/charge/ChargeList.vue')
       },
+      /* 충전 */
       {
-        path: 'charge/chargeTran',
-        name: 'ChargeTran',
-        component: () => import('@/views/proc/charge/chargeTran/ChargeTranList.vue')
+        path: 'charge/chargeEentire',
+        name: 'ChargeEentire',
+        component: () => import('@/views/proc/charge/charge/ChargeEentireList.vue')
       },
+
 
       /* 포장 */
       {
@@ -84,9 +93,9 @@ export default [
         component: () => import('@/views/proc/packing/packing/PackingList.vue')
       },
       {
-        path: 'packing/packingTran',
-        name: 'PackingTran',
-        component: () => import('@/views/proc/packing/packingTran/PackingTranList.vue')
+        path: 'packing/packingEentire',
+        name: 'PackingEentire',
+        component: () => import('@/views/proc/packing/packing/PackingEentireList.vue')
       },
 
 

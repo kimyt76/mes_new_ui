@@ -73,9 +73,9 @@
                     </div>
                 </template>
             </Column>
-            <Column field="matRegDate"  header="제품유형"   frozen :style="{ width: '120px'}" />
-            <Column field="matRegDate"  header="고객사명"   frozen :style="{ width: '120px'}" />
-            <Column field="matRegDate"  header="담당자"   frozen :style="{ width: '120px'}" />
+            <Column field="prodType"  header="제품유형"   frozen :style="{ width: '120px'}" />
+            <Column field="clientName"  header="고객사명"   frozen :style="{ width: '120px'}" />
+            <Column field="managerName"  header="담당자"   frozen :style="{ width: '120px'}" />
             <Column field="itemCd"      header="품목코드" frozen :style="{ width: '130px'}"  >
                 <template #body="slotProps">
                     <div @click="bomPop(slotProps.data.itemName)" class="clickable-cell">
@@ -95,14 +95,14 @@
                     {{ (slotProps.data.qty ?? 0).toLocaleString() }}
                 </template>
             </Column>
-            <Column field="matPlanDate" header="납기희망일"     :style="{ width: '120px'}" />
-            <Column field="matPlanDate" header="수주유형"     :style="{ width: '120px'}" />
-            <Column field="matPlanDate" header="선금여부"     :style="{ width: '120px'}" />
-            <Column field="matPlanDate" header="제품사양서"     :style="{ width: '120px'}" />
-            <Column field="matPlanDate" header="원재료종결"     :style="{ width: '120px'}" />
-            <Column field="matPlanDate" header="부자재종결"     :style="{ width: '120px'}" />
-            <Column field="matPlanDate" header="부자재계획일자(자급)"     :style="{ width: '120px'}" />
-            <Column field="qty"         header="부자재계획수량(자급)"   :style="{ width: '120px', textAlign:'right'}">
+            <Column field="deliveryReqDate" header="납기희망일"     :style="{ width: '120px'}" />
+            <Column field="orderType"       header="수주유형"     :style="{ width: '120px'}" />
+            <Column field="advancePaymentYn" header="선금여부"     :style="{ width: '120px'}" />
+            <Column field="productSpec"     header="제품사양서"     :style="{ width: '120px'}" />
+            <Column field="rawMaterialEndYn" header="원재료종결"     :style="{ width: '120px'}" />
+            <Column field="subMaterialEndYn" header="부자재종결"     :style="{ width: '120px'}" />
+            <Column field="matPlanDate"     header="부자재계획일자(자급)"     :style="{ width: '120px'}" />
+            <Column field="qty"             header="부자재계획수량(자급)"   :style="{ width: '120px', textAlign:'right'}">
                 <template #body="slotProps">
                     {{ (slotProps.data.qty ?? 0).toLocaleString() }}
                 </template>
@@ -113,28 +113,28 @@
                     {{ (slotProps.data.qty ?? 0).toLocaleString() }}
                 </template>
             </Column>
-            <Column field="matPlanDate" header="출고희망일자"     :style="{ width: '120px'}" />
-            <Column field="qty"         header="출고희망수량"   :style="{ width: '120px', textAlign:'right'}">
+            <Column field="shipmentReqDate" header="출고희망일자"     :style="{ width: '120px'}" />
+            <Column field="shipmentReqQty"  header="출고희망수량"   :style="{ width: '120px', textAlign:'right'}">
                 <template #body="slotProps">
-                    {{ (slotProps.data.qty ?? 0).toLocaleString() }}
+                    {{ (slotProps.data.shipmentReqQty ?? 0).toLocaleString() }}
                 </template>
             </Column>
-            <Column field="etc"         header="제조예정일"           :style="{ width: '180px'}"  />
-            <Column field="etc"         header="칭량시작일"           :style="{ width: '180px'}"  />
-            <Column field="etc"         header="제조시작일"           :style="{ width: '180px'}"  >
+            <Column field="prodPlanDate"    header="제조예정일"           :style="{ width: '180px'}"  />
+            <Column field="weightStartDate" header="칭량시작일"           :style="{ width: '180px'}"  />
+            <Column field="matStartDate"    header="제조시작일"           :style="{ width: '180px'}"  >
                 <template #body="slotProps">
                     <div @click="openMakeInfoPop(slotProps.data)" class="clickable-cell">
                         {{ slotProps.data.itemCd }}
                     </div>
                 </template>
             </Column>
-            <Column field="etc"         header="포장시작일"           :style="{ width: '180px'}"  />
-            <Column field="qty"         header="창고수"   :style="{ width: '120px', textAlign:'right'}">
+            <Column field="packStartDate"    header="포장시작일"           :style="{ width: '180px'}"  />
+            <Column field="storageCnt"       header="창고수"   :style="{ width: '120px', textAlign:'right'}">
                 <template #body="slotProps">
-                    {{ (slotProps.data.qty ?? 0).toLocaleString() }}
+                    {{ (slotProps.data.storageCnt ?? 0).toLocaleString() }}
                 </template>
             </Column>
-             <Column field="etc"        header="출고일자"           :style="{ width: '180px'}"  />
+             <Column field="shipmentDate"        header="출고일자"           :style="{ width: '180px'}"  />
             <Column field="endYn"       header="종결여부"        :style="{ width: '90px'}"  >
                  <template #body="slotProps">
                     <span
@@ -146,13 +146,14 @@
                     </span>
                 </template>
             </Column>
-            <Column field="etc"         header="리드타임"           :style="{ width: '180px'}"  />
+            <Column field="readTime"         header="리드타임"           :style="{ width: '180px'}"  />
         </DataTable>
     </div>
-
 </template>
 
 <script setup>
+import { ApiOrder } from '@/api/apiOrders';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import { addMonth, minMonth, todayKST } from '@/util/common';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
@@ -172,26 +173,30 @@ const form = reactive({
     itemCd: '',
 });
 
-
 //소요량 호출
-const openBomDialogPop = (row) ={
+const openBomDialogPop = (row) =>{
     //원재료는 사급원료만 표시 자급일경우 표시하지 않음
+    console.log('openBomDialogPop', row)
 }
-
 //제조 호출
-const openMakeInfoPop = (row) ={
+const openMakeInfoPop = (row) =>{
     //원재료는 사급원료만 표시 자급일경우 표시하지 않음
+    console.log('openMakeInfoPop', row)
 }
 
 //부자재계획 정보 저장 팝업 호출
-const openSubMatInfoPop = (row) ={
+const openSubMatInfoPop = (row) =>{
     //
+    console.log('openSubMatInfoPop', row)
 }
 
 
 
-const srhList = () =>{
-
+const srhList = async () =>{
+    const params = {
+        ...form
+    }
+    orderPlanList.value = await ApiOrder.getOrderPlanList(params);
 }
 
 onMounted(() => {
@@ -202,9 +207,9 @@ const home = ref({
 });
 
 const items = ref([
-  { label: '주문관리' },
-  { label: '수주제조계획일정' },
-  { label: '수주제조계획일정목록' },
+  { label: '영업관리' },
+  { label: '수주제조계획' },
+  { label: '수주제조계획목록' },
 ]);
 </script>
 

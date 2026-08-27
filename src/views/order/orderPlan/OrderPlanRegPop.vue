@@ -29,13 +29,13 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.expectedDueDate" fluid  show-icon/>
+                    <DatePicker v-model="form.requestedDispatchDate" fluid  show-icon/>
                     <label>출고희망일자</label>
                 </FloatLabel>
             </div>
             <div>
                 <FloatLabel variant="on">
-                    <InputNumber v-model="form.expectedQty" :inputStyle="{ width: '100px', 'text-align': 'center' }" /> <!-- 크기 축소 -->
+                    <InputNumber v-model="form.requestedDispatchQty" :inputStyle="{ width: '100px', 'text-align': 'center' }" /> <!-- 크기 축소 -->
                     <label>출고희망수량</label>
                 </FloatLabel>
             </div>
@@ -53,6 +53,7 @@
 
 <script setup>
 import { todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { inject, reactive } from 'vue';
 
 const dialogRef = inject('dialogRef')
@@ -61,11 +62,19 @@ const form = reactive({
     selfSuppliedQty: 0,
     customerSuppliedDate: todayKST(),
     customerSuppliedQty: 0,
-    expectedDueDate: todayKST(),
-    expectedQty: 0
+    requestedDispatchDate: todayKST(),
+    expecrequestedDispatchQty: 0
+
+
 });
 
 const saveInfo = () =>{
+    try{
+
+
+    }catch(err){
+        handleApiError(err)
+    }
 
 }
 

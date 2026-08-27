@@ -18,8 +18,8 @@
                 <label for="on_label">구역</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <InputText id="on_label1" v-model="form.makeNo" />
-                <label for="on_label1">제조번호</label>
+                <InputText id="on_label1" v-model="form.clientName" />
+                <label for="on_label1">납품처명</label>
             </FloatLabel>
             <FloatLabel variant="on">
                 <InputText id="on_label" v-model="form.itemName" />
@@ -34,76 +34,72 @@
         </template>
     </Toolbar>
 </form>
-<div class="mt-2">
+
+<div>
     <DataTable
-        :value="workOrderList"
+        :value="matList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
         scrollable
         showGridlines
-        tableStyle="table-layout: fixed;"
+        tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaName"    header="구역"       :style="{ width: '80px'}" ></Column>
-        <Column field="weighDate"   header="칭량지시일"  :style="{ width: '110px'}" >
+        <Column field="poNo"        header="PO No"    :style="{ width: '120px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"    header="공장"      :style="{ width: '80px', textAlign: 'center'}" ></Column>
+        <Column field="prodDate"    header="제조일자"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.weighDate }}
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                    {{ slotProps.data.prodDate }}
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px'}" ></Column>
-        <Column field="makeNo"      header="제조번호"  :style="{ width: '150px'}" />
-        <Column field="logNo"       header="LOT번호"  :style="{ width: '200px'}" />
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px'}" />
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
-        <Column field="qty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
-            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'center'}" />
+        <Column field="itemName"    header="품목명"    :style="{ width: '400px'}" bodyClass="break-words"  ></Column>
+        <Column field="orderQty"    header="제조량"   :style="{ width: '100px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
-        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px'}" />
-        <Column field="procTest"    header="공정검사"   :style="{ width: '80px'}" />
+        <Column field="clientName"  header="납품처명"  :style="{ width: '220px'}" />
+        <Column field="equipmentCd"      header="제조설비"  :style="{ width: '100px', textAlign: 'center'}" />
+        <Column field="procStatusName"   header="제조상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
+
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import DateRangePicker from '@/components/DateRangePicker.vue';
+import { ApiProc } from '@/api/apiProc';
 import { minMonth, todayKST } from '@/util/common';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
-import WeighProcTestPop from './WeighProcTestPop.vue';
+import MatCondPop from './MatCondPop.vue';
 
 const dialog = useDialog()
-const matList = ref([])
-const processStates = ref([])
 const areaCds = ref([])
+const matList = ref([])
 const form = reactive({
-  strDate: minMonth(todayKST(), 10),
-  endDate: todayKST(),
-  areaCd: '',
-  makeNo: '',
-  itemCd: '',
-  itemName: '',
+    strDate: minMonth(todayKST(), 6),
+    endDate: todayKST(),
+    areaCd: '',
+    itemCd: '',
+    itemName: '',
+    clientName : '',
+
+    procCd: 'PRC002'
 })
 
-const handleDateChange = () =>{
-}
-
-
-const selectRowClick = (id) =>{
-    dialog.open(WeighProcTestPop, {
+const selectRowClick = (row) =>{
+    dialog.open(MatCondPop, {
         props:{
-            header: '공정검사(칭량)',
+            header: '공정조건 상세',
             modal: true,
-            closeOnEscape: false,
-            maximizable: false,
-            draggable: false,
+            draggable: true,
             style: {
-                width: '90vw',          // 🔹 팝업 가로 폭
-                maxWidth: '1800px',
-                height: '800px',
+                width: '85vw',          // 🔹 팝업 가로 폭
+                maxWidth: '1400px',
+                height: '500px',
                 overflow: 'hidden'
             },
             pt: {
@@ -111,35 +107,40 @@ const selectRowClick = (id) =>{
                 content: { style: { overflow: 'hidden' } }
             },
         },
-        data: id,
+        data: {
+            row: row,
+        },
         onClose:(event) => {
+            if(event){
+                srhList()
+            }
         },
     })
 }
 
-// form
+
+const handleDateChange = () =>{}
+
 const srhList = async () =>{
     const params = {
         ...form
     }
     // api
-    matList.value = await ApiMat.getMatList(params);
+    matList.value = await ApiProc.getMatProcCondList(params);
 }
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    processStates.value = await ApiCommon.getCodeList('process_state')
 })
 
 const home = ref({
     icon: 'pi pi-home'
 });
 const items = ref([
-    { label: '칭량관리' },
-    { label: '공정검사' },
-    { label: '공정검사 목록' },
+    { label: '제조공정' },
+    { label: '공정조건(온도RPM)' },
+    { label: '공정조건(온도RPM) 목록' },
 ]);
-
 
 </script>
 
@@ -151,6 +152,13 @@ const items = ref([
   text-align: center;
   font-family: monaco, Consolas;
   padding: 8px;
+}
+::v-deep(.break-words) {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  /* text-decoration: underline;
+  cursor: pointer; */
 }
 
 </style>

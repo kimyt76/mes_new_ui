@@ -216,6 +216,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiOrder } from '@/api/apiOrders';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
