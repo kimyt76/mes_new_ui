@@ -7,26 +7,24 @@
         showGridlines
         class="my-table"
         >
-        <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+        <Column header="No" :style="{ width: '20px', textAlign:'center'}">
             <template #body="slotProps">
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="poNo"        header="품목코드"  frozen :style="{ width: '120px'}" />
-        <Column field="matRegDate"  header="품목구분"   frozen :style="{ width: '120px'}" />
-        <Column field="matRegDate"  header="품목명"   frozen :style="{ width: '120px'}" />
-        <Column field="matRegDate"  header="담당자"   frozen :style="{ width: '120px'}" />
-        <Column field="qty"         header=" 소요량"   :style="{ width: '120px', textAlign:'right'}">
+        <Column field="itemTypeName"  header="품목구분"   frozen :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="matName"       header="BOM"  frozen :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="requiredQuantity"         header=" 소요량"   :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">
-                {{ (slotProps.data.qty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.requiredQuantity ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="qty"         header=" 필요량"   :style="{ width: '120px', textAlign:'right'}">
+        <Column field="reqQty"         header=" 필요량"   :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">
-                {{ (slotProps.data.qty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.reqQty ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="matPlanDate" header="공급"     :style="{ width: '120px'}" />
+        <Column field="orderType" header="공급"     :style="{ width: '80px', textAlign:'center'}" />
     </DataTable>
 </div>
 <!-- 🔹 하단 버튼 -->
@@ -34,18 +32,35 @@
     <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
 </div>
 
-
 </template>
 
 <script setup>
 
-import { inject, onMounted, ref } from 'vue';
+import { ApiOrder } from '@/api/apiOrders';
+import { inject, onMounted, reactive, ref } from 'vue';
+
 const dialogRef = inject('dialogRef')
 const first = ref(0)
 const orderStockList = ref([])
 
-onMounted(() => {
-    srhList()
+const form = reactive({
+    itemCd : '',
+    poNo: '',
+})
+
+
+onMounted( async () => {
+    form.itemCd = dialogRef.value.data.itemCd
+    form.poNo =  dialogRef.value.data.poNo
+
+    const params = {
+        itemCd: form.itemCd,
+        poNo: form.poNo,
+    }
+
+    const res  = await ApiOrder.getRequiredQuantityList(params)
+
+    orderStockList.value = res.orderStockList
 })
 
 const closeDialog = () => {
@@ -57,5 +72,12 @@ const closeDialog = () => {
 </script>
 
 <style scoped>
-
+::v-deep(.my-table .p-datatable-thead > tr > th) {
+  background-color: #BCAAA4;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  font-family: monaco, Consolas;
+  padding: 8px;
+}
 </style>

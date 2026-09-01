@@ -131,6 +131,47 @@ export const ApiOrder = {
     }
   },
 
+  /**************************수주계획 관리******************************************************* */
+
+ getOrderPlanList: async(params) => {
+    try{
+      const res = await API_URL.post('/contract/getOrderPlanList', params)
+      return res.data
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+saveOrderPlan: async(ids) => {
+    return  await API_URL.post('/contract/saveOrderPlan', ids)
+  },
+updateOrderPlanYn: async(ids) => {
+    return  await API_URL.post('/contract/updateOrderPlanYn', ids)
+  },
+  getOrderPlanType: async(params) => {
+    try{
+      const res = await API_URL.post('/contract/getOrderPlanType', params)
+      return res.data
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+  getMatWorkOrder: async(params) => {
+    try{
+      const res = await API_URL.post('/contract/getMatWorkOrder', params)
+      return res.data
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+  getRequiredQuantityList: async(params) => {
+    try{
+      const res = await API_URL.post('/contract/getRequiredQuantityList', params)
+      return res.data
+    }catch(err){
+      throw new Error(err.response?.data);
+    }
+  },
+
   /**************************출고지서 관리******************************************************* */
   getShipmentList: async(params) => {
     try{
@@ -199,10 +240,6 @@ export const ApiOrder = {
         throw err.response
     }
 },
-
-
-/**************************수주계획 관리******************************************************* */
-
 
 
 

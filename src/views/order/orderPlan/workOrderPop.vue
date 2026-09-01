@@ -12,9 +12,9 @@
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="poNo"        header="지시일"  frozen :style="{ width: '120px'}" />
-        <Column field="matRegDate"  header="제조번호"   frozen :style="{ width: '120px'}" />
-        <Column field="matRegDate"  header="LOT번호"   frozen :style="{ width: '120px'}" />
+        <Column field="poNo"            header="지시일"   :style="{ width: '120px'}" />
+        <Column field="workProcDate"    header="제조번호"    :style="{ width: '150px'}" />
+        <Column field="lotNo"           header="LOT번호"    :style="{ width: '150px'}" />
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
@@ -24,12 +24,29 @@
 </template>
 
 <script setup>
-import { inject, onMounted, ref } from 'vue';
+import { ApiOrder } from '@/api/apiOrders';
+import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
 const workOrderList = ref([])
+const form = reactive({
+    procCd: 'PRC002',
+    poNo : '',
+
+})
+
+const srhList = async () =>{
+
+    const params = {
+        ...form
+    }
+
+    const res = await ApiOrder.getMatWorkOrder(params)
+    workOrderList.value = res
+}
 
 onMounted(() => {
+    form.poNo = dialogRef.value.data.poNo
     srhList()
 })
 
@@ -42,5 +59,12 @@ const closeDialog = () => {
 </script>
 
 <style scoped>
-
+::v-deep(.my-table .p-datatable-thead > tr > th) {
+  background-color: #BCAAA4;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  font-family: monaco, Consolas;
+  padding: 8px;
+}
 </style>
