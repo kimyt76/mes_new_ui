@@ -781,30 +781,15 @@
 
 
 <script setup>
-
 import { ApiOrder } from '@/api/apiOrders'
 import DateRangePicker from '@/components/DateRangePicker.vue'
-
-import {
-    addMonth,
-    minMonth,
-    todayKST
-} from '@/util/common'
-
+import { minMonth, todayKST } from '@/util/common'
 import { exportToExcel } from '@/util/exportToExcel'
-
-import {
-    computed,
-    onMounted,
-    reactive,
-    ref
-} from 'vue'
-
 import { useDialog } from 'primevue/usedialog'
+import { computed, onMounted, reactive, ref } from 'vue'
 import OrderPlanRegPop from './OrderPlanRegPop.vue'
-import OrderStockPop from './orderStockPop.vue'
+import OrderStockPop from './OrderStockPop.vue'
 import WorkOrderPop from './workOrderPop.vue'
-
 
 /*
  * ============================================================
@@ -813,72 +798,35 @@ import WorkOrderPop from './workOrderPop.vue'
  * 실제 프로젝트의 파일경로에 맞게 변경
  * ============================================================
  */
-
-
 const dialog = useDialog()
-
 const dt = ref(null)
-
 const orderPlanList = ref([])
-
 const prodTypes = ref([])
-
-
 
 // ============================================================
 // 검색조건
 // ============================================================
 const form = reactive({
-
-    strDate: minMonth(
-        todayKST(),
-        1
-    ),
-
-    endDate: addMonth(
-        todayKST(),
-        2
-    ),
-
+    strDate: minMonth( todayKST(), 3 ),
+    endDate: todayKST(),
     prodType: null,
-
     poNo: '',
-
     clientName: '',
-
     managerName: '',
-
     itemName: '',
-
     itemCd: '',
-
     endYn: 'N',
-
 })
 
-
-
-const handleDateChange = () => {
-
-}
-
-
+const handleDateChange = () => {}
 
 // ============================================================
 // 숫자 변환
 // ============================================================
 const toNum = (value) => {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ''
-    ) {
-
+    if ( value === null || value === undefined || value === '' ) {
         return 0
-
     }
-
 
     const num = Number(
         String(value)
@@ -886,14 +834,8 @@ const toNum = (value) => {
             .trim()
     )
 
-
-    return Number.isNaN(num)
-        ? 0
-        : num
-
+    return Number.isNaN(num) ? 0 : num
 }
-
-
 
 // ============================================================
 // 합계
@@ -915,102 +857,47 @@ const toNum = (value) => {
 // shipmentReqDate
 // ============================================================
 const total = computed(() => {
-
     const result = {
-
         qty: 0,
-
         bsQty: 0,
-
         bjQty: 0,
-
         outQty: 0,
-
         shipmentQty: 0,
-
         readDay: 0,
-
         weighProdDate: 0,
-
         matProdDate: 0,
-
         packingProdDate: 0,
-
         storageCnt: 0,
-
         shipmentReqDate: 0
-
     }
 
-
     orderPlanList.value.forEach(row => {
-
-        const rowId =
-            Number(row.rowId)
-
+        const rowId = Number(row.rowId)
 
         // =====================================================
         // 첫 번째 ROW
         // =====================================================
         if (rowId === 0) {
-
-            result.qty +=
-                toNum(row.qty)
-
-
-            result.bsQty +=
-                toNum(row.bsQty)
-
-
-            result.bjQty +=
-                toNum(row.bjQty)
-
-
-            result.outQty +=
-                toNum(row.outQty)
-
-
-            result.shipmentQty +=
-                toNum(row.shipmentQty)
-
-
-            result.readDay +=
-                toNum(row.readDay)
-
+            result.qty += toNum(row.qty)
+            result.bsQty += toNum(row.bsQty)
+            result.bjQty += toNum(row.bjQty)
+            result.outQty += toNum(row.outQty)
+            result.shipmentQty += toNum(row.shipmentQty)
+            result.readDay += toNum(row.readDay)
         }
-
-
         // =====================================================
         // 두 번째 ROW
         // =====================================================
         else if (rowId === 1) {
-
-            result.weighProdDate +=
-                toNum(row.weighProdDate)
-
-
-            result.matProdDate +=
-                toNum(row.matProdDate)
-
-
-            result.packingProdDate +=
-                toNum(row.packingProdDate)
-
-
-            result.storageCnt +=
-                toNum(row.storageCnt)
-
-
-            result.shipmentReqDate +=
-                toNum(row.shipmentReqDate)
-
+            result.weighProdDate += toNum(row.weighProdDate)
+            result.matProdDate += toNum(row.matProdDate)
+            result.packingProdDate += toNum(row.packingProdDate)
+            result.storageCnt += toNum(row.storageCnt)
+            result.shipmentReqDate += toNum(row.shipmentReqDate)
         }
-
     })
 
-
     return result
-
 })
 
 // ============================================================
@@ -1043,8 +930,6 @@ const formatNumber = (value) => {
         }
     )
 }
-
-
 
 // ============================================================
 // 조회
@@ -1132,18 +1017,16 @@ const getFieldType = (field) => {
 // 전체 필드 클릭 공통 함수
 // ============================================================
 const fieldClick = async ( row, field ) => {
-    console.log('클릭됨 =================')
-    console.log('field = ', field)
-    console.log('row = ', row)
-
+    // console.log('클릭됨 =================')
+    // console.log('field = ', field)
+    // console.log('row = ', row)
     const info = getFieldType(field)
 
     if (!info) {
         console.warn( '등록되지 않은 field', field )
         return
     }
-
-    console.log( 'fieldClick', { row, field, info } )
+    // console.log( 'fieldClick', { row, field, info } )
     // =====================================================
     // PO
     // =====================================================
@@ -1338,8 +1221,7 @@ const updateYn = async ( row, field ) => {
         value: newValue,
     }
 
-    console.log( 'YN 변경', params )
-
+    //console.log( 'YN 변경', params )
     try {
         /*
          * API 이름은 실제 apiOrders.js에 맞게 변경
@@ -1350,7 +1232,7 @@ const updateYn = async ( row, field ) => {
          */
         const res = await ApiOrder.updateOrderPlanYn( params )
 
-        console.log( 'updateOrderPlanYn', res )
+        //console.log( 'updateOrderPlanYn', res )
         /*
          * 서버 저장 성공 후
          * 화면 바로 변경
@@ -1361,12 +1243,11 @@ const updateYn = async ( row, field ) => {
     }
 }
 
-
 // ============================================================
 // 종결
 // ============================================================
 const toggleEndYn = async (row) => {
-    console.log( 'toggleEndYn', row )
+    // console.log( 'toggleEndYn', row )
 }
 
 // ============================================================
@@ -1392,7 +1273,6 @@ onMounted(async () => {
      */
     await srhList()
 })
-
 
 // ============================================================
 // Breadcrumb
