@@ -65,7 +65,6 @@
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="rowNum"          header="No."        style="text-align: center;"    :style="{ width: '30px'}" "/>
         <Column field="businessNo"      header="고객사코드"  style="text-align: center;"        :style="{ width: '110px'}" "/>
         <Column field="businessManagerName" header="영업담당자"    style="text-align: center;"  :style="{ width: '100px'}" "/>
         <Column field="customerName"    header="고객사명"  frozen  :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" ">
@@ -95,7 +94,7 @@
 <script setup>
 import { ApiBase } from '@/api/apiBase';
 import DateRangePicker from '@/components/DateRangePicker.vue';
-import { isEmpty, todayKST } from '@/util/common';
+import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { reactive, ref } from 'vue';
@@ -106,7 +105,7 @@ const dialog = useDialog()
 const clientList = ref([])
 const dt = ref(null)
 const form  =reactive({
-  strDate: todayKST(),
+  strDate: minMonth(todayKST(), 3),
   endDate: todayKST(),
   clientName : '',
   saleManagerName: '',

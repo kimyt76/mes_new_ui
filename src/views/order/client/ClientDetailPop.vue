@@ -440,17 +440,17 @@
         show-gridlines
         class="my-table fixed-datatable"
     >
-        <Column field="managerName"       header="담당자"     :style="{ width: '100px'}"  >
+        <Column field="managerName"     header="담당자" :style="{ width: '100px'}"  >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.managerName"  class="w-full"/>
             </template>
         </Column>
-        <Column field="changeDate"       header="변경일"     :style="{ width: '100px'}" >
+        <Column field="changeDate"      header="변경일" :style="{ width: '150px', textAlign: 'center'}"  >
             <template #body="slotProps">
-                <DatePicker v-model="slotProps.data.changeDate" class="w-full" />
+                <DatePicker v-model="slotProps.data.changeDate" :inputStyle="{ width: '140px', 'text-align': 'center' }" />
             </template>
         </Column>
-        <Column field="historyContents"        header="변경내용"      :style="{ width: '800px'}" >
+        <Column field="historyContents" header="변경내용"   :style="{ width: '800px'}" >
             <template #body="slotProps">
                 <InputText v-model="slotProps.data.historyContents" class="w-full" />
             </template>
@@ -683,7 +683,7 @@ const addRowH = () => {
     clientHistoryList.value.push({
         clientHistoryId: null,
         managerName: '',
-        changeDate: '',
+        changeDate: todayKST(),
         historyContents: '',
         orderDist: clientHistoryList.value.length + 1,
     })
