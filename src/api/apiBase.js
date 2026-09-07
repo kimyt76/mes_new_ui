@@ -113,7 +113,7 @@ getProdCompany: async(params) =>{
   },
 
 
-/**************************생산일보***************************************/
+/**************************생산일보  원료***************************************/
   getM1DailyReportList: async(params) =>{
     try{
       const res = await API_URL.post('/dailyReport/getM1DailyReportList', params )
@@ -135,10 +135,12 @@ getProdCompany: async(params) =>{
         throw err.response
     }
   },
-  saveM1DailyReportInfo: async(params) => {
-    return await API_URL.post('/dailyReport/saveM1DailyReportInfo', params)
+  saveDailyReportM1: async(params) => {
+    return await API_URL.post('/dailyReport/saveDailyReportM1', params)
   },
-
+    updateM1DailyReportEndYn: async(params) => {
+        return await API_URL.post('/dailyReport/updateM1DailyReportEndYn', params)
+    },
 
 
 
