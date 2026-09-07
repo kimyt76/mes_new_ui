@@ -274,22 +274,30 @@
     >
         <Column field="year"      header="년도(년)"  :style="{ width: '110px'}" >
             <template #body="slotProps">
-                <InputText v-model="slotProps.data.year" class="w-full"/>
+                 <InputNumber
+                    v-model="slotProps.data.year"
+                    suffix="년"
+                    :min="1000"
+                    :max="9999"
+                    :useGrouping="false"
+                    :maxFractionDigits="0"
+                    class="w-full"
+                />
             </template>
         </Column>
         <Column field="salesAmt"    header="매출금액"    :style="{ width: '100px', textAlign: 'right'}" >
             <template #body="slotProps">
-                <InputText v-model="slotProps.data.salesAmt" class="w-full" />
+                 <InputNumber v-model="slotProps.data.salesAmt" class="w-full" />
             </template>
         </Column>
         <Column field="dealAmt"       header="거래금액"  :style="{ width: '120px', textAlign: 'right'}" >
             <template #body="slotProps">
-                <InputText v-model="slotProps.data.dealAmt" class="w-full"/>
+                <InputNumber v-model="slotProps.data.dealAmt" class="w-full" />
             </template>
         </Column>
         <Column field="orderQty"     header="수주건수"    :style="{ width: '120px', textAlign: 'right'}" >
             <template #body="slotProps">
-                <InputText v-model="slotProps.data.orderQty" class="w-full"/>
+                <InputNumber v-model="slotProps.data.orderQty" class="w-full" />
             </template>
         </Column>
         <Column field="managerName"     header="담당자"    :style="{ width: '200px'}"  >
@@ -507,6 +515,7 @@ const form = reactive({
     clientType: '',
     clientTypeName: '',
     tradeType: '',
+    firstTradeDate: '',
     clientRegDate: todayKST(),
     responSalesBiz: '',
     establishDate: null,

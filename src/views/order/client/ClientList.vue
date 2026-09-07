@@ -65,7 +65,7 @@
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="businessNo"      header="고객사코드"  style="text-align: center;"        :style="{ width: '110px'}" "/>
+        <Column field="businessNo"      header="고객사코드"  style="text-align: center;"        :style="{ width: '120px'}" "/>
         <Column field="businessManagerName" header="영업담당자"    style="text-align: center;"  :style="{ width: '100px'}" "/>
         <Column field="customerName"    header="고객사명"  frozen  :style="{ width: '300px'}" bodyClass="break-words" style="text-align: left;" ">
             <template #body="slotProps">
@@ -74,6 +74,7 @@
                 </div>
             </template>
         </Column>
+        <Column field="location"            header="소재지"      style="text-align: center;"  :style="{ width: '170px'}" "/>
         <Column field="president"           header="대표자명"      style="text-align: center;"  :style="{ width: '100px'}" "/>
         <Column field="oneYearAgo"          :header="String(year1)" :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.oneYearAgo).toLocaleString() }}</template>
@@ -84,8 +85,8 @@
         <Column field="threeYearAgo"        :header="String(year3)" :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.threeYearAgo).toLocaleString() }}</template>
         </Column>
-        <Column field="firstDelaDate"       header="최초거래일자"  style="text-align: center;"  :style="{ width: '120px'}" "/>
-        <Column field="lastDelaDate"        header="최종거래일자"  style="text-align: center;"  :style="{ width: '120px'}" "/>
+        <Column field="firstDelaDate"       header="최초거래일자"  style="text-align: center;"  :style="{ width: '110px'}" "/>
+        <Column field="lastDelaDate"        header="최종거래일자"  style="text-align: center;"  :style="{ width: '110px'}" "/>
         <Column field="managerRank"         header="관리등급"     style="text-align: center;"   :style="{ width: '80px'}" "/>
     </DataTable>
 </div>
@@ -126,6 +127,8 @@ const srhList = async () =>{
         ...form
     }
     clientList.value = await ApiBase.getClientList(params)
+
+    console.log('clientList.value', clientList.value)
 }
 
 const currentYear = new Date().getFullYear();
