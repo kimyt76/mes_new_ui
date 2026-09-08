@@ -805,7 +805,7 @@ const createDiscardRow = () => ({
     etc: '',
 })
 
-const createUsageRow = () => ({
+const createProdRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -820,7 +820,7 @@ const createUsageRow = () => ({
     etc: '',
 })
 
-const createStockRow = () => ({
+const createUseRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -860,8 +860,8 @@ const addRow = (type) => {
         in: createInRow,
         return: createReturnRow,
         discard: createDiscardRow,
-        prod: createUsageRow,
-        use: createStockRow,
+        prod: createProdRow,
+        use: createUseRow,
         osp: createOspRow,
     }
 
