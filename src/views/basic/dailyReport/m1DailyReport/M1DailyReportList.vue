@@ -38,8 +38,8 @@ const form = reactive({
     endDate: todayKST(),
     typeCd : 'M',
 })
-const handleDateChange = () =>{
-}
+const handleDateChange = () =>{}
+
 const selectRowClick = (row) => {
     // Handle row selection logic here
     let title =''
@@ -51,24 +51,30 @@ const selectRowClick = (row) => {
     }
 
     dialog.open(M1DailyReportPop, {
-       props:{
+       props: {
             title: title,
             modal: true,
             draggable: true,
-             style: {
+            style: {
                 overflow: 'hidden'
-                },
+            },
             pt: {
-                content: {
+                headerActions: {
                     style: {
-                        maxHeight: 'calc(90vh - 4rem)', // 헤더/푸터 높이 제외 영역
-                        overflow: 'auto',               // 🔥 스크롤 활성화
+                        marginLeft: 'auto'
                     }
                 },
-            },
-       },
+                content: {
+                    style: {
+                        maxHeight: 'calc(90vh - 4rem)',
+                        overflow: 'auto'
+                    }
+                }
+            }
+        },
        data: {
-        dailyId : row.dailyId,
+        dailyId : row.dailyId || null,
+        endYn : row.endYn || 'N',
        },onClose: () => {
             //
             // srhList()
