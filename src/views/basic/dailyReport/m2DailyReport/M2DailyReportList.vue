@@ -50,25 +50,34 @@ const selectRowClick = (row) => {
     }
 
     dialog.open(M2DailyReportPop, {
-       props:{
+       props: {
             title: title,
             modal: true,
             draggable: true,
-             style: {
+            style: {
+                width: '92vw',
+                maxWidth: '1850px',
                 overflow: 'hidden'
-                },
+            },
             pt: {
-                content: {
+                headerActions: {
                     style: {
-                        maxHeight: 'calc(90vh - 4rem)', // 헤더/푸터 높이 제외 영역
-                        overflow: 'auto',               // 🔥 스크롤 활성화
+                        marginLeft: 'auto'
                     }
                 },
-            },
-       },
-       data: {
-        dailyId : row.dailyId,
-       },onClose: () => {
+                content: {
+                    style: {
+                        padding: '4px 8px',
+                        maxHeight: 'calc(90vh - 4rem)',
+                        overflow: 'auto'
+                    }
+                }
+            }
+        },
+        data: {
+            dailyId : row.dailyId || null,
+            endYn : row.endYn || 'N',
+        },onClose: () => {
             //
             // srhList()
        }
