@@ -74,7 +74,7 @@
                         </div>
                     </template>
                 </Column>
-                <Column field="qty" header="수량[kg]" style="width: 110px" >
+                <Column field="qty" header="수량[EA]" style="width: 110px" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'in', index, 'qty')">
                             <InputNumber
