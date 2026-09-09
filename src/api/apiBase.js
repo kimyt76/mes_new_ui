@@ -113,6 +113,11 @@ getProdCompany: async(params) =>{
   },
 
 
+  /**************************생산일보  곹통***************************************/
+  updateDailyReportEndYn: async(params) => {
+        return await API_URL.post('/dailyReport/updateDailyReportEndYn', params)
+  },
+
 /**************************생산일보  원료***************************************/
   getM1DailyReportList: async(params) =>{
     try{
@@ -138,14 +143,58 @@ getProdCompany: async(params) =>{
   saveDailyReportM1: async(params) => {
     return await API_URL.post('/dailyReport/saveDailyReportM1', params)
   },
-    updateM1DailyReportEndYn: async(params) => {
-        return await API_URL.post('/dailyReport/updateM1DailyReportEndYn', params)
-    },
 
+/**************************생산일보  부자재***************************************/
+  getM2DailyReportList: async(params) =>{
+    try{
+      const res = await API_URL.post('/dailyReport/getM2DailyReportList', params )
 
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
 
+  getM2DailyReportInfo: async (id) => {
+    try {
+            const res = await API_URL.get('/dailyReport/getM2DailyReportInfo', {
+            params: {
+                dailyId: id ?? null
+                }
+            })
+        return res.data
+    } catch (err) {
+        throw err.response
+    }
+  },
+  saveDailyReportM2: async(params) => {
+    return await API_URL.post('/dailyReport/saveDailyReportM2', params)
+  },
 
+  /**************************생산일보  완제품***************************************/
+    getM0DailyReportList: async(params) =>{
+    try{
+      const res = await API_URL.post('/dailyReport/getM0DailyReportList', params )
 
-
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+  getM0DailyReportInfo: async (id) => {
+    try {
+            const res = await API_URL.get('/dailyReport/getM0DailyReportInfo', {
+            params: {
+                dailyId: id ?? null
+                }
+            })
+        return res.data
+    } catch (err) {
+        throw err.response
+    }
+  },
+  saveDailyReportM0: async(params) => {
+    return await API_URL.post('/dailyReport/saveDailyReportM0', params)
+  },
 
 }
