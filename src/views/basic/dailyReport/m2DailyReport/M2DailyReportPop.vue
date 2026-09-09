@@ -647,10 +647,10 @@ onMounted(async () => {
         if (form.endYn === 'Y') {
             isBtn.value = false
         }
-form.dailyId = 11
+
         const res = await ApiBase.getM2DailyReportInfo( form.dailyId )
 
-        console.log( 'M2 일일보고서 정보', res )
+        //console.log( 'M2 일일보고서 정보', res )
 
         if (res.dailyReportInfo) {
             Object.assign( form, res.dailyReportInfo )
@@ -667,7 +667,7 @@ form.dailyId = 11
         useList.value = initializeUseList( res.useList || [] )
 
     } catch (error) {
-        console.error( '조회 중 오류 발생:', error )
+        //console.error( '조회 중 오류 발생:', error )
         handleApiError(error)
     }
 })
@@ -922,7 +922,6 @@ const deleteIdMap = {
         idField: 'dailySubItemId',
     },
 }
-
 
 /* =========================================================
    일반 LIST 삭제
@@ -1301,12 +1300,12 @@ const saveInfo = async () => {
             deleteUseIds: deleteUseIds.value,
         }
 
-        console.log( '저장 데이터', params )
+        //console.log( '저장 데이터', params )
         await ApiBase.saveDailyReportM2( params )
         vSuccess( '저장되었습니다.' )
         closeDialog()
     } catch (error) {
-        console.error( '저장 중 오류 발생:', error )
+        //console.error( '저장 중 오류 발생:', error )
         handleApiError( error )
     }
 }

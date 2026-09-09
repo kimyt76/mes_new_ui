@@ -727,14 +727,13 @@ const form = reactive({
 onMounted( async () =>{
     form.dailyId = dialogRef.value?.data?.dailyId ?? null
     form.endYn = dialogRef.value?.data?.endYn ?? 'N'
-form.dailyId= 1
+
     if ( form.endYn === 'Y') {
         isBtn.value = false
     }
 
     const res = await ApiBase.getM1DailyReportInfo(form.dailyId)
-
-   console.log('M1 일일보고서 정보', res)
+   //console.log('M1 일일보고서 정보', res)
 
    if ( res.dailyReportInfo) {
        Object.assign(form, res.dailyReportInfo)
@@ -1020,13 +1019,13 @@ const saveInfo = async () => {
             deleteOspIds: deleteOspIds.value,
         }
 
-        console.log('저장 데이터', params)
+        //console.log('저장 데이터', params)
         // 실제 API 호출
         await ApiBase.saveDailyReportM1(params)
         vSuccess('저장되었습니다.')
         closeDialog()
     }catch (error) {
-        console.error('저장 중 오류 발생:', error)
+        //console.error('저장 중 오류 발생:', error)
         handleApiError(error)
     }
 }
