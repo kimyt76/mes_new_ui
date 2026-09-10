@@ -276,18 +276,18 @@
                 />
             </template>
         </Column>
-        <Column field="ho"  header="H"    :style="{ width: '70px'}"   >
+        <Column field="h"  header="H"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
                 <InputText
-                    v-model="slotProps.data.ho"
+                    v-model="slotProps.data.h"
                     class="w-full"
                     />
             </template>
         </Column>
-        <Column field="pd"  header="P"    :style="{ width: '70px'}"  >
+        <Column field="p"  header="P"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
                 <InputText
-                    v-model="slotProps.data.pd"
+                    v-model="slotProps.data.p"
                     class="w-full"
                     />
             </template>
