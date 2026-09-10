@@ -40,7 +40,7 @@
             <div class="col-3">
                 <Checkbox v-model="form.vegan" name="Vegan"  binary  readonly/>
                 <label> Vegan </label>
-                <Checkbox v-model="form.strDatel" name="halal" binary readonly />
+                <Checkbox v-model="form.halal" name="halal" binary readonly />
                 <label> Halal </label>
                 <Checkbox v-model="form.rspo" name="RSPO"  binary readonly/>
                 <label> RSPO </label>
@@ -323,6 +323,8 @@ onMounted( async () =>{
     itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
 
     const res = await ApiLab.getMaterialInfo(dialogRef.value.data)
+
+    //console.log('res', res)
     Object.assign(form,{
         ...res.itemInfo,
         vegan : res.itemInfo.vegan === 'Y',
