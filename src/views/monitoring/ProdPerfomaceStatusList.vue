@@ -107,7 +107,7 @@ const srhList = async () =>{
     }
 
     const res = await ApiMonitoring.getProdPerformaceStatus(params)
- console.log('res',   res)
+ //console.log('res',   res)
     workOrderList.value = res
 }
 
