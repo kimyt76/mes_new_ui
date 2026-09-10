@@ -332,14 +332,14 @@
                     />
             </template>
         </Column>
-        <Column field="m"  header="RT"    :style="{ width: '70px'}"  >
+        <!-- <Column field="m"  header="RT"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.rt"
                     class="w-full"
                     />
             </template>
-        </Column>
+        </Column> -->
         <Column field="etc"         header="적요" :style="{ width: '150px'}" >
             <template #body="slotProps">
                 <InputText
