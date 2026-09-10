@@ -82,7 +82,12 @@
                 <template #body="slotProps">{{ Number(slotProps.data.outPrice).toLocaleString() }}</template>
             </Column>
             <Column field="itemGrp2Name"    header="제품유형"  :style="{ width: '90px', textAlign:'center'}"  />
-            <Column field="useYn"          header="사용유무"  :style="{ width: '70px', textAlign:'center'}"  />
+            <Column field="useYn"          header="사용유무"  :style="{ width: '70px', textAlign:'center'}" >
+                <template #body="slotProps">
+                    <span v-if="slotProps.data.useYn === 'Y'" class="text-blue-600 font-semibold">사용</span>
+                    <span v-else class="text-red-600 font-semibold">미사용</span>
+                </template>
+            </Column>
         </DataTable>
     </div>
 </template>
