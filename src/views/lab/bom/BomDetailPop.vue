@@ -117,27 +117,10 @@
 <div class="flex justify-content-between align-items-center mr-4 mb-1 mt-2">
     <h5 class="m-0">- 원료구성정보</h5>
     <div class="flex justify-end gap-2">
-    <Button
-        label="BOM정보"
-        @click="openPop('B')"
-        class="p-button-xm"
-    />
-    <Button
-        label="연구처방"
-        @click="openPop('R')"
-        class="p-button-xm"
-    />
-    <Button
-        label="추가+"
-        @click="addRowR"
-        class="p-button-xm"
-    />
-    <Button
-        label="전체삭제"
-        severity="danger"
-        @click="removeAll"
-        class="p-button-xm"
-    />
+    <Button label="BOM정보" @click="openPop('B')" class="p-button-xm" />
+    <Button label="연구처방" @click="openPop('R')" class="p-button-xm" />
+    <Button label="추가+" @click="addRowR" class="p-button-xm" />
+    <Button label="전체삭제" severity="danger" @click="removeAll" class="p-button-xm" />
     </div>
 </div>
 <div class="w-full recipe-table-area">
@@ -235,11 +218,10 @@
 
 <div class="proc-title flex justify-content-between align-items-center mr-4 mb-1 mt-8">
     <h5 class="m-0">- 제조공정도</h5>
-    <Button
-        label="추가+"
-        @click="addRowP"
-        class="p-button-xm"
-    />
+    <div class="flex justify-end gap-2">
+        <Button label="제조공정" @click="openBomProcPop" class="p-button-xm" />
+        <Button label="추가+" @click="addRowP" class="p-button-xm" />
+    </div>
 </div>
 
 <div class="w-full">
@@ -376,6 +358,7 @@ import { useDialog } from 'primevue';
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 import RecipeListPop from '../recipe/RecipeListPop.vue';
 import BomListPop from './BomListPop.vue';
+import BomProcPop from './BomProcPop.vue';
 
 const totalRealContent = computed(() =>
   recipeList.value.reduce(
@@ -434,6 +417,28 @@ const saveInfo = async () =>{
     }catch(err){
         handleApiError(err)
     }
+}
+
+const openBomProcPop =() =>{
+    dialog.open( BomProcPop, {
+        props: {
+            header: '제조공정',
+            modal: true,
+            draggable: true,
+            maximizable: false,
+            style: {
+                overflow: 'hidden'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            },
+        },
+         onClose:(event) => {
+            if (!event || !event.data) return;
+            bomProcList.value = event.data
+        },
+    })
 }
 
 const openPop = (type) =>{

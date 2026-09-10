@@ -281,7 +281,15 @@ export const ApiLab = {
     }
   },
 
+  getBomProcInfo: async(id) => {
+    try{
+      const res = await API_URL.get(`/bom/getBomProcInfo/${id}`)
+      return res.data
 
+    }catch(err){
+      throw err.response
+    }
+  },
 
 
 }
