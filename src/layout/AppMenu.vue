@@ -103,16 +103,21 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/basic/dailyReport/m2DailyReport'
                     },
-                    // {
-                    //     label: '완제품생산일보',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/basic/dailyReport/m0DailyReport'
-                    // },
-                    // {
-                    //     label: '인건비',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/basic/dailyReport/laborCostDaily'
-                    // }
+                    {
+                        label: '완제품생산일보',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/m0DailyReport'
+                    },
+                    {
+                        label: '인건비',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/laborCost'
+                    },
+                    {
+                        label: '통합관리대장',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/basic/dailyReport/dailyMgmt'
+                    }
                 ]
             },
         ]
@@ -161,7 +166,7 @@ const model = ref([
                         to: '/lab/bom'
                     },
                     {
-                        label: '공정별BOM',
+                        label: '벌크/포장/완체품BOM ',
                         icon: 'pi pi-fw pi-id-card',
                         to: '/lab/matBom'
                     },
