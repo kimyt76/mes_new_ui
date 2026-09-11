@@ -116,26 +116,24 @@ const searchList = async () =>{
     const params = {
         ...form
     }
-    //if (  form.itemTypeCd === 'M1'  ){
-    //    purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
-    //}else{
+    // if (  form.itemTypeCd === 'M1'  ){
+    //     purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
+    // }else{
         purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderDetailList(params)
     //}
-
-
 }
 
 const selectedRow = async () => {
-
     if ( selectedItem.value.length === 0) return vWarning("선택된 발주가 없습니다." )
 
-    if (form.itemTypeCd !== 'M1'){
-        const purOrderIds = selectedItem.value.map(v => v.purOrderId)
-        subItemList.value = await ApiPurchaseOrder.getSubItemList(purOrderIds)
-        emit('selected', subItemList.value)
-    }else{
-        emit('selected', selectedItem.value)
-    }
+    // if (form.itemTypeCd !== 'M1'){
+    //     const purOrderIds = selectedItem.value.map(v => v.purOrderId)
+    //     subItemList.value = await ApiPurchaseOrder.getSubItemList(purOrderIds)
+    //     emit('selected', subItemList.value)
+    // }else{
+    //     emit('selected', selectedItem.value)
+    // }
+    emit('selected', selectedItem.value)
     selectedItem.value = []
 
 
@@ -143,10 +141,7 @@ const selectedRow = async () => {
 
 onMounted( async () =>{
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
-
     form.customerName = props.customerName
-console.log('props', props)
-searchList()
 })
 </script>
 

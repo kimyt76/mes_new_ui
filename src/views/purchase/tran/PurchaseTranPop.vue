@@ -387,11 +387,7 @@ const openPop = (type) =>{
 watch(() => form.purDate, async (newVal, oldVal) => {
   if ( !isEmpty(oldVal)) {
     if ( oldVal !==  newVal ){
-        if ( form.itemTypeCd === 'M1') {
-            form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  newVal)
-        }else{
-            form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  newVal)
-        }
+        form.seq = await ApiCommon.getNextSeq('tb_pur_mst', 'pur_date',  newVal)
     }
   }
 })
