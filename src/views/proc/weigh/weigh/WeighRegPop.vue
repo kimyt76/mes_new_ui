@@ -166,21 +166,27 @@ onBeforeUnmount(() => {
 })
 
 const handleScannerKeydown = (event) => {
-    const isEditable = ['input', 'textarea'].includes(event.target?.tagName?.toLowerCase()) || event.target?.isContentEditable
-    if (isEditable) return
-
     const now = Date.now()
-    if (now - lastScanTime.value > SCAN_INTERVAL) scanBuffer.value = ''
+
+    if (now - lastScanTime.value > SCAN_INTERVAL) {
+        scanBuffer.value = ''
+    }
+
     lastScanTime.value = now
 
     if (event.key === 'Enter') {
         const barcode = scanBuffer.value.trim()
+
         scanBuffer.value = ''
+
         if (barcode) {
             form.barcode = barcode
+            console.log('스캔 barcode = ', barcode)
             handleScannedCode(barcode)
         }
+
     } else if (event.key.length === 1) {
+
         scanBuffer.value += event.key
     }
 }
