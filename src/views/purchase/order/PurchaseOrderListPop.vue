@@ -79,7 +79,6 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
-import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
 const { vWarning } = useAlertStore()
@@ -98,6 +97,9 @@ const props = defineProps({
    name: {
     type: String,
    },
+   customerName: {
+    type: String,
+   },
 })
 
 
@@ -106,20 +108,19 @@ const form = reactive({
     itemCd:'',
     itemName:'',
     customerName:'',
+    inYn:'N',
 })
 
 const searchList = async () =>{
-    if (isEmpty(form.itemTypeCd)) return vWarning("품목구분은 필수입니다.")
-
+    //if (isEmpty(form.itemTypeCd)) return vWarning("품목구분은 필수입니다.")
     const params = {
         ...form
     }
-
-    if (  form.itemTypeCd === 'M1'  ){
-        purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
-    }else{
+    //if (  form.itemTypeCd === 'M1'  ){
+    //    purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params)
+    //}else{
         purOrderList.value = await ApiPurchaseOrder.getPurchaseOrderDetailList(params)
-    }
+    //}
 
 
 }
@@ -142,6 +143,10 @@ const selectedRow = async () => {
 
 onMounted( async () =>{
     itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
+
+    form.customerName = props.customerName
+console.log('props', props)
+searchList()
 })
 </script>
 

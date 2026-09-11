@@ -202,6 +202,7 @@
         :resizable="false"
         >
         <PurchaseOrderListPop
+            :customerName="form.customerName"
             @selected = "handleOrderSelected"
             @close="orderDialog = false"
             />
