@@ -291,7 +291,7 @@ const saveInfo = async () =>{
     }
     if(isEmpty(form.storageCd))  return vWarning('입고창고를 선택해주세요.')
     if(isEmpty(form.managerId))  return vWarning('담당자를 선택해주세요.')
-console.log('deletedItemIds.value' , deletedItemIds.value)
+//console.log('deletedItemIds.value' , deletedItemIds.value)
     try{
         const params = {
             purchaseOrderInfo : form,

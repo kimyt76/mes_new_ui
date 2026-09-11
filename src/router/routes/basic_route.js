@@ -74,6 +74,11 @@ export default [
         name: 'LaborCost',
         component: () => import('@/views/basic/dailyReport/laborCost/LaborCostList.vue')
       },
+      {
+        path: 'dailyReport/dailyMgmt',
+        name: 'DailyMgmt',
+        component: () => import('@/views/basic/dailyReport/dailyMgmt/DailyMgmtList.vue')
+      },
 
 
 

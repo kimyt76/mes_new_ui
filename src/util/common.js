@@ -89,7 +89,9 @@ export function formatQty(value){
 }
 
 export function formatDate (value) {
+
   if (!value) return ''
+
   const d = new Date(value)
   const yyyy = d.getFullYear()
   const mm = String(d.getMonth() + 1).padStart(2, '0')

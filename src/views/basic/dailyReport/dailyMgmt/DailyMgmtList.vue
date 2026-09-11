@@ -9,23 +9,13 @@
                 v-model:endDate="form.endDate"
                 @change="handleDateChange"
             />
-            <FloatLabel variant="on">
-                <Select v-model="form.workTypeCd"
-                 :options="workTypeCd"
-                 optionLabel="codeNm" optionValue="code"
-                style="width: 150px"
-                />
-                <label for="on_label1">작업유형</label>
-             </FloatLabel>
-
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
             </div>
         </template>
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규(시흥)" icon="pi pi-plus" severity="secondary"  @click="newPop('S')"></Button>
-    <Button label="신규(안산)" icon="pi pi-plus" severity="secondary"  @click="newPop('A')"></Button>
+    <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 
@@ -38,77 +28,22 @@ import { todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { reactive, ref } from 'vue';
-import LaborCostPop from './LaborCostPop.vue';
+import DailyMgmtPop from './DailyMgmtPop.vue';
 
 const dt = ref(null);
 const dialog = useDialog()
-const laborCostList = ref([])
-const workTypeCd = ref([
-    {code: 'D', codeNm: '주간'},
-    {code: 'O', codeNm: '잔업'},
-    {code: 'N', codeNm: '야간'},
-])
-
+const dailyMgmtList = ref([])
 const form = reactive({
     strDate: todayKST(),
     endDate: todayKST(),
-    workTypeCd: null,
 })
-
 const handleDateChange = () =>{}
 
-const newPop = (area) =>{
-
-
-    let title =''
-
-    if (area === 'S' ){
-        title = '인건비 현황(시흥) 등록'
-    } else if (area === 'A' ){
-        title = '인건비 현황(안산) 등록'
-    }
-
-     dialog.open(LaborCostPop, {
-       props: {
-            title: title,
-            modal: true,
-            draggable: true,
-            style: {
-                width: '92vw',
-                maxWidth: '1850px',
-                overflow: 'hidden'
-            },
-            pt: {
-                headerActions: {
-                    style: {
-                        marginLeft: 'auto'
-                    }
-                },
-                content: {
-                    style: {
-                        padding: '4px 8px',
-                        maxHeight: 'calc(90vh - 4rem)',
-                        overflow: 'auto'
-                    }
-                }
-            }
-        },
-        data: {
-            dailyId : null,
-            endYn : 'N',
-        },onClose: () => {
-            //
-            // srhList()
-       }
-    })
-
-}
 const selectRowClick = (row) => {
     // Handle row selection logic here
-
-    dialog.open(LaborCostPop, {
+    dialog.open(DailyMgmtPop, {
        props: {
-            title: '인건비 생산일보 상세',
+            title: '생산일보 관리대장',
             modal: true,
             draggable: true,
             style: {
@@ -132,8 +67,8 @@ const selectRowClick = (row) => {
             }
         },
         data: {
-            dailyId : row.dailyId,
-            endYn : row.endYn,
+            dailyId : row.dailyId || null,
+            endYn : row.endYn || 'N',
         },onClose: () => {
             //
             // srhList()
@@ -146,7 +81,7 @@ const srhList = async () => {
         strDate: form.strDate,
         endDate: form.endDate,
     }
-    laborCostList.value = await ApiBase.getLaborCostList(params)
+    dailyMgmtList.value = await ApiBase.getDailyMgmtList(params)
 }
 
 const downloadExcel = () =>{
@@ -155,18 +90,19 @@ const downloadExcel = () =>{
   if (!cols.length) {
     return;
   }
-  exportToExcel(laborCostList.value, "인건비 생산일보 리스트", cols);
+  exportToExcel(dailyMgmtList.value, "생산일보 관리대장", cols);
 }
-
 
 const home = ref({
     icon: 'pi pi-home'
-});
+})
+
 const items = ref([
     { label: '생산일보' },
-    { label: '인건비 생산일보' },
-    { label: '인건비 생산일보 목록' },
-]);
+    { label: '생산일보 관리대장' },
+    { label: '생산일보 관리대장 목록' },
+])
+
 </script>
 
 <style  scoped>
