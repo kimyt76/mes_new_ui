@@ -82,10 +82,17 @@ const addRow = async () =>{
 
     itemList.value.push(item);
     testNo.value = '';
+
+    await focusBarcode();
   } catch (err) {
     handleApiError(err);
   }
 }
+
+const focusBarcode = async () => {
+    await nextTick();
+    barcodeInput.value?.$el?.focus();
+};
 
 const saveInfo = () =>{
     dialogRef.value.close(itemList.value);
