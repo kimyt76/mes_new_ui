@@ -4,6 +4,7 @@
         <div class="flex gap-2">
             <FloatLabel variant="on">
             <InputText
+                ref="barcodeInput"
                 id="on_label"
                 v-model="testNo"
                 style="width: 180px"
@@ -43,11 +44,12 @@
 import { ApiQc } from '@/api/apiQc';
 import { useAlertStore } from '@/stores/alert';
 import { handleApiError } from '@/util/errorHandler';
-import { inject, ref } from 'vue';
+import { inject, nextTick, ref } from 'vue';
 
 const { vSuccess, vWarning, vInfo } = useAlertStore()
 const dialogRef = inject('dialogRef')
 const itemList = ref([])
+const barcodeInput = ref(null)
 const testNo = ref('')
 const init = () =>{
     testNo.value = ''
