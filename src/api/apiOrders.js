@@ -144,9 +144,10 @@ export const ApiOrder = {
 saveOrderPlan: async(ids) => {
     return  await API_URL.post('/contract/saveOrderPlan', ids)
   },
-updateOrderPlanYn: async(ids) => {
+  updateOrderPlanYn: async(ids) => {
     return  await API_URL.post('/contract/updateOrderPlanYn', ids)
   },
+
   getOrderPlanType: async(params) => {
     try{
       const res = await API_URL.post('/contract/getOrderPlanType', params)

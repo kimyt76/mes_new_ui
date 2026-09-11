@@ -135,7 +135,6 @@
          테이블
     ====================================================== -->
     <div class="table-area">
-
         <DataTable
             ref="dt"
             :value="orderPlanList"
@@ -146,21 +145,11 @@
             tableStyle=" min-width: 104rem; table-layout: fixed; "
         >
             <!-- No -->
-            <Column
-                header="No"
-                :style="{
-                    width: '34px',
-                    textAlign: 'center'
-                }"
-            >
+            <Column header="No" :style="{ width: '34px', textAlign: 'center' }" >
                 <template #body="slotProps">
-
                     {{ slotProps.index + 1 }}
-
                 </template>
             </Column>
-
-
             <!-- =====================================================
                  PO No
             ====================================================== -->
@@ -174,11 +163,11 @@
                     </div>
                 </template>
             </Column>
-            <Column field="prodType" header="제품유형" frozen :style="{ width: '65px', textAlign: 'center' }" />
-            <Column field="clientName" header="고객사명" frozen :style="{ width: '100px' }" />
-            <Column field="managerId" header="담당자" frozen :style="{ width: '75px', textAlign: 'center' }" />
-            <Column field="itemCd" header="품목코드" frozen :style="{ width: '100px', textAlign: 'center' }" />
-            <Column field="itemName" header="품목명" frozen :style="{ width: '210px' }" />
+            <Column field="prodType"    header="제품유형" frozen :style="{ width: '65px', textAlign: 'center' }" />
+            <Column field="clientName"  header="고객사명" frozen :style="{ width: '100px' }" />
+            <Column field="managerId"   header="담당자" frozen :style="{ width: '75px', textAlign: 'center' }" />
+            <Column field="itemCd"      header="품목코드" frozen :style="{ width: '100px', textAlign: 'center' }" />
+            <Column field="itemName"    header="품목명" frozen :style="{ width: '210px' }" />
             <!-- =====================================================
                  주문수량
             ====================================================== -->
@@ -186,7 +175,7 @@
                 <template #body="slotProps"> {{ formatNumber( slotProps.data.qty ) }} </template>
             </Column>
             <Column field="deliveryReqDate" header="납기희망일" :style="{ width: '82px', textAlign: 'center' }" />
-            <Column field="orderTypeName" header="수주유형" :style="{ width: '60px', textAlign: 'center' }" />
+            <Column field="orderTypeName"   header="수주유형" :style="{ width: '60px', textAlign: 'center' }" />
             <!-- =====================================================
                  선금여부
             ====================================================== -->
@@ -195,11 +184,7 @@
                     <span
                         v-if="Number(slotProps.data.rowId) === 0"
                         class="yn-cell"
-                        :class="
-                            slotProps.data.advancePayYn === 'Y'
-                                ? 'yn-y'
-                                : 'yn-n'
-                        "
+                        :class=" slotProps.data.advancePayYn === 'Y' ? 'yn-y' : 'yn-n' "
                         @click=" fieldClick( slotProps.data, 'advancePayYn' ) "
                     >
                         {{ slotProps.data.advancePayYn }}
@@ -214,17 +199,8 @@
                     <span
                         v-if="Number(slotProps.data.rowId) === 0"
                         class="yn-cell"
-                        :class="
-                            slotProps.data.prodSheet === 'Y'
-                                ? 'yn-y'
-                                : 'yn-n'
-                        "
-                        @click="
-                            fieldClick(
-                                slotProps.data,
-                                'prodSheet'
-                            )
-                        "
+                        :class=" slotProps.data.prodSheet === 'Y' ? 'yn-y' : 'yn-n' "
+                        @click=" fieldClick( slotProps.data, 'prodSheet' ) "
                     >
                         {{ slotProps.data.prodSheet }}
                     </span>
@@ -236,106 +212,51 @@
             ====================================================== -->
             <Column field="m1Yn" header="원재료세팅여부" :style="{ width: '52px', textAlign: 'center' }" >
                 <template #body="slotProps">
-                    <span
-                        v-if="Number(slotProps.data.rowId) === 0"
-                        class="yn-cell"
-                        :class="
-                            slotProps.data.m1Yn === 'Y'
-                                ? 'yn-y'
-                                : 'yn-n'
-                        "
-                        @click="
-                            fieldClick(
-                                slotProps.data,
-                                'm1Yn'
-                            )
-                        "
-                    >
+                    <div class="clickable-cell" @click="fieldClick(slotProps.data, 'm1Yn')" >
                         {{ slotProps.data.m1Yn }}
-                    </span>
+                    </div>
                 </template>
             </Column>
-
             <!-- =====================================================
                  부자재 세팅
             ====================================================== -->
-            <Column
-                field="m2Yn"
-                header="부자재세팅여부"
-                :style="{
-                    width: '52px',
-                    textAlign: 'center'
-                }"
-            >
-
+            <Column field="m2Yn" header="부자재세팅여부" :style="{ width: '52px', textAlign: 'center' }" >
                 <template #body="slotProps">
-
-                    <span
-                        v-if="Number(slotProps.data.rowId) === 0"
-                        class="yn-cell"
-                        :class="
-                            slotProps.data.m2Yn === 'Y'
-                                ? 'yn-y'
-                                : 'yn-n'
-                        "
-                        @click="
-                            fieldClick(
-                                slotProps.data,
-                                'm2Yn'
-                            )
-                        "
-                    >
-                        {{ slotProps.data.m2Yn }}
-                    </span>
-
+                    <div class="clickable-cell" @click="fieldClick(slotProps.data, 'm2Yn')" >
+                         {{ formatNumber(slotProps.data.m2Yn) }}
+                    </div>
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  부자재 계획 - 자급 J
             ====================================================== -->
             <Column field="bjPlanDate" header="부자재계획일자(자급)" :style="{ width: '80px', textAlign: 'center' }" >
                 <template #body="slotProps">
-                    <div
-                        class="clickable-cell"
-                        @click="fieldClick(slotProps.data, 'bjPlanDate')"
-                    >
+                    <div class="clickable-cell" @click="fieldClick(slotProps.data, 'bjPlanDate')" >
                         {{ slotProps.data.bjPlanDate || '\u00A0' }}
                     </div>
                 </template>
             </Column>
             <Column field="bjQty" header="부자재계획수량(자급)" :style="{ width: '72px', textAlign: 'right' }" >
                 <template #body="slotProps">
-                    <div
-                        class="clickable-cell text-right"
-                        @click="fieldClick(slotProps.data, 'bjQty')"
-                    >
+                    <div class="clickable-cell text-right" @click="fieldClick(slotProps.data, 'bjQty')" >
                         {{ formatNumber(slotProps.data.bjQty) || '\u00A0' }}
                     </div>
                 </template>
             </Column>
-
             <!-- =====================================================
                  부자재 계획 - 사급 S
             ====================================================== -->
             <Column field="bsPlanDate" header="부자재계획일자(사급)" :style="{ width: '80px', textAlign: 'center' }" >
                 <template #body="slotProps">
-                    <div
-                        class="clickable-cell"
-                        @click="fieldClick(slotProps.data, 'bsPlanDate')"
-                    >
+                    <div class="clickable-cell" @click="fieldClick(slotProps.data, 'bsPlanDate')" >
                         {{ slotProps.data.bsPlanDate || '\u00A0' }}
                     </div>
                 </template>
             </Column>
             <Column field="bsQty" header="부자재계획수량(사급)" :style="{ width: '72px', textAlign: 'right' }" >
                 <template #body="slotProps">
-                    <div
-                        class="clickable-cell text-right"
-                        @click="fieldClick(slotProps.data, 'bsQty')"
-                    >
+                    <div class="clickable-cell text-right" @click="fieldClick(slotProps.data, 'bsQty')" >
                         {{ formatNumber(slotProps.data.bsQty) || '\u00A0' }}
                     </div>
                 </template>
@@ -345,10 +266,7 @@
             ====================================================== -->
             <Column field="outPlanDate" header="출고희망일" :style="{ width: '82px', textAlign: 'center' }" >
                 <template #body="slotProps">
-                    <div
-                        class="clickable-cell"
-                        @click="fieldClick(slotProps.data, 'outPlanDate')"
-                    >
+                    <div class="clickable-cell" @click="fieldClick(slotProps.data, 'outPlanDate')" >
                         {{ slotProps.data.outPlanDate || '\u00A0' }}
                     </div>
                 </template>
@@ -356,10 +274,7 @@
 
             <Column field="outQty" header="출고희망수량" :style="{ width: '72px', textAlign: 'right' }" >
                 <template #body="slotProps">
-                    <div
-                        class="clickable-cell text-right"
-                        @click="fieldClick(slotProps.data, 'outQty')"
-                    >
+                    <div class="clickable-cell text-right" @click="fieldClick(slotProps.data, 'outQty')" >
                         {{ formatNumber(slotProps.data.outQty) || '\u00A0' }}
                     </div>
                 </template>
@@ -378,407 +293,127 @@
                     </span>
                 </template>
             </Column>
-
             <!-- =====================================================
                  제조
                  matProdDate 클릭
             ====================================================== -->
             <Column field="matProdDate" header="제조" :style="{ width: '78px', textAlign: 'center' }" >
                 <template #body="slotProps">
-
-                    <span
-                        v-if="
-                            Number(
-                                slotProps.data.rowId
-                            ) === 0
-                        "
+                    <span v-if=" Number( slotProps.data.rowId ) === 0 "
                         class="clickable-cell"
-                        @click="
-                            fieldClick(
-                                slotProps.data,
-                                'matProdDate'
-                            )
-                        "
+                        @click=" fieldClick( slotProps.data, 'matProdDate' ) "
                     >
                         {{ slotProps.data.matProdDate }}
                     </span>
-
                     <span v-else>
-                        {{
-                            formatNumber(
-                                slotProps.data.matProdDate
-                            )
-                        }}
+                        {{ formatNumber( slotProps.data.matProdDate ) }}
                     </span>
-
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  포장
             ====================================================== -->
-            <Column
-                field="packingProdDate"
-                header="포장"
-                :style="{
-                    width: '78px',
-                    textAlign: 'center'
-                }"
-            >
-
+            <Column field="packingProdDate" header="포장" :style="{ width: '78px', textAlign: 'center' }" >
                 <template #body="slotProps">
-
-                    <span
-                        v-if="
-                            Number(
-                                slotProps.data.rowId
-                            ) === 0
-                        "
-                    >
+                    <span v-if=" Number( slotProps.data.rowId ) === 0 " >
                         {{ slotProps.data.packingProdDate }}
                     </span>
-
-                    <span v-else>
-                        {{
-                            formatNumber(
-                                slotProps.data.packingProdDate
-                            )
-                        }}
-                    </span>
-
+                    <span v-else> {{ formatNumber( slotProps.data.packingProdDate ) }} </span>
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  창고
             ====================================================== -->
-            <Column
-                field="storageCnt"
-                header="창고"
-                :style="{
-                    width: '65px',
-                    textAlign: 'right'
-                }"
-            >
-
+            <Column field="storageCnt" header="창고" :style="{ width: '65px', textAlign: 'right' }" >
                 <template #body="slotProps">
-
-                    {{
-                        formatNumber(
-                            slotProps.data.storageCnt
-                        )
-                    }}
-
+                    {{ formatNumber( slotProps.data.storageCnt ) }}
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  실제 출고
             ====================================================== -->
-            <Column
-                field="shipmentReqDate"
-                header="출고일/수량"
-                :style="{
-                    width: '82px',
-                    textAlign: 'right'
-                }"
-            >
-
+            <Column field="shipmentReqDate" header="출고일/수량" :style="{ width: '82px', textAlign: 'right' }" >
                 <template #body="slotProps">
-
-                    <span
-                        v-if="
-                            Number(
-                                slotProps.data.rowId
-                            ) === 0
-                        "
-                    >
+                    <span v-if=" Number( slotProps.data.rowId ) === 0 " >
                         {{ slotProps.data.shipmentReqDate }}
                     </span>
-
                     <span v-else>
-                        {{
-                            formatNumber(
-                                slotProps.data.shipmentReqDate
-                            )
-                        }}
+                        {{ formatNumber( slotProps.data.shipmentReqDate ) }}
                     </span>
-
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  종결
             ====================================================== -->
-            <Column
-                field="statusType"
-                header="종결"
-                :style="{
-                    width: '50px',
-                    textAlign: 'center'
-                }"
-            >
-
+            <Column field="statusType" header="종결" :style="{ width: '50px', textAlign: 'center' }" >
                 <template #body="slotProps">
-
-                    <span
-                        v-if="slotProps.data.statusType"
-                        :class="
-                            slotProps.data.statusType === 'ING'
-                                ? 'text-red'
-                                : 'text-blue'
-                        "
+                    <span v-if="slotProps.data.statusType" :class=" slotProps.data.statusType === 'ING' ? 'text-red' : 'text-blue' "
                         class="click-text"
-                        @click="
-                            toggleEndYn(
-                                slotProps.data
-                            )
-                        "
+                        @click=" toggleEndYn( slotProps.data ) "
                     >
-
-                        {{
-                            slotProps.data.statusType === 'END'
-                                ? '종결'
-                                : '미종결'
-                        }}
-
+                        {{ slotProps.data.statusType === 'END' ? '종결' : '미종결' }}
                     </span>
-
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  리드타임
             ====================================================== -->
-            <Column
-                field="readDay"
-                header="리드타임"
-                :style="{
-                    width: '55px',
-                    textAlign: 'right'
-                }"
-            >
-
+            <Column field="readDay" header="리드타임" :style="{ width: '55px', textAlign: 'right' }" >
                 <template #body="slotProps">
-
-                    {{
-                        formatNumber(
-                            slotProps.data.readDay
-                        )
-                    }}
-
+                    {{ formatNumber( slotProps.data.readDay ) }}
                 </template>
-
             </Column>
-
-
             <!-- =====================================================
                  합계
             ====================================================== -->
             <ColumnGroup type="footer">
-
                 <Row>
-
                     <Column footer="" />
-
-                    <Column
-                        footer="합계 :"
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
+                    <Column footer="합계 :" footerStyle=" text-align:right; font-weight:700; " />
                     <Column footer="" />
                     <Column footer="" />
                     <Column footer="" />
                     <Column footer="" />
                     <Column footer="" />
-
-
                     <!-- qty -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.qty
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.qty ) " footerStyle=" text-align:right; font-weight:700; " />
                     <Column footer="" />
                     <Column footer="" />
                     <Column footer="" />
                     <Column footer="" />
                     <Column footer="" />
-                    <Column footer="" />
-
-
+                   <Column :footer=" formatNumber( total.m2Yn ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- bjPlanDate -->
                     <Column footer="" />
-
-
                     <!-- bjQty -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.bjQty
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.bjQty ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- bsPlanDate -->
                     <Column footer="" />
-
-
                     <!-- bsQty -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.bsQty
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.bsQty ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- outPlanDate -->
                     <Column footer="" />
-
-
                     <!-- outQty -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.outQty
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.outQty ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- 칭량 -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.weighProdDate
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.weighProdDate ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- 제조 -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.matProdDate
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.matProdDate ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- 포장 -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.packingProdDate
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.packingProdDate ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- 창고 -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.storageCnt
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.storageCnt ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- 출고수량 -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.shipmentReqDate
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
-
+                    <Column :footer=" formatNumber( total.shipmentReqDate ) " footerStyle=" text-align:right; font-weight:700; " />
                     <!-- 종결 -->
                     <Column footer="" />
-
-
                     <!-- 리드타임 -->
-                    <Column
-                        :footer="
-                            formatNumber(
-                                total.readDay
-                            )
-                        "
-                        footerStyle="
-                            text-align:right;
-                            font-weight:700;
-                        "
-                    />
-
+                    <Column :footer=" formatNumber( total.readDay ) " footerStyle=" text-align:right; font-weight:700; " />
                 </Row>
-
             </ColumnGroup>
-
         </DataTable>
-
     </div>
-
 </template>
-
 
 <script setup>
 import { ApiOrder } from '@/api/apiOrders'
@@ -787,10 +422,11 @@ import { minMonth, todayKST } from '@/util/common'
 import { exportToExcel } from '@/util/exportToExcel'
 import { useDialog } from 'primevue/usedialog'
 import { computed, onMounted, reactive, ref } from 'vue'
+import OrderPlanM1ItemPop from './OrderPlanM1ItemPop.vue'
+import OrderPlanM2ItemPop from './OrderPlanM2ItemPop.vue'
 import OrderPlanRegPop from './OrderPlanRegPop.vue'
 import OrderStockPop from './OrderStockPop.vue'
 import WorkOrderPop from './workOrderPop.vue'
-
 /*
  * ============================================================
  * 팝업
@@ -837,19 +473,24 @@ const toNum = (value) => {
     return Number.isNaN(num) ? 0 : num
 }
 
+const isNumeric = (value) => {
+    if ( value === null || value === undefined || String(value).trim() === '' ) {
+        return false
+    }
+
+    const num = Number( String(value) .replaceAll(',', '') .trim() )
+
+    return !Number.isNaN(num)
+}
 // ============================================================
 // 합계
-//
 // rowId = 0
-//
 // qty
 // bsQty
 // bjQty
 // outQty
 // readDay
-//
 // rowId = 1
-//
 // weighProdDate
 // matProdDate
 // packingProdDate
@@ -868,15 +509,18 @@ const total = computed(() => {
         matProdDate: 0,
         packingProdDate: 0,
         storageCnt: 0,
-        shipmentReqDate: 0
+        shipmentReqDate: 0,
+        m2Yn: 0,
     }
 
     orderPlanList.value.forEach(row => {
         const rowId = Number(row.rowId)
-
         // =====================================================
         // 첫 번째 ROW
         // =====================================================
+        if (isNumeric(row.m2Yn)) {
+            result.m2Yn += toNum(row.m2Yn)
+        }
         if (rowId === 0) {
             result.qty += toNum(row.qty)
             result.bsQty += toNum(row.bsQty)
@@ -944,18 +588,14 @@ const srhList = async () => {
 
 // ============================================================
 // 필드 구분
-//
 // PO
 //   poNo
-//
 // MAT
 //   matProdDate
-//
 // PLAN
 //   J : bjPlanDate / bjQty
 //   S : bsPlanDate / bsQty
 //   O : outPlanDate / outQty
-//
 // YN
 //   advancePayYn
 //   prodSheet
@@ -976,16 +616,13 @@ const getFieldType = (field) => {
     if (field === 'matProdDate') {
         return { popupType: 'MAT', planType: null, }
     }
-
     // =====================================================
     // 부자재 자급
     // J
     // =====================================================
     if ( [ 'bjPlanDate', 'bjQty' ].includes(field) ) {
         return { popupType: 'PLAN', planType: 'J', }
-
     }
-
     // =====================================================
     // 부자재 사급
     // S
@@ -993,7 +630,6 @@ const getFieldType = (field) => {
     if ( [ 'bsPlanDate', 'bsQty' ].includes(field) ) {
         return { popupType: 'PLAN', planType: 'S', }
     }
-
     // =====================================================
     // 출고
     // O
@@ -1001,17 +637,21 @@ const getFieldType = (field) => {
     if ( [ 'outPlanDate', 'outQty' ].includes(field) ) {
         return { popupType: 'PLAN', planType: 'O', }
     }
-
     // =====================================================
     // Y/N 업데이트
     // =====================================================
-    if ( [ 'advancePayYn', 'prodSheet', 'm1Yn', 'm2Yn' ].includes(field) ) {
+    if ( [ 'advancePayYn', 'prodSheet'].includes(field) ) {
         return { popupType: 'YN', planType: null, }
+    }
+    // =====================================================
+    // Y/N 업데이트
+    // =====================================================
+    if ( [ 'm1Yn', 'm2Yn' ].includes(field) ) {
+        return { popupType: 'ITEM', planType: null, }
     }
 
     return null
 }
-
 
 // ============================================================
 // 전체 필드 클릭 공통 함수
@@ -1020,6 +660,13 @@ const fieldClick = async ( row, field ) => {
     // console.log('클릭됨 =================')
     // console.log('field = ', field)
     // console.log('row = ', row)
+    // console.log('row.rowId = ', row.rowId)
+
+    if (row.rowId !== '0') {
+        console.warn('rowId가 0이 아닌 경우 클릭 무시', row)
+        return
+    }
+
     const info = getFieldType(field)
 
     if (!info) {
@@ -1054,6 +701,12 @@ const fieldClick = async ( row, field ) => {
     if ( info.popupType === 'YN' ) {
         await updateYn( row, field )
     }
+    // =====================================================
+    // ITEM
+    // =====================================================
+    if ( info.popupType === 'ITEM' ) {
+        openItemPop( row, field )
+    }
 }
 
 // ============================================================
@@ -1082,6 +735,46 @@ const openPoPop = (row) => {
             },
             onClose: () => {
                 //srhList()
+            },
+        }
+    )
+}
+
+// ============================================================
+const openItemPop = (row, field) => {
+    let componentPop = null
+    let title = ''
+
+    if (field === 'm1Yn') {
+        title = '원재료 세팅 상세'
+        componentPop = OrderPlanM1ItemPop
+    } else if (field === 'm2Yn') {
+        title = '부자재 세팅 상세'
+        componentPop = OrderPlanM2ItemPop
+    } else {
+        console.warn('No Item Pop Available', row)
+    }
+
+    dialog.open(componentPop,{
+            props: {
+                header: title,
+                modal: true,
+                draggable: false,
+                style: {
+                    width: '320px',
+                },
+            },
+            data: {
+                /*
+                 * 실제 조회에 필요한 키를 넘기면 됨
+                 */
+                poNo: row.poNo,
+                itemCd: row.itemCd,
+                contractId: row.contractId,
+                row: row,
+            },
+            onClose: () => {
+                srhList()
             },
         }
     )
@@ -1123,7 +816,6 @@ const openPlanPop = ( row, planType, field ) => {
                     width: '900px',
                 },
             },
-
             data: {
                 // =============================================
                 // 기본키
@@ -1131,14 +823,12 @@ const openPlanPop = ( row, planType, field ) => {
                 poNo: row.poNo,
                 itemCd: row.itemCd,
                 contractId: row.contractId,
-
                 // =============================================
                 // 중요
                 //
                 // J / S / O
                 // =============================================
                 typeCd: planType,
-
                 // =============================================
                 // 클릭한 필드
                 //
@@ -1220,7 +910,6 @@ const updateYn = async ( row, field ) => {
         // 변경 값
         value: newValue,
     }
-
     //console.log( 'YN 변경', params )
     try {
         /*
