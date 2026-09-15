@@ -427,11 +427,38 @@ const applyQrToList = async () => {
         return
     }
 
-    const makeQty = await ApiProc.getWeighQty(weighId.value)
-    targetRow.makeQty = makeQty ?? 0
+    if (targetRow.makeYn === 'Y') {
+        vInfo('이미 투입 완료된 원료입니다.')
+        weighId.value = ''
+        return
+    }
 
-    const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
-    hotInstance?.render()
+    try {
+
+        const params = {
+            weighId: id,
+            workProcId: form.workProcId,
+            workBatchId: form.workBatchId
+        }
+
+        const res = await ApiProc.applyMakeQr(params)
+
+        targetRow.makeQty = res.weighQty ?? 0
+        targetRow.makeYn = 'Y'
+
+        const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
+        hotInstance?.render()
+
+    } catch (err) {
+        handleApiError(err)
+    } finally {
+        weighId.value = ''
+    }
+    // const makeQty = await ApiProc.getWeighQty(weighId.value)
+    // targetRow.makeQty = makeQty ?? 0
+
+    // const hotInstance = hotTable.value?.hotInstance || hotTable.value?.getHotInstance?.()
+    // hotInstance?.render()
 }
 
 const checkVavlid = () =>{
