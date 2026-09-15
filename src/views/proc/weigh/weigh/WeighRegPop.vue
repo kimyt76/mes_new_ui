@@ -251,14 +251,17 @@ const allChecked = computed({
 
 // Handsontable 설정
 const hotHeaders = ref(['', '선택', '품목코드', '품목명', '성상', '상구분', '지시량', '칭량', '용기무게', '-', '총량', '사용시험번호', '완료', '칭량자', '-', '확인자', '-'])
-
+const orderDistRenderer = (instance, td, row, col, prop, value) => {
+  td.textContent = activeSangGubun.value === ALL_TAB ? row + 1 : value
+  td.className = 'htCenter'
+}
 const magnifierRenderer = (instance, td) => {
   td.innerHTML = `<span style="cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:100%;"><i class="pi pi-search"></i></span>`
   td.style.textAlign = 'center'
 }
 
 const hotColumns = ref([
-  { data: FIELD.DIST_ORDER, readOnly: true, className: 'htCenter' },
+  { data: FIELD.DIST_ORDER, readOnly: true, className: 'htCenter', renderer: orderDistRenderer },
   { data: FIELD.SELECTED, type: 'checkbox', className: 'htCenter' },
   { data: 'itemCd', readOnly: true, className: 'htCenter' },
   { data: 'itemName', readOnly: true },
@@ -492,18 +495,47 @@ const printWeighLabel = async () => {
     }
 }
 
-const downloadExcel = () => {
-  const ws = XLSX.utils.json_to_sheet(currentTabList.value.map(row => ({
-    품목코드: row.itemCd ?? '', 품목명: row.itemName ?? '', 성상: row.appearance ?? '', 상구분: row.phase ?? '',
-    지시량: row.orderQty ?? 0, 칭량: row.weighQty ?? 0, 용기무게: row.bagWeight ?? 0, 총량: row.totalQty ?? 0,
-    사용시험번호: row.testNo ?? '', 완료: row.weighYn ?? '', 칭량자: row.weigher ?? '', 확인자: row.confirmer ?? '',
-  })))
+const downloadExcel =  async () => {
+    const ws = XLSX.utils.json_to_sheet(currentTabList.value.map(row => ({
+        품목코드: row.itemCd ?? ''
+        , 품목명: row.itemName ?? ''
+        , 성상: row.appearance ?? ''
+        , 상구분: row.phase ?? ''
+        , 지시량: row.orderQty ?? 0
+        , 칭량: row.weighQty ?? 0
+        , 용기무게: row.bagWeight ?? 0
+        , 총량: row.totalQty ?? 0
+        ,사용시험번호: row.testNo ?? ''
+        , 완료: row.weighYn ?? ''
+        , 칭량자: row.weigher ?? ''
+        , 확인자: row.confirmer ?? '',
+    })))
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, '칭량처방리스트')
   XLSX.writeFile(wb, '칭량_처방_리스트.xlsx')
 }
 
-const downloadProc = () => {}
+const downloadProc = async () => {
+  const params = {
+        itemCd : form.itemCd,
+        itemName : form.itemName,
+        procCd : 'PRC001',
+        workProcId : form.workProcId,
+    }
+
+    try {
+        const blob = await ApiProc.downloadWeighProc(params)
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download =`${form?.makeNo || ''}_칭량기록.xlsx`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    } catch {
+        vError('엑셀 다운로드 실패')
+    }
+}
+
 const closeDialog = () => dialogRef.value?.close()
 </script>
 
