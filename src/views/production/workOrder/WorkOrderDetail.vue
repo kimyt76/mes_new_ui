@@ -212,7 +212,7 @@ const form = reactive({
   clientId: '',
   itemName: '',
   itemCd: '',
-  areaCd: '',
+  areaCd: 'A001',
   workOrderId: '',
 
   poNo: '',
@@ -465,6 +465,10 @@ const openPop =(type) => {
         form.itemCd = event.data.itemCd
         form.itemName = event.data.itemName
         form.poNo = event.data.poNo
+        form.clientId = event.data.clientId
+        form.clientName = event.data.clientName
+        form.deliveryQty = event.data.qty
+        form.deliveryDate = event.data.deliveryReqDate
 
         workOrderList.value[0].poNo = event.data.poNo
       }
