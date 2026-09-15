@@ -76,35 +76,11 @@
         selectionMode="single"
         @row-select="selectedRow"
     >
-        <Column
-            field="poNo"
-            header="PO No."
-            :style="{ width: '150px', textAlign: 'center' }"
-        />
-
-        <Column
-            field="itemName"
-            header="품목명"
-            :style="{ width: '280px' }"
-        />
-
-        <Column
-            field="deliveryReqDate"
-            header="납기일자"
-            :style="{ width: '110px', textAlign: 'center' }"
-        />
-
-        <Column
-            field="clientName"
-            header="고객사명"
-            :style="{ width: '180px' }"
-        />
-
-        <Column
-            field="qty"
-            header="총수량"
-            :style="{ width: '100px', textAlign: 'right' }"
-        >
+        <Column field="poNo" header="PO No." :style="{ width: '130px', textAlign: 'center' }" />
+        <Column field="itemName" header="품목명" :style="{ width: '370px' }" />
+        <Column field="deliveryReqDate" header="납기일자" :style="{ width: '100px', textAlign: 'center' }" />
+        <Column field="clientName" header="고객사명" :style="{ width: '200px' }" />
+        <Column field="qty" header="총수량" :style="{ width: '90px', textAlign: 'right' }" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.qty || 0).toLocaleString() }}
             </template>
@@ -113,7 +89,7 @@
         <Column
             field="reQty"
             header="남은수량"
-            :style="{ width: '100px', textAlign: 'right' }"
+            :style="{ width: '90px', textAlign: 'right' }"
         >
             <template #body="slotProps">
                 {{ Number(slotProps.data.reQty || 0).toLocaleString() }}
