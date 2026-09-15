@@ -167,6 +167,23 @@ export const ApiProc = {
         }
     },
 
+    downloadWeighProc: async (params) => {
+        try {
+            const res = await API_URL.post('/procWeigh/downloadWeighProc',params,{
+                responseType: 'blob'
+            })
+
+            return res.data
+        } catch (err) {
+            // blob 에러 메시지 읽기
+            if (err.response?.data instanceof Blob) {
+                const text = await err.response.data.text()
+                throw new Error(text)
+            }
+
+            throw new Error('파일 다운로드 중 오류가 발생했습니다.')
+        }
+    },
 
     // =================================제조 ==========================================================//
     getMakeInfo: async (params) => {
@@ -180,9 +197,9 @@ export const ApiProc = {
     startProcMake: async(params) => {
         return await API_URL.post('/procMat/startProcMake', params)
     },
-    getWeighQty: async(id) => {
+    applyMakeQr: async(id) => {
         try{
-            const res = await API_URL.get(`/procMat/getWeighQty/${id}`)
+            const res = await API_URL.get(`/procMat/applyMakeQr/${id}`)
             return res.data
         }catch(err){
             throw err.response
@@ -203,9 +220,6 @@ export const ApiProc = {
             const res = await API_URL.post('/procMat/downloadMatProc',params,{
                 responseType: 'blob'
             })
-            console.log('download response:', res)
-        console.log('content-type:', res.headers['content-type'])
-
             return res.data
         } catch (err) {
             // blob 에러 메시지 읽기
