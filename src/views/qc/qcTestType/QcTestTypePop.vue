@@ -3,7 +3,7 @@
     <span style="font-size: large; font-weight: bold;"> 품목 :  {{ itemCd }} / {{ itemName }} </span>
 </div>
 <div class="flex items-center gap-4 mt-3 mb-2" >
-    <Button label="배치+" @click="addRow" />
+    <Button label="추가+" @click="addRow" />
 </div>
 <div>
     <DataTable
