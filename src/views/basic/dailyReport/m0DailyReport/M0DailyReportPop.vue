@@ -459,7 +459,7 @@
             >
                 <ColumnGroup type="footer">
                     <Row>
-                        <Column footer="합계" :colspan="5" footerClass="summary-title-cell" />
+                        <Column footer="합계" :colspan="6" footerClass="summary-title-cell" />
                         <Column :footer="formatNumber(discardTotalQty)" footerClass="summary-value-cell" />
                         <Column footer="" />
                         <Column :footer="formatNumber(discardTotalAmount)" footerClass="summary-value-cell" />
@@ -499,6 +499,13 @@
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'discard', index, 'itemName')">
                         <InputText v-model="data.itemName" class="cell-input" />
+                        </div>
+                    </template>
+                </Column>
+                <Column field="lotNo" header="LOT" style="width: 220px" >
+                    <template #body="{ data, index }">
+                        <div @paste.prevent="handlePaste($event, 'discard', index, 'lotNo')">
+                        <InputText v-model="data.lotNo" class="cell-input" />
                         </div>
                     </template>
                 </Column>
@@ -865,6 +872,7 @@
         <div class="bottom-buttons">
             <Button v-if="isBtn" label="저장" icon="pi pi-save" @click="saveInfo" />
             <Button v-if="isBtn" label="종결" icon="pi pi-save" @click="updateEndYn" />
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadM0"></Button>
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </div>
@@ -883,7 +891,7 @@ const dialogRef = inject( 'dialogRef', null )
 const form = reactive({
     dailyDate: null,
     itemTypeCd: 'M0',
-    typeCd: 'S',
+    typeCd: 'P',
     endYn: '',
     dailyId: '',
 })
@@ -920,7 +928,7 @@ onMounted(async () => {
         if (form.endYn === 'Y') {
             isBtn.value = false
         }
-
+form.dailyId = 13
         const res = await ApiBase.getM0DailyReportInfo( form.dailyId )
 
         //console.log( 'M0 일일보고서 정보', res )
@@ -1401,6 +1409,32 @@ const saveInfo = async () => {
     }
 }
 
+
+const downloadM0 = async () => {
+    if (!form.dailyId) {
+        vInfo('저장 후 다운로드 가능합니다.')
+        return
+    }
+
+    try {
+        const params = {
+            typeCd: 'P',
+            dailyId: form.dailyId
+        }
+console.log('엑셀 다운로드 params:', params)
+        const res = await ApiBase.downloadDailyReport(params)
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `완제품생산일보_${form.dailyDate}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
+        handleApiError(error)
+    }
+}
 /* =========================================================
    닫기
 ========================================================= */

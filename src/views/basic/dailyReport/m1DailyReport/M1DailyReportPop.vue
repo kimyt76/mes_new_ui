@@ -134,7 +134,7 @@
                         <InputText v-model="data.dailyDate" class="cell-input text-center" />
                     </template>
                 </Column>
-                <Column field="orderDist" header="순번" style="width: 70px">
+                <Column field="orderDist" header="NO" style="width: 70px">
                     <template #body="{ data }">
                         <InputNumber
                             v-model="data.orderDist"
@@ -252,7 +252,7 @@
                     </template>
                 </Column>
 
-                <Column field="orderDist" header="순번" style="width: 70px">
+                <Column field="orderDist" header="NO" style="width: 70px">
                     <template #body="{ data }">
                         <InputNumber
                             v-model="data.orderDist"
@@ -371,7 +371,7 @@
                     </template>
                 </Column>
 
-                <Column field="orderDist" header="순번" frozen style="width: 70px">
+                <Column field="orderDist" header="NO" frozen style="width: 70px">
                     <template #body="{ data }">
                         <InputNumber
                             v-model="data.orderDist"
@@ -490,7 +490,7 @@
                     </template>
                 </Column>
 
-                <Column field="orderDist" header="순번" frozen style="width: 70px">
+                <Column field="orderDist" header="NO" frozen style="width: 70px">
                     <template #body="{ data }">
                         <InputNumber
                             v-model="data.orderDist"
@@ -599,7 +599,7 @@
                         <InputText v-model="data.dailyDate" class="cell-input text-center" />
                     </template>
                 </Column>
-                <Column field="orderDist" header="순번" frozen style="width: 70px">
+                <Column field="orderDist" header="NO" frozen style="width: 70px">
                     <template #body="{ data }">
                         <InputNumber
                             v-model="data.orderDist"
@@ -700,6 +700,7 @@
         <div class="bottom-buttons">
             <Button label="저장" icon="pi pi-save" @click="saveInfo" />
             <Button v-if="isBtn" label="종결" icon="pi pi-save" @click="updateEndYn" />
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadM1"></Button>
             <Button label="닫기"   outlined class="ml-2" @click="closeDialog"></Button>
             <!-- <Button label="초기화"  icon="pi pi-refresh" severity="secondary" outlined @click="reset" /> -->
         </div>
@@ -731,7 +732,6 @@ onMounted( async () =>{
     if ( form.endYn === 'Y') {
         isBtn.value = false
     }
-
     const res = await ApiBase.getM1DailyReportInfo(form.dailyId)
    //console.log('M1 일일보고서 정보', res)
 
@@ -1026,6 +1026,33 @@ const saveInfo = async () => {
         closeDialog()
     }catch (error) {
         //console.error('저장 중 오류 발생:', error)
+        handleApiError(error)
+    }
+}
+
+const downloadM1 = async () => {
+
+    if (!form.dailyId) {
+        vInfo('저장 후 다운로드 가능합니다.')
+        return
+    }
+
+    try {
+        const params = {
+            typeCd: form.typeCd,
+            dailyId: form.dailyId
+        }
+
+        const res = await ApiBase.downloadDailyReport(params)
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `원료생산일보_${form.dailyDate}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
         handleApiError(error)
     }
 }

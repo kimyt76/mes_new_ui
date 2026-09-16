@@ -596,6 +596,7 @@
         <div class="bottom-buttons">
             <Button v-if="isBtn" label="저장" icon="pi pi-save" @click="saveInfo" />
             <Button v-if="isBtn" label="종결" icon="pi pi-save" @click="updateEndYn" />
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadM2"></Button>
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </div>
@@ -647,7 +648,7 @@ onMounted(async () => {
         if (form.endYn === 'Y') {
             isBtn.value = false
         }
-
+form.dailyId = 14
         const res = await ApiBase.getM2DailyReportInfo( form.dailyId )
 
         //console.log( 'M2 일일보고서 정보', res )
@@ -1315,6 +1316,32 @@ const saveInfo = async () => {
 ========================================================= */
 const closeDialog = () => {
     dialogRef.value.close()
+}
+
+const downloadM2 = async () => {
+    if (!form.dailyId) {
+        vInfo('저장 후 다운로드 가능합니다.')
+        return
+    }
+
+    try {
+        const params = {
+            typeCd: form.typeCd,
+            dailyId: form.dailyId
+        }
+
+        const res = await ApiBase.downloadDailyReport(params)
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `부자재 생산일보_${form.dailyDate}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
+        handleApiError(error)
+    }
 }
 
 /* =========================================================
