@@ -18,19 +18,87 @@
     <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
+<div>
+    <DataTable
+        ref="dt"
+        v-model:first="first"
+        :value="m1DailyReportList"
+        dataKey="dailyId"
+        paginator :rows="20"
+        :rowsPerPageOptions="[20,30,40]"
+        class="my-table"
+        scrollHeight="650px"
+        scrollable
+        showGridlines
+        >
+        <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
+        <Column field="dailyDate"    header="생산일자"  :style="{ width: '120px', textAlign:'right'}" >
+            <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell">
+                    {{ slotProps.data.dailyDate }}
+                </div>
+            </template>
+        </Column>
+        <Column field="inQty"         header="입고량"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="returnQty"         header="반품량"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.returnQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="discardQty"         header="폐기량"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.discardQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="prodQty"         header="칭량제품"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.prodQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="useQty"         header="원료사용량"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.useQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="ospQty"         header="외주반출"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.ospQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="regId" header="등록자"  :style="{ width: '100px', textAlign:'center'}"  />
+        <Column field="endYn" header="마감여부" :style="{ width: '80px', textAlign: 'center' }" >
+            <template #body="slotProps">
+                <span v-if="slotProps.data.endYn === 'Y'" > 마감 </span>
+                <span v-else class="end-progress" @click="updateEndYn(slotProps.data)" > 진행중 </span>
+            </template>
+        </Column>
+    </DataTable>
+</div>
 
 
 </template>
 
 <script setup>
 import { ApiBase } from '@/api/apiBase';
+import { useAlertStore } from '@/stores/alert.js';
 import { isEmpty, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { reactive, ref } from 'vue';
 import M1DailyReportPop from './M1DailyReportPop.vue';
 
+const {vSuccess} = useAlertStore()
 const dt = ref(null);
+const first = ref(null);
 const dialog = useDialog()
 const m1DailyReportList = ref([])
 const form = reactive({
@@ -52,7 +120,7 @@ const selectRowClick = (row) => {
 
     dialog.open(M1DailyReportPop, {
        props: {
-            title: title,
+            header: title,
             modal: true,
             draggable: true,
             style: {
@@ -73,15 +141,30 @@ const selectRowClick = (row) => {
             }
         },
        data: {
-        dailyId : row.dailyId || null,
-        endYn : row.endYn || 'N',
+            dailyId : row.dailyId || null,
+            endYn : row.endYn || 'N',
        },onClose: () => {
             //
             // srhList()
        }
     })
-
 }
+
+const updateEndYn = async (row) =>{
+    try{
+        const params = {
+            dailyId: row.dailyId,
+            endYn: 'Y',
+        }
+
+        const res = await ApiBase.updateDailyReportEndYn(params)
+        vSuccess('마감 되었습니다.')
+        srhList()
+    }catch(err){
+        handleApiError(err)
+    }
+}
+
 
 const srhList = async () => {
     const params = {
@@ -126,5 +209,15 @@ const items = ref([
   padding: 0.25rem 0;
   text-decoration: underline;
   text-align: left;
+}
+.end-progress {
+    cursor: pointer;
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.end-progress:hover {
+    opacity: 0.7;
 }
 </style>
