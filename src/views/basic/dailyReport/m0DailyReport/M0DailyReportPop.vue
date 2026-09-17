@@ -1398,13 +1398,11 @@ const saveInfo = async () => {
             deleteShipmentIds: deleteShipmentIds.value,
             deleteReturnIds: deleteReturnIds.value,
         }
-
         //console.log( '저장 데이터', params )
         await ApiBase.saveDailyReportM0( params )
         vSuccess( '저장되었습니다.' )
         closeDialog()
     } catch (error) {
-        //console.error( '저장 중 오류 발생:', error )
         handleApiError( error )
     }
 }
@@ -1777,7 +1775,6 @@ const reset = () => {
     box-shadow: none;
     font-size: 12px;
 }
-
 .use-table :deep(.p-button.p-button-icon-only) {
     width: 25px;
     height: 25px;
