@@ -61,7 +61,7 @@
                         <div @paste.prevent="handlePaste($event, 'in', index, 'customerName')">
                             <InputText
                             v-model="data.customerName"
-                            class="cell-input text-center"
+                            class="cell-input"
                         />
                         </div>
                     </template>
@@ -194,7 +194,7 @@
                         <div @paste.prevent="handlePaste($event, 'out', index, 'itemCd')">
                             <InputText
                             v-model="data.itemCd"
-                            class="cell-input"
+                            class="cell-input text-center"
                         />
                         </div>
                     </template>
@@ -204,7 +204,7 @@
                         <div @paste.prevent="handlePaste($event, 'out', index, 'customerName')">
                             <InputText
                             v-model="data.customerName"
-                            class="cell-input text-center"
+                            class="cell-input"
                         />
                         </div>
                     </template>
@@ -267,7 +267,7 @@
                 <Column field="storageName" header="입고창고" style="width: 200px; text-align: center" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'out', index, 'storageName')">
-                            <InputText v-model="data.storageName" class="cell-input" />
+                            <InputText v-model="data.storageName" class="cell-input text-center" />
                         </div>
                     </template>
                 </Column>
@@ -343,7 +343,7 @@
                         <div @paste.prevent="handlePaste($event, 'outExpense', index, 'itemCd')">
                             <InputText
                             v-model="data.itemCd"
-                            class="cell-input"
+                            class="cell-input text-center"
                         />
                         </div>
                     </template>
@@ -353,7 +353,7 @@
                         <div @paste.prevent="handlePaste($event, 'outExpense', index, 'customerName')">
                             <InputText
                             v-model="data.customerName"
-                            class="cell-input text-center"
+                            class="cell-input"
                         />
                         </div>
                     </template>
@@ -416,7 +416,7 @@
                 <Column field="storageName" header="입고창고" style="width: 200px; text-align: center" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'outExpense', index, 'storageName')">
-                            <InputText v-model="data.storageName" class="cell-input" />
+                            <InputText v-model="data.storageName" class="cell-input text-center"  />
                         </div>
                     </template>
                 </Column>
@@ -484,14 +484,14 @@
                 <Column field="itemCd" header="품목코드" style="width: 100px" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'discard', index, 'itemCd')">
-                        <InputText v-model="data.itemCd" class="cell-input" />
+                        <InputText v-model="data.itemCd" class="cell-input text-center" />
                         </div>
                     </template>
                 </Column>
                 <Column field="customerName" header="거래처명" style="width: 180px" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'discard', index, 'customerName')">
-                        <InputText v-model="data.customerName" class="cell-input text-center" />
+                        <InputText v-model="data.customerName" class="cell-input" />
                         </div>
                     </template>
                 </Column>
@@ -614,7 +614,7 @@
                         <div @paste.prevent="handlePaste($event, 'shipment', index, 'itemCd')">
                             <InputText
                             v-model="data.itemCd"
-                            class="cell-input"
+                            class="cell-input text-center"
                         />
                         </div>
                     </template>
@@ -624,7 +624,7 @@
                         <div @paste.prevent="handlePaste($event, 'shipment', index, 'customerName')">
                             <InputText
                             v-model="data.customerName"
-                            class="cell-input text-center"
+                            class="cell-input"
                         />
                         </div>
                     </template>
@@ -687,7 +687,7 @@
                 <Column field="storageName" header="입고창고" style="width: 200px; text-align: center" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'shipment', index, 'storageName')">
-                            <InputText v-model="data.storageName" class="cell-input" />
+                            <InputText v-model="data.storageName" class="cell-input text-center" />
                         </div>
                     </template>
                 </Column>
@@ -761,7 +761,7 @@
                         <div @paste.prevent="handlePaste($event, 'return', index, 'itemCd')">
                             <InputText
                             v-model="data.itemCd"
-                            class="cell-input"
+                            class="cell-input text-center"
                         />
                         </div>
                     </template>
@@ -771,7 +771,7 @@
                         <div @paste.prevent="handlePaste($event, 'return', index, 'customerName')">
                             <InputText
                             v-model="data.customerName"
-                            class="cell-input text-center"
+                            class="cell-input"
                         />
                         </div>
                     </template>
@@ -835,10 +835,7 @@
                 <Column field="storageName" header="입고창고" style="width: 100px; text-align: center" >
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'return', index, 'storageName')">
-                            <InputText
-                            v-model="data.storageName"
-                            class="cell-input"
-                        />
+                            <InputText v-model="data.storageName" class="cell-input text-center" />
                         </div>
                     </template>
                 </Column>
