@@ -760,7 +760,7 @@ const updateEndYn = async () =>{
             endYn: 'Y',
         }
 
-        const res = await ApiBase.updateM1DailyReportEndYn(params)
+        const res = await ApiBase.updateDailyReportEndYn(params)
         vSuccess('종결 처리되었습니다.')
     }catch(err){
         handleApiError(err)
