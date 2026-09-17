@@ -648,24 +648,41 @@ onMounted(async () => {
         if (form.endYn === 'Y') {
             isBtn.value = false
         }
-form.dailyId = 14
+
         const res = await ApiBase.getM2DailyReportInfo( form.dailyId )
-
         //console.log( 'M2 일일보고서 정보', res )
-
         if (res.dailyReportInfo) {
             Object.assign( form, res.dailyReportInfo )
         }
 
-        inList.value = res.inList || []
-        returnList.value = res.returnList || []
-        discardList.value = res.discardList || []
+        if (!form.dailyDate) {
+            form.dailyDate = todayKST()
+        }
+
+        inList.value = (res.inList || []).map(row => ({
+            ...row,
+            dailyDate: row.dailyDate || form.dailyDate,
+        }))
+        returnList.value = (res.returnList || []).map(row => ({
+            ...row,
+            dailyDate: row.dailyDate || form.dailyDate,
+        }))
+       // console.log( 'M2 일일보고서 정보', res.discardList )
+        discardList.value = (res.discardList || []).map(row => ({
+            ...row,
+            dailyDate: row.dailyDate || form.dailyDate,
+        }))
 
         /*
          * 기존 DB에서 조회한 useList는
          * 화면용 그룹 Key를 생성해준다.
          */
-        useList.value = initializeUseList( res.useList || [] )
+        useList.value = initializeUseList(
+            (res.useList || []).map(row => ({
+                ...row,
+                dailyDate: row.dailyDate || form.dailyDate,
+            }))
+        )
 
     } catch (error) {
         //console.error( '조회 중 오류 발생:', error )
@@ -764,7 +781,8 @@ const createReturnRow = () => ({
 })
 
 const createDiscardRow = () => ({
-    dailyDate: !form.dailyId ? todayKST() : form.dailyDate ?? todayKST(), orderDist: discardList.value.length + 1,
+    dailyDate: !form.dailyId ? todayKST() : form.dailyDate ?? todayKST(),
+    orderDist: discardList.value.length + 1,
     itemCd: '',
     itemName: '',
     unit: '',

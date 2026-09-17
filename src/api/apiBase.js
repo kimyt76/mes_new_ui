@@ -117,6 +117,18 @@ getProdCompany: async(params) =>{
   updateDailyReportEndYn: async(params) => {
         return await API_URL.post('/dailyReport/updateDailyReportEndYn', params)
   },
+  downloadDailyReport: async (param) => {
+    try {
+      const res = await API_URL.post('/dailyReport/downloadDailyReport', param, {
+        responseType: 'blob'
+      })
+
+      return res.data
+    } catch (err) {
+      console.error('Download error:', err)
+      throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+    }
+  },
 
 /**************************생산일보  원료***************************************/
   getM1DailyReportList: async(params) =>{
@@ -195,6 +207,33 @@ getProdCompany: async(params) =>{
   },
   saveDailyReportM0: async(params) => {
     return await API_URL.post('/dailyReport/saveDailyReportM0', params)
+  },
+
+  /**************************생산일보  인건비***************************************/
+   getLaborCosttList: async(params) =>{
+    try{
+      const res = await API_URL.post('/dailyReport/getLaborCosttList', params )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  getLaborCostInfo: async (id) => {
+    try {
+            const res = await API_URL.get('/dailyReport/getLaborCostInfo', {
+            params: {
+                dailyId: id ?? null
+                }
+            })
+        return res.data
+    } catch (err) {
+        throw err.response
+    }
+  },
+  saveLaborCostInfo: async(params) => {
+    return await API_URL.post('/dailyReport/saveLaborCostInfo', params)
   },
 
 }
