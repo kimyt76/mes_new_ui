@@ -203,11 +203,11 @@ import { ApiOrder } from '@/api/apiOrders.js';
 import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty, todayKST } from '@/util/common';
+import { formatDate, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListPop from '@/views/stock/realStock/ItemListPop.vue';
 import { useDialog } from 'primevue';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { inject, onMounted, reactive, ref, watch } from 'vue';
 import ClientListPop from '../client/ClientListPop.vue';
 import ShipmentItemListPop from './ShipmentItemListPop.vue';
 
@@ -260,7 +260,9 @@ const saveInfo = async () =>{
         const formData = new FormData()
         const request = {
             shipmentInfo: {
-                ...form
+                ...form,
+                shipmentDate: formatDate(form.shipmentDate),
+                shipmentReqDate: formatDate(form.shipmentReqDate),
             },
             shipmentItemList: shipmentItemList.value,
             attachFile: attachFile.value
@@ -405,6 +407,16 @@ const openPop = (type) =>{
     })
 }
 
+
+watch(() => form.shipmentDate, async (newVal, oldVal) => {
+  if ( !isEmpty(newVal)) {
+    if ( oldVal !==  newVal ){
+    form.seq = await ApiCommon.getNextSeq('tb_shipment_mst','shipment_date', newVal)
+    }
+  }
+})
+
+
 onMounted( async () =>{
     shipmentTypes.value = await ApiCommon.getCodeList('shipment_type')
     shipmentStatus.value = await ApiCommon.getCodeList('shipment_status')
@@ -414,6 +426,9 @@ onMounted( async () =>{
     form.shipmentDate = todayKST()
     form.seq = await ApiCommon.getNextSeq('tb_shipment_mst', 'shipment_date',  form.shipmentDate)
 })
+
+
+
 
 const closeDialog = () =>{
     dialogRef.value.close()

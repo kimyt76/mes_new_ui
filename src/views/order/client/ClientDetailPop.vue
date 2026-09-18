@@ -482,7 +482,7 @@ import { ApiBase } from '@/api/apiBase'
 import { ApiCommon } from '@/api/apiCommon'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
-import { isEmpty, todayKST } from '@/util/common'
+import { formatDate, isEmpty, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import UserListPop from '@/views/system/user/UserListPop.vue'
 import { DatePicker, useDialog } from 'primevue'
@@ -588,6 +588,9 @@ const saveInfo = async () =>{
         clientManagerList: clientManagerList.value,
         clientAddressList: clientAddressList.value,
         clientHistoryList: clientHistoryList.value,
+
+        clientRegDate: formatDate(form.clientRegDate),
+        establishDate: formatDate(form.establishDate),
 
         deleteApprovalIds: deleteApprovalIds.value,
         deleteDealIds: deleteDealIds.value,

@@ -330,7 +330,8 @@ const saveInfo = async () =>{
     try{
         const request = {
             contractInfo: {
-                ...form
+                ...form,
+                contractDate : formatDate(form.contractDate),
             },
             itemList: itemList.value.map(row => ({
                 ...row,

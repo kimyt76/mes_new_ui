@@ -116,7 +116,7 @@ import { ApiCommon } from '@/api/apiCommon'
 import { ApiStock } from '@/api/apiStock'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
-import { isEmpty, todayKST } from '@/util/common'
+import { formatDate, isEmpty, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue'
 import QrCodeSimplePop from '@/views/common/QrCodeSimplePop.vue'
@@ -234,6 +234,7 @@ const saveInfo = async () =>{
         const params = {
             adjustInfo : form,
             adjustItemList : adjustItemList.value,
+            tranDate: formatDate(form.tranDate)
         }
 
         const res = await ApiStock.saveAdjust(params)

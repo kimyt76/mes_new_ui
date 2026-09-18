@@ -134,7 +134,7 @@ import { ApiStock } from '@/api/apiStock';
 import { ApiSystem } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { todayKST } from '@/util/common';
+import { formatDate, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
@@ -221,7 +221,8 @@ const saveInfo = async () =>{
     const params = {
         moveStockInfo: form,
         deleteMoveStockItemIds: deleteMoveStockItemIds.value,
-        procItemList: itemList.value
+        procItemList: itemList.value,
+        moveStockDate: formatDate(form.moveStockDate),
     }
 
     try {
