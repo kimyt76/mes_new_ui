@@ -36,7 +36,7 @@
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="dailyDate"    header="생산일자"  :style="{ width: '120px', textAlign:'right'}" >
+        <Column field="dailyDate"    header="생산일자"  :style="{ width: '120px', textAlign:'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data)" class="clickable-cell">
                     {{ slotProps.data.dailyDate }}
@@ -193,22 +193,19 @@ const items = ref([
   text-align: center;
   font-family: monaco, Consolas;
 }
-
 /* 셀 hover 효과 */
 .clickable-cell {
   cursor: pointer;
   padding: 0.25rem 0;
   text-decoration: underline;
-  text-align: left;
+  text-align: center;
 }
-
 .end-progress {
     cursor: pointer;
     color: #2563eb;
     text-decoration: underline;
     font-weight: 600;
 }
-
 .end-progress:hover {
     opacity: 0.7;
 }

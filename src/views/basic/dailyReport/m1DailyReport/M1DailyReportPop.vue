@@ -9,6 +9,7 @@
             </div>
             <DataTable
                 :value="inList"
+                @paste="handleExcelPaste($event, 'in')"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -124,6 +125,7 @@
             </div>
             <DataTable
                 :value="returnList"
+                @paste="handleExcelPaste($event, 'return')"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -241,6 +243,7 @@
             </div>
             <DataTable
                 :value="discardList"
+                @paste="handleExcelPaste($event, 'discard')"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -360,6 +363,7 @@
             </div>
             <DataTable
                 :value="prodList"
+                @paste="handleExcelPaste($event, 'prod')"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -479,6 +483,7 @@
             </div>
             <DataTable
                 :value="useList"
+                @paste="handleExcelPaste($event, 'use')"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -589,6 +594,7 @@
             </div>
             <DataTable
                 :value="ospList"
+                @paste="handleExcelPaste($event, 'osp')"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -870,6 +876,198 @@ const addRow = (type) => {
     if (!targetList || !rowFactory) return
 
     targetList.value.push(rowFactory())
+}
+
+const pasteColumnMap = {
+    in: [
+        { field: 'dailyDate', type: 'date' },
+        { field: 'orderDist', type: 'number' },
+        { field: 'itemCd' },
+        { field: 'customerName' },
+        { field: 'itemName' },
+        { field: 'spec' },
+        { field: 'qty', type: 'number' },
+        { field: 'inPrice', type: 'number' },
+        { field: 'supplyPrice', readonly: true },
+        { field: 'expiryDate', type: 'date' },
+        { field: 'etc' },
+    ],
+    return: [
+        { field: 'dailyDate', type: 'date' },
+        { field: 'orderDist', type: 'number' },
+        { field: 'itemCd' },
+        { field: 'customerName' },
+        { field: 'itemName' },
+        { field: 'spec' },
+        { field: 'qty', type: 'number' },
+        { field: 'inPrice', type: 'number' },
+        { field: 'supplyPrice', readonly: true },
+        { field: 'expiryDate', type: 'date' },
+        { field: 'etc' },
+    ],
+    discard: [
+        { field: 'dailyDate', type: 'date' },
+        { field: 'orderDist', type: 'number' },
+        { field: 'itemCd' },
+        { field: 'customerName' },
+        { field: 'itemName' },
+        { field: 'spec' },
+        { field: 'qty', type: 'number' },
+        { field: 'inPrice', type: 'number' },
+        { field: 'supplyPrice', readonly: true },
+        { field: 'expiryDate', type: 'date' },
+        { field: 'etc' },
+    ],
+    prod: [
+        { field: 'dailyDate', type: 'date' },
+        { field: 'orderDist', type: 'number' },
+        { field: 'itemCd' },
+        { field: 'customerName' },
+        { field: 'itemName' },
+        { field: 'lotNo' },
+        { field: 'qty', type: 'number' },
+        { field: 'inPrice', type: 'number' },
+        { field: 'totalPrice', readonly: true },
+        { field: 'areaName' },
+        { field: 'etc' },
+    ],
+    use: [
+        { field: 'dailyDate', type: 'date' },
+        { field: 'orderDist', type: 'number' },
+        { field: 'itemCd' },
+        { field: 'customerName' },
+        { field: 'itemName' },
+        { field: 'requiredQuantity', type: 'number' },
+        { field: 'inPrice', type: 'number' },
+        { field: 'totalPrice', readonly: true },
+        { field: 'etc' },
+    ],
+    osp: [
+        { field: 'dailyDate', type: 'date' },
+        { field: 'orderDist', type: 'number' },
+        { field: 'itemCd' },
+        { field: 'customerName' },
+        { field: 'itemName' },
+        { field: 'spec' },
+        { field: 'qty', type: 'number' },
+        { field: 'inPrice', type: 'number' },
+        { field: 'supplyPrice', readonly: true },
+        { field: 'expiryDate', type: 'date' },
+        { field: 'etc' },
+    ],
+}
+
+const parseClipboardTable = (text) => {
+    const rows = []
+    let row = []
+    let cell = ''
+    let quoted = false
+
+    for (let index = 0; index < text.length; index += 1) {
+        const char = text[index]
+
+        if (char === '"') {
+            if (quoted && text[index + 1] === '"') {
+                cell += '"'
+                index += 1
+            } else {
+                quoted = !quoted
+            }
+        } else if (char === '\t' && !quoted) {
+            row.push(cell)
+            cell = ''
+        } else if ((char === '\n' || char === '\r') && !quoted) {
+            if (char === '\r' && text[index + 1] === '\n') index += 1
+            row.push(cell)
+            rows.push(row)
+            row = []
+            cell = ''
+        } else {
+            cell += char
+        }
+    }
+
+    row.push(cell)
+    rows.push(row)
+
+    while (rows.length > 1 && rows.at(-1).every(value => value === '')) {
+        rows.pop()
+    }
+
+    return rows
+}
+
+const excelSerialToDate = (value) => {
+    const serial = Number(value)
+
+    if (!Number.isFinite(serial) || serial < 1 || serial > 100000) return null
+
+    const date = new Date(Date.UTC(1899, 11, 30) + serial * 86400000)
+    return date.toISOString().slice(0, 10)
+}
+
+const convertPasteValue = (value, type) => {
+    const trimmedValue = value.trim()
+
+    if (type === 'number') {
+        if (trimmedValue === '') return 0
+
+        const numberValue = Number(trimmedValue.replace(/,/g, ''))
+        return Number.isFinite(numberValue) ? numberValue : 0
+    }
+
+    if (type === 'date') {
+        const excelDate = excelSerialToDate(trimmedValue)
+
+        if (excelDate) return excelDate
+
+        const matched = trimmedValue.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/)
+
+        if (matched) {
+            return `${matched[1]}-${matched[2].padStart(2, '0')}-${matched[3].padStart(2, '0')}`
+        }
+    }
+
+    return trimmedValue
+}
+
+const handleExcelPaste = (event, type) => {
+    const targetList = listMap[type]
+    const columns = pasteColumnMap[type]
+    const startCell = event.target.closest('td')
+    const startRow = startCell?.parentElement
+
+    if (!targetList || !columns || !startCell || !startRow) return
+
+    const clipboardText = event.clipboardData?.getData('text/plain')
+
+    if (clipboardText == null || clipboardText === '') return
+
+    event.preventDefault()
+
+    const tableRows = Array.from(startRow.parentElement.children)
+    const tableCells = Array.from(startRow.children)
+    const startRowIndex = tableRows.indexOf(startRow)
+    const startColumnIndex = tableCells.indexOf(startCell)
+    const pasteRows = parseClipboardTable(clipboardText)
+
+    pasteRows.forEach((pasteRow, pasteRowIndex) => {
+        const targetRowIndex = startRowIndex + pasteRowIndex
+
+        while (targetList.value.length <= targetRowIndex) {
+            addRow(type)
+        }
+
+        const targetRow = targetList.value[targetRowIndex]
+
+        pasteRow.forEach((value, pasteColumnIndex) => {
+            const column = columns[startColumnIndex + pasteColumnIndex]
+
+            if (!column || column.readonly) return
+
+            targetRow[column.field] = convertPasteValue(value, column.type)
+        })
+    })
 }
 
 const deleteInIds = ref([])
