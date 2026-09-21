@@ -210,7 +210,7 @@
             <!-- =====================================================
                  원재료 세팅
             ====================================================== -->
-            <Column field="m1Yn" header="원재료세팅여부" :style="{ width: '52px', textAlign: 'center' }" >
+            <Column field="m1Yn" header="원재료세팅여부" :style="{ width: '80px', textAlign: 'center' }" >
                 <template #body="slotProps">
                     <div class="clickable-cell" @click="fieldClick(slotProps.data, 'm1Yn')" >
                         {{ slotProps.data.m1Yn }}
