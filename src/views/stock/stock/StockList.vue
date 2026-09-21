@@ -30,7 +30,10 @@
         <FloatLabel variant="on">
           <Select
             v-model="form.areaCd"
-            :options="areaCds"
+            :options="[
+            { code: 'ALL', codeNm: '전체' },
+            ...areaCds
+            ]"
             optionLabel="codeNm"
             optionValue="code"
             style="width: 120px"
@@ -170,7 +173,6 @@ const areaCds = ref([]);
 const itemTypeCds = ref([]);
 const dynamicColumns = ref([]);
 const stockList = ref([]);
-
 const form = reactive({
   type: 'ITEM',
   itemTypeCd: '',
@@ -191,12 +193,10 @@ const srhList = async () => {
 
   const params = {
     ...form,
+    areaCd: form.areaCd === 'ALL' ? null : form.areaCd
   }
 
   const res = await ApiStock.getStockItemList(params)
-console.log('API 전체 응답:', res)
-console.log('rows:', res.rows)
-console.log('rows 개수:', res.rows?.length)
   dynamicColumns.value = res.dynamicColumns || []
 
   stockList.value = (res.rows || []).map((row, index) => ({
