@@ -75,7 +75,11 @@
         >
         <Column field="itemCd"    header="품목코드" :style="{ width: '110px', textAlign: 'center'}" />
         <Column field="itemName"  header="품목명"   style="width: 380px" />
-        <Column field="testNo"    header="시험번호" :style="{ width: '110px', textAlign: 'center'}" />
+        <Column field="testNo"    header="시험번호" :style="{ width: '110px', textAlign: 'center'}">
+            <template #body="slotProps">
+                <InputText v-model="slotProps.data.testNo" class="w-full" />
+            </template>
+        </Column>
         <Column field="qty"       header="수량" :style="{ width: '110px', textAlign: 'right'}" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }">
             <template #body="slotProps">
                 <InputNumber v-model="slotProps.data.qty" :inputStyle="{ width: '110px', textAlign: 'right' }" class="w-full"/>
