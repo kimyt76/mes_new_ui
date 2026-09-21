@@ -102,7 +102,7 @@ const form = reactive({
   makeNo: '',
   itemCd: '',
   itemName: '',
-  procStatus: '',
+  procStatus: 'ALL',
   processState: '',
 
   procCd: 'PRC001',
@@ -144,7 +144,8 @@ const selectRowClick = (id, itemCd, procStatus) =>{
 // form
 const srhList = async () =>{
     const params = {
-        ...form
+        ...form,
+        procStatus : form.procStatus === 'ALL' ? null : form.procStatus,
     }
     // api
     weighList.value = await ApiProc.getProcList(params);
@@ -154,7 +155,15 @@ onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
     procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "11", "12", "99"];
-    procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
+    procStatuss.value = [
+        { code: 'ALL', codeNm: '전체' },
+        ...procStatuss.value
+        .filter(v => want.includes(v.code))
+        .map(v => ({
+            ...v,
+            codeNm: v.code === "11" ? "칭량중" : v.codeNm
+        }))
+    ]
 })
 
 const home = ref({
