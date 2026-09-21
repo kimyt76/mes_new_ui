@@ -370,6 +370,7 @@ const form = reactive({
     approvalState: '',
     bomVer: '',
 
+    defaultYn: 'Y',
     bomId : '',
     userId: userId,
 })

@@ -371,6 +371,7 @@ const form = reactive({
     bomVer: '',
 
     bomId : '',
+    defaultYn: 'N',
     userId: userId,
 })
 
@@ -387,7 +388,7 @@ const saveInfo = async () =>{
             deleteBomRecipe : deleteBomRecipe.value,
             deleteBomProc : deleteBomProc.value,
         }
-
+console.log('params',  params.bomInfo)
         const res = await ApiLab.saveBomVerInfo(params)
         vSuccess(res.message)
         closeDialog()
