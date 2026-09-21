@@ -135,21 +135,6 @@
         class="my-table fixed-datatable"
         @rowSelect="onRowSelect"
     >
-    <ColumnGroup type="header">
-        <Row>
-            <Column header="No."    :rowspan="2"  />
-            <Column header="Phase"  :rowspan="2"  />
-            <Column header="실생"    :colspan="3" />
-            <Column header="적요"    :rowspan="2" />
-            <Column header="-"      :rowspan="2" />
-        </Row>
-        <Row>
-            <!-- 실생 -->
-            <Column header="품목코드"   field="realItemCd"   :style="{ width: '130px' }" />
-            <Column header="품목명"     field="realItemName" :style="{ width: '500px' }"  />
-            <Column header="함량"       field="realContens" :style="{ width: '80px' }"  />
-        </Row>
-    </ColumnGroup>
         <Column field="orderDist"       header="No."    :style="{ width: '40px'}" ></Column>
         <Column field="phase"           header="Phase"  :style="{ width: '30px'}"  >
             <template #body="slotProps">
@@ -314,14 +299,6 @@
                     />
             </template>
         </Column>
-        <!-- <Column field="m"  header="RT"    :style="{ width: '70px'}"  >
-            <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.rt"
-                    class="w-full"
-                    />
-            </template>
-        </Column> -->
         <Column field="etc"         header="적요" :style="{ width: '150px'}" >
             <template #body="slotProps">
                 <InputText

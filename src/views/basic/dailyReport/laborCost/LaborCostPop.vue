@@ -1,6 +1,6 @@
 <template>
     <div class="prod-page">
-        <div class="page-title"> 인  건  비  현  황 (안산) </div>
+        <div class="page-title"> 인  건  비  현  황  ({{ areaName }})</div>
         <!-- 1. 원료 입고 -->
         <section class="list-section">
             <div class="section-header section-blue">
@@ -54,7 +54,7 @@
                 <Column field="inPrice" header="정규직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -66,7 +66,7 @@
                 <Column field="inPrice" header="일용직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -78,7 +78,7 @@
                 <Column field="inPrice" header="정규직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -90,7 +90,7 @@
                 <Column field="inPrice" header="일용직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -130,11 +130,11 @@
                         <span>합계</span>
                         <span>
                             수량:
-                            {{ formatNumber(inTotalQty) }}
+                            {{ formatNumber(weighTotalQty) }}
                         </span>
                         <span>
                             금액:
-                            {{ formatNumber(inTotalAmount) }}
+                            {{ formatNumber(weighTotalAmount) }}
                         </span>
                     </div>
                 </template>
@@ -193,7 +193,7 @@
                 <Column field="inPrice" header="정규직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -205,7 +205,7 @@
                 <Column field="inPrice" header="일용직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -217,7 +217,7 @@
                 <Column field="inPrice" header="정규직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -229,7 +229,7 @@
                 <Column field="inPrice" header="일용직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -269,11 +269,11 @@
                         <span>합계</span>
                         <span>
                             수량:
-                            {{ formatNumber(inTotalQty) }}
+                            {{ formatNumber(matTotalQty) }}
                         </span>
                         <span>
                             금액:
-                            {{ formatNumber(inTotalAmount) }}
+                            {{ formatNumber(matTotalAmount) }}
                         </span>
                     </div>
                 </template>
@@ -332,7 +332,7 @@
                 <Column field="inPrice" header="정규직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -344,7 +344,7 @@
                 <Column field="inPrice" header="일용직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -356,7 +356,7 @@
                 <Column field="inPrice" header="정규직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -368,7 +368,7 @@
                 <Column field="inPrice" header="일용직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -408,11 +408,11 @@
                         <span>합계</span>
                         <span>
                             수량:
-                            {{ formatNumber(inTotalQty) }}
+                            {{ formatNumber(coatingTotalQty) }}
                         </span>
                         <span>
                             금액:
-                            {{ formatNumber(inTotalAmount) }}
+                            {{ formatNumber(coatingTotalAmount) }}
                         </span>
                     </div>
                 </template>
@@ -471,7 +471,7 @@
                 <Column field="inPrice" header="정규직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -483,7 +483,7 @@
                 <Column field="inPrice" header="일용직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -495,7 +495,7 @@
                 <Column field="inPrice" header="정규직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -507,7 +507,7 @@
                 <Column field="inPrice" header="일용직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -547,11 +547,11 @@
                         <span>합계</span>
                         <span>
                             수량:
-                            {{ formatNumber(inTotalQty) }}
+                            {{ formatNumber(chargeTotalQty) }}
                         </span>
                         <span>
                             금액:
-                            {{ formatNumber(inTotalAmount) }}
+                            {{ formatNumber(chargeTotalAmount) }}
                         </span>
                     </div>
                 </template>
@@ -562,10 +562,10 @@
         <section class="list-section">
             <div class="section-header section-green">
                 <h5>5. 포장</h5>
-                <Button label="행 추가" icon="pi pi-plus" size="small" class="add-button" @click="addRow('packaging')" />
+                <Button label="행 추가" icon="pi pi-plus" size="small" class="add-button" @click="addRow('packing')" />
             </div>
             <DataTable
-                :value="packagingList"
+                :value="packingList"
                 class="my-table fixed-width-table"
                 showGridlines
                 scrollable
@@ -610,7 +610,7 @@
                 <Column field="inPrice" header="정규직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -622,7 +622,7 @@
                 <Column field="inPrice" header="일용직(남)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.manDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -634,7 +634,7 @@
                 <Column field="inPrice" header="정규직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonFPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -646,7 +646,7 @@
                 <Column field="inPrice" header="일용직(여)" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.inPrice"
+                            v-model="data.wonDPrice"
                             mode="decimal"
                             :minFractionDigits="0"
                             :maxFractionDigits="2"
@@ -686,11 +686,11 @@
                         <span>합계</span>
                         <span>
                             수량:
-                            {{ formatNumber(inTotalQty) }}
+                            {{ formatNumber(packingTotalQty) }}
                         </span>
                         <span>
                             금액:
-                            {{ formatNumber(inTotalAmount) }}
+                            {{ formatNumber(packingTotalAmount) }}
                         </span>
                     </div>
                 </template>
@@ -699,6 +699,7 @@
         <div class="bottom-buttons">
             <Button label="저장" icon="pi pi-save" @click="saveInfo" />
             <Button v-if="isBtn" label="종결" icon="pi pi-save" @click="updateEndYn" />
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadLaborCost"></Button>
             <Button label="닫기"   outlined class="ml-2" @click="closeDialog"></Button>
             <!-- <Button label="초기화"  icon="pi pi-refresh" severity="secondary" outlined @click="reset" /> -->
         </div>
@@ -718,14 +719,22 @@ const dialogRef = inject('dialogRef', null)
 const form = reactive({
     dailyDate: null,
     workTypeCd : '',
-    areaCd : 'M',
+    typeCd: 'C',
     endYn: '',
     dailyId:'',
 })
-
+const areaName = ref('')
 onMounted( async () =>{
     form.dailyId = dialogRef.value?.data?.dailyId ?? null
     form.endYn = dialogRef.value?.data?.endYn ?? 'N'
+     let area = dialogRef.value?.data?.areaCd ?? ''
+   console.log('area', area)
+
+     if (area === 'A001') {
+        areaName.value = '시흥'
+    }else{
+         areaName.value = '안산'
+     }
 form.dailyId= 1
     if ( form.endYn === 'Y') {
         isBtn.value = false
@@ -738,11 +747,11 @@ form.dailyId= 1
    if ( res.dailyReportInfo) {
        Object.assign(form, res.dailyReportInfo)
    }
-   weighList.value = res.inList || []
-   matList.value = res.returnList || []
-   coatingList.value = res.discardList || []
-   chargeList.value = res.prodList || []
-   packingList.value = res.useList || []
+   weighList.value = res.weighList || []
+   matList.value = res.matList || []
+   coatingList.value = res.coatingList || []
+   chargeList.value = res.chargeList || []
+   packingList.value = res.packingList || []
 })
 
 
@@ -766,7 +775,7 @@ const updateEndYn = async () =>{
     }
 }
 
-const createInRow = () => ({
+const createWeighRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -779,7 +788,7 @@ const createInRow = () => ({
     etc: '',
 })
 
-const createReturnRow = () => ({
+const createMatRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -791,7 +800,7 @@ const createReturnRow = () => ({
     etc: '',
 })
 
-const createDiscardRow = () => ({
+const createCoatingRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -803,7 +812,7 @@ const createDiscardRow = () => ({
     etc: '',
 })
 
-const createProdRow = () => ({
+const createChargeRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -818,7 +827,7 @@ const createProdRow = () => ({
     etc: '',
 })
 
-const createUseRow = () => ({
+const createPackingRow = () => ({
     dailyDate: !form.dailyId
         ? todayKST()
         : form.dailyDate ?? todayKST(),
@@ -830,36 +839,22 @@ const createUseRow = () => ({
     totalPrice: 0,
     etc: '',
 })
-const createOspRow = () => ({
-    dailyDate: !form.dailyId
-        ? todayKST()
-        : form.dailyDate ?? todayKST(),
-    orderDist: ospList.value.length + 1,
-    itemCd: '',
-    itemName: '',
-    spec: '',
-    qty: 0,
-    inPrice: 0,
-    expiryDate: '',
-    etc: '',
-})
 
 const listMap = {
-    in: weighList,
-    return: matList,
-    discard: coatingList,
-    prod: chargeList,
-    use: packingList,
+    weigh: weighList,
+    mat: matList,
+    coating: coatingList,
+    charge: chargeList,
+    packing: packingList,
 }
 
 const addRow = (type) => {
     const rowFactoryMap = {
-        in: createInRow,
-        return: createReturnRow,
-        discard: createDiscardRow,
-        prod: createProdRow,
-        use: createUseRow,
-        osp: createOspRow,
+        weigh: createWeighRow,
+        mat: createMatRow,
+        coating: createCoatingRow,
+        charge: createChargeRow,
+        packing: createPackingRow,
     }
 
     const targetList = listMap[type]
@@ -877,11 +872,11 @@ const deleteChargeIds = ref([])
 const deletePackingIds = ref([])
 
 const deleteIdMap = {
-    in: { ids: deleteWeighIds, idField: 'dailyCostId' },
-    return: { ids: deleteMatIds, idField: 'dailyCostId' },
-    discard: { ids: deleteCoatingIds, idField: 'dailyCostId' },
-    prod: { ids: deleteChargeIds, idField: 'dailyCostId' },
-    use: { ids: deletePackingIds, idField: 'dailyCostId' },
+    weigh: { ids: deleteWeighIds, idField: 'dailyCostId' },
+    mat: { ids: deleteMatIds, idField: 'dailyCostId' },
+    coating: { ids: deleteCoatingIds, idField: 'dailyCostId' },
+    charge: { ids: deleteChargeIds, idField: 'dailyCostId' },
+    packing: { ids: deletePackingIds, idField: 'dailyCostId' },
 }
 
 const removeRow = (type, index) => {
@@ -917,68 +912,57 @@ const calculateAmount = (row) => {
 }
 
 /************** 리스트 별 합계******************************************************* */
-const inTotalQty = computed(() => {
-    return inList.value.reduce(
+const weighTotalQty = computed(() => {
+    return weighList.value.reduce(
         (sum, row) => sum + (Number(row.qty) || 0), 0,
     )
 })
-const inTotalAmount = computed(() => {
-    return inList.value.reduce(
+const weighTotalAmount = computed(() => {
+    return weighList.value.reduce(
         (sum, row) => sum + calculateAmount(row),0,
     )
 })
 
-const  returnTotalQty = computed(() => {
-    return returnList.value.reduce(
+const  matTotalQty = computed(() => {
+    return matList.value.reduce(
         (sum, row) => sum + (Number(row.qty) || 0), 0,
     )
 })
-const returnTotalAmount = computed(() => {
-    return returnList.value.reduce(
+const matTotalAmount = computed(() => {
+    return matList.value.reduce(
         (sum, row) => sum + calculateAmount(row), 0,
     )
 })
 
-const  discardTotalQty = computed(() => {
-    return discardList.value.reduce(
+const  coatingTotalQty = computed(() => {
+    return coatingList.value.reduce(
         (sum, row) => sum + (Number(row.qty) || 0), 0,
     )
 })
-const discardTotalAmount = computed(() => {
-    return discardList.value.reduce(
+const coatingTotalAmount = computed(() => {
+    return coatingList.value.reduce(
         (sum, row) => sum + calculateAmount(row), 0,
     )
 })
 
-const prodTotalQty = computed(() => {
-    return prodList.value.reduce(
+const chargeTotalQty = computed(() => {
+    return chargeList.value.reduce(
         (sum, row) => sum + (Number(row.qty) || 0), 0,
     )
 })
-const prodTotalAmount = computed(() => {
-    return prodList.value.reduce(
+const chargeTotalAmount = computed(() => {
+    return chargeList.value.reduce(
         (sum, row) => sum + calculateAmount(row), 0,
     )
 })
 
-const useTotalQty = computed(() => {
-    return useList.value.reduce(
+const packingTotalQty = computed(() => {
+    return packingList.value.reduce(
         (sum, row) => sum + (Number(row.qty) || 0), 0,
     )
 })
-const useTotalAmount = computed(() => {
-    return useList.value.reduce(
-        (sum, row) => sum + calculateUseQty(row), 0,
-    )
-})
-
-const ospTotalQty = computed(() => {
-    return ospList.value.reduce(
-        (sum, row) => sum + (Number(row.qty) || 0), 0,
-    )
-})
-const ospTotalAmount = computed(() => {
-    return ospList.value.reduce(
+const packingTotalAmount = computed(() => {
+    return packingList.value.reduce(
         (sum, row) => sum + calculateAmount(row), 0,
     )
 })
@@ -1011,6 +995,33 @@ const saveInfo = async () => {
         closeDialog()
     }catch (error) {
         console.error('저장 중 오류 발생:', error)
+        handleApiError(error)
+    }
+}
+
+
+const downloadLaborCost = async () => {
+    if (!form.dailyId) {
+        vInfo('저장 후 다운로드 가능합니다.')
+        return
+    }
+
+    try {
+        const params = {
+            typeCd: form.typeCd,
+            dailyId: form.dailyId
+        }
+
+        const res = await ApiBase.downloadDailyReport(params)
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `인건비생산일보_${form.dailyDate}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
         handleApiError(error)
     }
 }

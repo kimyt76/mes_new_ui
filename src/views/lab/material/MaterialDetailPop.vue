@@ -89,7 +89,7 @@
                     class="w-full"
                     :min="0"
                     :minFractionDigits="0"
-                    :maxFractionDigits="7"
+                    :maxFractionDigits="6"
                     :useGrouping="false"
                     :inputStyle="{ width: '50px', 'text-align': 'right' }"
                 />
@@ -101,8 +101,8 @@
                     v-model="slotProps.data.outContent"
                     class="w-full"
                     :min="0"
-                    ::minFractionDigits="0"
-                    :maxFractionDigits="7"
+                    :minFractionDigits="0"
+                    :maxFractionDigits="6"
                     :useGrouping="false"
                     :inputStyle="{ width: '50px', 'text-align': 'right' }"
                 />
@@ -117,6 +117,19 @@
                 <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
             </template>
         </Column>
+
+        <ColumnGroup type="footer">
+            <Row>
+                <Column footer="합계" :colspan="3" footerStyle="text-align: center; background-color: #eeeeee; font-weight: bold;" />
+                <Column :footer="inContentTotal" footerStyle="text-align: right; background-color: #eeeeee; font-weight: bold;" />
+                <Column :footer="outContentTotal" footerStyle="text-align: right; background-color: #eeeeee; font-weight: bold;"/>
+                <Column footer="" footerStyle="text-align: center; background-color: #eeeeee; font-weight: bold;"/>
+                <Column footer="" footerStyle="text-align: center; background-color: #eeeeee; font-weight: bold;"/>
+                <Column footer="" footerStyle="text-align: center; background-color: #eeeeee; font-weight: bold;"/>
+                <Column footer="" footerStyle="text-align: center; background-color: #eeeeee; font-weight: bold;"/>
+                <Column footer="" footerStyle="text-align: center; background-color: #eeeeee; font-weight: bold;"/>
+            </Row>
+        </ColumnGroup>
     </DataTable>
 </div>
 
@@ -200,7 +213,7 @@ import CommFileUpload from '@/components/CommFileUpload.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { isEmpty, todayKST } from '@/util/common';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { computed, inject, onMounted, reactive, ref } from 'vue';
 import IngredientistPop from '../ingredient/IngredientistPop.vue';
 
 const { userId } = useAuthStore()
@@ -214,6 +227,21 @@ const itemGrp1s = ref([])
 const attachFileId = ref('')
 const historyId = ref('')
 
+const inContentTotal = computed(() =>{
+    const total = materialMappingList.value.reduce((sum, item) =>{
+        return sum + Number(item.inContent || 0)
+    }, 0)
+
+    return Number(total.toFixed(6))
+})
+
+const outContentTotal = computed(() =>{
+    const total = materialMappingList.value.reduce((sum, item) =>{
+        return sum + Number(item.outContent || 0)
+    }, 0)
+
+    return Number(total.toFixed(6))
+})
 const form = reactive({
     itemCd: '',
     itemName: '',
@@ -229,6 +257,7 @@ const form = reactive({
 
     userId: userId,
 })
+
 
 const saveInfo = async () =>{
     const formData = new FormData()
@@ -276,6 +305,7 @@ const saveInfo = async () =>{
   }
 }
 
+
 const selectedRow = (obj) =>{
     if (!Array.isArray(obj)) return;
 
@@ -301,6 +331,7 @@ const selectedRow = (obj) =>{
   }
 }
 
+
 const addRow = () => {
     historyList.value.push({
         orderDist: historyList.value.length + 1,
@@ -311,13 +342,16 @@ const addRow = () => {
     })
 }
 
+
 const removeRow = (index) =>{
     materialMappingList.value.splice(index,1)
 }
 
+
 const openPop = () =>{
     ingredientDialog.value = true
 }
+
 
 onMounted( async () =>{
     itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
@@ -344,14 +378,17 @@ onMounted( async () =>{
 
 })
 
+
 const initServerFiles = (list) =>
   (list || []).map(f => ({ ...f, flag: 'S' }))
+
 
 const closeDialog = () =>{
     dialogRef.value.close()
 }
 
 </script>
+
 
 <style scoped>
 ::v-deep(.my-table .p-datatable-thead > tr > th) {

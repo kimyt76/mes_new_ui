@@ -13,47 +13,25 @@
           <label for="dailyDate">기준일자</label>
         </FloatLabel>
       </div>
-
       <div class="toolbar-right">
-        <Button
-          label="조회"
-          icon="pi pi-search"
-          severity="secondary"
-          @click="srhInfo"
-        />
+        <Button label="조회" icon="pi pi-search" severity="secondary" @click="srhInfo" />
         <Button label="저장" icon="pi pi-save" @click="saveInfo" />
-        <Button
-          label="인쇄"
-          icon="pi pi-print"
-          severity="secondary"
-          @click="printPage"
-        />
+        <Button label="인쇄" icon="pi pi-print" severity="secondary" @click="printPage" />
       </div>
     </div>
 
     <div class="report-header">
       <div class="report-title">일일 손익계산서</div>
-
       <div class="approval-box print-only">
         <div class="approval-title">결<br />재</div>
-
-        <div
-          v-for="item in approvalList"
-          :key="item.title"
-          class="approval-item"
-        >
-          <div class="approval-name">
-            {{ item.title }}
-          </div>
+        <div v-for="item in approvalList" :key="item.title" class="approval-item" >
+          <div class="approval-name"> {{ item.title }} </div>
           <div class="approval-sign"></div>
         </div>
       </div>
     </div>
-
     <div class="report-info">
-      <div class="report-date">
-        {{ displayDailyDate }}
-      </div>
+      <div class="report-date"> {{ displayDailyDate }} </div>
       <div class="report-unit">단위 : 금액(원)</div>
     </div>
 
@@ -62,7 +40,6 @@
         ========================================================== -->
     <section class="report-section">
       <div class="section-title">1. 원료 당일 재고 현황</div>
-
       <div class="table-wrapper">
         <table class="report-table stock-table">
           <colgroup>
@@ -77,7 +54,6 @@
             <col style="width: 96px" />
             <col style="width: 190px" />
           </colgroup>
-
           <thead>
             <tr>
               <th>구 분</th>
@@ -92,7 +68,6 @@
               <th>비고</th>
             </tr>
           </thead>
-
           <tbody>
             <tr>
               <th>수 량(kg)</th>
@@ -108,7 +83,6 @@
                 <InputText v-model="rawStock.etc" class="cell-input" />
               </td>
             </tr>
-
             <tr>
               <th>금 액(원)</th>
               <td v-for="field in rawAmtFields" :key="field">
@@ -124,13 +98,11 @@
         </table>
       </div>
     </section>
-
     <!-- =========================================================
              2. 부자재 당일 재고 현황
         ========================================================== -->
     <section class="report-section">
       <div class="section-title">2. 부자재 당일 재고 현황</div>
-
       <div class="table-wrapper">
         <table class="report-table stock-table">
           <colgroup>
@@ -145,7 +117,6 @@
             <col style="width: 96px" />
             <col style="width: 190px" />
           </colgroup>
-
           <thead>
             <tr>
               <th>구 분</th>
@@ -160,7 +131,6 @@
               <th>비고</th>
             </tr>
           </thead>
-
           <tbody>
             <tr>
               <th>수 량(ea)</th>
@@ -176,7 +146,6 @@
                 <InputText v-model="subStock.etc" class="cell-input" />
               </td>
             </tr>
-
             <tr>
               <th>금 액(원)</th>
               <td v-for="field in subAmtFields" :key="field">
@@ -198,7 +167,6 @@
         ========================================================== -->
     <section class="report-section">
       <div class="section-title">3. 완제품 당일 재고 현황</div>
-
       <div class="table-wrapper">
         <table class="report-table stock-table">
           <colgroup>
@@ -213,7 +181,6 @@
             <col style="width: 96px" />
             <col style="width: 190px" />
           </colgroup>
-
           <thead>
             <tr>
               <th>구 분</th>
@@ -228,7 +195,6 @@
               <th>비고</th>
             </tr>
           </thead>
-
           <tbody>
             <tr>
               <th>수 량(ea)</th>
@@ -244,7 +210,6 @@
                 <InputText v-model="prodStock.etc" class="cell-input" />
               </td>
             </tr>
-
             <tr>
               <th>금 액(원)</th>
               <td v-for="field in prodAmtFields" :key="field">
@@ -303,7 +268,6 @@
                 <td class="center-cell">
                   {{ row.typeName }}
                 </td>
-
                 <td>
                   <InputNumber
                     v-model="row.manCnt"
@@ -313,7 +277,6 @@
                     @update:modelValue="calculateLaborRow(row)"
                   />
                 </td>
-
                 <td>
                   <InputNumber
                     v-model="row.womCnt"
@@ -323,11 +286,9 @@
                     @update:modelValue="calculateLaborRow(row)"
                   />
                 </td>
-
                 <td class="readonly-number">
                   {{ formatNumber(personTotal(row)) }}
                 </td>
-
                 <td>
                   <InputNumber
                     v-model="row.workTime"
@@ -338,11 +299,9 @@
                     @update:modelValue="calculateLaborRow(row)"
                   />
                 </td>
-
                 <td class="readonly-number">
                   {{ formatNumber(row.amount) }}
                 </td>
-
                 <td
                   v-if="index === 0"
                   :rowspan="group.rows.length"
@@ -350,13 +309,11 @@
                 >
                   {{ formatNumber(groupTotal(group.rows)) }}
                 </td>
-
                 <td>
                   <InputText v-model="row.etc" class="cell-input" />
                 </td>
               </tr>
             </template>
-
             <tr class="total-row">
               <td colspan="6" class="total-title">합 계</td>
               <td class="grand-total-cell">
@@ -374,7 +331,6 @@
         ========================================================== -->
     <section class="report-section">
       <div class="section-title">5. 당일 경비 현황</div>
-
       <div class="table-wrapper">
         <table class="report-table expense-table">
           <colgroup>
@@ -386,7 +342,6 @@
             <col style="width: 150px" />
             <col style="width: 190px" />
           </colgroup>
-
           <thead>
             <tr>
               <th colspan="2">구분</th>
@@ -396,7 +351,6 @@
               <th>비고</th>
             </tr>
           </thead>
-
           <tbody>
             <tr>
               <td class="center-cell">소모품</td>
@@ -409,7 +363,6 @@
                   inputClass="text-right"
                 />
               </td>
-
               <td rowspan="3" class="center-cell">판관경비</td>
               <td>
                 <InputNumber
@@ -419,16 +372,13 @@
                   inputClass="text-right"
                 />
               </td>
-
               <td rowspan="3" class="group-total-cell">
                 {{ formatNumber(expenseTotal) }}
               </td>
-
               <td rowspan="3">
                 <InputText v-model="expense.etc" class="cell-input" />
               </td>
             </tr>
-
             <tr>
               <td class="center-cell">식대</td>
               <td>
@@ -448,7 +398,6 @@
                 />
               </td>
             </tr>
-
             <tr>
               <td class="center-cell">기타(접대비외)</td>
               <td>
@@ -478,7 +427,6 @@
         ========================================================== -->
     <section class="report-section">
       <div class="section-title">6. 생산금액</div>
-
       <div class="table-wrapper">
         <table class="report-table production-table">
           <colgroup>
@@ -488,7 +436,6 @@
             <col style="width: 190px" />
             <col style="width: 190px" />
           </colgroup>
-
           <thead>
             <tr>
               <th colspan="3">구 분</th>
@@ -496,11 +443,9 @@
               <th>비고</th>
             </tr>
           </thead>
-
           <tbody>
             <tr>
               <td colspan="3" class="center-cell">납품단가</td>
-
               <td>
                 <InputNumber
                   v-model="production.deliveryAmount"
@@ -509,7 +454,6 @@
                   inputClass="text-right"
                 />
               </td>
-
               <td>
                 <InputText
                   v-model="production.deliveryEtc"
@@ -517,18 +461,13 @@
                 />
               </td>
             </tr>
-
             <tr>
               <td rowspan="10" class="center-cell">생산원가</td>
-
               <td rowspan="3" class="center-cell">재료비</td>
-
               <td class="center-cell">원재료비</td>
-
               <td class="readonly-number">
                 {{ formatNumber(production.rawMaterialCost) }}
               </td>
-
               <td rowspan="10">
                 <InputText v-model="production.costEtc" class="cell-input" />
               </td>

@@ -1,4 +1,4 @@
-import { API_URL} from '.'
+import { API_URL } from '.';
 
 
 export const login = async (userId, password) => {

@@ -166,7 +166,7 @@
                         <span>T : 온도조건</span>
                         <span>M : 시간</span>
                         <span>P2 : Hand Mixer</span>
-                        <span>RT : 상온</span>
+                        <!-- <span>RT : 상온</span> -->
                     </div>
                 </div>
             </div>

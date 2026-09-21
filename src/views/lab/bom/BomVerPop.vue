@@ -5,16 +5,19 @@
         <div class="grid mb-1">
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.itemCd" class="w-full" readonly/>
+                    <IconField iconPosition="left">
+                    <InputText v-model="form.itemCd" class="w-full" />
+                    <InputIcon class="pi pi-search" @click="openPop('I')" />
+                    </IconField>
                     <label>품목코드</label>
                 </FloatLabel>
-                </div>
-                <div class="col-6">
+            </div>
+            <div class="col-6">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.itemName" class="w-full" readonly/>
+                    <InputText v-model="form.itemName" class="w-full" />
                     <label>품목명</label>
                 </FloatLabel>
-                </div>
+            </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
                     <IconField iconPosition="left">
@@ -69,7 +72,7 @@
         <div class="grid mb-1">
             <div class="col-3">
             <FloatLabel variant="on">
-                <InputText v-model="form.bomVer" class="w-full" readonly/>
+                <InputText v-model="form.bomVer" class="w-full"  readonly/>
                 <label>BOM 버전</label>
             </FloatLabel>
             </div>
@@ -89,7 +92,7 @@
             </div>
             <div class="col-6">
             <FloatLabel variant="on">
-                <Textarea v-model="form.caution" rows="2" class="w-full" style="resize: none"/>
+                <Textarea v-model="form.caution" rows="2" class="w-full" style="resize: none" />
                 <label>사용시주의사항</label>
             </FloatLabel>
             </div>
@@ -111,59 +114,29 @@
     </template>
 </Card>
 
-<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
+<div class="flex justify-content-between align-items-center mr-4 mb-1 mt-2">
     <h5 class="m-0">- 원료구성정보</h5>
     <div class="flex justify-end gap-2">
-    <Button
-        label="BOM정보"
-        @click="openPop('B')"
-        class="p-button-xm"
-    />
-    <Button
-        label="연구처방"
-        @click="openPop('R')"
-        class="p-button-xm"
-    />
-    <Button
-        label="추가+"
-        @click="addRowR"
-        class="p-button-xm"
-    />
+    <Button label="BOM정보" @click="openPop('B')" class="p-button-xm" />
+    <Button label="연구처방" @click="openPop('R')" class="p-button-xm" />
+    <Button label="추가+" @click="addRowR" class="p-button-xm" />
+    <Button label="전체삭제" severity="danger" @click="removeAll" class="p-button-xm" />
     </div>
 </div>
-<div class="w-full" ref="tableWrapper">
+<div class="w-full recipe-table-area">
     <DataTable
         v-model:selection="selectedRow"
         :value="recipeList"
-        dataKey="orderDist"
-        scrollHeight="300px"
+        dataKey="bomItecmId"
+        scrollHeight="350px"
         show-gridlines
         scrollable
         selectionMode="single"
         class="my-table fixed-datatable"
         @rowSelect="onRowSelect"
     >
-    <ColumnGroup type="header">
-        <Row>
-            <Column header="No."    :rowspan="2"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="Phase"  :rowspan="2"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="실생"    :colspan="3" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="표준"    :colspan="3" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="-"      :rowspan="2" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        </Row>
-        <Row>
-            <!-- 실생 -->
-            <Column header="품목코드"   field="realItemCd"     :style="{ width: '130px' }" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="품목명"     field="realItemName" :style="{ width: '500px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-            <Column header="함량"       field="realContens" :style="{ width: '130px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-            <!-- 표준 -->
-            <Column header="품목코드"   field="stdItemCd"   :style="{ width: '130px' }" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column header="품목명"     field="stdItemName" :style="{ width: '500px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-            <Column header="함량"       field="stdContens" :style="{ width: '130px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-        </Row>
-    </ColumnGroup>
-        <Column field="orderDist"       header="No."        :style="{ width: '30px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="phase"           header="Phase"    :style="{ width: '50px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderDist"       header="No."    :style="{ width: '40px'}" ></Column>
+        <Column field="phase"           header="Phase"  :style="{ width: '30px'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
@@ -172,7 +145,7 @@
                     />
             </template>
         </Column>
-        <Column field="realItemCd"      header="품목코드"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="realItemCd"      header="품목코드"  :style="{ width: '120px'}" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.realItemCd"
@@ -180,8 +153,11 @@
                     style="text-align: center;"
                     />
             </template>
+            <template #footer>
+                <div style="text-align: center; font-weight: bold;" class="footer-cell">합계</div>
+            </template>
         </Column>
-        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}"  style="text-align: left;" bodyClass="break-words">
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.realItemName"
@@ -190,7 +166,7 @@
                     />
             </template>
         </Column>
-        <Column field="realContent"     header="함량"    :style="{ width: '100px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="realContent"     header="함량"    :style="{ width: '50px'}"  style="text-align: left;" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.realContent"
@@ -198,41 +174,26 @@
                     :min="0"
                     :maxFractionDigits="8"
                     :useGrouping="true"
-                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
+                    :inputStyle="{ width: '50px', 'text-align': 'right' }"
                     />
             </template>
-        </Column>
-        <Column field="stdItemCd"       header="품목코드"  :style="{ width: '110px'}" :pt="{ columnHeaderContent: 'justify-center' }">
-            <template #body="slotProps">
-                <InputText
-                    v-model="slotProps.data.stdItemCd"
-                    class="w-full"
-                    style="text-align: center;"
-                    />
+            <!-- 👇 여기 합계 footer -->
+            <template #footer>
+                <div style="text-align: right; width: 50px; padding-right: 4px;" class="footer-cell">
+                {{ totalRealContent.toFixed(2) }}
+                </div>
             </template>
         </Column>
-        <Column field="stdItemName"     header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc" header="적요"    :style="{ width: '240px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <InputText
-                    v-model="slotProps.data.stdItemName"
+                    v-model="slotProps.data.etc"
                     class="w-full"
                     style="text-align: left;"
                     />
             </template>
         </Column>
-        <Column field="stdContent"      header="함량"    :style="{ width: '100px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
-            <template #body="slotProps">
-                <InputNumber
-                    v-model="slotProps.data.stdContent"
-                    class="w-full"
-                    :min="0"
-                    :maxFractionDigits="8"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '100px', 'text-align': 'right' }"
-                    />
-            </template>
-        </Column>
-        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: center;" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowR(slotProps.index)"></i>
             </template>
@@ -240,14 +201,14 @@
     </DataTable>
 </div>
 
-<div class="flex justify-content-between align-items-center ml-2 mb-1 mt-4">
+<div class="proc-title flex justify-content-between align-items-center mr-4 mb-1 mt-8">
     <h5 class="m-0">- 제조공정도</h5>
-    <Button
-        label="추가+"
-        @click="addRowP"
-        class="p-button-xm"
-    />
+    <div class="flex justify-end gap-2">
+        <Button label="제조공정" @click="openBomProcPop" class="p-button-xm" />
+        <Button label="추가+" @click="addRowP" class="p-button-xm" />
+    </div>
 </div>
+
 <div class="w-full">
     <DataTable
         :value="bomProcList"
@@ -256,8 +217,8 @@
         show-gridlines
         class="my-table fixed-datatable"
     >
-        <Column field="orderDist"   header="No."        :style="{ width: '20px'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-        <Column field="phase"       header="공정구분"     :style="{ width: '80px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderDist"   header="No."    :style="{ width: '20px'}" />
+        <Column field="phase"       header="공정"   :style="{ width: '60px', textAligh:'center'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
@@ -266,29 +227,15 @@
                     />
             </template>
         </Column>
-        <Column field="procGb"        header="제조부"      :style="{ width: '90px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="procType"       header="제조구분"  :style="{ width: '100px', textAligh:'center'}"  >
             <template #body="slotProps">
-                <Select
-                    v-model="slotProps.data.procGb"
-                    :options="procGbs"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
-                    />
-            </template>
-        </Column>
-        <Column field="procType"       header="제조구분"      :style="{ width: '90px'}" bodyClass="break-words" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
-            <template #body="slotProps">
-                <Select
+                <InputText
                     v-model="slotProps.data.procType"
-                    :options="procTypes"
-                    optionLabel="codeNm"
-                    optionValue="code"
                     class="w-full"
                     />
             </template>
         </Column>
-        <Column field="matProc"  header="제조공정"    :style="{ width: '470px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="matProc"  header="제조공정"    :style="{ width: '400px', textAligh:'center'}" >
             <template #body="slotProps">
                 <Textarea
                     v-model="slotProps.data.matProc" rows="2" style="resize: none;"
@@ -296,79 +243,63 @@
                 />
             </template>
         </Column>
-        <Column field="ho"  header="HO"    :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="h"  header="H"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
-                <InputNumber
-                    v-model="slotProps.data.ho"
+                <InputText
+                    v-model="slotProps.data.h"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="pd"  header="PD"    :style="{ width: '70px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="p"  header="P"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
-                <InputNumber
-                    v-model="slotProps.data.pd"
+                <InputText
+                    v-model="slotProps.data.p"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="d1"  header="D1"    :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="d1"  header="D1"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.d1"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="d2"  header="D2"    :style="{ width: '70px'}" bodyClass="break-words"  :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="d2"  header="D2"    :style="{ width: '70px'}"   >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.d2"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="t"  header="T"    :style="{ width: '70px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="t"  header="T"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.t"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="m"  header="M"    :style="{ width: '70px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="m"  header="M"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
-                <InputNumber
+                <InputText
                     v-model="slotProps.data.m"
                     class="w-full"
-                    :min="0"
-                    :maxFractionDigits="0"
-                    :useGrouping="true"
-                    :inputStyle="{ width: '70px', 'text-align': 'right' }"
                     />
             </template>
         </Column>
-        <Column field="etc"         header="etc"        :style="{ width: '180px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="m"  header="P2"    :style="{ width: '70px'}"  >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.p2"
+                    class="w-full"
+                    />
+            </template>
+        </Column>
+        <Column field="etc"         header="적요" :style="{ width: '150px'}" >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -376,7 +307,7 @@
                     />
             </template>
         </Column>
-        <Column field="actions"     header="-"          :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions"     header="-"          :style="{ width: '20px', textAligh:'center'}" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowP(slotProps.index)"></i>
             </template>
@@ -384,9 +315,10 @@
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="BOM저장" severity="secondary" @click="saveInfo"></Button>
-    <Button label="닫기"   outlined class="ml-2" @click="closeDialog"></Button>
+    <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
+    <Button label="닫기"  outlined class="ml-2" @click="closeDialog"></Button>
 </div>
+
 </template>
 
 <script setup>
@@ -396,21 +328,29 @@ import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
+import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import ClientListPop from '@/views/order/client/ClientListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
-import { inject, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 import RecipeListPop from '../recipe/RecipeListPop.vue';
+import BomListPop from './BomListPop.vue';
+import BomProcPop from './BomProcPop.vue';
+
+const totalRealContent = computed(() =>
+  recipeList.value.reduce(
+    (sum, row) => sum + (Number(row.realContent) || 0),
+    0,
+  ),
+)
 
 const  { userId } = useAuthStore()
-const {   vSuccess, vInfo } = useAlertStore()
+const { vSuccess, vInfo } = useAlertStore()
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const currentComponet = shallowRef(null)
-const prodTypes = ref([])
-const procGbs = ref([])
-const procTypes = ref([])
 const approvalStates = ref([])
+const prodTypes = ref([])
 const recipeList = ref([])
 const bomProcList = ref([])
 const form = reactive({
@@ -431,9 +371,12 @@ const form = reactive({
     bomVer: '',
 
     bomId : '',
-    asBomId:'',
     userId: userId,
 })
+
+const removeAll = () =>{
+    recipeList.value = []
+}
 
 const saveInfo = async () =>{
     try{
@@ -441,14 +384,38 @@ const saveInfo = async () =>{
             bomInfo : form,
             bomRecipeList : recipeList.value,
             bomProcList : bomProcList.value,
+            deleteBomRecipe : deleteBomRecipe.value,
+            deleteBomProc : deleteBomProc.value,
         }
 
         const res = await ApiLab.saveBomVerInfo(params)
-        vSuccess(res)
+        vSuccess(res.message)
         closeDialog()
     }catch(err){
         handleApiError(err)
     }
+}
+
+const openBomProcPop =() =>{
+    dialog.open( BomProcPop, {
+        props: {
+            header: '제조공정',
+            modal: true,
+            draggable: true,
+            maximizable: false,
+            style: {
+                overflow: 'hidden'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            },
+        },
+         onClose:(event) => {
+            if (!event || !event.data) return;
+            bomProcList.value = event.data
+        },
+    })
 }
 
 const openPop = (type) =>{
@@ -465,6 +432,9 @@ const openPop = (type) =>{
         currentComponet.value = RecipeListPop
     }else if ( type === 'B') {
         title = 'BOM 목록'
+        currentComponet.value = BomListPop
+    }else if ( type === 'I') {
+        currentComponet.value = ItemListSinglePop
     }
 
     dialog.open( currentComponet.value, {
@@ -492,8 +462,11 @@ const openPop = (type) =>{
                 form.managerName = event.data.memberNm
             }else if ( type === 'R') {
                 addRowR(event.data)
-             }else if ( type === 'B') {
+            }else if ( type === 'B') {
                 addRowPop(event.data)
+            }else if ( type === 'B') {
+                form.itemCd = event.data.itemCd
+                form.itemName = event.data.itemName
             }
         },
     })
@@ -534,6 +507,12 @@ const onRowSelect = (event) => {
   selectedRowIndex.value = idx >= 0 ? idx : null;
 }
 
+const recipeSort = () =>{
+     // 5) orderDist 재정렬 (1부터)
+  recipeList.value.forEach((row, idx) => {
+    row.orderDist = idx + 1
+  })
+}
 
 const addRowPop = (obj) =>{
      const rowsToInsert = []
@@ -546,9 +525,6 @@ const addRowPop = (obj) =>{
         realItemCd: o.realItemCd || '',
         realItemName: o.realItemName || '',
         realContent: o.realContent || 0,
-        stdItemCd: o.stdItemCd || '',
-        stdItemName: o.stdItemName || '',
-        stdContent: o.stdContent || 0,
       }))
     )
   }
@@ -564,12 +540,8 @@ const addRowPop = (obj) =>{
   }
   // 4) 해당 위치에 rows 삽입
   recipeList.value.splice(insertIndex, 0, ...rowsToInsert)
-  // 5) orderDist 재정렬 (1부터)
-  recipeList.value.forEach((row, idx) => {
-    row.orderDist = idx + 1
-  })
+  recipeSort()
 }
-
 
 const addRowR = (obj)=>{
     const rowsToInsert = []
@@ -582,9 +554,6 @@ const addRowR = (obj)=>{
         realItemCd: o.itemCd || '',
         realItemName: o.itemName || '',
         realContent: o.content || 0,
-        stdItemCd: o.itemCd || '',
-        stdItemName: o.itemName || '',
-        stdContent: o.content || 0,
       }))
     )
 
@@ -596,9 +565,6 @@ const addRowR = (obj)=>{
       realItemCd: '',
       realItemName: '',
       realContent: '',
-      stdItemCd: '',
-      stdItemName: '',
-      stdContent: '',
     })
   }
 
@@ -614,9 +580,7 @@ const addRowR = (obj)=>{
   // 4) 해당 위치에 rows 삽입
   recipeList.value.splice(insertIndex, 0, ...rowsToInsert)
   // 5) orderDist 재정렬 (1부터)
-  recipeList.value.forEach((row, idx) => {
-    row.orderDist = idx + 1
-  })
+  recipeSort()
 }
 
 const addRowP = ()=>{
@@ -625,15 +589,16 @@ const addRowP = ()=>{
     bomProcList.value.push({
       orderDist: nextNo++,
       phase: '',
-      krIngredientName: '',
-      enIngredientName: '',
-      mat_proc: '',
-      ho: 0,
-      pd: 0,
-      d1: 0,
-      d2: 0,
-      t: 0,
-      m: 0,
+      procType: '',
+      matProc: '',
+      h: '',
+      p: '',
+      d1: '',
+      d2: '',
+      t: '',
+      m: '',
+      p2: '',
+      rt: '',
       etc: '',
   });
    // 5) orderDist 재정렬 (1부터)
@@ -642,16 +607,33 @@ const addRowP = ()=>{
   })
 }
 
-const removeRowR = (index) =>{
-    recipeList.value.splice(index,1)
-    // 5) orderDist 재정렬 (1부터)
+const deleteBomRecipe = ref([])
+const deleteBomProc = ref([])
+
+const removeRowR = (index) => {
+    const row = recipeList.value[index]
+
+    // 1. id가 존재할 때만 삭제 리스트에 추가 (신규 row는 id 없을 수 있음)
+    if (row?.bomItemId) {
+        deleteBomRecipe.value.push(row.bomItemId)
+    }
+    // 2. 실제 리스트에서 제거
+    recipeList.value.splice(index, 1)
+    // 3. orderDist 재정렬
     recipeList.value.forEach((row, idx) => {
         row.orderDist = idx + 1
     })
 }
-const removeRowP = (index) =>{
-    bomProcList.value.splice(index,1)
-    // 5) orderDist 재정렬 (1부터)
+
+const removeRowP = (index) => {
+    const row = bomProcList.value[index]
+
+    if (row?.bomProcId) {
+        deleteBomProc.value.push(row.bomProcId)
+    }
+
+    bomProcList.value.splice(index, 1)
+
     bomProcList.value.forEach((row, idx) => {
         row.orderDist = idx + 1
     })
@@ -660,8 +642,6 @@ const removeRowP = (index) =>{
 onMounted( async () =>{
     prodTypes.value = await ApiLab.getProdTypeList()
     approvalStates.value = await ApiCommon.getCodeList('approval_state')
-    procGbs.value = await ApiCommon.getCodeList('proc_gb')
-    procTypes.value = await ApiCommon.getCodeList('proc_type')
     form.bomId = dialogRef.value.data
 
     if ( !isEmpty(form.bomId)){
@@ -669,9 +649,9 @@ onMounted( async () =>{
 
         Object.assign(form, res.bomInfo)
         recipeList.value = res.bomRecipeList
+        recipeSort()
         bomProcList.value =res.bomProcList
     }
-    form.asBomId = dialogRef.value.data
 
     document.addEventListener('click', handleDocumentClick)
 })
@@ -706,4 +686,36 @@ const closeDialog = () =>{
   height: calc(300px - 42px) !important; /* 헤더 높이 42px 정도 */
 }
 
+.footer-cell {
+  color: black;              /* 글자색 */
+  height: 15px;                /* 높이 조절 */
+  line-height: 15px;           /* 가운데 정렬 */
+  font-weight: bold;
+  font-size: medium;
+  text-align: right;
+  padding-right: 1px;
+}
+.p-datatable-tfoot > tr > td {
+  background-color: gray !important;
+  color: white !important;
+  font-weight: bold;
+  height: 35px;
+}
+
+.recipe-table-area {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 12px;
+}
+
+.proc-title {
+    position: relative;
+    z-index: 5;
+    background: #fff;
+    padding-top: 4px;
+}
+
+::v-deep(.my-table .p-datatable-tbody > tr > td) {
+    padding: 2px 4px !important;
+}
 </style>

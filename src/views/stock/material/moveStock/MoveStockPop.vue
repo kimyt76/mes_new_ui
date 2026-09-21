@@ -113,7 +113,7 @@ import { ApiStock } from '@/api/apiStock';
 import { ApiSystem } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty, todayKST } from '@/util/common';
+import { formatDate, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 import QrCodeSimplePop from '@/views/common/QrCodeSimplePop.vue';
@@ -153,6 +153,7 @@ const saveInfo = async () =>{
     try{
         const param = {
             moveStockInfo: form,
+            moveStockDate: formatDate(form.moveStockDate),
             deleteMoveStockItemIds: deleteMoveStockItemIds.value,
             moveItemList: moveStockList.value
         }

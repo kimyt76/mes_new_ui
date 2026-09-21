@@ -188,7 +188,7 @@
 </Card>
 
 <div class="flex justify-content-between align-items-center ml-2 mb-1 mt-2">
-    <h5 class="m-0">- 결재조건</h5>
+    <h5 class="m-0">- 결제조건</h5>
     <div class="flex justify-end gap-2">
         <Button label="추가+" @click="addRowC" class="p-button-xm" />
     </div>
