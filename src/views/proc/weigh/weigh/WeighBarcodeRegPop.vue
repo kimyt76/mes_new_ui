@@ -51,8 +51,14 @@
         <Column field="itemCd"  header="품목코드" :style="{ width: '120px' }"  />
         <Column field="lotNo"   header="로트번호" :style="{ width: '180px' }" bodyClass="break-words"  />
         <Column field="orderQty" header="지시량" :style="{ width: '100px' }" >
-            <template #body="{ data }">
-                <div class="text-right">{{ formatQty(data.orderQty) }}</div>
+            <template #body="slotProps">
+                <div
+                    class="text-right"
+                    style="cursor: pointer;"
+                    @dblclick="copyOrderQtyToWeighQty(slotProps.data)"
+                >
+                    {{ formatQty(slotProps.data.orderQty) }}
+                </div>
             </template>
         </Column>
         <!-- 칭량량: InputNumber로 항상 입력 가능 -->
@@ -161,39 +167,47 @@ const totalWeighQty = computed(() => {
 //   return stockItemList.value.reduce((acc, cur) => acc + (Number(cur.orderQty) || 0), 0)
 // })
 
+const copyOrderQtyToWeighQty = (row) => {
+    row.weighQty = Number(row.orderQty ?? 0)
+}
+
 //좌측 테스트번호로 조회
 const searchByBarcode = async () => {
-  const testNo = String(barcode.value ?? '').trim()
-  if (!testNo) return
+    const testNo = String(barcode.value ?? '').trim()
+    if (!testNo) return
 
-  const res = await ApiQc.getItemTestNoInfo(testNo)
+    const res = await ApiQc.getItemTestNoInfo(testNo)
 
-  const r = res?.data ?? res
-  if (!r) return vInfo('조회 결과가 없습니다.')
-  if ( new Date(todayKST()) > new Date(r.expiryDate)) {
-    vWarning('사용기한이 지난 원자재입니다.')
-    return
-  }
-  //이미 있는 값이면 추가 안함 (중복 방지)
-  const exists = stockItemList.value.some(item => item.testNo === r.testNo)
-  if (exists) {
+    const r = res?.data ?? res
+    if (!r) return vInfo('조회 결과가 없습니다.')
+    if ( new Date(todayKST()) > new Date(r.expiryDate)) {
+        vWarning('사용기한이 지난 원자재입니다.')
+        return
+    }
+    //이미 있는 값이면 추가 안함 (중복 방지)
+    const exists = stockItemList.value.some(item => item.testNo === r.testNo)
+    if (exists) {
+        barcode.value = ''
+        return
+    }
+
+    // ★ 현재 시험번호보다 빠른 재고가 있는지 확인
+    // 알림만 띄우고 계속 진행
+    checkEarlierTestNo(r.testNo)
+
+    stockItemList.value.push({
+        no: stockItemList.value.length + 1,
+        testNo: r.testNo ?? '',
+        itemCd: r.itemCd ?? itemCd.value,
+        lotNo: r.lotNo ?? '',
+        orderQty: Number(orderQty.value ?? 0),
+        weighQty: 0,
+        weighId: weighId.value ?? '',
+        workProcId: workProcId.value ?? '',
+        storageCd:  r.storageCd ?? storageCd.value ?? '',
+    })
+
     barcode.value = ''
-    return
-  }
-
-  stockItemList.value.push({
-    no: stockItemList.value.length + 1,
-    testNo: r.testNo ?? '',
-    itemCd: r.itemCd ?? itemCd.value,
-    lotNo: r.lotNo ?? '',
-    orderQty: Number(orderQty.value ?? 0),
-    weighQty: 0,
-    weighId: weighId.value ?? '',
-    workProcId: workProcId.value ?? '',
-    storageCd:  r.storageCd ?? storageCd.value ?? '',
-  })
-
-  barcode.value = ''
 }
 
 const openWeighQtyPopup = (row) =>{
@@ -327,22 +341,25 @@ onMounted(async () => {
   const rowData = dialogData.row || {}
   const formData = dialogData.form || {}
 
+  const areaCd = formData.areaCd ?? ''
+  workProcId.value = formData.workProcId ?? ''
+  storageCd.value = formData.storageCd ?? ''
+
   itemCd.value = rowData.itemCd ?? ''
   itemName.value = rowData.itemName ?? ''
   weighId.value = rowData.weighId ?? ''
   orderQty.value = Number(rowData.orderQty ?? 0)
   tmpTestNo.value = rowData.testNo ?? ''
 
+  await loadInventoryList(areaCd)
 
   if (!isEmpty(tmpTestNo.value)) {
     await getStockTestNoList()
   }
 
-  const areaCd = formData.areaCd ?? ''
-  workProcId.value = formData.workProcId ?? ''
-  storageCd.value = formData.storageCd ?? ''
 
-  await loadInventoryList(areaCd)
+
+
 })
 
 const getStockTestNoList = async () =>{
@@ -350,10 +367,42 @@ const getStockTestNoList = async () =>{
         testNos: tmpTestNo.value,
         weighId: weighId.value
     }
-    console.log('params', params)
-    stockItemList.value = await ApiProc.getStockTestNoList(params)
+    const res = await ApiProc.getStockTestNoList(params)
+
+    stockItemList.value = (res || []).map((item, index) => ({
+        ...item,
+        no: index + 1,
+        orderQty: Number(orderQty.value ?? 0)
+    }))
 }
 
+// 현재 시험번호보다 빠른 시험번호의 재고가 있는지 확인
+const checkEarlierTestNo = (testNo) => {
+    if (isEmpty(testNo)) return
+
+    const currentTestNo = String(testNo).trim()
+
+    const earlierItem = stockItemHistList.value.find(item => {
+        const histTestNo = String(item.testNo ?? '').trim()
+
+        if (!histTestNo) return false
+
+        // 재고가 실제로 남아있는 것만 체크
+        const hasStock = Number(item.totQty ?? 0) > 0
+        if (!hasStock) return false
+
+        // 숫자가 포함된 시험번호도 자연스럽게 비교
+        return histTestNo.localeCompare(
+            currentTestNo,
+            undefined,
+            { numeric: true, sensitivity: 'base' }
+        ) < 0
+    })
+
+    if (earlierItem) {
+        vInfo( `현재 시험번호(${currentTestNo})보다 빠른 시험번호(${earlierItem.testNo})의 재고가 있습니다.` )
+    }
+}
 </script>
 
 <style scoped>

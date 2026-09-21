@@ -212,7 +212,17 @@ const handleScannedCode = (barcode) => {
 }
 
 // Computed 옵션 및 필터링 리스트
-const sungsangOptions = computed(() => [...new Set(matUseDataList.value.map(r => r?.[FIELD.SUNGSANG]).filter(Boolean))])
+const SUNGSANG_EMPTY = '공백'
+
+const sungsangOptions = computed(() => {
+  return [...new Set(
+    matUseDataList.value.map(r => {
+      const value = String(r?.[FIELD.SUNGSANG] ?? '').trim()
+      return value || SUNGSANG_EMPTY
+    })
+  )]
+})
+
 const sungsangCheckedMap = reactive({})
 watch(sungsangOptions, (opts) => {
   opts.forEach(ss => { if (sungsangCheckedMap[ss] === undefined) sungsangCheckedMap[ss] = true })
@@ -235,13 +245,15 @@ const currentTabList = computed(() => {
 
   return matUseDataList.value.filter(r => {
     const sg = String(r?.[FIELD.SANGGUBUN] ?? '')
-    const ss = String(r?.[FIELD.SUNGSANG] ?? '')
+    const rawSs = String(r?.[FIELD.SUNGSANG] ?? '').trim()
+    const ss = rawSs || SUNGSANG_EMPTY
+
     const tabOk = (tab === ALL_TAB) || (sg === tab)
-    const ssOk = ss === '' || (allowedSs.size ? allowedSs.has(ss) : true)
+    const ssOk = allowedSs.size ? allowedSs.has(ss) : true
+
     return tabOk && ssOk
   })
 })
-
 const totalMatCount = computed(() => currentTabList.value.length)
 const finishedCount = computed(() => currentTabList.value.filter(r => r?.[FIELD.WEIGH_YN] === 'Y').length)
 const allChecked = computed({
@@ -260,19 +272,63 @@ const magnifierRenderer = (instance, td) => {
   td.style.textAlign = 'center'
 }
 
+const sungsangRenderer = (instance, td, row, col, prop, value) => {
+  td.textContent = value ?? ''
+  td.className = 'htCenter'
+
+  const v = String(value ?? '').trim()
+
+  td.style.backgroundColor = ''
+  td.style.color = ''
+  td.style.fontWeight = ''
+
+  if (v === '분말') {
+    td.style.backgroundColor = '#FFF3CD'
+    td.style.color = '#664D03'
+    td.style.fontWeight = 'bold'
+  } else if (v === '액상') {
+    td.style.backgroundColor = '#D1ECF1'
+    td.style.color = '#055160'
+    td.style.fontWeight = 'bold'
+  } else if (v === '색소') {
+    td.style.backgroundColor = '#F8D7DA'
+    td.style.color = '#842029'
+    td.style.fontWeight = 'bold'
+  } else if (v === '향료') {
+    td.style.backgroundColor = '#E2D9F3'
+    td.style.color = '#432874'
+    td.style.fontWeight = 'bold'
+  } else if (!v) {
+    td.style.backgroundColor = '#E9ECEF'
+    td.style.color = '#495057'
+  }
+}
+
+const testNoRenderer = (instance, td, row, col, prop, value) => {
+  const testNos = String(value ?? '')
+    .split(',')
+    .map(v => v.trim())
+    .filter(Boolean)
+
+  td.innerHTML = testNos.join('<br>')
+  td.className = 'htCenter'
+  td.style.whiteSpace = 'normal'
+  td.style.lineHeight = '22px'
+}
+
 const hotColumns = ref([
   { data: FIELD.DIST_ORDER, readOnly: true, className: 'htCenter', renderer: orderDistRenderer },
   { data: FIELD.SELECTED, type: 'checkbox', className: 'htCenter' },
   { data: 'itemCd', readOnly: true, className: 'htCenter' },
   { data: 'itemName', readOnly: true },
-  { data: FIELD.SUNGSANG, readOnly: true, className: 'htCenter' },
+  { data: FIELD.SUNGSANG, readOnly: true, className: 'htCenter', renderer: sungsangRenderer },
   { data: FIELD.SANGGUBUN, readOnly: true, className: 'htCenter' },
   { data: 'orderQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight', readOnly: true },
   { data: 'weighQty', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },
   { data: 'bagWeight', type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },
   { data: LOOKUP_PROP.CONTAINER, readOnly: true, renderer: magnifierRenderer },
   { data: 'totalQty', readOnly: true, type: 'numeric', numericFormat: { pattern: '0,0.00000' }, className: 'htRight' },
-  { data: 'testNo', readOnly: true, className: 'htCenter' },
+  { data: 'testNoJoin', readOnly: true, className: 'htCenter', renderer: testNoRenderer },
   { data: FIELD.WEIGH_YN, type: 'checkbox', checkedTemplate: 'Y', uncheckedTemplate: 'N', className: 'htCenter' },
   { data: 'weigher', className: 'htCenter' },
   { data: LOOKUP_PROP.WEIGHER, readOnly: true, renderer: magnifierRenderer },
@@ -328,7 +384,7 @@ const handleAfterChange = (changes, source) => {
     if (!row) continue
 
     if (prop === FIELD.WEIGH_YN) {
-      currentTabList.value[rowIndex][FIELD.WEIGH_YN] = newVal === true ? 'Y' : 'N'
+      row[FIELD.WEIGH_YN] = newVal
     }
 
     // 칭량이나 용기무게가 변경되면 실시간으로 총량을 다시 계산하여 그리드에 반영
@@ -505,7 +561,7 @@ const downloadExcel =  async () => {
         , 칭량: row.weighQty ?? 0
         , 용기무게: row.bagWeight ?? 0
         , 총량: row.totalQty ?? 0
-        ,사용시험번호: row.testNo ?? ''
+        , 사용시험번호: row.testNo ?? ''
         , 완료: row.weighYn ?? ''
         , 칭량자: row.weigher ?? ''
         , 확인자: row.confirmer ?? '',
@@ -554,6 +610,9 @@ const closeDialog = () => dialogRef.value?.close()
 .handsontable THEAD TH {
   background: #d9d9d9;
   border-color: #000000;
+}
+:deep(.handsontable td) {
+  vertical-align: middle;
 }
 td .custom-cell {
   background-color: rgb(245 245 245);
