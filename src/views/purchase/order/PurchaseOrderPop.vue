@@ -214,6 +214,8 @@ import UserListPop from '@/views/system/user/UserListPop.vue';
 import { InputNumber, InputText, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 
+
+
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
 const itemDialog = ref(false)
@@ -282,14 +284,14 @@ const handleSelected = (rows) =>{
 const addRow = (rows) =>{
     const rowItem = rows.map((o) => {
     const row = {
-        itemCd: o.itemCd,
-        itemName: o.itemName,
-        spec: o.spec,
-        qty: o.qty,
-        inPrice: o.inPrice,
-        supplyPrice: o.supplyPrice,
-        vatPrice: o.vatPrice,
-        etc: o.etc,
+        itemCd: o.itemCd ?? '',
+        itemName: o.itemName ?? '',
+        spec: o.spec ?? '',
+        qty: o.qty ?? '',
+        inPrice: o.inPrice ?? '',
+        supplyPrice: o.supplyPrice ?? '',
+        vatPrice: o.vatPrice ?? '',
+        etc: o.etc ?? '',
         itemTypeCd: o.itemTypeCd ?? o.item_type_cd ?? '',
     };
 
@@ -298,11 +300,25 @@ const addRow = (rows) =>{
     return row;
     });
 
-    if (purchaseOrderItemList.value.length > 0) {
-        purchaseOrderItemList.value.push(...rowItem);
-    } else {
-        purchaseOrderItemList.value = [...rowItem];
+    if (selectedRows.value.length > 0) {
+        const selectedIndexes = selectedRows.value
+            .map(row => purchaseOrderItemList.value.indexOf(row))
+            .filter(index => index !== -1)
+
+        if (selectedIndexes.length > 0) {
+            const insertIndex = Math.max(...selectedIndexes) + 1
+
+            purchaseOrderItemList.value.splice(
+                insertIndex,
+                0,
+                ...rowItem
+            )
+
+            return
+        }
     }
+
+    purchaseOrderItemList.value.push(...rowItem)
 }
 
 const itemPop = () =>{
