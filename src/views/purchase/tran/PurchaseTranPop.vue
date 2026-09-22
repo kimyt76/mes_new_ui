@@ -85,7 +85,7 @@
         <Button label="품목+" @click="itemPop('I')"/>
     </div>
 </div>
-<div class="w-full mt-2">
+<div class="w-full mt-2" @keydown="handleTableKeydown">
     <DataTable
         :value="purchaseItemList"
         class="my-table"
@@ -217,6 +217,7 @@ import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { calculateVAT, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
+import { handleTableKeydown } from '@/util/tableKeyboard';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 import StorageListPop from '@/views/system/storage/StorageListPop.vue';
