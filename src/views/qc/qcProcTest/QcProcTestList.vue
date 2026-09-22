@@ -97,8 +97,8 @@
                 </span>
             </template>
         </Column>
-        <Column field="chargingDate"    header="중진일자" :style="{ width: '100px', textAlign: 'center'}" />
-        <Column field="packingDate"     header="포장일자" :style="{ width: '100px', textAlign: 'center'}" />
+        <Column field="chargeDate"    header="충전일자" :style="{ width: '100px', textAlign: 'center'}" />
+        <Column field="packingDate"   header="포장일자" :style="{ width: '100px', textAlign: 'center'}" />
     </DataTable>
 </div>
 
