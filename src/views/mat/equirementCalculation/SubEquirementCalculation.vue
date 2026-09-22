@@ -1,3 +1,4 @@
+```vue
 <template>
 <Breadcrumb :home="home" :model="items"/>
 <div>
@@ -23,7 +24,7 @@
         v-model:selection="selectedItem"
         :value="itemBomList"
         selection-mode="multiple"
-        data-key="itemCd"
+        data-key="rowId"
         class="my-table"
         scrollHeight="400px"
         showGridlines
@@ -36,6 +37,7 @@
         <Column field="qty"         header="생산량"     :style="{ width: '140px'}" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }" >
             <template #body="slotProps">
                 <InputNumber
+                    v-model="slotProps.data.qty"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="0"
@@ -107,12 +109,14 @@ import { getItemCds } from '@/util/common';
 import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
 import { ref } from 'vue';
 
+let rowIdSeq = 0
 const bomDialog = ref(false)
 const selectedItem = ref([])
 const itemBomList = ref([])
 const itemStockList = ref([])
 const typeCd = ref('M2')
-const removeRow = () =>{
+
+const removeRow = (index) =>{
     itemBomList.value.splice(index,1)
 }
 
@@ -137,12 +141,15 @@ const bomCalculation = async ()=>{
 }
 
 const allClear = () =>{
+    rowIdSeq = 0
+    selectedItem.value = []
     itemBomList.value = []
     itemStockList.value = []
 }
 
 const addRows = (rows) =>{
     const rowItem = rows.map((o, index) => ({
+      rowId: ++rowIdSeq,
       itemCd: o.itemCd,
       bomVer: o.bomVer,
       itemName: o.itemName,
@@ -194,3 +201,4 @@ const items = ref([
 
 
 </style>
+```

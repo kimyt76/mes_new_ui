@@ -14,7 +14,7 @@
         v-model:selection="selectedItem"
         :value="itemBomList"
         selection-mode="multiple"
-        data-key="itemCd"
+        data-key="rowId"
         class="my-table"
         scrollHeight="250px"
         tableStyle="width: 1300px"
@@ -53,7 +53,7 @@
         :value="itemStockList"
         data-key="itemCd"
         class="my-table"
-        scrollHeight="600px"
+        scrollHeight="570px"
         showGridlines
         scrollable
     >
@@ -105,6 +105,7 @@ import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
 import { ref } from 'vue';
 
 const { vInfo, vWarning} = useAlertStore()
+let rowIdSeq = 0
 const bomDialog = ref(false)
 const selectedItem = ref([])
 const itemBomList = ref([])
@@ -112,7 +113,7 @@ const itemStockList = ref([])
 const typeCd = ref('M3')
 const dt = ref(null)
 
-const removeRow = () =>{
+const removeRow = (index) =>{
     itemBomList.value.splice(index,1)
 }
 
@@ -137,12 +138,15 @@ const bomCalculation = async ()=>{
 }
 
 const allClear = () =>{
+    rowIdSeq = 0
+    selectedItem.value = []
     itemBomList.value = []
     itemStockList.value = []
 }
 
 const addRows = (rows) =>{
     const rowItem = rows.map((o, index) => ({
+      rowId: ++rowIdSeq,
       itemCd: o.itemCd,
       bomVer: o.bomVer,
       itemName: o.itemName,
