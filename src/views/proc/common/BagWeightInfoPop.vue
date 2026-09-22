@@ -55,7 +55,7 @@
           :value="measureList"
             stripedRows
             scrollable
-            scrollHeight="320px"
+            scrollHeight="160px"
             class="measure-table"
         >
           <Column field="scaleName" header="저울별칭" />
@@ -135,77 +135,82 @@ onMounted( () =>{
 
 </script>
 
+```css
 <style scoped>
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
   background-color: #BCAAA4;
   color: white;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
   font-family: monaco, Consolas;
-  padding: 8px;
+  padding: 4px;
 }
+
 :deep(.weight-input-dialog .p-dialog-header) {
   background: #4b586d;
   color: #fff;
-  padding: 0.85rem 1rem;
+  padding: 0.45rem 0.5rem;
 }
 
 .dialog-header-title {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
 .weight-dialog-body {
   display: flex;
-  gap: 2rem;
-  padding: 1.25rem 1rem 1.5rem 1rem;
-  min-height: 430px;
+  gap: 1rem;
+  padding: 0.6rem 0.5rem 0.75rem 0.5rem;
+  min-height: 215px;
   background: #f7f7f7;
-  width: 900px;
+  width: 450px;
 }
 
 .left-panel {
-  width: 265px;
+  width: 132px;
   flex-shrink: 0;
 }
 
 .display-value {
-  font-size: 3rem;
+  font-size: 1.5rem;
   line-height: 1;
   color: #222;
-  padding: 0.5rem 0 0.75rem 0;
+  padding: 0.25rem 0 0.4rem 0;
   border-bottom: 1px dashed #b8b8b8;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .keypad-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.65rem;
-  margin-top: 0.35rem;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
 }
 
 :deep(.keypad-btn.p-button) {
-  height: 64px;
+  height: 32px;
+  min-width: 0;
+  padding: 0;
   border-radius: 2px;
   color: #4b586d;
   border-color: #5c6880;
   background: #fff;
-  font-size: 1.35rem;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
 .bottom-btns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-  margin-top: 0.65rem;
+  display: flex;
+  gap: 5px;
+  margin-top: 0.35rem;
 }
 
 :deep(.action-btn.p-button) {
-  height: 62px;
+  height: 32px;
+  min-width: 0;
+  padding: 0;
   border-radius: 3px;
-  font-size: 1.6rem;
+  font-size: 0.9rem;
   font-weight: 700;
   background: #4f5d74;
   border-color: #4f5d74;
@@ -220,11 +225,11 @@ onMounted( () =>{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #111;
 }
@@ -233,12 +238,14 @@ onMounted( () =>{
   background: #4f5d74;
   border-color: #4f5d74;
   font-weight: 600;
-  height: 34px;
-  padding: 0 1rem;
+  font-size: 0.7rem;
+  height: 25px;
+  padding: 0 0.4rem;
 }
 
 .measure-table {
   background: #fff;
+  font-size: 11px;
 }
 
 :deep(.measure-table .p-datatable-thead > tr > th) {
@@ -246,33 +253,30 @@ onMounted( () =>{
   color: #444;
   text-align: center;
   font-weight: 600;
-  padding: 0.45rem 0.75rem;
+  font-size: 11px;
+  padding: 0.25rem 0.35rem;
   border: 1px solid #d5d5d5;
 }
 
 :deep(.measure-table .p-datatable-tbody > tr > td) {
   text-align: center;
-  padding: 0.5rem 0.75rem;
+  font-size: 11px;
+  padding: 0.25rem 0.35rem;
   border: 1px solid #ececec;
-  height: 42px;
+  height: 25px;
 }
 
 :deep(.measure-table .p-datatable-tbody > tr > td:first-child) {
   color: #14a3a3;
   font-weight: 600;
 }
-.bottom-btns {
-  display: flex;
-  gap: 10px;
-}
 
-/* 버튼 기본: 2개일 때 */
 .bottom-btns .action-btn {
   flex: 1;
 }
 
-/* 버튼 3개일 때 */
 .bottom-btns.three .action-btn {
   flex: 1;
 }
 </style>
+
