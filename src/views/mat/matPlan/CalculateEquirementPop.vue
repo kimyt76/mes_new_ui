@@ -9,7 +9,7 @@
     <div class="top-table-area">
       <DataTable
         :value="itemBomList"
-        data-key="itemCd"
+        data-key="rowId"
         class="my-table top-table"
         scrollable
         :scrollHeight="'var(--top-body-h)'"
@@ -100,6 +100,7 @@ import { useDialog } from 'primevue';
 import { inject, onMounted, ref } from 'vue';
 
 const { vInfo, vWarning} = useAlertStore()
+let rowIdSeq = 0;
 const dt =ref(null)
 const dialog = useDialog();
 const bomDialog = ref(false);
@@ -122,6 +123,7 @@ const handleSelect = (obj) => {
 
 const addRows = (rows) => {
   const rowItem = rows.map((o) => ({
+    rowId: ++rowIdSeq,
     itemCd: o.itemCd,
     bomVer: o.bomVer,
     itemName: o.itemName,
@@ -176,7 +178,8 @@ const openPop = () => {
             itemList : selectedItem.value,
             itemTypeCd : itemTypeCd,
             customerCd : selectedItem.value[0]?.customerCd,
-            customerName : selectedItem.value[0]?.customerName
+            customerName : selectedItem.value[0]?.customerName,
+            customerManager : selectedItem.value[0]?.customerManager
          },
          onClose: (event) =>{
 
@@ -197,7 +200,10 @@ onMounted( async () => {
        //자동조회
        const res = await ApiMat.getRequiredAmount(dialogRef?.value?.data?.list )
 
-       itemBomList.value = res.itemBomList
+       itemBomList.value = res.itemBomList.map((item) => ({
+            ...item,
+            rowId: ++rowIdSeq
+       }))
        itemStockList.value = res.itemStockList;
   } else{
        typeCd.value = 'M3';

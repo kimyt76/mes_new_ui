@@ -253,7 +253,7 @@ const form = reactive({
     customerName: '',
     customerCd: '',
     remark: '',
-    vatType: '',
+    vatType: 'VRY',
 
     areaCd: '',
     userId: userId,
