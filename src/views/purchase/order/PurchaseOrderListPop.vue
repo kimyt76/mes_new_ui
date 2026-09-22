@@ -85,7 +85,6 @@ const { vWarning } = useAlertStore()
 const emit = defineEmits(["selected", "close"]);
 const selectedItem = ref([])
 const purOrderList = ref([])
-const subItemList = ref([])
 const itemTypeCds = ref([])
 const props = defineProps({
    typeCd: {
@@ -135,8 +134,6 @@ const selectedRow = async () => {
     // }
     emit('selected', selectedItem.value)
     selectedItem.value = []
-
-
 }
 
 onMounted( async () =>{
