@@ -46,7 +46,7 @@
                 <label for="on_label">입고상태</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.endYn" :options="endYns"
+                <Select v-model="form.itemEndYn" :options="itemEndYns"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 90px"
@@ -78,12 +78,12 @@
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-        <Column field="purOrderDateSeq"     header="일자"   frozen :style="{ width: '130px', textAlign:'center'}" />
-        <Column field="purOrderDate"        header="발주일"  frozen :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="deliveryDate"        header="납기일"     :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="customerName"        header="거래처명"  :style="{ width: '280px'}" />
+        <Column field="purOrderDateSeq"     header="발주번호"   frozen :style="{ width: '130px', textAlign:'center'}" />
+        <Column field="purOrderDate"        header="발주일"     frozen :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="deliveryDate"        header="납기일"     :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="customerName"        header="거래처명"  :style="{ width: '250px'}" />
         <Column field="itemCd"              header="품목코드"  :style="{ width: '120px', textAlign:'center'}" />
-        <Column field="itemName"            header="품목명"    :style="{ width: '350px'}" bodyClass="break-words">
+        <Column field="itemName"            header="품목명"    :style="{ width: '390px'}" bodyClass="break-words">
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.purOrderItemId, slotProps.data.purOrderId)" class="clickable-cell">
                     {{ slotProps.data.itemName }}
@@ -97,12 +97,47 @@
         <Column field="inQty"       header="입고수량"    :style="{ width: '90px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.inQty).toLocaleString() }}</template>
         </Column>
-        <Column field="supplyPrice" header="공급가액"    :style="{ width: '90px', textAlign:'center'}">
+        <Column field="supplyPrice" header="공급가액"    :style="{ width: '120px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
-        <Column field="inYn"        header="입고상태"   :style="{ width: '90px', textAlign:'center'}" />
-        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" />
-        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="inYn"        header="입고상태"   :style="{ width: '90px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span
+                    :class="slotProps.data.inYn === 'Y' ? 'text-red' : 'text-blue'"
+                >
+                    {{ slotProps.data.inYn === 'Y' ? '입고' : '미입고' }}
+                </span>
+            </template>
+        </Column>
+        <Column field="printYn"     header="인쇄상태"   :style="{ width: '90px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span
+                    :class="slotProps.data.printYn === 'Y' ? 'text-red' : 'text-blue'"
+                >
+                    {{ slotProps.data.printYn === 'Y' ? '인쇄' : '미출력' }}
+                </span>
+            </template>
+        </Column>
+        <Column field="itemEndYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span
+                    :class="slotProps.data.itemEndYn === 'Y' ? 'text-red' : 'text-blue'"
+                    class="click-text"
+                    @click="toggleEndYn(slotProps.data)"
+                >
+                    {{ slotProps.data.itemEndYn === 'Y' ? '종결' : '진행중' }}
+                </span>
+            </template>
+        </Column>
+        <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}">
+            <template #body="slotProps">
+                <span
+                    :class="slotProps.data.mailYn === 'Y' ? 'text-red' : 'text-blue'"
+                >
+                    {{ slotProps.data.mailYn === 'Y' ? '발송' : '미발송' }}
+                </span>
+            </template>
+        </Column>
         <Column field="managerName" header="담당자"     :style="{ width: '90px', textAlign:'center'}" />
     </DataTable>
 </div>
@@ -113,6 +148,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { useAlertStore } from '@/stores/alert.js';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -123,7 +159,8 @@ import PurchaseOrderPop from './PurchaseOrderPop.vue';
 const totalCount = computed(() => {
   return Array.isArray(purchaseOrderList.value) ? purchaseOrderList.value.length : 0
 })
-const selectedItem = ref();
+const {vInfo, vWarning} = useAlertStore()
+const selectedItem = ref([]);
 const purchaseOrderList = ref([])
 const dialog = useDialog()
 const dt = ref(null);
@@ -133,10 +170,12 @@ const inYns = ref([
     { codeNm: '미입고', code: 'N' },
     { codeNm: '입고', code: 'Y' },
 ])
-const endYns = ref([
+
+const itemEndYns = ref([
     { codeNm: '진행중', code: 'N' },
     { codeNm: '종결', code: 'Y' },
 ])
+
 const form = reactive({
     strDate: minMonth(todayKST(), 1),
     endDate: todayKST(),
@@ -147,10 +186,23 @@ const form = reactive({
     customerCd: '',
     inYn: '',
     endYn: '',
+    itemEndYn: '',
 })
 
 const handleDateChange = () =>{
 
+}
+
+const toggleEndYn = async (row) =>{
+    const newValue = row.itemEndYn === 'Y' ? 'N' : 'Y'
+
+    const params = {
+        purOrderItemId: row.purOrderItemId,
+        itemEndYn: newValue
+    }
+    await ApiPurchaseOrder.updatePurchaseOrderItemEndYn(params)
+
+    row.itemEndYn = newValue
 }
 
 const selectRowClick = (id, purOrderId) =>{
@@ -199,6 +251,8 @@ const srhList = async () =>{
 }
 
 const printOut = async () => {
+    if(selectedItem.value.length === 0 ) return vWarning('인쇄할 목록이 없습니다.')
+
     const purOrderIds = [
         ...new Set(
         (selectedItem.value?.length
@@ -231,7 +285,6 @@ const home = ref({
 });
 const items = ref([
     { label: '발주관리' },
-    { label: '발주목록(생산)' },
     { label: '발주목록(생산)목록' },
 ]);
 
@@ -266,5 +319,8 @@ const downloadExcel = () =>{
   text-decoration: underline;
   text-align: left;
 }
-
+.click-text {
+    cursor: pointer;
+    font-weight: 600;
+}
 </style>

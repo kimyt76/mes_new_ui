@@ -98,7 +98,17 @@
             <template #body="slotProps">{{ Number(slotProps.data.supplyPrice).toLocaleString() }}</template>
         </Column>
         <!-- <Column field="inYn"        header="입고상태"   :style="{ width: '90px', textAlign:'center'}" /> -->
-        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="endYn"       header="진행상태"   :style="{ width: '90px', textAlign:'center'}">
+            <template #body="slotProps">
+                <span
+                    :class="slotProps.data.endYn === 'Y' ? 'text-red' : 'text-blue'"
+                    class="click-text"
+                    @click="toggleEndYn(slotProps.data)"
+                >
+                    {{ slotProps.data.endYn === 'Y' ? '종결' : '진행중' }}
+                </span>
+            </template>
+        </Column>
         <Column field="mailYn"      header="발주서발송" :style="{ width: '100px', textAlign:'center'}" />
         <Column field="managerName" header="담당자"     :style="{ width: '90px', textAlign:'center'}" />
     </DataTable>
@@ -136,7 +146,7 @@ const endYns = ref([
 const form = reactive({
     strDate: minMonth(todayKST(), 1),
     endDate: todayKST(),
-    itemTypeCd: 'M2',
+    itemTypeCd: '',
     itemCd: '',
     itemName: '',
     customerName: '',
@@ -185,6 +195,18 @@ const selectRowClick = (id) =>{
             srhList()
         },
     })
+}
+
+const toggleEndYn = async (row) =>{
+    const newValue = row.endYn === 'Y' ? 'N' : 'Y'
+
+    const params = {
+        purOrderId: row.purOrderId,
+        endYn: newValue
+    }
+    await ApiPurchaseOrder.updatePurchaseOrderM2EndYn(params)
+
+    row.endYn = newValue
 }
 
 const srhList = async () =>{
@@ -260,5 +282,8 @@ const downloadExcel = () =>{
   text-decoration: underline;
   text-align: left;
 }
-
+.click-text {
+    cursor: pointer;
+    font-weight: 600;
+}
 </style>
