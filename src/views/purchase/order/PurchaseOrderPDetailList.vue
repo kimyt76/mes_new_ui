@@ -142,7 +142,7 @@ const endYns = ref([
 const form = reactive({
     strDate: minMonth(todayKST()),
     endDate: todayKST(),
-    itemTypeCd: 'M2',
+    itemTypeCd: '',
     itemCd: '',
     itemName: '',
     customerName: '',
