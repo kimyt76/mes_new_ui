@@ -87,9 +87,9 @@
     </template>
 </Card>
 <div class="w-full flex gap-2 ml-2 mt-4">
-    <div>
+    <!-- <div>
         <Button label="주문서" @click="openPop('O')"/>
-    </div>
+    </div> -->
     <div>
         <Button label="품목+" @click="itemPop"/>
     </div>
@@ -408,10 +408,13 @@ const openPop = (type) =>{
             }
         },
         onClose: (event) => {
+            console.log('event.data',  event.data)
             if ( event.data ) {
                 if ( type === 'C' ){
+
                     form.customerCd = event.data.customerCd
                     form.customerName = event.data.customerName
+                    form.customerManagerName = event.data.customerManager
                 }else if ( type === 'U' ){
                     form.managerId = event.data.userId
                     form.managerName = event.data.memberNm
