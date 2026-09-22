@@ -132,8 +132,9 @@ onMounted( async () =>{
         Object.assign(form, popupForm)
     }
     Object.assign(form, popupForm)
-    allStorages.value = await ApiSystem.getStorageCodeList()
-})
+    allStorages.value = (await ApiSystem.getStorageCodeList())
+        .filter(item => !['WS001', 'WS101'].includes(item.code))
+    })
 
 const closeDialog = () =>{
     dialogRef.value.close()
