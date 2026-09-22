@@ -65,7 +65,7 @@
             scrollHeight="700px"
             showGridlines
             >
-            <Column header="No."  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column header="NO"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
                 <template #body="slotProps">
                     {{ slotProps.index + 1 }}
                 </template>

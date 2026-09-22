@@ -59,7 +59,7 @@
             showGridlines
             >
             <Column selectionMode="single"    headerStyle="width: 3rem" style="text-align: center;"></Column>
-            <Column header="No."  :style="{ width: '40px'}" >
+            <Column header="NO"  :style="{ width: '40px'}" >
                 <template #body="slotProps">
                     {{ slotProps.index + 1 }}
                 </template>
