@@ -257,12 +257,18 @@ const selectRowClick = (type, id, passState) =>{
         baseProps.style = {
             width: '95vw',
             maxWidth: '1900px',
-            height: '650px',
+            maxHeight: '90vh',
             overflow: 'hidden'
         }
+
         baseProps.pt = {
             root: { style: { overflow: 'hidden' } },
-            content: { style: { overflow: 'hidden' } }
+            content: {
+                style: {
+                    overflowX: 'auto',
+                    overflowY: 'auto'
+                }
+            }
         }
     }
 
