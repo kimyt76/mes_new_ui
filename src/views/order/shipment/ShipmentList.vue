@@ -72,7 +72,7 @@
         </Column>
         <Column field="shipmentReqDate" header="출고요청일"    :style="{ width: '120px', textAlign: 'center'}" ></Column>
         <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
-        <Column field="poNo"            header="PO No"    :style="{ width: '130px'}" ></Column>
+        <Column field="poNo"            header="PO NO"    :style="{ width: '130px'}" ></Column>
         <Column field="deliveryManagerName"     header="담당자명"   :style="{ width: '100px', textAlign: 'center'}" />
         <Column field="itemCd"          header="품목코드" :style="{ width: '160px', textAlign: 'center'}" />
         <Column field="itemName"        header="품목명"   :style="{ width: '420px'}" bodyClass="break-words" >

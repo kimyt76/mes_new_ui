@@ -82,7 +82,7 @@
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="poNo"            header="PO No"    :style="{ width: '130px'}" ></Column>
+        <Column field="poNo"            header="PO NO"    :style="{ width: '130px'}" ></Column>
         <Column field="clientNo"        header="고객사코드"   :style="{ width: '100px'}" />
         <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
         <Column field="managerName"     header="담당자명"   :style="{ width: '90px', textAlign: 'center'}" />

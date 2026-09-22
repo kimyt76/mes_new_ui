@@ -59,7 +59,7 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="poNo"            header="PO No"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
+        <Column field="poNo"            header="PO NO"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
         <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'right'}" ></Column>
         <Column field="procOrderDate"   header="코팅지시일"  :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">

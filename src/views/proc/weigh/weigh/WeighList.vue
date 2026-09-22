@@ -65,7 +65,7 @@
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px', textAlign: 'center'}" ></Column>
+        <Column field="poNo"        header="PO NO"    :style="{ width: '110px', textAlign: 'center'}" ></Column>
         <Column field="makeNo"      header="제조번호"  :style="{ width: '160px', textAlign: 'center'}" />
         <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '80px', textAlign: 'center'}" />

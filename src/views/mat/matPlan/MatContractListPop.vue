@@ -52,7 +52,7 @@
             />
             <Column
               field="poNo"
-              header="PO No"
+              header="PO NO"
               :style="{ width: '140px' }"
               style="text-align: center;"
               :pt="{ columnHeaderContent: 'justify-center' }"

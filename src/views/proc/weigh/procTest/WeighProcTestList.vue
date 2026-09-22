@@ -53,7 +53,7 @@
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO No"    :style="{ width: '110px'}" ></Column>
+        <Column field="poNo"        header="PO NO"    :style="{ width: '110px'}" ></Column>
         <Column field="makeNo"      header="제조번호"  :style="{ width: '150px'}" />
         <Column field="logNo"       header="LOT번호"  :style="{ width: '200px'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '110px'}" />

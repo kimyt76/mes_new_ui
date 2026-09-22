@@ -151,9 +151,9 @@
                 </template>
             </Column>
             <!-- =====================================================
-                 PO No
+                 PO NO
             ====================================================== -->
-            <Column field="poNo" header="PO No" frozen :style="{ width: '95px', textAlign: 'center' }" >
+            <Column field="poNo" header="PO NO" frozen :style="{ width: '95px', textAlign: 'center' }" >
                 <template #body="slotProps">
                     <div v-if="Number(slotProps.data.rowId) === 0" class="clickable-cell text-ellipsis" @click=" fieldClick( slotProps.data, 'poNo' ) " >
                         {{ slotProps.data.poNo }}

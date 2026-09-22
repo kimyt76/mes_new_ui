@@ -57,7 +57,7 @@
             >
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column field="matRegDate"  header="일자"   frozen :style="{ width: '120px'}" />
-            <Column field="poNo"        header="PO No"  frozen :style="{ width: '120px'}" />
+            <Column field="poNo"        header="PO NO"  frozen :style="{ width: '120px'}" />
             <Column field="itemCd"      header="품목코드" frozen :style="{ width: '130px'}"  >
                 <template #body="slotProps">
                     <div @click="bomPop(slotProps.data.itemName)" class="clickable-cell">

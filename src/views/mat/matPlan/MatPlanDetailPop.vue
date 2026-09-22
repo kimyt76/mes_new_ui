@@ -30,7 +30,7 @@
             />
           </template>
         </Column>
-        <Column field="poNo" header="PO No." :style="{ width: '140px', textAlign: 'center' }" />
+        <Column field="poNo" header="PO NO" :style="{ width: '140px', textAlign: 'center' }" />
         <Column field="itemCd" header="품목코드" :style="{ width: '120px', textAlign: 'center' }" />
         <Column field="itemName" header="품목명" :style="{ width: '350px', textAlign: 'left' }" bodyClass="break-words"/>
         <Column field="qty" header="수량" :style="{ width: '130px', textAlign: 'right' }">

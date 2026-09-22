@@ -252,7 +252,7 @@ const newRow = () => ({
 // -----------------
 const hotHeaders = computed(() => [
   '',
-  'PO No.',
+  'PO NO',
   '제조번호',
   '1차포장 Lot',
   '2차포장 Lot',

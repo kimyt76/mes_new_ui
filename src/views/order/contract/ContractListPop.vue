@@ -51,7 +51,7 @@
         >
             <Column selectionMode="multiple"  headerStyle="width: 3rem" style="text-align: center;"></Column>
             <Column field="contractDateSeq"   header="일자-No." :style="{ width: '130px'}" style="text-align: center;" />
-            <Column field="poNo"              header="PO No."  :style="{ width: '150px'}" style="text-align: left;" />
+            <Column field="poNo"              header="PO NO"  :style="{ width: '150px'}" style="text-align: left;" />
             <Column field="itemName"          header="품목명"  :style="{ width: '280px'}" style="text-align: left;" />
             <Column field="expectedDueDate"   header="납기예정일자" :style="{ width: '120px'}" style="text-align: left;" />
             <Column field="clientName"        header="고객사명" :style="{ width: '180px'}" style="text-align:  center;" />

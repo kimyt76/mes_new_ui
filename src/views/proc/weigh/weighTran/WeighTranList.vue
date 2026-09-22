@@ -42,7 +42,7 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="poNo"       header="PO No"       :style="{ width: '110px', textAlign: 'center'}" ></Column>
+        <Column field="poNo"       header="PO NO"       :style="{ width: '110px', textAlign: 'center'}" ></Column>
         <Column field="tranDate"   header="일자"        :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="openPop(slotProps.data.tranId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">

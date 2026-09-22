@@ -76,7 +76,7 @@
         selectionMode="single"
         @row-select="selectedRow"
     >
-        <Column field="poNo" header="PO No." :style="{ width: '130px', textAlign: 'center' }" />
+        <Column field="poNo" header="PO NO" :style="{ width: '130px', textAlign: 'center' }" />
         <Column field="itemName" header="품목명" :style="{ width: '370px' }" />
         <Column field="deliveryReqDate" header="납기일자" :style="{ width: '100px', textAlign: 'center' }" />
         <Column field="clientName" header="고객사명" :style="{ width: '200px' }" />
