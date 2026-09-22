@@ -42,6 +42,15 @@ export const  ApiPurchaseOrder = {
         return await API_URL.post('/purchaseOrder/updatePurchaseOrder', params)
     },
 
+     /* 발주  업데이트(원료용) */
+    updatePurchaseOrderItemEndYn: async(params) =>{
+        return await API_URL.post('/purchaseOrder/updatePurchaseOrderItemEndYn', params)
+    },
+     /* 발주  업데이트(부자재) */
+    updatePurchaseOrderM2EndYn: async(params) =>{
+        return await API_URL.post('/purchaseOrder/updatePurchaseOrderM2EndYn', params)
+    },
+
     /* 메일발송 */
     orderMail: async(params) =>{
         return API_URL.post('/purchaseOrder/orderMail', params)
