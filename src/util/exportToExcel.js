@@ -42,10 +42,43 @@ export function exportToExcel(data, fileName, columns) {
     }
   }
 
+  // 한글/영문/숫자 기준 문자열 너비 계산
+  const getTextWidth = (value) => {
+    if (value === null || value === undefined) return 0;
+
+    return String(value)
+      .split('')
+      .reduce((width, char) => {
+        const code = char.charCodeAt(0);
+
+        if (code > 255) {
+          return width + 2;
+        }
+
+        return width + 1;
+      }, 0);
+  };
+
   // 5) 자동 컬럼 너비
-  worksheet["!cols"] = visibleColumns.map(col => ({
-    wch: Math.max((col?.props?.header?.length ?? 5) * 2, 10)
-  }));
+  worksheet["!cols"] = visibleColumns.map(col => {
+    const field = col?.props?.field;
+    const header = col?.props?.header ?? "";
+
+    let maxWidth = getTextWidth(header);
+
+    data.forEach(row => {
+      const value = row[field];
+      const valueWidth = getTextWidth(value);
+
+      if (valueWidth > maxWidth) {
+        maxWidth = valueWidth;
+      }
+    });
+
+    return {
+      wch: Math.min(Math.max(maxWidth + 2, 10), 50)
+    };
+  });
 
   // 6) 엑셀 워크북 생성 및 다운로드
   const workbook = XLSX.utils.book_new();
