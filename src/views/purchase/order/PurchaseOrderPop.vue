@@ -96,8 +96,8 @@
 </div>
 <div class="w-full mt-2">
     <DataTable
+        v-model:selection="selectedRows"
         :value="purchaseOrderItemList"
-        selectionMode="single"
         class="my-table"
         show-gridlines
         >
@@ -217,12 +217,13 @@ import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
 const itemDialog = ref(false)
+const selectedRows = ref([])
 const dialogRef = inject('dialogRef')
 const { userId, memberNm } = useAuthStore()
 const itemTypeCds = ref([])
 const vatTypes = ref([])
 const purchaseOrderItemList = ref([])
-const updateItem = ['D000004','M60038','M60040','M60041','M60043']
+const updateItem = ['D000002','D000004','M60038','M60040','M60041','M60043']
 const isAllSelected = computed(() => {
   return (
     purchaseOrderItemList.value.length > 0 &&
@@ -243,7 +244,7 @@ const form = reactive({
     customerCd: '',
     customerManagerName: '',
     remark: '',
-    vatType: '',
+    vatType: 'VRY',
 
     areaCd: '',
     purOrderId: '',
@@ -344,6 +345,7 @@ const openPop = (type) =>{
                 if ( type === 'C' ){
                     form.customerCd = event.data.customerCd
                     form.customerName = event.data.customerName
+                    form.customerManagerName = event.data.customerManager
                 }else if ( type === 'U' ){
                     form.managerId = event.data.userId
                     form.managerName = event.data.memberNm
@@ -408,6 +410,7 @@ onMounted( async () => {
     form.itemTypeCd = dialogRef.value?.data?.itemTypeCd ?? ''
     form.customerCd = dialogRef.value?.data?.customerCd ?? ''
     form.customerName = dialogRef.value?.data?.customerName ?? ''
+    form.customerManagerName = dialogRef.value?.data?.customerManager ?? ''
 
     form.purOrderDate = todayKST()
     form.deliveryDate = todayKST()
