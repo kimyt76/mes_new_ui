@@ -65,25 +65,25 @@
             scrollHeight="700px"
             showGridlines
             >
-            <Column header="NO"  :style="{ width: '50px'}" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column header="NO"  :style="{ width: '50px'}" >
                 <template #body="slotProps">
                     {{ slotProps.index + 1 }}
                 </template>
             </Column>
-            <Column field="itemCd"    header="품목코드"  :style="{ width: '100px'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemName"  header="품목명"    :style="{ width: '540px'}" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }">
+            <Column field="itemCd"    header="품목코드"  :style="{ width: '100px'}"  />
+            <Column field="itemName"  header="품목명"    :style="{ width: '540px'}" bodyClass="break-words" >
                 <template #body="slotProps">
                     <div @click="selectRowClick(slotProps.data.bomId)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
             </Column>
-            <Column field="bomVer"      header="BOM버전"    :style="{ width: '80px', textAlign:'center'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="defaultYn"    header="기본BOM"   :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="managerName" header="담당자"     :style="{ width: '80px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="itemCnt"     header="원료갯수"   :style="{ width: '70px', textAlign:'right'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="approvalState"    header="결재상태"     :style="{ width: '70px', textAlign:'center'}" :pt="{ columnHeaderContent: 'justify-center' }"/>
-            <Column field="etc"         header="비고"       :style="{ width: '350px', textAlign:'left'}"  :pt="{ columnHeaderContent: 'justify-center' }"/>
+            <Column field="bomVer"      header="BOM버전"    :style="{ width: '80px', textAlign:'center'}"  />
+            <Column field="defaultYn"    header="기본BOM"   :style="{ width: '70px', textAlign:'center'}" />
+            <Column field="managerName" header="담당자"     :style="{ width: '80px', textAlign:'center'}" />
+            <Column field="itemCnt"     header="원료갯수"   :style="{ width: '70px', textAlign:'right'}"  />
+            <Column field="approvalState"    header="결재상태"     :style="{ width: '70px', textAlign:'center'}" />
+            <Column field="etc"         header="비고"       :style="{ width: '350px', textAlign:'left'}"  />
         </DataTable>
     </div>
 </template>
