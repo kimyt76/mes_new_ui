@@ -74,7 +74,7 @@
             </Column>
             <Column field="bomVer"      header="BOM버전"   :style="{ width: '90px', textAlign:'center'}" />
             <Column field="managerName" header="담당자"     :style="{ width: '70px', textAlign:'center'}" />
-            <Column field="itemCnt"     header="원료갯수"  :style="{ width: '70px', textAlign:'right'}"  />
+            <Column field="itemCnt"     header="원료개수"  :style="{ width: '70px', textAlign:'right'}"  />
             <Column field="approvalState"    header="결재상태"     :style="{ width: '70px', textAlign:'center'}" />
             <Column field="etc"         header="비고"   :style="{ width: '320px'}"  />
         </DataTable>
