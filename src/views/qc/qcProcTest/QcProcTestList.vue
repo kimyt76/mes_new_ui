@@ -265,6 +265,8 @@ const getBatchStateText = (state) => {
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     procStatuss.value = (await ApiCommon.getCodeList('PROC_STATUS')).filter(i => ['31','32','41','42','51','52'].includes(i.code))
+
+    srhList()
 })
 
 const downloadExcel = () =>{
