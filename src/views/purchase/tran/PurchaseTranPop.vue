@@ -105,7 +105,7 @@
                         v-model="slotProps.data.qty"
                         class="w-full"
                         :min="0"
-                        :maxFractionDigits="0"
+                        :maxFractionDigits="6"
                         :useGrouping="true"
                         :inputStyle="{ width: '90px', 'text-align': 'right' }"
                          @update:modelValue="() => onChangeRow(slotProps.data)"
