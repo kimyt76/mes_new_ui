@@ -88,6 +88,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { useAlertStore } from '@/stores/alert.js';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -95,6 +96,7 @@ import { onMounted, reactive, ref } from 'vue';
 import MoveReqPop from '../../common/MoveReqPop.vue';
 import PackingPop from './PackingPop.vue';
 
+const {vWarning} = useAlertStore()
 const selectedItem = ref([])
 const dialog = useDialog()
 const dt = ref(null);
@@ -146,7 +148,6 @@ const selectRowClick = (row) =>{
 }
 
 const moveReq = () =>{
-        //selectedItem.value
     if ( !selectedItem.value.length ) {
         vWarning("이동 요청할 항목을 선택해주세요.");
         return;
