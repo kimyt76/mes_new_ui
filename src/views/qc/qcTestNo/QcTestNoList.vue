@@ -87,7 +87,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
-import { todayKST } from '@/util/common';
+import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useDialog } from 'primevue';
@@ -101,7 +101,7 @@ const selectedItem = ref([])
 const itemTypeCds = ref([])
 const itemTestNoList = ref([])
 const form = reactive({
-    strDate: todayKST(),
+    strDate: minMonth(todayKST(), 36),
     endDate: todayKST(),
     itemTypeCd: '',
     itemName: '',
