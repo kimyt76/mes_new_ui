@@ -88,6 +88,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { useAlertStore } from '@/stores/alert.js';
 import { minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -95,6 +96,7 @@ import { onMounted, reactive, ref } from 'vue';
 import MoveReqPop from '../../common/MoveReqPop.vue';
 import ChargePop from './ChargePop.vue';
 
+const { vWarning } = useAlertStore()
 const selectedItem = ref([])
 const dialog = useDialog()
 const dt = ref(null);
