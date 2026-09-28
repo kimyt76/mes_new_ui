@@ -55,6 +55,7 @@
             ref="dt"
             v-model:selection="selectedItem"
             :value="bomList"
+            :loading="loading"
             selectionMode="single"
             dataKey="bomId"
             paginator :rows="20"
@@ -92,6 +93,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -99,6 +101,7 @@ import BomDetailPop from './BomDetailPop.vue';
 
 const {vInfo} = useAlertStore()
 const dialog = useDialog()
+const loading = ref(false);
 const dt = ref(null);
 const approvaStates = ref([])
 const itemTypeCds = ref([])
@@ -117,10 +120,22 @@ const form = reactive({
 })
 
 const srchList = async () => {
-  const params = {
-    ...form
-  };
-  bomList.value = await ApiLab.getBomList(params);
+  loading.value = true
+
+    try {
+        const params = {
+            ...form
+        }
+        //console.log('BOM 검색조건:', params)
+        bomList.value = await ApiLab.getBomList(params)
+       // console.log('BOM 조회결과:', bomList.value)
+    } catch (err) {
+       // console.error('BOM 목록 조회 오류:', err)
+        handleApiError(err)
+        bomList.value = []
+    } finally {
+        loading.value = false
+    }
 };
 
 
