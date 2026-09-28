@@ -58,6 +58,11 @@ export default [
         name: 'MatProcCond',
         component: () => import('@/views/proc/mat/conditon/MatProcCondList.vue')
       },
+      {
+        path: 'mat/proc',
+        name: 'MatProcTest',
+        component: () => import('@/views/proc/mat/proc/MatProcTestList.vue')
+      },
 
 
       /* 코팅 */
@@ -71,6 +76,12 @@ export default [
         name: 'CoatingEentire',
         component: () => import('@/views/proc/coating/coating/CoatingEentireList.vue')
       },
+      {
+        path: 'coating/proc',
+        name: 'CoatingProcTest',
+        component: () => import('@/views/proc/coating/proc/CoatingProcTestList.vue')
+      },
+
 
       /* 충전 */
       {
@@ -83,6 +94,11 @@ export default [
         path: 'charge/chargeEentire',
         name: 'ChargeEentire',
         component: () => import('@/views/proc/charge/charge/ChargeEentireList.vue')
+      },
+      {
+        path: 'charge/proc',
+        name: 'ChargeProcTest',
+        component: () => import('@/views/proc/charge/proc/ChargeProcTestList.vue')
       },
 
 
@@ -97,7 +113,11 @@ export default [
         name: 'PackingEentire',
         component: () => import('@/views/proc/packing/packing/PackingEentireList.vue')
       },
-
+      {
+        path: 'packing/proc',
+        name: 'PackingProcTest',
+        component: () => import('@/views/proc/packing/proc/PackingProcTestList.vue')
+      },
 
 
 

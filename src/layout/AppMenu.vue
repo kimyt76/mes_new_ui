@@ -367,11 +367,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/mat/mat'
                     },
-                    // {
-                    //     label: '공정검사',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/proc/mat/matProcTest'
-                    // },
+                    {
+                        label: '공정검사',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/proc/mat/proc'
+                    },
                     {
                         label: '공정조건(온도RPM)',
                         icon: 'pi pi-fw pi-id-card',
@@ -394,11 +394,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/coating/coatingEentire'
                     },
-                    // {
-                    //     label: '공정검사',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/coating/coatingProcTest'
-                    // },
+                    {
+                        label: '공정검사',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/proc/coating/proc'
+                    },
                 ]
             },
             {
@@ -415,11 +415,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/charge/chargeEentire'
                     },
-                    // {
-                    //     label: '공정검사',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/charge/chargeProcTest'
-                    // },
+                    {
+                        label: '공정검사',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/proc/charge/proc/chargeProcTest'
+                    },
 
                 ]
             },
@@ -437,11 +437,11 @@ const model = ref([
                         icon: 'pi pi-fw pi-id-card',
                         to: '/proc/packing/packingEentire'
                     },
-                    // {
-                    //     label: '공정검사',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/proc/packing/packingProcTest'
-                    // },
+                    {
+                        label: '공정검사',
+                        icon: 'pi pi-fw pi-id-card',
+                        to: '/proc/packing/proc'
+                    },
                 ]
             },
         ]
