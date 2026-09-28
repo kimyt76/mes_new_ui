@@ -38,9 +38,10 @@
             <div class="col-6 flex">
                 <div class="flex align-items-center gap-2">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.testNo" style="width: 156px;" readonly/>
+                        <InputText v-model="form.testNo" style="width: 156px;"/>
                         <label>시험번호</label>
                     </FloatLabel>
+                    <Button label="검색" class="p-button-secondary" @click="getTestNo"></Button>
                     <span>-</span>
                     <FloatLabel style="width: 60px" variant="on">
                         <InputNumber
@@ -93,7 +94,7 @@
 <script setup>
 import { ApiQc } from '@/api/apiQc';
 import { useAlertStore } from '@/stores/alert';
-import { todayKST } from '@/util/common';
+import { isEmpty, todayKST } from '@/util/common';
 import StorageListPop from '@/views/system/storage/StorageListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
@@ -105,7 +106,7 @@ const dialogRef = inject('dialogRef')
 const form = reactive({
     reqDate: todayKST(),
     retestYn: '',
-    seq: '',
+    seq: 1,
     reqTesterName: '',
     reqTesterId: '',
     storageName: '',
@@ -116,6 +117,15 @@ const form = reactive({
 
     qcTestId: '',
 })
+
+const getTestNo = async () =>{
+    const res = await ApiQc.getQcTestNoInfo(form.testNo)
+
+    console.log('res', res)
+    if ( isEmpty(res) ) return vWarning('시험번호가 없습니다.')
+    if ( res.passState === 'PASS') return vWarning('시험번호가 적합상태입니다.')
+    Object.assign(form, res)
+}
 
 const saveInfo = async () =>{
     const params = {
@@ -162,10 +172,8 @@ const openPop = (type) =>{
 }
 
 onMounted( async () =>{
-    form.qcTestId = dialogRef.value.data.qcTestId
+   // await ApiCommon.getNextSeq('tb_qc_test_mst','test_no', )
 
-    const res = await ApiQc.getQcTestDetailInfo(form.qcTestId)
-    Object.assign(form , res)
 })
 
 const closeDialog = () =>{
