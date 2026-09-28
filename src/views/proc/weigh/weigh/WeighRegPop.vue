@@ -88,7 +88,7 @@
       <Button v-if="isStarted" label="칭량시작" @click="openLookupPopup('S')" />
       <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
       <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
-      <Button label="공정기획서" @click="downloadProc" />
+      <Button label="공정기록서" @click="downloadProc" />
       <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
       <Button v-if="isComplate" label="창량완료" @click="completeWeight" />
       <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
