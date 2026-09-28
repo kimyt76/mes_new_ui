@@ -136,13 +136,13 @@
         <Column field="retestYn"         header="검사유형"  :style="{ width: '70px', textAlign: 'center'}" >
                 <template #body="slotProps">{{ slotProps.data.retestYn === 'Y' ? '재검사' : '입고검사' }}</template>
         </Column>
-        <Column field="testState"   header="시험상태"  :style="{ width: '80px', textAlign: 'center'}" >
+        <Column field="testStateName"   header="시험상태"  :style="{ width: '80px', textAlign: 'center'}" >
             <template #body="slotProps">
                     {{ slotProps.data.testStateName}}
             </template>
         </Column>
         <Column field="confirmDate"     header="판정일자"  :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="passState"   header="판정상태" :style="{ width: '80px', textAlign: 'center'}">
+        <Column field="passState"       header="판정상태" :style="{ width: '80px', textAlign: 'center'}">
             <template #body="slotProps">
                 <span :class="getPassStateClass(slotProps.data.passState)">
                     {{ getPassStateName(slotProps.data.passState) }}
@@ -701,25 +701,18 @@ const handleCopy = (event) =>{
 
 
 const srhList = async () =>{
-
     const params = {
-
         ...form
-
     }
-
-
 
     qcTestList.value = await ApiQc.getQcTestList(params)
 
     selectItem.value = null;
-
 }
 
 
 
 const selectRowClick = (obj) =>{
-
     dialog.open(ReqQcTestPop, {
 
         props:{
@@ -845,122 +838,71 @@ onMounted(async () => {
 
 
 onUnmounted(() => {
-
     document.removeEventListener('copy', handleCopy)
-
     document.removeEventListener('mousedown', handleDocumentMouseDown)
-
 })
 
-
-
 const downloadExcel = () =>{
-
   const cols = dt.value?.columns ?? [];
-
-
-
   if (!cols.length) {
-
-    console.warn("No Columns Found");
-
+    //console.warn("No Columns Found");
     return;
-
   }
 
-  exportToExcel(qcTestList.value, "품질검사 리스트", cols);
+  const excelData = qcTestList.value.map(row => ({
+    ...row,
+    passState: getPassStateName(row.passState),
+  }))
 
+  exportToExcel(excelData, "품질검사 리스트", cols);
 }
-
 
 
 const getPassStateName = (state) => {
-
     const stateMap = {
-
         REQ: '시험대기',
-
         ING: '시험중',
-
         ING2: '검토대기',
-
         ING3: '승인대기',
-
         PASS: '적합',
-
         FAIL: '부적합'
-
     }
 
-
-
     return stateMap[state] ?? state
-
 }
 
 const stateClassMap = {
-
     REQ: 'state-req',
-
     ING: 'state-ing',
-
     ING2: 'state-review',
-
     ING3: 'state-approval',
-
     PASS: 'state-pass',
-
     FAIL: 'state-fail'
-
 }
-
-
 
 const getPassStateClass = (state) => stateClassMap[state] || ''
 
-
-
 const resetSearch = () => {
-
     form.areaCd = ''
-
     form.retestYn = ''
-
     form.itemTypeCd = ''
-
     form.itemName = ''
-
     form.itemCd = ''
-
     form.testNo = ''
-
     form.passState = ''
 
-
-
     srhList()
-
 }
 
-
-
 const home = ref({
-
     icon: 'pi pi-home'
-
 });
 
 const items = ref([
-
     { label: '품질관리' },
-
     { label: '품질검사' },
-
     { label: '품질검사목록' },
-
 ]);
-
-
 
 </script>
 

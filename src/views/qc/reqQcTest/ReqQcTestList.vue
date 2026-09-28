@@ -187,23 +187,14 @@
             </template>
 
         </Column>
-
         <Column field="reqDate"         header="요청일자"  :style="{ width: '110px', textAlign: 'center'}"  sortable />
-
         <Column field="reqTesterId"     header="요청자"    :style="{ width: '80px', textAlign: 'center'}" />
-
         <Column field="itemTypeCd"      header="품목구분"  :style="{ width: '90px', textAlign: 'center'}" />
-
         <Column field="itemCd"          header="품목코드"  :style="{ width: '140px', textAlign: 'center'}" />
-
         <Column field="itemName"        header="품목명"    :style="{ width: '350px'}"/>
-
         <Column field="lotNo"           header="로트번호"  :style="{ width: '190px'}" />
-
         <Column field="reqQty"          header="수량"      :style="{ width: '120px', textAlign:'right'}">
-
                 <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
-
         </Column>
 
         <Column field="storageCd"       header="창고명"    :style="{ width: '150px', textAlign: 'center'}" />
@@ -215,7 +206,7 @@
             </template>
         </Column>
         <Column field="passStateName"   header="판정상태"  :style="{ width: '90px', textAlign: 'center'}" />
-        <Column field="passState" header="검사"      :style="{ width: '70px', textAlign: 'center'}" >
+        <Column field="passState"       header="검사"      :style="{ width: '70px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <span
                     class="action-link"
@@ -939,7 +930,12 @@ const downloadExcel = () =>{
     return;
   }
 
-  exportToExcel(qcTestList.value, "품질검사요청 리스트", cols);
+  const excelData = qcTestList.value.map(row => ({
+    ...row,
+    testState: row.testStateName,
+  }))
+
+  exportToExcel(excelData, "품질검사요청 리스트", cols);
 }
 
 const stateClassMap = {
