@@ -3,48 +3,70 @@
 
 
   <div class="content-wrap">
-    <!-- 왼쪽 폼 -->
+        <!-- 왼쪽 폼 -->
     <div class="left-panel mt-3 ml-2">
-      <div class="grid mb-3">
-        <div class="col-3">
+
+      <!-- 1행 -->
+      <div class="grid mb-2">
+        <div class="col-4">
           <FloatLabel variant="on">
             <InputText v-model="form.reqDate" class="w-full" readonly />
             <label>의뢰일</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <InputText v-model="form.reqTesterName" class="w-full" readonly />
             <label>시험의뢰자</label>
           </FloatLabel>
         </div>
-        <div class="col-6">
+        <div class="col-4">
           <FloatLabel variant="on">
-            <InputText v-model="form.customerName" class="w-full" readonly />
-            <label>구매처</label>
+            <InputText v-model="form.testNo" class="w-full" readonly />
+            <label>시험번호</label>
           </FloatLabel>
         </div>
       </div>
-      <div class="grid mb-3">
-        <div class="col-3">
+
+      <!-- 2행 -->
+      <div class="grid mb-2">
+        <div class="col-4">
           <FloatLabel variant="on">
             <InputText v-model="form.itemTypeName" class="w-full" readonly />
             <label>품목구분</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <InputText v-model="form.itemCd" class="w-full" readonly />
             <label>품목코드</label>
           </FloatLabel>
         </div>
-        <div class="col-6">
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <InputText v-model="form.qcCd" class="w-full" />
+            <label>QC코드</label>
+          </FloatLabel>
+        </div>
+      </div>
+
+      <!-- 3행 : 긴 항목 -->
+      <div class="grid mb-3">
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <InputText v-model="form.customerName" class="w-full" readonly />
+            <label>구매처</label>
+          </FloatLabel>
+        </div>
+        <div class="col-8">
           <FloatLabel variant="on">
             <InputText v-model="form.itemName" class="w-full" readonly />
             <label>품목명</label>
           </FloatLabel>
         </div>
       </div>
+
+      <!-- 4행 : LOT / 제조번호 -->
       <div class="grid mb-3">
         <div class="col-6">
           <FloatLabel variant="on">
@@ -59,14 +81,10 @@
           </FloatLabel>
         </div>
       </div>
+
+      <!-- 5행 -->
       <div class="grid mb-3">
-        <div class="col-3">
-          <FloatLabel variant="on">
-            <InputText v-model="form.testNo" class="w-full" readonly />
-            <label>시험번호</label>
-          </FloatLabel>
-        </div>
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <IconField iconPosition="left">
               <InputText v-model="form.testerName" class="w-full" />
@@ -75,7 +93,7 @@
             <label>시험접수자</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <Select
               v-model="form.testState"
@@ -87,21 +105,21 @@
             <label>시험상태</label>
           </FloatLabel>
         </div>
-        <div class="col-3 req-date-box">
+        <div class="col-4 req-date-box">
           <FloatLabel variant="on">
             <DatePicker
               v-model="form.testDate"
               showIcon
-              :pt="{
-                input: { style: 'width: 80px;' }
-              }"
+              class="w-full"
             />
             <label>시험일</label>
           </FloatLabel>
         </div>
       </div>
+
+      <!-- 6행 -->
       <div class="grid mb-3">
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <IconField iconPosition="left">
               <InputText v-model="form.orderTesterName" class="w-full" />
@@ -110,16 +128,7 @@
             <label>시험지시자</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
-          <FloatLabel variant="on">
-            <IconField iconPosition="left">
-              <InputText v-model="form.confirmTesterName" class="w-full" />
-              <InputIcon class="pi pi-search" @click="openPop('C')" />
-            </IconField>
-            <label>시험확인자</label>
-          </FloatLabel>
-        </div>
-        <div class="col-3">
+         <div class="col-4">
           <FloatLabel variant="on">
             <Select
               v-model="form.passState"
@@ -131,22 +140,31 @@
             <label>판정상태</label>
           </FloatLabel>
         </div>
-        <div class="col-3 req-date-box">
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <IconField iconPosition="left">
+              <InputText v-model="form.confirmTesterName" class="w-full" />
+              <InputIcon class="pi pi-search" @click="openPop('C')" />
+            </IconField>
+            <label>시험확인자</label>
+          </FloatLabel>
+        </div>
+
+      </div>
+
+      <!-- 7행 -->
+      <div class="grid mb-3">
+        <div class="col-4 req-date-box">
           <FloatLabel variant="on">
             <DatePicker
               v-model="form.confirmDate"
               showIcon
-              :pt="{
-                input: { style: 'width: 80px;' }
-              }"
+              class="w-full"
             />
             <label>판정일자</label>
           </FloatLabel>
         </div>
-      </div>
-
-      <div class="grid mb-3">
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <IconField iconPosition="left">
               <InputText v-model="form.sampleTesterName" class="w-full" />
@@ -155,56 +173,55 @@
             <label>검체채취자</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <InputNumber
               v-model="form.sampleQty"
               class="w-full"
               :minFractionDigits="0"
               :maxFractionDigits="6"
-              :inputStyle="{ width: '70px', 'text-align': 'right' }"
+              :inputStyle="{ width: '100%', 'text-align': 'right' }"
             />
-            <label>검체채취량(ea)</label>
+            <label>검체채취량 g(ml)</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
+      </div>
+
+      <!-- 8행 -->
+      <div class="grid mb-3">
+        <div class="col-4">
           <FloatLabel variant="on">
             <InputNumber
               v-model="form.testQty"
               class="w-full"
               :minFractionDigits="0"
               :maxFractionDigits="6"
-              :inputStyle="{ width: '70px', 'text-align': 'right' }"
+              :inputStyle="{ width: '100%', 'text-align': 'right' }"
             />
-            <label>검사샘플량(ea)</label>
+            <label>검사샘플량 (kg)</label>
           </FloatLabel>
         </div>
-        <div class="col-3">
-          <FloatLabel variant="on">
-            <InputText v-model="form.qcCd" class="w-full" />
-            <label>QC코드</label>
-          </FloatLabel>
-        </div>
-       <div class="grid mb-3"></div>
-        <div v-if="isOrderType" class="col-3">
+        <div v-if="isOrderType" class="col-4">
           <FloatLabel variant="on">
             <InputText v-model="form.orderType" class="w-full" readonly />
             <label>거래유형</label>
           </FloatLabel>
-         </div>
-        <div v-if="isExpirDate" class="col-3">
+        </div>
+        <div v-if="isExpirDate" class="col-4">
           <FloatLabel variant="on">
             <InputText v-model="form.expiryDate" class="w-full" readonly />
             <label>사용기한</label>
           </FloatLabel>
         </div>
       </div>
+
+      <!-- 비고 -->
       <div class="grid mb-3">
         <div class="col-12">
           <FloatLabel variant="on">
             <Textarea
               v-model="form.etc"
-              rows="4"
+              rows="3"
               class="w-full"
               style="resize: none;"
             />
@@ -219,19 +236,19 @@
       <div class="right-toolbar flex gap-2 items-center">
         <Button label="검사유형" outlined size="small" @click="openPop('M')" />
         <Button label="항목 +" outlined size="small" @click="addRow" />
+        <Button label="삭제" outlined severity="danger" size="small" @click="removeRow" />
       </div>
 
       <div class="table-area mt-2">
-        <CommonEditTable
-          v-model="qcTestTypeMethodList"
-          v-model:selection="selectItem"
-          :columns="methodColumns"
-          dataKey="testTypeMethodId"
-          :selectable="true"
-          selectionMode="multiple"
-          :showDelete="true"
-          :validators="validators"
-          @remove-row="removeRow"
+        <BaseHotTable
+          ref="hotTable"
+          :data="qcTestTypeMethodList"
+          :colHeaders="colHeaders"
+          :columns="columns"
+          :rowHeaders="false"
+          :height="430"
+          stretchH="none"
+          :afterChange="onAfterChange"
         />
       </div>
     </div>
@@ -251,29 +268,23 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiQc } from '@/api/apiQc';
-import CommonEditTable from '@/components/CommonEditTable.vue';
+import BaseHotTable from '@/components/BaseHotTable.vue';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { todayKST } from '@/util/common';
+import { isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
-import { computed, inject, onMounted, reactive, ref } from 'vue';
+import { inject, onMounted, reactive, ref } from 'vue';
 import QcTestTypeListPop from '../qcTestType/QcTestTypeListPop.vue';
 
-const { memberNm } = useAuthStore()
+const { userId, memberNm } = useAuthStore()
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialogRef = inject('dialogRef')
 const dialog = useDialog()
-const isAllSelected = computed(() => {
-  return (
-    qcTestTypeMethodList.value.length > 0 &&
-    selectItem.value.length === qcTestTypeMethodList.value.length
-  )
-})
+const hotTable = ref(null)
 const isOrderType = ref(false)
 const isExpirDate = ref(false)
-const selectItem = ref([])
 const testStates = ref([])
 const passStates = ref([])
 const deleteIds = ref([])
@@ -287,14 +298,14 @@ const form = reactive({
     lotNo : '',
     makeNo: '',
     testNo: '',
-    testDate: null,
+    testDate: todayKST(),
     confirmDate: null,
 
     reqTesterId: '',
     reqTesterName: '',
 
-    testerName: '',
-    testerId: '',
+    testerName: memberNm,
+    testerId: userId,
     orderTesterName: '',
     orderTesterId: '',
     confirmTesterName:'',
@@ -306,8 +317,8 @@ const form = reactive({
     passState: '',
     qcCd: '',
 
-    sampleQty: '',
-    testQty: '',
+    sampleQty: 0,
+    testQty: 0,
     orderType: '',
     expiryDate: null,
     etc: '',
@@ -316,41 +327,97 @@ const form = reactive({
     tranYn: '',
 })
 
-const methodColumns = [
-  { field: 'orderDist',     header: 'No', width: '50px', align: 'center', editable: false },
-  { field: 'testItem',      header: '검사항목', width: '100px', editor: 'text', align: 'center' },
-  { field: 'testMethod',    header: '시험방법', width: '320px', editor: 'textarea', multiline: true },
-  { field: 'testSpec',      header: '시험기준', width: '210px', editor: 'textarea', multiline: true },
-  { field: 'testResult',    header: '시험결과', width: '130px', editor: 'textarea', multiline: true },
-  { field: 'testDateString', header: '시험일자', width: '120px', editor: 'text', align: 'center' , multiline: true },
-  { field: 'testerName',    header: '시험자', width: '90px', editor: 'text', align: 'center' },
-  { field: 'passState',     header: '판정', width: '90px', editor: 'text', align: 'center' }
+const colHeaders = [
+    '',
+    'NO',
+    '검사항목',
+    '시험방법',
+    '시험기준',
+    '시험결과',
+    '시험일자',
+    '시험자',
+    '판정'
 ]
 
-const validators = {
-  orderDist: (value) => {
-    const num = Number(value)
-    if (Number.isNaN(num) || num < 0) return false
-    return num
+const columns = [
+    {
+      data: 'orderDist',
+      readOnly: true,
+      className: 'htCenter',
+      width: 50
+    },
+  {
+    data: 'checked',
+    type: 'checkbox',
+    className: 'htCenter',
+    width: 40
   },
-  testItem: (value) => String(value ?? '').trim(),
-  testMethod: (value) => String(value ?? '').trim(),
-  testSpec: (value) => String(value ?? '').trim(),
-  testResult: (value) => String(value ?? '').trim(),
-  testDateString: (value) => String(value ?? '').trim(),
-  testerName: (value) => String(value ?? '').trim(),
-  passState: (value) => String(value ?? '').trim()
+  {
+    data: 'testItem',
+    type: 'text',
+    className: 'htCenter',
+    width: 110
+  },
+  {
+    data: 'testMethod',
+    type: 'text',
+    className: 'htLeft',
+    width: 330
+  },
+  {
+    data: 'testSpec',
+    type: 'text',
+    className: 'htLeft',
+    width: 210
+  },
+  {
+    data: 'testResult',
+    type: 'text',
+    className: 'htLeft',
+    width: 130
+  },
+  {
+    data: 'testDateString',
+    type: 'text',
+    className: 'htCenter',
+    width: 120
+  },
+  {
+    data: 'testerName',
+    type: 'text',
+    className: 'htCenter',
+    width: 100
+  },
+  {
+    data: 'passState',
+    type: 'text',
+    className: 'htCenter',
+    width: 100
+  }
+]
+
+const onAfterChange = (changes, source) => {
+    if (!changes || source === 'loadData') return
 }
 
 const saveInfo = async () =>{
-    const params = {
-        qcTestInfo : form,
-        deleteIds : deleteIds.value,
-        qcTestTypeMethodList: qcTestTypeMethodList.value
+
+    if(isEmpty(form.sampleTesterName)) return vWarning('검체채취자 정보를 입력하세요')
+    if(isEmpty(form.orderTesterName)) return vWarning('시험지시자 정보를 입력하세요')
+
+    try{
+        const params = {
+            qcTestInfo : form,
+            deleteIds : deleteIds.value,
+            qcTestTypeMethodList: qcTestTypeMethodList.value
+        }
+
+        const res = await ApiQc.updateQcTestInfo(params)
+        vSuccess(res.message)
+    }catch(err){
+        handleApiError(err)
     }
 
-    const res = await ApiQc.updateQcTestInfo(params)
-    vSuccess(res.message)
 }
 
 const printPdf = async () =>{
@@ -448,15 +515,16 @@ const addRows = (rows)  =>{
     const startOrder = qcTestTypeMethodList.value.length
 
     const mappedRows = rows.map((row, idx) => ({
+        checked: false,
         testTypeMethodId: row.testTypeMethodId ?? null,
         orderDist: startOrder+idx+1,
         testItem: row.testItem ?? '',
         testMethod: row.testMethod ?? '',
         testSpec: row.testSpec ?? '',
         testResult: row.testResult ?? '',
-        testDateString: todayKST(),
-        testerName: memberNm,
-        passState: '시험중'
+        testDateString: row.testDateString ?? todayKST(),
+        testerName: row.testerName ?? memberNm,
+        passState: row.passState ?? '시험중'
     }))
 
     qcTestTypeMethodList.value.push(...mappedRows)
@@ -466,6 +534,7 @@ const addRows = (rows)  =>{
 
 const addRow = () => {
   const newRow = {
+    checked: false,
     testTypeMethodId: null,
     orderDist: qcTestTypeMethodList.value.length + 1,
     testItem: '',
@@ -484,30 +553,34 @@ const addRow = () => {
 
 //순서
 const resetOrder = () => {
-  qcTestTypeMethodList.value = qcTestTypeMethodList.value.map((row, idx) => ({
-    ...row,
-    orderDist: idx + 1
-  }))
+  qcTestTypeMethodList.value.forEach((row, idx) => {
+    row.orderDist = idx + 1
+  })
 }
 
-const removeRow = (index) =>{
-    if (isAllSelected.value) {
-        qcTestTypeMethodList.value.forEach(row => {
-            if (row.testTypeMethodId) {
-                deleteIds.value.push(row.testTypeMethodId)
-            }
-        })
+//체크항목 삭제
+const removeRow = () =>{
 
-        qcTestTypeMethodList.value = []
+    const checkedRows = qcTestTypeMethodList.value.filter(row => row.checked === true)
+
+    if (checkedRows.length === 0) {
+        vWarning('삭제할 항목을 체크하세요.')
         return
     }
 
-    const row = qcTestTypeMethodList.value[index]
+    checkedRows.forEach(row => {
 
-    if (row.testTypeMethodId) {
-        deleteIds.value.push(row.testTypeMethodId)
-    }
-    qcTestTypeMethodList.value.splice(index, 1)
+        if (row.testTypeMethodId) {
+
+            if (!deleteIds.value.includes(row.testTypeMethodId)) {
+                deleteIds.value.push(row.testTypeMethodId)
+            }
+        }
+    })
+
+    qcTestTypeMethodList.value = qcTestTypeMethodList.value.filter(row => row.checked !== true)
+
+    resetOrder()
 }
 
 onMounted( async () =>{
@@ -527,17 +600,38 @@ onMounted( async () =>{
 
     Object.assign(form, res.qcTestInfo)
 
+     // DB 값이 없으면 기본값 적용
+    if (!form.testDate) {
+        form.testDate = todayKST()
+    }
+
+    if (!form.testerId) {
+        form.testerId = userId
+    }
+
+    if (!form.testerName) {
+        form.testerName = memberNm
+    }
+
     if ( res.qcTestTypeMethodList.length > 0  ){
-        qcTestTypeMethodList.value = res.qcTestTypeMethodList
+        qcTestTypeMethodList.value = res.qcTestTypeMethodList.map(row => ({
+            ...row,
+            checked: false,
+            testDateString: row.testDateString || todayKST(),
+            testerName: row.testerName || memberNm,
+            passState: row.passState || '시험중'
+        }))
     }else{
         vWarning("검사유형 정보가 없습니다. 품목검사정보를 등록하세요!!")
         return
     }
+
 })
 
 const closeDialog = () =>{
     dialogRef.value.close()
 }
+
 
 </script>
 
@@ -545,7 +639,7 @@ const closeDialog = () =>{
 .popup-wrap {
   display: flex;
   flex-direction: column;
-  height: 60vh; /* 팝업 높이 기준, 필요시 70vh~85vh 조정 */
+  height: 620px;
   min-height: 0;
   overflow: hidden;
 }
@@ -553,29 +647,30 @@ const closeDialog = () =>{
 .content-wrap {
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 520px;
   min-height: 0;
+  overflow: hidden;
 }
 
 .left-panel {
-  flex: 0 0 30%;
+  flex: 0 0 32%;
   min-width: 0;
   min-height: 0;
   border: 1px solid #dcdfe6;
-  padding: 18px 16px;
+  padding: 12px 12px;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .right-panel {
-  flex: 0 0 70%;
+  flex: 0 0 68%;
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #dcdfe6;
-  padding: 18px 16px;
+  padding: 12px 8px;
   box-sizing: border-box;
 }
 
