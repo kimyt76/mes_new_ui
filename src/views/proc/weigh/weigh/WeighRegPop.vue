@@ -481,7 +481,7 @@ const openLookupPopup = (type, row = null) => {
 const applyPopupResultToRow = (type, row, data) => {
     if (type === 'ITEM_CODE') {
         row.weighQty = data.weighQty ?? row.weighQty
-        row.testNo = data.testNo ?? row.testNo
+        row.testNoJoin = data.testNo ?? row.testNo
         row.weighYn = 'Y'
     } else if (type === 'CONTAINER_WEIGHT') {
         row.bagWeight = data.weight ?? row.weight

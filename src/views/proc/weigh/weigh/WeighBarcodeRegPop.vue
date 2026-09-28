@@ -180,6 +180,9 @@ const searchByBarcode = async () => {
 
     const r = res?.data ?? res
     if (!r) return vInfo('조회 결과가 없습니다.')
+
+    if (itemCd.value  !== r.itemCd ) return vWarning('투입 원료가 틀립니다.')
+
     if ( new Date(todayKST()) > new Date(r.expiryDate)) {
         vWarning('사용기한이 지난 원자재입니다.')
         return
@@ -205,6 +208,7 @@ const searchByBarcode = async () => {
         weighId: weighId.value ?? '',
         workProcId: workProcId.value ?? '',
         storageCd:  r.storageCd ?? storageCd.value ?? '',
+        weighInvId: r.weighInvId ?? '',
     })
 
     barcode.value = ''
@@ -250,7 +254,8 @@ const onChangeRow = async (row) => {
   // 여기서 행 단위로 total 계산이나 유효성 체크 가능
   if ( (Number(totalWeighQty.value)||0) > (Number(orderQty.value)||0) ) {
     vWarning('지시량보다 칭량량이 많습니다.')
-     return
+    row.weighQty = 0
+    return
   }
 }
 
@@ -275,8 +280,8 @@ const saveInfo = async () => {
   // 저장 로직 구현
   const testNosArray = stockItemList.value.map(item => item.testNo)
 
-  if ( orderQty.value >  totalWeighQty.value) {
-    vWarning('지시량보다 칭량량이 적습니다.')
+  if ( orderQty.value !== totalWeighQty.value) {
+    vWarning('지시량값과 칭량값이 틀립니다.')
     return
   }
 
@@ -296,7 +301,7 @@ const saveInfo = async () => {
 
   const params1 = {
     weighQty: totalWeighQty.value,
-    testNo : testNosArray.join(',')
+    testNo : testNosArray.join(','),
   }
 
   try{
@@ -305,6 +310,8 @@ const saveInfo = async () => {
   }catch(err){
     handleApiError(err)
   }
+
+
 
   dialogRef.value.close(params1)
 }
