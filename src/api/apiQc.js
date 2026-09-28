@@ -14,6 +14,19 @@ export const ApiQc = {
         }
     },
     /**
+     *  품질검사 재요청 검사 조회
+     * @param {} params
+     * @returns
+     */
+    getQcTestNoInfo: async(id) =>{
+        try{
+            const res = await API_URL.get(`/qcTest/getQcTestNoInfo/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    /**
      * 품질검사 상세
      */
     getQcTestDetailInfo: async(id) =>{
