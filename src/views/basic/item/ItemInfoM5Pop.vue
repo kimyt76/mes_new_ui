@@ -228,17 +228,36 @@ const form = reactive({
 })
 
 const saveInfo = async () =>{
-  try{
-    const params = {
-      ...form
-    }
+    if (isEmpty(form.prodType ))  return vWarning('제품타입을 입력하세요!!')
+    if (isEmpty(form.matName ))  return vWarning('재료명을 입력하세요!!')
+    if (isEmpty(form.itemCondition ))  return vWarning('보관조건을 입력하세요!!')
+    if (isEmpty(form.woodenPattern ))  return vWarning('목형종류을 입력하세요!!')
+    if (isEmpty(form.coolingTemp ))  return vWarning('냉각온도기준을 입력하세요!!')
+    if (isEmpty(form.stdSize ))  return vWarning('기준사이즈를 입력하세요!!')
+    if (isEmpty(form.sheetStacking ))  return vWarning('적층수를 입력하세요!!')
+    if (isEmpty(form.exAppearance ))  return vWarning('외관을 입력하세요!!')
+    if (isEmpty(form.specInfo ))  return vWarning('규격정보를 입력하세요!!')
+    if (isEmpty(form.stdWeight ))  return vWarning('기준무게를 입력하세요!!')
+    if (isEmpty(form.stdYield ))  return vWarning('품목기준수율를 입력하세요!!')
+    if (isEmpty(form.displayYield ))  return vWarning('수율공식를 입력하세요!!')
+    if (isEmpty(form.packingSpecValue ))  return vWarning('단위별포장규격(값)을 입력하세요!!')
+    if (isEmpty(form.packingSpecUnit ))  return vWarning('단위별포장규격(단위)을 입력하세요!!')
+    if (isEmpty(form.theoryProdNumber1 ))  return vWarning('이론생산계수1을 입력하세요!!')
+    if (isEmpty(form.theoryProdNumber2 ))  return vWarning('이론생산계수2를 입력하세요!!')
+    if (isEmpty(form.itemCategory1 ))  return vWarning('제품유형(대분류)을 입력하세요!!')
+    if (isEmpty(form.itemCategory2 ))  return vWarning('제품유형(중분류)을 입력하세요!!')
 
-    const res = await ApiItem.saveItemDetailInfo(params)
-    vSuccess(res.message)
-    closeDialog()
-  }catch(err){
-    vError(err.message)
-  }
+    try{
+        const params = {
+            ...form
+        }
+
+        const res = await ApiItem.saveItemDetailInfo(params)
+        vSuccess(res.message)
+        closeDialog()
+    }catch(err){
+        vError(err.message)
+    }
 }
 
 onMounted( async () =>{

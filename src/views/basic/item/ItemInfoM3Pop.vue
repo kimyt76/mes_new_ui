@@ -151,17 +151,27 @@ const form = reactive({
 })
 
 const saveInfo = async () =>{
-  try{
-    const params = {
-      ...form
-    }
+    if (isEmpty(form.prodType ))  return vWarning('제품타입을 입력하세요!!')
+    if (isEmpty(form.specInfo ))  return vWarning('규격정보를 입력하세요!!')
+    if (isEmpty(form.exAppearance ))  return vWarning('외관을 입력하세요!!')
+    if (isEmpty(form.packingSpecValue ))  return vWarning('단위별포장규격(값)을 입력하세요!!')
+    if (isEmpty(form.packingSpecUnit ))  return vWarning('단위별포장규격(단위)을 입력하세요!!')
+    if (isEmpty(form.itemCondition ))  return vWarning('보관조건을 입력하세요!!')
+    if (isEmpty(form.itemCategory1 ))  return vWarning('제품유형(대분류)을 입력하세요!!')
+    if (isEmpty(form.itemCategory2 ))  return vWarning('제품유형(중분류)을 입력하세요!!')
+    if (isEmpty(form.functionalTypeCd ))  return vWarning('기능성분류를 입력하세요!!')
 
-    const res = await ApiItem.saveItemDetailInfo(params)
-    vSuccess(res.message)
-    closeDialog()
-  }catch(err){
-    vError(err.massage)
-  }
+    try{
+        const params = {
+        ...form
+        }
+
+        const res = await ApiItem.saveItemDetailInfo(params)
+        vSuccess(res.message)
+        closeDialog()
+    }catch(err){
+        vError(err.massage)
+    }
 }
 
 onMounted( async () =>{

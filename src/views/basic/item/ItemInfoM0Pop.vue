@@ -192,10 +192,11 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
+import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
 const { userId } = useAuthStore()
-const { vError, vSuccess} = useAlertStore()
+const { vError, vSuccess, vWarning} = useAlertStore()
 const itemTypeCds = ref([])
 const itemCategory1s = ref([])
 const itemCategory2s = ref([])
@@ -231,6 +232,21 @@ const form = reactive({
 })
 
 const saveInfo = async () =>{
+    if (isEmpty(form.prodType ))  return vWarning('제품타입을 입력하세요!!')
+    if (isEmpty(form.functionalTypeCd ))  return vWarning('기능성분류를 입력하세요!!')
+    if (isEmpty(form.stdWeight ))  return vWarning('기준무게를 입력하세요!!')
+    if (isEmpty(form.displayAmount ))  return vWarning('표시중량을 입력하세요!!')
+    if (isEmpty(form.theoryProdNumber1 ))  return vWarning('이론생산계수1을 입력하세요!!')
+    if (isEmpty(form.theoryProdNumber2 ))  return vWarning('이론생산계수2를 입력하세요!!')
+    if (isEmpty(form.labNo ))  return vWarning('랩넘버를 입력하세요!!')
+    if (isEmpty(form.stdYield ))  return vWarning('품목기준수율를 입력하세요!!')
+    if (isEmpty(form.displayYield ))  return vWarning('수율공식를 입력하세요!!')
+    if (isEmpty(form.chargingQtys ))  return vWarning('충전지시량를 입력하세요!!')
+    if (isEmpty(form.chargingCnt ))  return vWarning('충전매수를 입력하세요!!')
+    if (isEmpty(form.cappingRange ))  return vWarning('캡핑세기측정 범위를 입력하세요!!')
+    if (isEmpty(form.essenceStd ))  return vWarning('에센스 충전량을 입력하세요!!')
+    if (isEmpty(form.workFlow ))  return vWarning('포장공정 작업공정도를 입력하세요!!')
+
   try{
     const params = {
       ...form
