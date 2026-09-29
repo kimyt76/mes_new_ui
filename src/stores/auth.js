@@ -1,3 +1,4 @@
+import { ApiSystem } from "@/api/apiSystem";
 import { fetchUser, login, logout } from "@/api/auth";
 import { defineStore } from "pinia";
 
@@ -82,8 +83,22 @@ export const useAuthStore = defineStore('auth', {
     },
 
 
+    async fetchMenuAuthList() {
+      if (!this.userId) {
+        this.menuAuthList = [];
+        return;
+      }
+
+      const res = await ApiSystem.getMenuList();
+
+      this.menuAuthList = res?.data ?? res ?? [];
+    },
+
+
     setMenuAuthList(menuList) {
       this.menuAuthList = menuList ?? [];
     }
+
   }
+
 });
