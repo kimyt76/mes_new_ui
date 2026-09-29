@@ -1,664 +1,102 @@
 <script setup>
-import { ref } from 'vue';
-
+import { ApiSystem } from '@/api/apiSystem.js';
+import { useAuthStore } from '@/stores/auth.js';
+import { onMounted, ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 
-const model = ref([
-    {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
-    },
-    {
-        label: '모니터링',
-        items: [
-            {
-                label: '모니터링',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '설비가동정보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/monitoring/equipOperationInfo'
-                    },
-                    {
-                        label: '제조모니터링',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/monitoring/matMonitoring'
-                    },
-                    {
-                        label: '충전모니터링',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/monitoring/chargeMonitoring'
-                    },
-                    {
-                        label: '접점모니터링',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/monitoring/contactMonitoring'
-                    },
-                    {
-                        label: '생산실적현황',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/monitoring/prodPerfomaceStatus'
-                    },
-                ]
-            },
-        ]
-    },
-    {
-        label: '기본 관리',
-        items: [
-            {
-                label: '기본정보',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '품목관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/itemlist'
-                    },
-                    {
-                        label: '품목정보관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/itemInfoList'
-                    },
-                    {
-                        label: '거래처관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/customerList'
-                    },
-                ]
-            },
-            {
-                label: '기타관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '생산실적',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/prodPerformance'
-                    },
-                    {
-                        label: '생산수율',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/prodYield'
-                    },
-                    {
-                        label: '업체별생산량',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/prodCompany'
-                    }
-                ]
-            },
-            {
-                label: '생산일보',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '원료생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m1DailyReport'
-                    },
-                    {
-                        label: '부자재생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m2DailyReport'
-                    },
-                    {
-                        label: '완제품생산일보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/m0DailyReport'
-                    },
-                    {
-                        label: '인건비',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/laborCost'
-                    },
-                    {
-                        label: '통합관리대장',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/basic/dailyReport/dailyMgmt'
-                    }
-                ]
-            },
-        ]
-    },
-    {
-        label: '연구 및 BOM 관리',
-        items: [
-            {
-                label: '연구관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '성분정보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/ingredient'
-                    },
-                    {
-                        label: '원료관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/material'
-                    },
-                    {
-                        label: '처방리스트',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/recipe'
-                    },
-                    {
-                        label: '신원료정보',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/newMaterail'
-                    },
-                    {
-                        label: '샘플송부관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/sample'
-                    },
-                ]
-            },
-            {
-                label: 'BOM관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '반제품BOM',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/bom'
-                    },
-                    {
-                        label: '벌크/포장/완체품BOM ',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/matBom'
-                    },
-                    {
-                        label: 'BOM이력관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/lab/bomHist'
-                    },
-                ]
-            },
-        ]
-    } ,
-    {
-        label: '영업 및 영업관리',
-        items: [
-            {
-                label: '영업관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '고객사관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/clientList'
-                    },
-                    {
-                        label: '사양서검토',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/draftList'
-                    },
-                    {
-                        label: '주문서관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/contractList'
-                    },
-                    {
-                        label: '출고지시관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/shipmentList'
-                    },
-                    // {
-                    //     label: '진행관리',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/order/progressList'
-                    // },
-                    {
-                        label: '수주계획관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/order/orderPlan'
-                    },
-                ]
-            },
-        ]
-    } ,
-    {
-        label: '발주 및 구매관리',
-        items: [
-            {
-                label: '발주관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '발주등록(생산)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purOrderM'
-                    },
-                    {
-                        label: '발주등록(구매)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purOrderP'
-                    },
-                    {
-                        label: '발주현황(구매)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purOrderStateP'
-                    },
-                ]
-            },
-            {
-                label: '구매관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '구매',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purchaseTran'
-                    },
-                    {
-                        label: '구매현황',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/purchase/purchaseState'
-                    },
-                ]
-            },
-        ]
-    },
-    {
-        label: '제조 계획 및 생산관리',
-        items: [
-            {
-                label: '제조계획관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '원료제조계획',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/matPlan'
-                    },
-                    {
-                        label: '소요량계산(원재료)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/equirementCalculation'
-                    },
-                    {
-                        label: '소요량계산(부자재)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/equirementCalculationM2'
-                    },
-                    {
-                        label: '원재료별 소요품목',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/itemM1Equirment'
-                    },
-                    {
-                        label: '부자재 소요품목',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/mat/itemM2Equirment'
-                    },
-                ]
-            },
-            {
-                label: '작업지시',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '작업지시',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/prod/workOrderList'
-                    },
-                    {
-                        label: '작업지시현황',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/prod/workOrderProgress'
-                    },
-                    {
-                        label: '작업자관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/prod/worker'
-                    },
-                ]
-            },
-            {
-                label: '칭량공정',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '작업지시',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh'
-                    },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/weighProcTest'
-                    },
-                    {
-                        label: '제조출고',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/weighTran'
-                    },
-                    {
-                        label: '자재불출',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/weighOut'
-                    },
-                    {
-                        label: '일일마감',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/dayClose'
-                    },
-                    {
-                        label: '월간마감',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/monClose'
-                    },
-                    {
-                        label: '폐기조정',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/weigh/distposalAdjust'
-                    },
-                ]
-            },
-            {
-                label: '제조공정',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '작업지시',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/mat/mat'
-                    },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/mat/proc'
-                    },
-                    {
-                        label: '공정조건(온도RPM)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/mat/conditon'
-                    },
+const authStore = useAuthStore()
+const model = ref([]);
 
-                ]
-            },
-            {
-                label: '코팅공정',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '작업지시',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/coating/coating'
-                    },
-                    {
-                        label: '작업지시(전체)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/coating/coatingEentire'
-                    },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/coating/proc'
-                    },
-                ]
-            },
-            {
-                label: '충전공정',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '작업지시',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/charge/charge'
-                    },
-                    {
-                        label: '작업지시(전체)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/charge/chargeEentire'
-                    },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/charge/proc/chargeProcTest'
-                    },
+const buildMenuTree = (menuList) => {
+    if (!Array.isArray(menuList)) return [];
 
-                ]
-            },
-            {
-                label: '포장공정',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '작업지시',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/packing'
-                    },
-                    {
-                        label: '작업지시(전체)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/packingEentire'
-                    },
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/proc/packing/proc'
-                    },
-                ]
-            },
-        ]
-    },
+    const menuMap = new Map();
 
-    {
-        label: 'QC',
-        items: [
-            {
-               label: '품질관리',
-               icon: 'pi pi-fw pi-check-square',
-               items:[
-                    {
-                        label: '품질검사요청',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/reqQcTest'
-                    },
-                    {
-                        label: '품질검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/qcTest'
-                    },
-                    {
-                        label: '품목별검사비교',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/reqQcTestCompare'
-                    },
-                    {
-                        label: '품질검사유형',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/qcTestType'
-                    },
-                ],
-            },
-            {
-                label: '공정관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '공정검사',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/qcProcTest'
-                    },
-                    {
-                        label: '공정검사유형',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/qcProcTestType'
-                    },
-                ],
-            },
-            {
-                label: '시험번호내역관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '시험번호별내역',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/qc/qcTestNo'
-                    },
-                ]
+    menuList.forEach((row) => {
+        menuMap.set(row.menuId, {
+            menuId: row.menuId,
+            parentId: row.parentId,
+            sortOrder: row.sortOrder ?? 0,
+
+            menuType: row.menuType,
+            readYn: row.readYn ?? 'N',
+            writeYn: row.writeYn ?? 'N',
+
+            label: row.menuName,
+
+            ...(row.icon ? { icon: row.icon } : {}),
+            ...(row.menuPath ? { to: row.menuPath } : {}),
+
+            items: []
+        });
+    });
+
+    const roots = [];
+
+    menuMap.forEach((menu) => {
+        if (menu.parentId == null) {
+            roots.push(menu);
+            return;
+        }
+
+        const parent = menuMap.get(menu.parentId);
+        if (parent) {
+            parent.items.push(menu);
+        }
+    });
+
+    const sortMenus = (items) => {
+        items.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+        items.forEach((item) => {
+            if (item.items?.length) {
+                sortMenus(item.items);
+            } else {
+                delete item.items;
             }
-        ]
-    },
+        });
+    };
 
-    {
-        label: '재고관리 및 조사',
-        items: [
-            {
-                label: '재고관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '재고조회',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/stock'
-                    },
-                    {
-                        label: '원재료수불부',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/rawMat'
-                    },
-                    {
-                        label: '부자재수불부',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/subMat'
-                    },
-                    {
-                        label: '품목별사용량',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/itemUse'
-                    },
-                    {
-                        label: '시험번호별 사용현황',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/testUse'
-                    },
-                    {
-                        label: '사용기한(원재료)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/useByM1'
-                    },
-                    {
-                        label: '사용기한(부자재)',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/useByM2'
-                    },
-                ]
-            },
-            {
-                label: '자재관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '자재조정',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/material/adjust'
-                    },
-                    {
-                        label: '자재이동요청',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/material/moveReq'
-                    },
-                    {
-                        label: '자재이동',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/material/moveStock'
-                    },
-                    {
-                        label: '제품출고',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/material/prodOut'
-                    },
-                    {
-                        label: '자재불출',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/material/itemOut'
-                    },
-                ]
-            },
-            {
-                label: '재고조사',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '실사재고',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/stock/realStock'
-                    },
-                ]
-            },
-        ]
-    },
-    {
-        label: '시스템 관리',
-        items: [
-            {
-                label: '시스템 관리 ',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    {
-                        label: '사용자관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/system/userMgmt'
-                    },
-                    {
-                        label: '공통코드관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/system/commonMgmt'
-                    },
-                    // {
-                    //     label: '권한관리',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/system/auth'
-                    // },
-                    {
-                        label: '창고관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/system/storage'
-                    },
-                    // {
-                    //     label: '메뉴관리',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/system/menu'
-                    // },
-                ]
-            },
-            {
-                label: '장비 관리',
-                icon: 'pi pi-fw pi-check-square',
-                items:[
-                    // {
-                    //     label: '중량측정이력',
-                    //     icon: 'pi pi-fw pi-id-card',
-                    //     to: '/equipment/shipmentList'
-                    // },
-                    {
-                        label: '저울관리',
-                        icon: 'pi pi-fw pi-id-card',
-                        to: '/system/scale'
-                    },
-                ]
-            },
-        ]
-    },
+    sortMenus(roots);
+    return roots;
+};
 
+const getMenuList = async () => {
+    try {
+        const res = await ApiSystem.getMenuList(authStore.userId)
 
-]);
+        const menuList = res?.data ?? res ?? []
+
+        authStore.setMenuAuthList(menuList)
+
+        model.value = buildMenuTree(menuList)
+
+    } catch (error) {
+        console.error('메뉴 조회 오류', error)
+        model.value = []
+    }
+}
+
+onMounted(() => {
+    getMenuList();
+});
 </script>
 
 <template>
     <ul class="layout-menu">
-        <template v-for="(item, i) in model" :key="item">
+        <template
+            v-for="(item, i) in model"
+            :key="item.menuId ?? i"
+        >
             <app-menu-item
                 v-if="!item.separator"
-                :item="item" :index="i">
-            </app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+                :item="item"
+                :index="i"
+            />
+            <li
+                v-if="item.separator"
+                class="menu-separator"
+            ></li>
         </template>
     </ul>
 </template>

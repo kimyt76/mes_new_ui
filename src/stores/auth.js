@@ -1,37 +1,65 @@
 import { fetchUser, login, logout } from "@/api/auth";
 import { defineStore } from "pinia";
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    userId : null,
-    deptNm : null,
-    memberNm : null,
+    userId: null,
+    deptNm: null,
+    memberNm: null,
+
+    menuAuthList: [],
+
     sessionChecked: false,
   }),
+
   getters: {
     isLoggedIn: (state) => !!state.user,
-  },
-  actions: {
-    async loginUser(userId, password) {
-      try{
-        const data =  await login(userId, password) ;
 
-        //console.log('data' , data)
+    getWriteYnByPath: (state) => (path) => {
+      const menu = state.menuAuthList.find(
+        item => item.menuPath === path
+      );
+
+      return menu?.writeYn ?? 'N';
+    },
+
+    getReadYnByPath: (state) => (path) => {
+      const menu = state.menuAuthList.find(
+        item => item.menuPath === path
+      );
+
+      return menu?.readYn ?? 'N';
+    },
+  },
+
+  actions: {
+
+    async loginUser(userId, password) {
+      try {
+        const data = await login(userId, password);
+
         this.user = data;
         this.userId = data.userId;
         this.deptNm = data.deptNm;
         this.memberNm = data.memberNm;
-        //localStorage.setItem('user', data)
-      }catch(err){
+
+      } catch (err) {
         throw err;
       }
-
     },
+
 
     async logoutUser() {
-      logout();
-      this.user = null
+      await logout();
+
+      this.user = null;
+      this.userId = null;
+      this.deptNm = null;
+      this.memberNm = null;
+      this.menuAuthList = [];
     },
+
 
     async fetchUser() {
       try {
@@ -42,16 +70,20 @@ export const useAuthStore = defineStore('auth', {
         this.deptNm = data.deptNm;
         this.memberNm = data.memberNm;
 
-        localStorage.setItem('user', data)
       } catch {
-        this.user = null
-      }finally{
+        this.user = null;
+        this.userId = null;
+        this.deptNm = null;
+        this.memberNm = null;
+        this.menuAuthList = [];
+      } finally {
         this.sessionChecked = true;
       }
+    },
+
+
+    setMenuAuthList(menuList) {
+      this.menuAuthList = menuList ?? [];
     }
   }
-
-
-})
-
-
+});

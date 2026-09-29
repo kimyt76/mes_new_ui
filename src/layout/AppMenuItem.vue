@@ -1,8 +1,10 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
+import { useAuthStore } from '@/stores/auth.js';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+const authStore = useAuthStore()
 const route = useRoute();
 const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
 
@@ -43,20 +45,32 @@ watch(
 
 function itemClick(event, item) {
     if (item.disabled) {
-        event.preventDefault();
-        return;
+        event.preventDefault()
+        return
     }
 
-    if ((item.to || item.url) && (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)) {
-        toggleMenu();
+    if ((item.to || item.url) &&
+        (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)) {
+        toggleMenu()
     }
+
     if (item.command) {
-        item.command({ originalEvent: event, item: item });
+        item.command({
+            originalEvent: event,
+            item: item
+        })
     }
 
-    const foundItemKey = item.items ? (isActiveMenu.value ? props.parentItemKey : itemKey) : itemKey.value;
+    // 실제 화면 메뉴인 경우만 현재 권한 저장
+    if (item.to) {
+        authStore.setMenuAuth(item)
+    }
 
-    setActiveMenuItem(foundItemKey);
+    const foundItemKey = item.items
+        ? (isActiveMenu.value ? props.parentItemKey : itemKey)
+        : itemKey.value
+
+    setActiveMenuItem(foundItemKey)
 }
 
 function checkActiveRoute(item) {
@@ -79,7 +93,7 @@ function checkActiveRoute(item) {
         </router-link>
         <Transition v-if="item.items && item.visible !== false" name="layout-submenu">
             <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
-                <app-menu-item v-for="(child, i) in item.items" :key="child" :index="i" :item="child" :parentItemKey="itemKey" :root="false"></app-menu-item>
+                <app-menu-item v-for="(menuId, i) in item.items" :key="menuId" :index="i" :item="menuId" :parentItemKey="itemKey" :root="false"></app-menu-item>
             </ul>
         </Transition>
     </li>

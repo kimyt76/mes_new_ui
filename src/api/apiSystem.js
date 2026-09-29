@@ -51,6 +51,16 @@ export const  ApiSystem = {
     }
   },
 
+    getMenuList: async (id) =>{
+        try {
+            const res =  await API_URL.get('/systemMgmt/getMenuList')
+            return res.data;
+
+        } catch (error) {
+            throw error.response;
+        }
+    },
+
 //  전자저울
   getScaleList:  async (params) =>{
     try {
@@ -129,5 +139,8 @@ export const  ApiSystem = {
       throw error.response;
     }
   },
+
+
+
 
 }
