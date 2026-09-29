@@ -21,4 +21,16 @@ export default [
         name: 'Scale',
         component: () => import('@/views/system/scale/ScaleList.vue')
       },
+      {
+        path: 'menu',
+        name: 'Menu',
+        component: () => import('@/views/system/menu/MenuList.vue')
+      },
+      {
+        path: 'auth',
+        name: 'Auth',
+        component: () => import('@/views/system/auth/AuthList.vue')
+      },
+
+
     ]
