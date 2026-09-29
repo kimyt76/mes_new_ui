@@ -106,6 +106,11 @@
             <Tag
                 :value="slotProps.node.data.useYn === 'Y' ? '사용' : '미사용'"
                 :severity="slotProps.node.data.useYn === 'Y' ? 'success' : 'danger'"
+                :class="{
+                    'cursor-pointer': Number(slotProps.node.data.menuLevel) === 3,
+                    'menu-use-disabled': Number(slotProps.node.data.menuLevel) !== 3
+                }"
+                @click=" Number(slotProps.node.data.menuLevel) === 3 && changeUseYn(slotProps.node.data) "
             />
         </template>
     </Column>
@@ -115,6 +120,7 @@
 
 <script setup>
 import { ApiSystem } from '@/api/apiSystem'
+import { handleApiError } from '@/util/errorHandler.js'
 import { exportToExcel } from '@/util/exportToExcel'
 import { useDialog } from 'primevue'
 import { onMounted, reactive, ref } from 'vue'
@@ -195,6 +201,28 @@ const buildMenuTree = (list) => {
     sortNodes(roots)
 
     return roots
+}
+
+const changeUseYn = async (row) => {
+    // 3단계 메뉴만 변경
+    if (Number(row.menuLevel) !== 3) {
+        return
+    }
+
+    const newUseYn = row.useYn === 'Y' ? 'N' : 'Y'
+
+    try {
+        const params = {
+            menuId: row.menuId,
+            useYn: newUseYn
+        }
+        await ApiSystem.updateMenuUseYn(params)
+        // DB 업데이트 성공 후 화면 변경
+        row.useYn = newUseYn
+    } catch (error) {
+        console.error('메뉴 사용여부 변경 오류', error)
+         handleApiError(error)
+    }
 }
 
 const srhList = async () => {
