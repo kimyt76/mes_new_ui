@@ -30,7 +30,6 @@
                             v-model="form.memberNm"
                             inputId="memberNm"
                             class="w-full"
-                            :readonly="!isReadOnly"
                         />
                         <label for="memberNm" id="lblMemberNm">사용자이름</label>
                     </FloatLabel>
@@ -264,6 +263,9 @@ const passwordInit = () => {
 }
 
 const userCheck = () => {
+
+  if(isEmpty(form.userId)) return vWarning('사용자ID를 입력하세요')
+
   ApiSystem.userCheck(form.userId).then(res => {
     vInfo(res.data)
   });
