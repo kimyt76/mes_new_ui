@@ -120,12 +120,14 @@
 
 <script setup>
 import { ApiSystem } from '@/api/apiSystem'
+import { useAuthStore } from '@/stores/auth.js'
 import { handleApiError } from '@/util/errorHandler.js'
 import { exportToExcel } from '@/util/exportToExcel'
 import { useDialog } from 'primevue'
 import { onMounted, reactive, ref } from 'vue'
 import MenuPop from './MenuPop.vue'
 
+const authStore = useAuthStore()
 const dialog = useDialog()
 const menuList = ref([])
 const menuTree = ref([])
@@ -188,7 +190,6 @@ const buildMenuTree = (list) => {
         )
 
         nodes.forEach((node) => {
-
             if (node.children?.length) {
                 sortNodes(node.children)
             } else {
@@ -219,6 +220,7 @@ const changeUseYn = async (row) => {
         await ApiSystem.updateMenuUseYn(params)
         // DB 업데이트 성공 후 화면 변경
         row.useYn = newUseYn
+        await authStore.fetchMenuAuthList()
     } catch (error) {
         console.error('메뉴 사용여부 변경 오류', error)
          handleApiError(error)
@@ -266,7 +268,6 @@ const collapseAll = () => {
 
 
 const selectRowClick = (row) => {
-
     // 신규 등록
     const isNew = row == null
 
@@ -343,20 +344,21 @@ onMounted(() => {
     text-align: center;
     font-family: monaco, Consolas;
 }
-
 ::v-deep(.my-table .p-treetable-tbody > tr > td) {
     font-size: 13px;
     padding: 4px 6px;
 }
-
 .clickable-cell {
     cursor: pointer;
     text-decoration: underline;
     text-align: left;
     width: 100%;
 }
-
 .clickable-cell:hover {
     font-weight: 600;
+}
+.menu-use-disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 </style>

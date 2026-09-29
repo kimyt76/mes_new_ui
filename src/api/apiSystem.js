@@ -82,6 +82,9 @@ export const  ApiSystem = {
   saveMenu: async(params) => {
         return await API_URL.post('/systemMgmt/saveMenu', params)
   },
+  updateMenuUseYn: async(params) =>{
+        return  await API_URL.post('/systemMgmt/updateMenuUseYn', params)
+  },
 
 
 //  전자저울
