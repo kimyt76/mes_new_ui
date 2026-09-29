@@ -57,14 +57,14 @@
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory1" :options="itemCategory1s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled />
                         <label>제품유형(대분류)</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory2" :options="itemCategory2s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                                optionLabel="codeNm" optionValue="code" class="w-full" disabled />
                         <label>제품유형(중분류)</label>
                     </FloatLabel>
                 </div>
@@ -188,9 +188,10 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { onMounted, reactive, ref } from 'vue';
+import { inject, onMounted, reactive, ref, watch } from 'vue';
 
 const { userId } = useAuthStore()
+const dialogRef = inject('dialogRef');
 const { vError, vSuccess} = useAlertStore()
 const itemTypeCds = ref([])
 const itemCategory1s = ref([])
@@ -260,6 +261,10 @@ const saveInfo = async () =>{
     }
 }
 
+watch(() => form.itemCategory1, async (newVal) => {
+  itemCategory2s.value = await ApiItem.getProdMList(form.itemCategory1)
+})
+
 onMounted( async () =>{
     const res = await ApiItem.getItemInfo(dialogRef.value.data)
 
@@ -268,13 +273,8 @@ onMounted( async () =>{
     itemCategory1s.value = await ApiItem.getProdLList()
     itemCategory2s.value = await ApiItem.getProdMList(res.itemCategory1)
 
-
     Object.assign(form, res)
 })
-
-import { inject } from 'vue';
-
-const dialogRef = inject('dialogRef');
 
 const closeDialog = () => {
   dialogRef.value.close();
