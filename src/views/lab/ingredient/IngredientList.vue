@@ -40,11 +40,12 @@
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
         <Button label="신규" icon="pi pi-plus" severity="secondary" @click="openPop('')"></Button>
-        <Button label="엑셀" icon="pi pi-file-excel" severity="success" ></Button>
+        <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
 </div>
     <div class="flex flex-col mt-2">
         <DataTable
+            ref="dt"
             :value="ingredientList"
             paginator :rows="20"
             :rowsPerPageOptions="[20,30,40]"
@@ -96,10 +97,12 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
+import { exportToExcel } from '@/util/exportToExcel.js';
 import { computed, onMounted, reactive, ref } from 'vue';
 import IngredientPop from './IngredientPop.vue';
 
 const { vError, vSuccess} = useAlertStore()
+const dt = ref(null)
 const loading = ref(false)
 const visible = ref(false)
 const functions = ref([])
@@ -144,6 +147,17 @@ const openPop = (cd) => {
         id.value = cd
     }
     visible.value = true
+}
+
+const downloadExcel = () =>{
+    const cols = dt.value?.columns ?? [];
+
+  if (!cols.length) {
+    console.warn("No Columns Found");
+    return;
+  }
+
+  exportToExcel(ingredientList.value, "성분리스트", cols);
 }
 
 const form = reactive({

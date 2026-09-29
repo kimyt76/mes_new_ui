@@ -78,6 +78,7 @@
 
 <script setup>
 import { ApiLab } from '@/api/apiLab';
+import { exportToExcel } from '@/util/exportToExcel.js';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import MaterialDetailPop from './MaterialDetailPop.vue';
