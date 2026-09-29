@@ -51,7 +51,7 @@ export const  ApiSystem = {
     }
   },
 
-    getMenuList: async (id) =>{
+  getMenuList: async (id) =>{
         try {
             const res =  await API_URL.get('/systemMgmt/getMenuList')
             return res.data;
@@ -59,7 +59,30 @@ export const  ApiSystem = {
         } catch (error) {
             throw error.response;
         }
-    },
+  },
+
+  getMenuMgmtList: async (params) =>{
+        try {
+            const res =  await API_URL.post('/systemMgmt/getMenuMgmtList', params)
+            return res.data;
+
+        } catch (error) {
+            throw error.response;
+        }
+  },
+  getMenuDetail: async (id) =>{
+        try {
+            const res =  await API_URL.get(`/systemMgmt/getMenuDetail/${id}`)
+            return res.data;
+
+        } catch (error) {
+            throw error.response;
+        }
+  },
+  saveMenu: async(params) => {
+        return await API_URL.post('/systemMgmt/saveMenu', params)
+  },
+
 
 //  전자저울
   getScaleList:  async (params) =>{
