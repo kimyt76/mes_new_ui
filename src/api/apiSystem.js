@@ -2,6 +2,7 @@ import { API_URL } from '.';
 
 export const  ApiSystem = {
 
+    /**사용자 관리 */
   getUserList:  async (params) =>{
     try {
       const res =  await API_URL.post(`/systemMgmt/getUserList`, params)
@@ -51,6 +52,8 @@ export const  ApiSystem = {
     }
   },
 
+
+/* 메뉴관리 */
   getMenuList: async (id) =>{
         try {
             const res =  await API_URL.get('/systemMgmt/getMenuList')
@@ -84,6 +87,35 @@ export const  ApiSystem = {
   },
   updateMenuUseYn: async(params) =>{
         return  await API_URL.post('/systemMgmt/updateMenuUseYn', params)
+  },
+
+/* 권한관리 */
+  getAuthMenuInfo: async (params) =>{
+        try {
+            const res =  await API_URL.post('/systemMgmt/getAuthMenuInfo', params)
+            return res.data;
+
+        } catch (error) {
+            throw error.response;
+        }
+  },
+
+ getUserMenuAuthList: async (params) =>{
+        try {
+            const res =  await API_URL.post('/systemMgmt/getUserMenuAuthList', params)
+            return res.data;
+
+        } catch (error) {
+            throw error.response;
+        }
+  },
+
+  saveMenuAuth: async(params) => {
+        return await API_URL.post('/systemMgmt/saveMenuAuth', params)
+  },
+
+  copyMenuAuthInfo: async(params) => {
+        return await API_URL.post('/systemMgmt/copyMenuAuthInfo', params)
   },
 
 
