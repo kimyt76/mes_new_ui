@@ -84,7 +84,6 @@ const buildMenuTree = (menuList) => {
          * 읽기 권한이 없으면 제거
          */
         if (menu.menuType === 'M') {
-
             if (menu.readYn !== 'Y') {
                 return false
             }
