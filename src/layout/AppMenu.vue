@@ -39,7 +39,6 @@ const buildMenuTree = (menuList) => {
     })
 
     const roots = []
-
     // 2. 부모 / 자식 관계 생성
     menuMap.forEach((menu) => {
 
@@ -52,14 +51,12 @@ const buildMenuTree = (menuList) => {
         } else {
             menuMap.get(menu.parentId).items.push(menu)
         }
-
     })
 
     /**
      * 하위 메뉴부터 권한 필터링
      */
     const filterMenu = (menu) => {
-
         // 자식 메뉴를 먼저 필터링
         if (menu.items?.length > 0) {
             menu.items = menu.items.filter(filterMenu)
@@ -67,8 +64,7 @@ const buildMenuTree = (menuList) => {
             // 자식 정렬
             menu.items.sort(
                 (a, b) =>
-                    Number(a.sortOrder ?? 0) -
-                    Number(b.sortOrder ?? 0)
+                    Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0)
             )
         }
 
@@ -150,8 +146,6 @@ watch(
         model.value = buildMenuTree(
             menuList ?? []
         )
-
-        console.log('왼쪽 메뉴:', model.value)
     },
     {
         deep: true,
@@ -167,31 +161,16 @@ onMounted(async () => {
 })
 </script>
 
-
 <template>
-
     <ul class="layout-menu">
-
         <template
             v-for="(item, i) in model"
             :key="item.menuId ?? i"
         >
-
-            <app-menu-item
-                v-if="!item.separator"
-                :item="item"
-                :index="i"
-            />
-
-            <li
-                v-if="item.separator"
-                class="menu-separator"
-            ></li>
-
+            <app-menu-item v-if="!item.separator" :item="item" :index="i" />
+            <li v-if="item.separator" class="menu-separator" ></li>
         </template>
-
     </ul>
-
 </template>
 
 
