@@ -61,11 +61,6 @@ function itemClick(event, item) {
         })
     }
 
-    // 실제 화면 메뉴인 경우만 현재 권한 저장
-    if (item.to) {
-        authStore.setMenuAuth(item)
-    }
-
     const foundItemKey = item.items
         ? (isActiveMenu.value ? props.parentItemKey : itemKey)
         : itemKey.value
