@@ -190,7 +190,7 @@ const authCopyPop = () =>{
             modal: true,
             draggable:false,
             style:{
-                width:'800px'
+                width:'400px'
             }
         },
         data:{
