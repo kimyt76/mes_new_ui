@@ -32,8 +32,7 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <Button label="신규(시흥)" icon="pi pi-plus" severity="secondary"  @click="newPop('A001')"></Button>
-    <Button label="신규(안산)" icon="pi pi-plus" severity="secondary"  @click="newPop('A002')"></Button>
+    <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="newPop"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 
@@ -62,76 +61,42 @@
                 </div>
             </template>
         </Column>
-        <Column field="areaName"      header="구역"  :style="{ width: '100px', textAlign:'center'}"  />
-        <Column field="workTypeName"  header="근무형태"  :style="{ width: '100px', textAlign:'center'}"  />
-
-        <Column field="inQty"       header="챵량"     :style="{ width: '80px', textAlign:'right'}" >
+        <Column field="areaName"      header="구역"  :style="{ width: '100px', textAlign:'center'}"/>
+        <Column field="workTypeCd"      header="근무형태" :style="{ width: '100px', textAlign: 'center' }">
             <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+                {{
+                     slotProps.data.workTypeCd === 'D' ? '주간'
+                    : slotProps.data.workTypeCd === 'O' ? '잔업'
+                    : slotProps.data.workTypeCd === 'N' ? '야간'
+                    : ''
+                }}
             </template>
         </Column>
-        <Column field="inQty"       header="제조"     :style="{ width: '80px', textAlign:'right'}" >
+        <Column field="manFTotalCost"       header="정규직인원(남) 비용"     :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.manFTotalCost ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="inQty"       header="코팅"     :style="{ width: '80px', textAlign:'right'}" >
+        <Column field="manDTotalCost"       header="일용직인원(남) 비용"     :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.manDTotalCost ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="inQty"       header="충전"     :style="{ width: '80px', textAlign:'right'}" >
+        <Column field="womFTotalCost"       header="정규직인원(여) 비용"     :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.womFTotalCost ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="inQty"       header="포장"     :style="{ width: '80px', textAlign:'right'}" >
+        <Column field="womDTotalCost"       header="일용직인원(여) 비용"     :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.womDTotalCost ?? 0).toLocaleString() }}
             </template>
         </Column>
-        <Column field="inQty"       header="정규직인원(남)"     :style="{ width: '80px', textAlign:'right'}" >
+         <Column field="totalCost"         header="총비용"     :style="{ width: '80px', textAlign:'right'}" >
             <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+                {{ (slotProps.data.totalCost ?? 0).toLocaleString() }}
             </template>
         </Column>
-            <Column field="returnQty"         header="인건비"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.returnQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-        <Column field="inQty"       header="정규직인원(여)"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-        <Column field="returnQty"         header="인건비"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.returnQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-
-        <Column field="inQty"       header="일용직인원(남)"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-            <Column field="returnQty"         header="인건비"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.returnQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-        <Column field="inQty"       header="일용직인원(여)"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-            <Column field="returnQty"         header="인건비"     :style="{ width: '80px', textAlign:'right'}" >
-            <template #body="slotProps">
-                {{ (slotProps.data.returnQty ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-
         <Column field="regId" header="등록자"  :style="{ width: '100px', textAlign:'center'}"  />
         <Column field="endYn" header="마감여부" :style="{ width: '80px', textAlign: 'center' }" >
             <template #body="slotProps">
@@ -148,7 +113,7 @@
 import { ApiBase } from '@/api/apiBase';
 import { ApiCommon } from '@/api/apiCommon.js';
 import { useAlertStore } from '@/stores/alert.js';
-import { todayKST } from '@/util/common';
+import { formatDate, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -168,7 +133,7 @@ const workTypeCds = ref([
 ])
 
 const form = reactive({
-    strDate: todayKST(),
+    strDate: minMonth(todayKST(), 1),
     endDate: todayKST(),
     workTypeCd: null,
     areaCd: null,
@@ -178,6 +143,18 @@ const form = reactive({
 })
 
 const handleDateChange = () =>{}
+
+const srhList = async () => {
+    const params = {
+        ...form,
+        strDate: formatDate(form.strDate),
+        endDate: formatDate(form.endDate),
+    }
+    laborCostList.value = await ApiBase.getDailyLaborCostList(params)
+
+    console.log('srhList', laborCostList.value)
+}
+
 
 const updateEndYn = async (row) =>{
     try{
@@ -198,15 +175,9 @@ const updateEndYn = async (row) =>{
 const newPop = (area) =>{
     let title =''
 
-    if (area === 'A001' ){
-        title = '인건비 현황(시흥) 등록'
-    } else if (area === 'A002' ){
-        title = '인건비 현황(안산) 등록'
-    }
-
      dialog.open(LaborCostPop, {
        props: {
-            header: title,
+            header: '인건비 현황',
             modal: true,
             draggable: true,
             style: {
@@ -275,14 +246,6 @@ const selectRowClick = (row) => {
             // srhList()
        }
     })
-}
-
-const srhList = async () => {
-    const params = {
-        strDate: form.strDate,
-        endDate: form.endDate,
-    }
-    laborCostList.value = await ApiBase.getLaborCostList(params)
 }
 
 onMounted (async () =>{

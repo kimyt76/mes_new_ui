@@ -473,7 +473,6 @@ onMounted(async () => {
             ? laborRateRes
             : laborRateRes?.laborCostList || []
 
-       form.dailyId = 22
         const res = await ApiBase.getLaborCostInfo(form.dailyId)
 
         if (res?.dailyReportInfo) {
