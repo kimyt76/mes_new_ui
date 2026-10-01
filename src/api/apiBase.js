@@ -210,9 +210,9 @@ getProdCompany: async(params) =>{
   },
 
   /**************************생산일보  인건비***************************************/
-   getLaborCosttList: async(params) =>{
+   getDailyLaborCostList: async(params) =>{
     try{
-      const res = await API_URL.post('/dailyReport/getLaborCosttList', params )
+      const res = await API_URL.post('/dailyReport/getDailyLaborCostList', params )
 
       return res.data
     }catch(err){
@@ -236,4 +236,13 @@ getProdCompany: async(params) =>{
     return await API_URL.post('/dailyReport/saveLaborCostInfo', params)
   },
 
+  getLaborCostList: async() =>{
+    try{
+      const res = await API_URL.get('/dailyReport/getLaborCostList')
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
 }
