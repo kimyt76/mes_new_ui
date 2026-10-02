@@ -12,9 +12,28 @@ export const ApiProc = {
         }
     },
 
+    getProcTestMethodList: async(params) => {
+        try{
+            const res = await API_URL.post('/procCommon/getProcTestMethodList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
     getWorkerList: async(params) => {
         return  await API_URL.post('/procCommon/getWorkerList',params)
     },
+
+    greProcTestList: async(params) => {
+        try{
+            const res = await API_URL.post('/greProcTestList/greProcTestList', params)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+
     getBagWeightList: async() => {
         return  await API_URL.get(`/procCommon/getBagWeightList`)
     },

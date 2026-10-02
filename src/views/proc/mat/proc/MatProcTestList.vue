@@ -45,39 +45,37 @@
         tableStyle="table-layout: fixed;"
         class="my-table"
         >
-        <Column field="poNo"        header="PONO"       :style="{ width: '120px', textAlign:'center'}" ></Column>
-        <Column field="areaName"    header="구역"       :style="{ width: '80px', textAlign:'center'}" ></Column>
-        <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '100px', textAlign:'center'}" >
+        <Column field="poNo"        header="PONO"       :style="{ width: '80px'}" ></Column>
+        <Column field="areaName"    header="구역"       :style="{ width: '80px'}" ></Column>
+        <Column field="workOrderDate"   header="제조지시일"  :style="{ width: '110px'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-decoration: underline; point">
-                    {{ slotProps.data.procOrderDate }}
+                <div @click="selectRowClick(slotProps.data.weighId)" class="clickable-cell" style="text-decoration: underline; point">
+                    {{ slotProps.data.weighDate }}
                 </div>
             </template>
         </Column>
-        <Column field="makeNo"      header="제조번호"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign:'center'}" />
-        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="itemName"    header="품목명"    :style="{ width: '400px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
-        <Column field="orderQty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
-            <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        <Column field="makeNo"      header="제조번호"  :style="{ width: '150px'}" />
+        <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px'}" />
+        <Column field="itemCd"      header="품목코드"  :style="{ width: '110px'}" />
+        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
+        <Column field="qty"         header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
+            <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign:'center'}" />
-        <Column field="procTest"        header="공정검사"   :style="{ width: '80px', textAlign:'center'}" />
+        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px'}" />
+        <Column field="procTest"    header="공정검사"   :style="{ width: '80px'}" />
     </DataTable>
 </div>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
-import { ApiProc } from '@/api/apiProc.js';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
-import WeighProcTestPop from './WeighProcTestPop.vue';
 
 const dialog = useDialog()
-const workOrderList = ref([])
+const matList = ref([])
 const processStates = ref([])
 const areaCds = ref([])
 const form = reactive({
@@ -88,14 +86,14 @@ const form = reactive({
   itemCd: '',
   itemName: '',
 
-  procCd: 'PRC001'
+  procCd: 'PRC002',
 })
 
 const handleDateChange = () =>{
 }
 
 
-const selectRowClick = (row) =>{
+const selectRowClick = (id) =>{
     dialog.open(WeighProcTestPop, {
         props:{
             header: '공정검사(칭량)',
@@ -104,8 +102,8 @@ const selectRowClick = (row) =>{
             maximizable: false,
             draggable: false,
             style: {
-                width: '70vw',          // 🔹 팝업 가로 폭
-                maxWidth: '1400px',
+                width: '90vw',          // 🔹 팝업 가로 폭
+                maxWidth: '1800px',
                 height: '800px',
                 overflow: 'hidden'
             },
@@ -114,7 +112,7 @@ const selectRowClick = (row) =>{
                 content: { style: { overflow: 'hidden' } }
             },
         },
-        data: row.workProcId,
+        data: id,
         onClose:(event) => {
         },
     })
@@ -126,7 +124,7 @@ const srhList = async () =>{
         ...form
     }
     // api
-    workOrderList.value = await ApiProc.getProcList(params);
+    matList.value = await ApiMat.getMatList(params);
 }
 
 onMounted( async () => {
