@@ -15,13 +15,13 @@
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemCd" class="w-full" />
+                        <InputText v-model="form.itemCd" class="w-full"  disabled/>
                         <label>품목코드</label>
                     </FloatLabel>
                 </div>
                 <div class="col-6">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.itemName" class="w-full" />
+                        <InputText v-model="form.itemName" class="w-full"  disabled/>
                         <label>품목명</label>
                     </FloatLabel>
                 </div>
