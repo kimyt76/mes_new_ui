@@ -250,6 +250,7 @@ const selectRowClick = (row) => {
 
 onMounted (async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
+    srhList()
 })
 
 

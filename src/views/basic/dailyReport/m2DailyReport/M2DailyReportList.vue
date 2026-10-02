@@ -82,7 +82,7 @@ import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import M2DailyReportPop from './M2DailyReportPop.vue';
 
 const dt = ref(null);
@@ -93,6 +93,7 @@ const m2DailyReportList = ref([])
 const form = reactive({
     strDate: minMonth(todayKST(), 3),
     endDate: todayKST(),
+    typeCd : 'S',
 })
 const handleDateChange = () =>{
 }
@@ -173,6 +174,10 @@ const downloadExcel = () =>{
   }
   exportToExcel(m2DailyReportList.value, "부자재생산일보 리스트", cols);
 }
+
+onMounted(() => {
+    srhList()
+})
 
 
 const home = ref({

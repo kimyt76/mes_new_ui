@@ -22,7 +22,7 @@
     <DataTable
         ref="dt"
         v-model:first="first"
-        :value="m2DailyReportList"
+        :value="m0DailyReportList"
         dataKey="dailyId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -92,17 +92,18 @@ import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import M0DailyReportPop from './M0DailyReportPop.vue';
 
 const dt = ref(null);
 const first = ref(null);
 const {vSuccess} = useAlertStore()
 const dialog = useDialog()
-const m2DailyReportList = ref([])
+const m0DailyReportList = ref([])
 const form = reactive({
     strDate: minMonth(todayKST(), 3),
     endDate: todayKST(),
+    typeCd : 'P',
 })
 const handleDateChange = () =>{
 }
@@ -167,10 +168,9 @@ const updateEndYn = async (row) =>{
 
 const srhList = async () => {
     const params = {
-        strDate: form.strDate,
-        endDate: form.endDate,
+        ...form
     }
-    m2DailyReportList.value = await ApiBase.getM0DailyReportList(params)
+    m0DailyReportList.value = await ApiBase.getM0DailyReportList(params)
 }
 
 const downloadExcel = () =>{
@@ -179,9 +179,12 @@ const downloadExcel = () =>{
   if (!cols.length) {
     return;
   }
-  exportToExcel(m2DailyReportList.value, "완제품생산일보 리스트", cols);
+  exportToExcel(m0DailyReportList.value, "완제품생산일보 리스트", cols);
 }
 
+onMounted(() => {
+    srhList()
+})
 
 const home = ref({
     icon: 'pi pi-home'

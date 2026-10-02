@@ -93,7 +93,7 @@ import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import M1DailyReportPop from './M1DailyReportPop.vue';
 
 const {vSuccess} = useAlertStore()
@@ -182,6 +182,10 @@ const downloadExcel = () =>{
   }
   exportToExcel(m1DailyReportList.value, "원료생산일보 리스트", cols);
 }
+
+onMounted(() => {
+    srhList()
+})
 
 
 const home = ref({
