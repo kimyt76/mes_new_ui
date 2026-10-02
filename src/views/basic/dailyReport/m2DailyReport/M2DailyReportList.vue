@@ -78,7 +78,7 @@
 <script setup>
 import { ApiBase } from '@/api/apiBase';
 import { useAlertStore } from '@/stores/alert.js';
-import { isEmpty, todayKST } from '@/util/common';
+import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -91,7 +91,7 @@ const {vSuccess} = useAlertStore()
 const dialog = useDialog()
 const m2DailyReportList = ref([])
 const form = reactive({
-    strDate: todayKST(),
+    strDate: minMonth(todayKST(), 3),
     endDate: todayKST(),
 })
 const handleDateChange = () =>{
