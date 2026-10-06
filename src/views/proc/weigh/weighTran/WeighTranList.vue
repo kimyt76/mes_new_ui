@@ -27,7 +27,6 @@
     </Toolbar>
 </form>
 <div class="flex items-center justify-end gap-2 mb-2">
-    <!-- <Button label="신규" icon="pi pi-file-excel"  @click="openPop('')"></Button> -->
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
 <div>
@@ -45,7 +44,7 @@
         <Column field="poNo"       header="PO NO"       :style="{ width: '110px', textAlign: 'center'}" ></Column>
         <Column field="tranDate"   header="일자"        :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="openPop(slotProps.data.tranId)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                <div @click="openPop(slotProps.data)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.tranDate }}
                 </div>
             </template>
@@ -91,7 +90,7 @@ const srhList = async () =>{
     procTranList.value = await ApiProc.getProcTranList(params);
 }
 
-const openPop = (id) =>{
+const openPop = (row) =>{
     dialog.open( TranPop,{
         props:{
             header: '제조출고 상세정보',
@@ -101,7 +100,7 @@ const openPop = (id) =>{
             height: '600px',
         },
         data: {
-            tranId: id,
+            tranId: row.outTranId,
             procCd: form.procCd
         },
         onClose: () =>{

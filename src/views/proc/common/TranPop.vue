@@ -26,7 +26,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
-                        <InputText v-model="form.fromStorageName" class="w-full"/>
+                        <InputText v-model="form.srcStorageName" class="w-full"/>
                         <InputIcon class="pi pi-search"  @click="openPop('S')"/>
                     </IconField>
                     <label>보낸창고</label>
@@ -35,7 +35,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
-                        <InputText v-model="form.toStorageName" class="w-full"/>
+                        <InputText v-model="form.tarStorageName" class="w-full"/>
                         <InputIcon class="pi pi-search"  @click="openPop('S')"/>
                     </IconField>
                     <label>받은창고</label>
@@ -72,20 +72,13 @@
         <Column selectionMode="multiple" headerStyle="width: 2rem" style="text-align: center;"></Column>
         <Column field="itemCd"    header="품목코드"  :style="{ width: '100px', textAlign: 'center'}" />
         <Column field="itemName"  header="품목명"    :style="{ width: '300px'}" bodyClass="break-words"></Column>
-        <Column field="lotNo"      header="로트(제조)번호"      :style="{ width: '120px'}"/>
-        <Column field="testNo"      header="시험번호"      :style="{ width: '120px', textAlign: 'center' }"/>
-        <Column field="qty"        header="수량"    :style="{ width: '80px', textAlign: 'right'}"  >
+        <Column field="lotNo"     header="로트(제조)번호"      :style="{ width: '120px'}"/>
+        <Column field="testNo"    header="시험번호"      :style="{ width: '120px', textAlign: 'center' }"/>
+        <Column field="qty"       header="수량"    :style="{ width: '80px', textAlign: 'right'}"  >
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="etc"        header="비고"    :style="{ width: '150px'}">
+        <Column field="etc"       header="비고"    :style="{ width: '150px'}">
         </Column>
-<!--
-        <Column field="actions"        header="-"    :style="{ width: '20px'}" style="text-align: center;" >
-            <template #body="slotProps">
-                <i class="pi pi-trash cursor-pointer"@click="removeRow(slotProps.index)"></i>
-            </template>
-        </Column>
-         -->
     </DataTable>
 </div>
 <div class="w-full flex gap-2 justify-end mt-2">
@@ -107,9 +100,9 @@ const form = reactive({
     seq: null,
     managerName: '',
     managerId: '',
-    fromStorageName: '',
+    srcStorageName: '',
     tarStorageCd: '',
-    toStorageName: '',
+    tarStorageName: '',
     srcStorageCd: '',
     etc: '',
 
@@ -117,7 +110,8 @@ const form = reactive({
 })
 
 onMounted(async()=>{
-    form.tranId = dialogRef.value.options.data?.tranId || ''
+    form.tranId = dialogRef.value.data?.tranId || ''
+
     if (form.tranId) {
        const res = await ApiTran.getTranInfo(form.tranId)
 
