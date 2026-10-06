@@ -118,7 +118,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
-import { todayKST } from '@/util/common';
+import { addDay, todayKST } from '@/util/common';
 import DayClosePop from '@/views/proc/weigh/dayClose/DayClosePop.vue';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
