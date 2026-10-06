@@ -18,7 +18,6 @@
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
                         <InputText v-model="form.managerName" class="w-full"/>
-                        <InputIcon class="pi pi-search"  @click="openPop('U')"/>
                     </IconField>
                     <label>담당자</label>
                 </FloatLabel>
@@ -27,7 +26,6 @@
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
                         <InputText v-model="form.srcStorageName" class="w-full"/>
-                        <InputIcon class="pi pi-search"  @click="openPop('S')"/>
                     </IconField>
                     <label>보낸창고</label>
                 </FloatLabel>
@@ -36,7 +34,6 @@
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
                         <InputText v-model="form.tarStorageName" class="w-full"/>
-                        <InputIcon class="pi pi-search"  @click="openPop('S')"/>
                     </IconField>
                     <label>받은창고</label>
                 </FloatLabel>
@@ -89,10 +86,8 @@
 
 <script setup>
 import { ApiTran } from '@/api/apiTran';
-import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
 
-const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const itemTranList = ref([])
 const form = reactive({
