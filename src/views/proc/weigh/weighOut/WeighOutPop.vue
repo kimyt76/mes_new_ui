@@ -77,7 +77,13 @@
         <Column field="itemName"  header="품목명"   style="width: 380px" />
         <Column field="testNo"    header="시험번호" :style="{ width: '110px', textAlign: 'center'}">
             <template #body="slotProps">
-                <InputText v-model="slotProps.data.testNo" class="w-full" />
+                <InputText
+                    v-model="slotProps.data.testNo"
+                    class="w-full"
+                    maxlength="11"
+                    @input="slotProps.data.testNo?.length === 11 && checkTestNo(slotProps.data)"
+                    @keyup.enter="checkTestNo(slotProps.data)"
+                />
             </template>
         </Column>
         <Column field="qty"       header="수량" :style="{ width: '110px', textAlign: 'right'}" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }">
@@ -113,10 +119,12 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
+import { ApiQc } from '@/api/apiQc';
 import { ApiStock } from '@/api/apiStock';
 import { ApiSystem } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
+import { checkTestNoItem } from '@/util/checkTestNoByItemCd';
 import { isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
@@ -124,6 +132,7 @@ import QrCodeSimplePop from '@/views/common/QrCodeSimplePop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
+
 
 const { vSuccess, vWarning} = useAlertStore()
 const { memberNm, userId} = useAuthStore()
@@ -152,6 +161,7 @@ const saveInfo = async () =>{
     if( form.srcStorageCd === form.tarStorageCd ) return vWarning('보내는 창고와 받는 창고가 동일합니다.')
     if( itemList.value.length <= 0 ) return vWarning('이동 요청할 품목을 추가해주세요.')
 
+
     try{
         const param = {
             tranInfo: form,
@@ -165,6 +175,38 @@ const saveInfo = async () =>{
         handleApiError(err)
     }
 }
+
+const checkTestNo = async (row) =>{
+    const testNo = row.testNo?.trim()
+
+    // 1. 시험번호 11자리 검증
+    const testNoCheck = checkTestNoItem(testNo)
+
+    if (!testNoCheck.valid) {
+        return vWarning(testNoCheck.message)
+    }
+
+    try {
+        // 2. 시험번호 조회
+        const testInfo = await ApiQc.getItemTestNoInfoList(testNo)
+
+        // 3. 조회된 품목과 현재 품목 비교
+        const result = checkTestNoItem(
+            testNo,
+            testInfo?.[0]?.itemCd,
+            row.itemCd
+        )
+
+        if (!result.valid) {
+            row.testNo = ''
+            return vWarning(result.message)
+        }
+
+    } catch(err) {
+        handleApiError(err)
+    }
+}
+
 
 const handleSelected = (row) =>{
     addRow(row)
