@@ -57,7 +57,7 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaName"        header="구역"       :style="{ width: '70px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '90px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
@@ -65,13 +65,21 @@
                 </div>
             </template>
         </Column>
-        <Column field="poNo"        header="PO NO"    :style="{ width: '110px', textAlign: 'center'}" ></Column>
+        <Column field="poNo"        header="PO NO"    :style="{ width: '120px', textAlign: 'center'}" ></Column>
         <Column field="makeNo"      header="제조번호"  :style="{ width: '160px', textAlign: 'center'}" />
         <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '430px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
         <Column field="orderQty"    header="지시수량"   :style="{ width: '90px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
+        </Column>
+        <Column field="procStatus"  header="칭량상태"   :style="{ width: '80px', textAlign: 'center'}">
+            <template #body="slotProps">
+                {{ slotProps.data.procStatus === '00' ? '작업 시작'
+                    : slotProps.data.procStatus === '11' ? '칭량중'
+                    : slotProps.data.procStatus === '12' ? '칭량완료'
+                    : '' }}
+            </template>
         </Column>
         <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" >
 
