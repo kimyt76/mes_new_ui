@@ -118,7 +118,7 @@ const selectRowClick = (tranId) => {
 const openItemOutPop = (id) =>{
     dialog.open(WeighOutPop, {
         props: {
-            header: id === 'N' ? '제조불출 등록' : '제조불출 수정',
+            header: id === 'N' ? '자재불출 등록' : '자재불출 수정',
             modal: true,
             draggable: true,
             resizable: false,
