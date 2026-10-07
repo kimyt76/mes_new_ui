@@ -108,7 +108,12 @@ const selectRowClick = (obj) =>{
             modal: true,
             maximizable: false,
             draggable: true,
-            style: { overflow: 'hidden' },
+            style: {
+                width: '90vw',
+                maxWidth: '1250px',
+                height: '650px',
+                overflow: 'hidden'
+            },
             pt: {
                 root: { style: { overflow: 'hidden' } },
                 content: { style: { overflow: 'auto' } }
