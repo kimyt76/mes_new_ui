@@ -3,19 +3,9 @@
 <Breadcrumb :home="home" :model="items"/>
 <div>
     <div class="mt-2 mb-3 flex  gap-2">
-        <Button
-            label="품목추가"
-            @click="openPop"
-            />
-        <Button
-            label="초기화"
-            @click="allClear"
-            class="ml-5"
-            />
-        <Button
-            label="계산하기"
-            @click="bomCalculation"
-            />
+        <Button label="품목추가" @click="openPop" />
+         <Button label="초기화" icon="pi pi-refresh" severity="secondary" type="button" @click="allClear" />
+        <Button label="계산하기" severity="info" @click="bomCalculation"></Button>
     </div>
 </div>
 
