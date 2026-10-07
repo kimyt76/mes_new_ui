@@ -68,5 +68,8 @@ export const ApiItem = {
   updatePriceInfo: async(params) => {
     return  await API_URL.post(`/item/updatePriceInfo`, params)
   },
+  deleteItem: async(id) => {
+    return  await API_URL.get(`/item/deleteItem/${id}`)
+  },
 
 }

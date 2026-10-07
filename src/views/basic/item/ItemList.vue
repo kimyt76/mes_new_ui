@@ -46,6 +46,7 @@
         <div class="flex items-center gap-2">
             <Button label="신규" icon="pi pi-plus" severity="secondary" @click="newItem" />
             <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
+            <Button label="품목삭제" severity="danger" @click="deleteItem" class="p-button-xm" />
         </div>
     </div>
     <div class="flex flex-col mt-2" ref="tableWrapper">
@@ -95,6 +96,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiItem } from '@/api/apiItem';
+import { useAlertStore } from '@/stores/alert';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
@@ -103,6 +105,7 @@ import ItemRegPop from './ItemRegPop.vue';
 import ItemSub from './ItemSub.vue';
 import ItemThird from './ItemThird.vue';
 
+const {  vSuccess, vWarning} = useAlertStore()
 const dialog = useDialog()
 const dt = ref(null);
 const itemTypeCds = ref([])
@@ -186,6 +189,28 @@ const newItem = () => {
     }
   })
 }
+
+  const deleteItem = () =>{
+    if (!selectedItem.value) {
+      vWarning('삭제할 품목을 선택해주세요.');
+      return;
+    }
+
+    const itemCd = selectedItem.value.itemCd;
+
+    if (confirm(`품목코드 ${itemCd}를 삭제하시겠습니까?`)) {
+      ApiItem.deleteItem(itemCd)
+        .then(() => {
+          vSuccess('품목이 삭제되었습니다.');
+          srchItemList(); // 삭제 후 목록 갱신
+          selectedItem.value = null; // 선택 초기화
+        })
+        .catch((error) => {
+          console.error('삭제 중 오류 발생:', error);
+          vWarning('품목 삭제 중 오류가 발생했습니다.');
+        });
+    }
+  }
 
 
 /**
