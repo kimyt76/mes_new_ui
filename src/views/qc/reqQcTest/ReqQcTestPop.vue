@@ -132,7 +132,7 @@
               :maxFractionDigits="6"
               :inputStyle="{ width: '100%', 'text-align': 'right' }"
             />
-            <label> 검체채취량 ({{ ['원재료', '반제품'].includes(form.itemTypeName) ? ' kg' : 'ea' }}) </label>
+            <label> 검체채취량 ({{ ['M1', 'M3'].includes(form.itemTypeCd) ? 'kg' : 'ea' }}) </label>
           </FloatLabel>
         </div>
         <div class="col-4">
@@ -144,7 +144,7 @@
               :maxFractionDigits="6"
               :inputStyle="{ width: '100%', 'text-align': 'right' }"
             />
-             <label> 검사샘플량 ({{ !['원재료', '반제품'].includes(form.itemTypeName) ? 'kg' : 'ea' }}) </label>
+             <label> 검사샘플량 ({{ ['M1', 'M3'].includes(form.itemTypeCd) ? 'kg' : 'ea' }}) </label>
           </FloatLabel>
         </div>
       </div>
