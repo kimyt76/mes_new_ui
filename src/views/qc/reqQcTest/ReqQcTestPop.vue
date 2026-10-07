@@ -87,10 +87,78 @@
         <div class="col-4">
           <FloatLabel variant="on">
             <IconField iconPosition="left">
-              <InputText v-model="form.testerName" class="w-full" />
+              <InputText v-model="form.testerId" class="w-full" />
               <InputIcon class="pi pi-search" @click="openPop('T')" />
             </IconField>
             <label>시험접수자</label>
+          </FloatLabel>
+        </div>
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <IconField iconPosition="left">
+              <InputText v-model="form.sampleTesterId" class="w-full" />
+              <InputIcon class="pi pi-search" @click="openPop('S')" />
+            </IconField>
+            <label>검체채취자</label>
+          </FloatLabel>
+        </div>
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <IconField iconPosition="left">
+              <InputText v-model="form.orderTesterId" class="w-full" />
+              <InputIcon class="pi pi-search" @click="openPop('O')" />
+            </IconField>
+            <label>시험지시자</label>
+          </FloatLabel>
+        </div>
+      </div>
+      <!-- 6행 -->
+      <div class="grid mb-3">
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <IconField iconPosition="left">
+              <InputText v-model="form.confirmTesterId" class="w-full" />
+              <InputIcon class="pi pi-search" @click="openPop('C')" />
+            </IconField>
+            <label>시험확인자</label>
+          </FloatLabel>
+        </div>
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <InputNumber
+              v-model="form.sampleQty"
+              class="w-full"
+              :minFractionDigits="0"
+              :maxFractionDigits="6"
+              :inputStyle="{ width: '100%', 'text-align': 'right' }"
+            />
+            <label> 검체채취량 ({{ ['원재료', '반제품'].includes(form.itemTypeName) ? ' kg' : 'ea' }}) </label>
+          </FloatLabel>
+        </div>
+        <div class="col-4">
+          <FloatLabel variant="on">
+            <InputNumber
+              v-model="form.testQty"
+              class="w-full"
+              :minFractionDigits="0"
+              :maxFractionDigits="6"
+              :inputStyle="{ width: '100%', 'text-align': 'right' }"
+            />
+             <label> 검사샘플량 ({{ !['원재료', '반제품'].includes(form.itemTypeName) ? 'kg' : 'ea' }}) </label>
+          </FloatLabel>
+        </div>
+      </div>
+
+      <!-- 7행 -->
+      <div class="grid mb-3">
+        <div class="col-4 req-date-box">
+          <FloatLabel variant="on">
+            <DatePicker
+              v-model="form.testDate"
+              showIcon
+              class="w-full"
+            />
+            <label>시험일자</label>
           </FloatLabel>
         </div>
         <div class="col-4">
@@ -105,54 +173,14 @@
             <label>시험상태</label>
           </FloatLabel>
         </div>
-        <div class="col-4 req-date-box">
+        <div v-if="isOrderType" class="col-4">
           <FloatLabel variant="on">
-            <DatePicker
-              v-model="form.testDate"
-              showIcon
-              class="w-full"
-            />
-            <label>시험일</label>
+            <InputText v-model="form.orderType" class="w-full" readonly />
+            <label>거래유형</label>
           </FloatLabel>
         </div>
       </div>
-
-      <!-- 6행 -->
-      <div class="grid mb-3">
-        <div class="col-4">
-          <FloatLabel variant="on">
-            <IconField iconPosition="left">
-              <InputText v-model="form.orderTesterName" class="w-full" />
-              <InputIcon class="pi pi-search" @click="openPop('O')" />
-            </IconField>
-            <label>시험지시자</label>
-          </FloatLabel>
-        </div>
-         <div class="col-4">
-          <FloatLabel variant="on">
-            <Select
-              v-model="form.passState"
-              :options="passStates"
-              optionLabel="codeNm"
-              optionValue="code"
-              class="w-full"
-            />
-            <label>판정상태</label>
-          </FloatLabel>
-        </div>
-        <div class="col-4">
-          <FloatLabel variant="on">
-            <IconField iconPosition="left">
-              <InputText v-model="form.confirmTesterName" class="w-full" />
-              <InputIcon class="pi pi-search" @click="openPop('C')" />
-            </IconField>
-            <label>시험확인자</label>
-          </FloatLabel>
-        </div>
-
-      </div>
-
-      <!-- 7행 -->
+      <!-- 8행 -->
       <div class="grid mb-3">
         <div class="col-4 req-date-box">
           <FloatLabel variant="on">
@@ -166,45 +194,14 @@
         </div>
         <div class="col-4">
           <FloatLabel variant="on">
-            <IconField iconPosition="left">
-              <InputText v-model="form.sampleTesterName" class="w-full" />
-              <InputIcon class="pi pi-search" @click="openPop('S')" />
-            </IconField>
-            <label>검체채취자</label>
-          </FloatLabel>
-        </div>
-        <div class="col-4">
-          <FloatLabel variant="on">
-            <InputNumber
-              v-model="form.sampleQty"
+            <Select
+              v-model="form.passState"
+              :options="passStates"
+              optionLabel="codeNm"
+              optionValue="code"
               class="w-full"
-              :minFractionDigits="0"
-              :maxFractionDigits="6"
-              :inputStyle="{ width: '100%', 'text-align': 'right' }"
             />
-            <label> 검체채취량 ({{ ['원재료', '반제품'].includes(form.itemTypeName) ? ' g(ml)' : 'ea' }}) </label>
-          </FloatLabel>
-        </div>
-      </div>
-
-      <!-- 8행 -->
-      <div class="grid mb-3">
-        <div class="col-4">
-          <FloatLabel variant="on">
-            <InputNumber
-              v-model="form.testQty"
-              class="w-full"
-              :minFractionDigits="0"
-              :maxFractionDigits="6"
-              :inputStyle="{ width: '100%', 'text-align': 'right' }"
-            />
-             <label> 검사샘플량 ({{ !['원재료', '반제품'].includes(form.itemTypeName) ? 'kg' : 'ea' }}) </label>
-          </FloatLabel>
-        </div>
-        <div v-if="isOrderType" class="col-4">
-          <FloatLabel variant="on">
-            <InputText v-model="form.orderType" class="w-full" readonly />
-            <label>거래유형</label>
+            <label>판정상태</label>
           </FloatLabel>
         </div>
         <div v-if="isExpirDate" class="col-4">
@@ -304,13 +301,9 @@ const form = reactive({
     reqTesterId: '',
     reqTesterName: '',
 
-    testerName: memberNm,
     testerId: userId,
-    orderTesterName: '',
     orderTesterId: '',
-    confirmTesterName:'',
     confirmTesterId:'',
-    sampleTesterName: '',
     sampleTesterId: '',
 
     testState: '',
@@ -402,8 +395,8 @@ const onAfterChange = (changes, source) => {
 
 const saveInfo = async () =>{
 
-    if(isEmpty(form.sampleTesterName)) return vWarning('검체채취자 정보를 입력하세요')
-    if(isEmpty(form.orderTesterName)) return vWarning('시험지시자 정보를 입력하세요')
+    if(isEmpty(form.sampleTesterId)) return vWarning('검체채취자 정보를 입력하세요')
+    if(isEmpty(form.orderTesterId)) return vWarning('시험지시자 정보를 입력하세요')
 
     try{
         const params = {
