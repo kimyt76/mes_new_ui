@@ -75,15 +75,14 @@
         </Column>
         <Column field="procStatus"  header="칭량상태"   :style="{ width: '80px', textAlign: 'center'}">
             <template #body="slotProps">
-                {{ slotProps.data.procStatus === '00' ? '작업시작'
+                {{ slotProps.data.procStatus === '00' ? '작업지시'
                     : slotProps.data.procStatus === '11' ? '칭량중'
                     : slotProps.data.procStatus === '12' ? '칭량완료'
                     : '' }}
             </template>
         </Column>
-        <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" >
+        <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
 
-        </Column>
     </DataTable>
 </div>
 </template>
