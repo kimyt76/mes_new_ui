@@ -339,6 +339,7 @@ const loadInventoryList = async (areaCd) => {
 }
 
 let tmpTestNo = ref('')
+
 onMounted(async () => {
   setTimeout(() => {
     barcodeInputRef.value?.$el?.querySelector('input')?.focus()
@@ -347,7 +348,6 @@ onMounted(async () => {
   const dialogData = dialogRef.value?.data || {}
   const rowData = dialogData.row || {}
   const formData = dialogData.form || {}
-
   const areaCd = formData.areaCd ?? ''
   workProcId.value = formData.workProcId ?? ''
   storageCd.value = formData.storageCd ?? ''
@@ -360,13 +360,9 @@ onMounted(async () => {
 
   await loadInventoryList(areaCd)
 
-  if (!isEmpty(tmpTestNo.value)) {
+  if (!isEmpty(weighId.value)) {
     await getStockTestNoList()
   }
-
-
-
-
 })
 
 const getStockTestNoList = async () =>{
