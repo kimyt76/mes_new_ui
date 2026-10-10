@@ -123,6 +123,7 @@
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon'
+import { ApiQc } from '@/api/apiQc'
 import { ApiStock } from '@/api/apiStock'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
