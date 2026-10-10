@@ -167,6 +167,7 @@
 <script setup>
 import { ApiStock } from '@/api/apiStock';
 import { useAlertStore } from '@/stores/alert';
+import { useAuthStore } from '@/stores/auth';
 import { isEmpty, todayKST } from '@/util/common.js';
 import { handleApiError } from '@/util/errorHandler';
 import UserListPop from '@/views/system/user/UserListPop.vue';
@@ -174,6 +175,7 @@ import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, watch } from 'vue';
 
 const { vWarning, vSuccess } = useAlertStore()
+const { memberNm, userId } = useAuthStore()
 const isInit = ref(true)
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
@@ -193,8 +195,8 @@ const form = reactive({
     //업데이트값
     moveRegDate: null,
     regSeq: null,
-    moveManagerId: null,
-    moveManagerName: null,
+    moveManagerId: userId,
+    moveManagerName: memberNm,
 
     //재고조회시 필요
     srcStorageCd: null,
