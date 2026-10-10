@@ -1416,7 +1416,7 @@ const downloadM0 = async () => {
             typeCd: 'P',
             dailyId: form.dailyId
         }
-console.log('엑셀 다운로드 params:', params)
+
         const res = await ApiBase.downloadDailyReport(params)
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
         const url = window.URL.createObjectURL(blob)

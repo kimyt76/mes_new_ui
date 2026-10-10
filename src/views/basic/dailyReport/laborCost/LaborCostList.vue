@@ -56,7 +56,7 @@
         </Column>
         <Column field="dailyDate"    header="생산일자"  :style="{ width: '120px', textAlign:'right'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data)" class="clickable-cell">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-align: center;">
                     {{ slotProps.data.dailyDate }}
                 </div>
             </template>
@@ -289,5 +289,15 @@ const items = ref([
   padding: 0.25rem 0;
   text-decoration: underline;
   text-align: left;
+}
+.end-progress {
+    cursor: pointer;
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.end-progress:hover {
+    opacity: 0.7;
 }
 </style>
