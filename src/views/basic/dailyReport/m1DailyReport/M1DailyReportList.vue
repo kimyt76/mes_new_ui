@@ -104,7 +104,7 @@ const m1DailyReportList = ref([])
 const form = reactive({
     strDate: minMonth(todayKST(), 3),
     endDate: todayKST(),
-    typeCd : 'M',
+    typeCd : 'I',
 })
 const handleDateChange = () =>{}
 

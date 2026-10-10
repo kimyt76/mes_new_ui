@@ -726,7 +726,7 @@ const dialogRef = inject('dialogRef', null)
 const form = reactive({
     dailyDate: null,
     itemTypeCd : 'M1',
-    typeCd : 'M',
+    typeCd : 'I',
     endYn: '',
     dailyId:'',
 })
