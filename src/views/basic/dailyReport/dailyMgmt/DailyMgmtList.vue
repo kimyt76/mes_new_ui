@@ -18,24 +18,87 @@
     <Button label="신규" icon="pi pi-plus" severity="secondary"  @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 </div>
-
-
+<div>
+    <DataTable
+        ref="dt"
+        v-model:first="first"
+        :value="dailyMgmtList"
+        dataKey="dailyId"
+        paginator :rows="20"
+        :rowsPerPageOptions="[20,30,40]"
+        class="my-table"
+        scrollHeight="650px"
+        scrollable
+        showGridlines
+        >
+        <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
+        <Column field="dailyDate"    header="생산일자"  :style="{ width: '120px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-align: center;">
+                    {{ slotProps.data.dailyDate }}
+                </div>
+            </template>
+        </Column>
+        <Column field="inQty"         header="입고량 총액"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.inQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="outQty"         header="부자재 총액"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.outQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="prodAmt"     header="완제품 총액"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.prodAmt ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="laborAmt"      header="인건비총액"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.laborAmt ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="totalAmt"         header="총비용"     :style="{ width: '80px', textAlign:'right'}" >
+            <template #body="slotProps">
+                {{ (slotProps.data.totalAmt ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="regId" header="등록자"  :style="{ width: '100px', textAlign:'center'}"  />
+        <Column field="endYn" header="마감여부" :style="{ width: '80px', textAlign: 'center' }" >
+            <template #body="slotProps">
+                <span v-if="slotProps.data.endYn === 'Y'" > 마감 </span>
+                <span v-else class="end-progress" @click="updateEndYn(slotProps.data)" > 진행중 </span>
+            </template>
+        </Column>
+    </DataTable>
+</div>
+                    `
 </template>
 
 <script setup>
 import { ApiBase } from '@/api/apiBase';
-import { todayKST } from '@/util/common';
+import { useAlertStore } from '@/stores/alert.js';
+import { minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { reactive, ref } from 'vue';
 import DailyMgmtPop from './DailyMgmtPop.vue';
 
+const {vSuccess} = useAlertStore()
 const dt = ref(null);
+const first = ref(0);
 const dialog = useDialog()
 const dailyMgmtList = ref([])
 const form = reactive({
-    strDate: todayKST(),
+    strDate: minMonth(todayKST(), 1),
     endDate: todayKST(),
+    typeCd: 'M',
 })
 const handleDateChange = () =>{}
 
@@ -76,10 +139,24 @@ const selectRowClick = (row) => {
     })
 }
 
+const updateEndYn = async (row) =>{
+    try{
+        const params = {
+            dailyId: row.dailyId,
+            endYn: 'Y',
+        }
+
+        const res = await ApiBase.updateDailyReportEndYn(params)
+        vSuccess('마감 되었습니다.')
+        srhList()
+    }catch(err){
+        handleApiError(err)
+    }
+}
+
 const srhList = async () => {
     const params = {
-        strDate: form.strDate,
-        endDate: form.endDate,
+       ...form
     }
     dailyMgmtList.value = await ApiBase.getDailyMgmtList(params)
 }
@@ -120,5 +197,15 @@ const items = ref([
   padding: 0.25rem 0;
   text-decoration: underline;
   text-align: left;
+}
+.end-progress {
+    cursor: pointer;
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.end-progress:hover {
+    opacity: 0.7;
 }
 </style>

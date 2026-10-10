@@ -245,4 +245,32 @@ getProdCompany: async(params) =>{
       throw err.response
     }
   },
+
+/**************************생산일보  인건비***************************************/
+getDailyMgmtList: async(params) =>{
+    try{
+      const res = await API_URL.post('/dailyReport/getDailyMgmtList', params )
+
+      return res.data
+    }catch(err){
+      throw err.response
+    }
+  },
+
+  getDailyMgmtInfo: async (id) => {
+    try {
+            const res = await API_URL.get('/dailyReport/getDailyMgmtInfo', {
+            params: {
+                dailyId: id ?? null
+                }
+            })
+        return res.data
+    } catch (err) {
+        throw err.response
+    }
+  },
+
+  saveDailyMgmt: async(params) => {
+    return await API_URL.post('/dailyReport/saveDailyMgmt', params)
+  },
 }

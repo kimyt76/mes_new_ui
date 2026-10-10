@@ -7,8 +7,8 @@
             v-model="form.dailyDate"
             dateFormat="yy-mm-dd"
             :manualInput="false"
-            showIcon
             inputId="dailyDate"
+            disabled
           />
           <label for="dailyDate">기준일자</label>
         </FloatLabel>
@@ -16,7 +16,8 @@
       <div class="toolbar-right">
         <Button label="조회" icon="pi pi-search" severity="secondary" @click="srhInfo" />
         <Button label="저장" icon="pi pi-save" @click="saveInfo" />
-        <Button label="인쇄" icon="pi pi-print" severity="secondary" @click="printPage" />
+        <!-- <Button label="인쇄" icon="pi pi-print" severity="secondary" @click="printPage" /> -->
+        <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadDailyMgmt"/>
       </div>
     </div>
 
@@ -43,16 +44,15 @@
       <div class="table-wrapper">
         <table class="report-table stock-table">
           <colgroup>
-            <col style="width: 105px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 190px" />
+            <col style="width: 12%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
           </colgroup>
           <thead>
             <tr>
@@ -65,29 +65,29 @@
               <th class="head-yellow">원료 사용량</th>
               <th class="head-blue">원료 외주 반출</th>
               <th>원료 현재고</th>
-              <th>비고</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <th>수 량(kg)</th>
               <td v-for="field in rawQtyFields" :key="field">
+                <span v-if="field === 'currentQty'" class="readonly-number stock-current">{{ formatNumber(stockCurrent.rawQty) }}</span>
                 <InputNumber
-                  v-model="rawStock[field]"
-                  :maxFractionDigits="3"
+                  v-else
+                  v-model="dailyMgmt[field]"
+                  :maxFractionDigits="6"
                   class="cell-number"
                   inputClass="text-right"
                 />
-              </td>
-              <td rowspan="2">
-                <InputText v-model="rawStock.etc" class="cell-input" />
               </td>
             </tr>
             <tr>
               <th>금 액(원)</th>
               <td v-for="field in rawAmtFields" :key="field">
+                <span v-if="field === 'currentAmt'" class="readonly-number stock-current">{{ formatNumber(stockCurrent.rawAmt) }}</span>
                 <InputNumber
-                  v-model="rawStock[field]"
+                  v-else
+                  v-model="dailyMgmt[field]"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -106,16 +106,15 @@
       <div class="table-wrapper">
         <table class="report-table stock-table">
           <colgroup>
-            <col style="width: 105px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 190px" />
+            <col style="width: 12%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
           </colgroup>
           <thead>
             <tr>
@@ -128,29 +127,29 @@
               <th class="head-yellow">부자재 사용량</th>
               <th class="head-blue">부자재 외주 반출</th>
               <th>부자재 현재고</th>
-              <th>비고</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <th>수 량(ea)</th>
               <td v-for="field in subQtyFields" :key="field">
+                <span v-if="field === 'currentQty'" class="readonly-number stock-current">{{ formatNumber(stockCurrent.subQty) }}</span>
                 <InputNumber
-                  v-model="subStock[field]"
-                  :maxFractionDigits="3"
+                  v-else
+                  v-model="dailyMgmt[field]"
+                  :maxFractionDigits="6"
                   class="cell-number"
                   inputClass="text-right"
                 />
-              </td>
-              <td rowspan="2">
-                <InputText v-model="subStock.etc" class="cell-input" />
               </td>
             </tr>
             <tr>
               <th>금 액(원)</th>
               <td v-for="field in subAmtFields" :key="field">
+                <span v-if="field === 'currentAmt'" class="readonly-number stock-current">{{ stockCurrent.subAmt == null ? "-" : formatNumber(stockCurrent.subAmt) }}</span>
                 <InputNumber
-                  v-model="subStock[field]"
+                  v-else
+                  v-model="dailyMgmt[field]"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -170,16 +169,15 @@
       <div class="table-wrapper">
         <table class="report-table stock-table">
           <colgroup>
-            <col style="width: 105px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 96px" />
-            <col style="width: 190px" />
+            <col style="width: 12%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
+            <col style="width: 11%" />
           </colgroup>
           <thead>
             <tr>
@@ -192,29 +190,29 @@
               <th class="head-yellow">완제품 출하</th>
               <th class="head-blue">완제품 반품</th>
               <th>완제품 현재고</th>
-              <th>비고</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <th>수 량(ea)</th>
               <td v-for="field in prodQtyFields" :key="field">
+                <span v-if="field === 'currentQty'" class="readonly-number stock-current">{{ formatNumber(stockCurrent.prodQty) }}</span>
                 <InputNumber
-                  v-model="prodStock[field]"
-                  :maxFractionDigits="3"
+                  v-else
+                  v-model="dailyMgmt[field]"
+                  :maxFractionDigits="6"
                   class="cell-number"
                   inputClass="text-right"
                 />
-              </td>
-              <td rowspan="2">
-                <InputText v-model="prodStock.etc" class="cell-input" />
               </td>
             </tr>
             <tr>
               <th>금 액(원)</th>
               <td v-for="field in prodAmtFields" :key="field">
+                <span v-if="field === 'currentAmt'" class="readonly-number stock-current">{{ formatNumber(stockCurrent.prodAmt) }}</span>
                 <InputNumber
-                  v-model="prodStock[field]"
+                  v-else
+                  v-model="dailyMgmt[field]"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -235,14 +233,14 @@
       <div class="table-wrapper">
         <table class="report-table labor-table">
           <colgroup>
-            <col style="width: 220px" />
-            <col style="width: 90px" />
-            <col style="width: 90px" />
-            <col style="width: 105px" />
-            <col style="width: 120px" />
-            <col style="width: 165px" />
-            <col style="width: 150px" />
-            <col style="width: 190px" />
+            <col style="width: 25%" />
+            <col style="width: 9%" />
+            <col style="width: 9%" />
+            <col style="width: 10%" />
+            <col style="width: 12%" />
+            <col style="width: 12%" />
+            <col style="width: 12%" />
+            <col style="width: 11%" />
           </colgroup>
 
           <thead>
@@ -251,9 +249,9 @@
               <th colspan="2">구 분</th>
               <th rowspan="2">인원소계</th>
               <th rowspan="2">근무시간</th>
-              <th rowspan="2">금 액</th>
+              <th rowspan="2">시간당 단가</th>
+               <th rowspan="2">금 액</th>
               <th rowspan="2">합계</th>
-              <th rowspan="2">비고</th>
             </tr>
 
             <tr>
@@ -263,63 +261,131 @@
           </thead>
 
           <tbody>
-            <template v-for="group in laborGroups" :key="group.workTypeCd">
-              <tr v-for="(row, index) in group.rows" :key="row.rowKey">
-                <td class="center-cell">
-                  {{ row.typeName }}
-                </td>
-                <td>
-                  <InputNumber
-                    v-model="row.manCnt"
-                    :maxFractionDigits="0"
-                    class="cell-number"
-                    inputClass="text-right"
-                    @update:modelValue="calculateLaborRow(row)"
-                  />
-                </td>
-                <td>
-                  <InputNumber
-                    v-model="row.womCnt"
-                    :maxFractionDigits="0"
-                    class="cell-number"
-                    inputClass="text-right"
-                    @update:modelValue="calculateLaborRow(row)"
-                  />
-                </td>
-                <td class="readonly-number">
-                  {{ formatNumber(personTotal(row)) }}
-                </td>
-                <td>
-                  <InputNumber
-                    v-model="row.workTime"
-                    :minFractionDigits="0"
-                    :maxFractionDigits="2"
-                    class="cell-number"
-                    inputClass="text-right"
-                    @update:modelValue="calculateLaborRow(row)"
-                  />
-                </td>
-                <td class="readonly-number">
-                  {{ formatNumber(row.amount) }}
-                </td>
-                <td
-                  v-if="index === 0"
-                  :rowspan="group.rows.length"
-                  class="group-total-cell"
-                >
-                  {{ formatNumber(groupTotal(group.rows)) }}
-                </td>
-                <td>
-                  <InputText v-model="row.etc" class="cell-input" />
-                </td>
-              </tr>
-            </template>
+            <tr>
+              <td class="center-cell">생산(관리)주간</td>
+              <td><InputNumber v-model="dailyMgmt.mgmtDayMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.mgmtDayFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.mgmtDayMaleCnt) + number(dailyMgmt.mgmtDayFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.mgmtDayWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.mgmtDayHourlyCost" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.mgmtDayMaleCnt, dailyMgmt.mgmtDayFemaleCnt, dailyMgmt.mgmtDayWorkHour, dailyMgmt.mgmtDayHourlyCost)) }}</td>
+              <td rowspan="4" class="group-total-cell">{{ formatNumber(dayLaborTotal) }}</td>
+            </tr>
+            <tr>
+              <td class="center-cell">생산(정규직)주간</td>
+              <td><InputNumber v-model="dailyMgmt.regularDayMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.regularDayFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.regularDayMaleCnt) + number(dailyMgmt.regularDayFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.regularDayWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.regularDayHourlyCost" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.regularDayMaleCnt, dailyMgmt.regularDayFemaleCnt, dailyMgmt.regularDayWorkHour, dailyMgmt.regularDayHourlyCost)) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(일용직-남)주간</td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleDayMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleDayFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.dailyMaleDayMaleCnt) + number(dailyMgmt.dailyMaleDayFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleDayWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleDayHourlyCost" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.dailyMaleDayMaleCnt, dailyMgmt.dailyMaleDayFemaleCnt, dailyMgmt.dailyMaleDayWorkHour, dailyMgmt.dailyMaleDayHourlyCost)) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(일용직-여)주간</td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleDayMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleDayFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.dailyFemaleDayMaleCnt) + number(dailyMgmt.dailyFemaleDayFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleDayWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleDayHourlyCost" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.dailyFemaleDayMaleCnt, dailyMgmt.dailyFemaleDayFemaleCnt, dailyMgmt.dailyFemaleDayWorkHour, dailyMgmt.dailyFemaleDayHourlyCost)) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(관리)주간잔업</td>
+              <td><InputNumber v-model="dailyMgmt.mgmtOvertimeMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.mgmtOvertimeFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.mgmtOvertimeMaleCnt) + number(dailyMgmt.mgmtOvertimeFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.mgmtOvertimeWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><span class="readonly-number stock-current">{{ formatNumber((dailyMgmt.mgmtDayHourlyCost * 1.5)) }}</span></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.mgmtOvertimeMaleCnt, dailyMgmt.mgmtOvertimeFemaleCnt, dailyMgmt.mgmtOvertimeWorkHour, (dailyMgmt.mgmtDayHourlyCost * 1.5))) }}</td>
+              <td rowspan="4" class="group-total-cell">{{ formatNumber(overtimeLaborTotal) }}</td>
+            </tr>
+            <tr>
+              <td class="center-cell">생산(정규직)주간잔업</td>
+              <td><InputNumber v-model="dailyMgmt.regularOvertimeMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.regularOvertimeFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.regularOvertimeMaleCnt) + number(dailyMgmt.regularOvertimeFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.regularOvertimeWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><span class="readonly-number stock-current">{{ formatNumber((dailyMgmt.regularDayHourlyCost * 1.5)) }}</span></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.regularOvertimeMaleCnt, dailyMgmt.regularOvertimeFemaleCnt, dailyMgmt.regularOvertimeWorkHour, (dailyMgmt.regularDayHourlyCost * 1.5))) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(일용직-남)주간잔업</td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleOvertimeMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleOvertimeFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.dailyMaleOvertimeMaleCnt) + number(dailyMgmt.dailyMaleOvertimeFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleOvertimeWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><span class="readonly-number stock-current">{{ formatNumber((dailyMgmt.dailyMaleDayHourlyCost * 1.5)) }}</span></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.dailyMaleOvertimeMaleCnt, dailyMgmt.dailyMaleOvertimeFemaleCnt, dailyMgmt.dailyMaleOvertimeWorkHour, (dailyMgmt.dailyMaleDayHourlyCost * 1.5))) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(일용직-여)주간잔업</td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleOvertimeMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleOvertimeFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.dailyFemaleOvertimeMaleCnt) + number(dailyMgmt.dailyFemaleOvertimeFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleOvertimeWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><span class="readonly-number stock-current">{{ formatNumber((dailyMgmt.dailyFemaleDayHourlyCost * 1.5)) }}</span></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.dailyFemaleOvertimeMaleCnt, dailyMgmt.dailyFemaleOvertimeFemaleCnt, dailyMgmt.dailyFemaleOvertimeWorkHour, (dailyMgmt.dailyFemaleDayHourlyCost * 1.5))) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(관리)야간</td>
+              <td><InputNumber v-model="dailyMgmt.mgmtNightMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.mgmtNightFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.mgmtNightMaleCnt) + number(dailyMgmt.mgmtNightFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.mgmtNightWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><span class="readonly-number stock-current">{{ formatNumber((dailyMgmt.mgmtDayHourlyCost * 1.5)) }}</span></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.mgmtNightMaleCnt, dailyMgmt.mgmtNightFemaleCnt, dailyMgmt.mgmtNightWorkHour, (dailyMgmt.mgmtDayHourlyCost * 1.5))) }}</td>
+              <td rowspan="4" class="group-total-cell">{{ formatNumber(nightLaborTotal) }}</td>
+            </tr>
+            <tr>
+              <td class="center-cell">생산(정규직)야간</td>
+              <td><InputNumber v-model="dailyMgmt.regularNightMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.regularNightFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.regularNightMaleCnt) + number(dailyMgmt.regularNightFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.regularNightWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><span class="readonly-number stock-current">{{ formatNumber((dailyMgmt.regularDayHourlyCost * 1.5)) }}</span></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.regularNightMaleCnt, dailyMgmt.regularNightFemaleCnt, dailyMgmt.regularNightWorkHour, (dailyMgmt.regularDayHourlyCost * 1.5))) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(일용직-남)야간</td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleNightMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleNightFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.dailyMaleNightMaleCnt) + number(dailyMgmt.dailyMaleNightFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleNightWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyMaleNightHourlyCost" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.dailyMaleNightMaleCnt, dailyMgmt.dailyMaleNightFemaleCnt, dailyMgmt.dailyMaleNightWorkHour, dailyMgmt.dailyMaleNightHourlyCost)) }}</td>
+
+            </tr>
+            <tr>
+              <td class="center-cell">생산(일용직-여)야간</td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleNightMaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleNightFemaleCnt" :maxFractionDigits="0" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(number(dailyMgmt.dailyFemaleNightMaleCnt) + number(dailyMgmt.dailyFemaleNightFemaleCnt)) }}</td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleNightWorkHour" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td><InputNumber v-model="dailyMgmt.dailyFemaleNightHourlyCost" :maxFractionDigits="2" class="cell-number" inputClass="text-right" /></td>
+              <td class="readonly-number">{{ formatNumber(laborAmount(dailyMgmt.dailyFemaleNightMaleCnt, dailyMgmt.dailyFemaleNightFemaleCnt, dailyMgmt.dailyFemaleNightWorkHour, dailyMgmt.dailyFemaleNightHourlyCost)) }}</td>
+
+            </tr>
             <tr class="total-row">
-              <td colspan="6" class="total-title">합 계</td>
+              <td colspan="7" class="total-title">합 계</td>
               <td class="grand-total-cell">
                 {{ formatNumber(laborGrandTotal) }}
               </td>
-              <td></td>
             </tr>
           </tbody>
         </table>
@@ -334,13 +400,12 @@
       <div class="table-wrapper">
         <table class="report-table expense-table">
           <colgroup>
-            <col style="width: 200px" />
-            <col style="width: 110px" />
-            <col style="width: 300px" />
-            <col style="width: 110px" />
-            <col style="width: 300px" />
-            <col style="width: 150px" />
-            <col style="width: 190px" />
+            <col style="width: 15%" />
+            <col style="width: 13%" />
+            <col style="width: 23%" />
+            <col style="width: 13%" />
+            <col style="width: 23%" />
+            <col style="width: 13%" />
           </colgroup>
           <thead>
             <tr>
@@ -348,7 +413,6 @@
               <th>직접비용</th>
               <th colspan="2">간접비용</th>
               <th>합계</th>
-              <th>비고</th>
             </tr>
           </thead>
           <tbody>
@@ -357,16 +421,17 @@
               <td rowspan="3" class="center-cell">제조경비</td>
               <td>
                 <InputNumber
-                  v-model="expense.consumable"
+                  v-model="dailyMgmt.suppliesDirectCost"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
                 />
               </td>
-              <td rowspan="3" class="center-cell">판관경비</td>
+              <td rowspan="3" class="center-cell">판관경비<br>(기타·감가상각·금융)</td>
               <td>
                 <InputNumber
-                  v-model="expense.salesAdmin"
+                  v-model="dailyMgmt.adminEtcIndirectCost"
+                   title="기타판관 경비"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -375,15 +440,12 @@
               <td rowspan="3" class="group-total-cell">
                 {{ formatNumber(expenseTotal) }}
               </td>
-              <td rowspan="3">
-                <InputText v-model="expense.etc" class="cell-input" />
-              </td>
             </tr>
             <tr>
               <td class="center-cell">식대</td>
               <td>
                 <InputNumber
-                  v-model="expense.meal"
+                  v-model="dailyMgmt.mealDirectCost"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -391,7 +453,8 @@
               </td>
               <td>
                 <InputNumber
-                  v-model="expense.indirectEtc1"
+                  v-model="dailyMgmt.depreciationIndirectCost"
+                   title="감가상각비"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -399,10 +462,10 @@
               </td>
             </tr>
             <tr>
-              <td class="center-cell">기타(접대비외)</td>
+              <td class="center-cell">기타(전력비외)</td>
               <td>
                 <InputNumber
-                  v-model="expense.directEtc"
+                  v-model="dailyMgmt.etcDirectCost"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -410,7 +473,8 @@
               </td>
               <td>
                 <InputNumber
-                  v-model="expense.indirectEtc2"
+                  v-model="dailyMgmt.financeIndirectCost"
+                   title="금융비용"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
@@ -430,34 +494,27 @@
       <div class="table-wrapper">
         <table class="report-table production-table">
           <colgroup>
-            <col style="width: 180px" />
-            <col style="width: 220px" />
-            <col style="width: 300px" />
-            <col style="width: 190px" />
-            <col style="width: 190px" />
+            <col style="width: 17%" />
+            <col style="width: 20%" />
+            <col style="width: 38%" />
+            <col style="width: 25%" />
           </colgroup>
           <thead>
             <tr>
               <th colspan="3">구 분</th>
               <th>금액</th>
-              <th>비고</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colspan="3" class="center-cell">납품단가</td>
+              <td colspan="3" class="center-cell">납품금액</td>
               <td>
                 <InputNumber
-                  v-model="production.deliveryAmount"
+                  :modelValue="production.deliveryAmount"
+                   :disabled="true"
                   :maxFractionDigits="0"
                   class="cell-number"
                   inputClass="text-right"
-                />
-              </td>
-              <td>
-                <InputText
-                  v-model="production.deliveryEtc"
-                  class="cell-input"
                 />
               </td>
             </tr>
@@ -467,9 +524,6 @@
               <td class="center-cell">원재료비</td>
               <td class="readonly-number">
                 {{ formatNumber(production.rawMaterialCost) }}
-              </td>
-              <td rowspan="10">
-                <InputText v-model="production.costEtc" class="cell-input" />
               </td>
             </tr>
 
@@ -502,8 +556,13 @@
             <tr>
               <td class="center-cell">간접인건비</td>
 
-              <td class="readonly-number">
-                {{ formatNumber(production.indirectLaborCost) }}
+              <td>
+                  <InputNumber
+                    v-model="dailyMgmt.indirectLaborCost"
+                    :maxFractionDigits="0"
+                    class="cell-number"
+                    inputClass="text-right"
+                  />
               </td>
             </tr>
 
@@ -555,8 +614,6 @@
               <td class="grand-total-cell">
                 {{ formatNumber(productionCostTotal) }}
               </td>
-
-              <td></td>
             </tr>
 
             <tr>
@@ -567,8 +624,6 @@
               <td class="profit-cell">
                 {{ formatNumber(normalProfit) }}
               </td>
-
-              <td></td>
             </tr>
 
             <tr>
@@ -577,8 +632,6 @@
               <td class="profit-cell">
                 {{ formatPercent(profitRate) }}
               </td>
-
-              <td></td>
             </tr>
           </tbody>
         </table>
@@ -588,529 +641,195 @@
 </template>
 
 <script setup>
+import { ApiBase } from "@/api/apiBase";
 import { useAlertStore } from "@/stores/alert";
+import { isEmpty } from '@/util/common';
 import { handleApiError } from "@/util/errorHandler";
-import { computed, reactive, ref } from "vue";
+import { computed, inject, onMounted, reactive, ref } from "vue";
 
+const dialogRef = inject("dialogRef");
 const { vSuccess } = useAlertStore();
-
-/* =========================================================
-   기본정보
-========================================================= */
-const form = reactive({
-  dailyId: null,
-  dailyDate: new Date(),
-});
-
-const approvalList = ref([
-  { title: "담 당" },
-  { title: "차 장" },
-  { title: "상 무" },
-  { title: "부 사 장" },
-]);
-
+const form = reactive({ dailyDate: new Date() });
+const approvalList = ref([{ title: "담 당" }, { title: "차 장" }, { title: "상 무" }, { title: "부 사 장" }]);
 const displayDailyDate = computed(() => {
-  if (!form.dailyDate) {
-    return "";
-  }
-
-  const date =
-    form.dailyDate instanceof Date ? form.dailyDate : new Date(form.dailyDate);
-
-  if (Number.isNaN(date.getTime())) {
-    return form.dailyDate;
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+  if (!form.dailyDate) return "";
+  const d = form.dailyDate instanceof Date ? form.dailyDate : new Date(form.dailyDate);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 });
 
-/* =========================================================
-   1. 원료 당일 재고 현황
-========================================================= */
-const rawStock = reactive({
-  prevQty: 0,
-  inQty: 0,
-  returnQty: 0,
-  discardQty: 0,
-  outsourceQty: 0,
-  useQty: 0,
-  outQty: 0,
-  currentQty: 0,
-
-  prevAmt: 0,
-  inAmt: 0,
-  returnAmt: 0,
-  discardAmt: 0,
-  outsourceAmt: 0,
-  useAmt: 0,
-  outAmt: 0,
-  currentAmt: 0,
-
-  etc: "",
-});
-
-const rawQtyFields = [
-  "prevQty",
-  "inQty",
-  "returnQty",
-  "discardQty",
-  "outsourceQty",
-  "useQty",
-  "outQty",
-  "currentQty",
-];
-
-const rawAmtFields = [
-  "prevAmt",
-  "inAmt",
-  "returnAmt",
-  "discardAmt",
-  "outsourceAmt",
-  "useAmt",
-  "outAmt",
-  "currentAmt",
-];
-
-/* =========================================================
-   2. 부자재 당일 재고 현황
-========================================================= */
-const subStock = reactive({
-  prevQty: 0,
-  inQty: 0,
-  returnQty: 0,
-  discardQty: 0,
-  outsourceQty: 0,
-  useQty: 0,
-  outQty: 0,
-  currentQty: 0,
-
-  prevAmt: 0,
-  inAmt: 0,
-  returnAmt: 0,
-  discardAmt: 0,
-  outsourceAmt: 0,
-  useAmt: 0,
-  outAmt: 0,
-  currentAmt: 0,
-
-  etc: "",
-});
-
-const subQtyFields = [
-  "prevQty",
-  "inQty",
-  "returnQty",
-  "discardQty",
-  "outsourceQty",
-  "useQty",
-  "outQty",
-  "currentQty",
-];
-
-const subAmtFields = [
-  "prevAmt",
-  "inAmt",
-  "returnAmt",
-  "discardAmt",
-  "outsourceAmt",
-  "useAmt",
-  "outAmt",
-  "currentAmt",
-];
-
-/* =========================================================
-   3. 완제품 당일 재고 현황
-========================================================= */
-const prodStock = reactive({
-  prevQty: 0,
-  prodQty: 0,
-  outsourceProdQty: 0,
-  discardQty: 0,
-  outsourceQty: 0,
-  shipmentQty: 0,
-  returnQty: 0,
-  currentQty: 0,
-
-  prevAmt: 0,
-  prodAmt: 0,
-  outsourceProdAmt: 0,
-  discardAmt: 0,
-  outsourceAmt: 0,
-  shipmentAmt: 0,
-  returnAmt: 0,
-  currentAmt: 0,
-
-  etc: "",
-});
-
-const prodQtyFields = [
-  "prevQty",
-  "prodQty",
-  "outsourceProdQty",
-  "discardQty",
-  "outsourceQty",
-  "shipmentQty",
-  "returnQty",
-  "currentQty",
-];
-
-const prodAmtFields = [
-  "prevAmt",
-  "prodAmt",
-  "outsourceProdAmt",
-  "discardAmt",
-  "outsourceAmt",
-  "shipmentAmt",
-  "returnAmt",
-  "currentAmt",
-];
-
-/* =========================================================
-   인건비 단가
-========================================================= */
-const laborCostList = ref([
-  { workTypeCd: "D", manFCost: 0, manDCost: 0, womFCost: 0, womDCost: 0 },
-  { workTypeCd: "O", manFCost: 0, manDCost: 0, womFCost: 0, womDCost: 0 },
-  { workTypeCd: "N", manFCost: 0, manDCost: 0, womFCost: 0, womDCost: 0 },
-]);
-
-/* =========================================================
-   4. 당일 인건비 현황
-========================================================= */
-const laborGroups = ref([
-  {
-    workTypeCd: "D",
-    rows: [
-      {
-        rowKey: "D-MANAGER",
-        workTypeCd: "D",
-        employeeType: "MANAGER",
-        typeName: "생산(관리)주간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "D-FULL",
-        workTypeCd: "D",
-        employeeType: "FULL",
-        typeName: "생산(정규직)주간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "D-DAY-M",
-        workTypeCd: "D",
-        employeeType: "DAY_M",
-        typeName: "생산(일용직-남)주간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "D-DAY-W",
-        workTypeCd: "D",
-        employeeType: "DAY_W",
-        typeName: "생산(일용직-여)주간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-    ],
-  },
-  {
-    workTypeCd: "O",
-    rows: [
-      {
-        rowKey: "O-MANAGER",
-        workTypeCd: "O",
-        employeeType: "MANAGER",
-        typeName: "생산(관리)주간잔업",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 2.5,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "O-FULL",
-        workTypeCd: "O",
-        employeeType: "FULL",
-        typeName: "생산(정규직)주간잔업",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 2.5,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "O-DAY-M",
-        workTypeCd: "O",
-        employeeType: "DAY_M",
-        typeName: "생산(일용직-남)주간잔업",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 2.5,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "O-DAY-W",
-        workTypeCd: "O",
-        employeeType: "DAY_W",
-        typeName: "생산(일용직-여)주간잔업",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 2.5,
-        amount: 0,
-        etc: "",
-      },
-    ],
-  },
-  {
-    workTypeCd: "N",
-    rows: [
-      {
-        rowKey: "N-MANAGER",
-        workTypeCd: "N",
-        employeeType: "MANAGER",
-        typeName: "생산(관리)야간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "N-FULL",
-        workTypeCd: "N",
-        employeeType: "FULL",
-        typeName: "생산(정규직)야간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "N-DAY-M",
-        workTypeCd: "N",
-        employeeType: "DAY_M",
-        typeName: "생산(일용직-남)야간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-      {
-        rowKey: "N-DAY-W",
-        workTypeCd: "N",
-        employeeType: "DAY_W",
-        typeName: "생산(일용직-여)야간",
-        manCnt: 0,
-        womCnt: 0,
-        workTime: 8,
-        amount: 0,
-        etc: "",
-      },
-    ],
-  },
-]);
-
-const personTotal = (row) => {
-  return (Number(row.manCnt) || 0) + (Number(row.womCnt) || 0);
-};
-
-const getLaborRate = (workTypeCd) => {
-  return (
-    laborCostList.value.find((item) => item.workTypeCd === workTypeCd) || {}
-  );
-};
-
-const calculateLaborRow = (row) => {
-  const rate = getLaborRate(row.workTypeCd);
-  const manCnt = Number(row.manCnt) || 0;
-  const womCnt = Number(row.womCnt) || 0;
-  const workTime = Number(row.workTime) || 0;
-  const baseHours = row.workTypeCd === "O" ? 2.5 : 8;
-
-  let manCost = 0;
-  let womCost = 0;
-
-  if (row.employeeType === "MANAGER" || row.employeeType === "FULL") {
-    manCost = Number(rate.manFCost) || 0;
-    womCost = Number(rate.womFCost) || 0;
-  }
-
-  if (row.employeeType === "DAY_M") {
-    manCost = Number(rate.manDCost) || 0;
-  }
-
-  if (row.employeeType === "DAY_W") {
-    womCost = Number(rate.womDCost) || 0;
-  }
-
-  row.amount =
-    (manCnt * manCost + womCnt * womCost) *
-    (baseHours === 0 ? 1 : workTime / baseHours);
-};
-
-const groupTotal = (rows) => {
-  return rows.reduce((sum, row) => sum + (Number(row.amount) || 0), 0);
-};
-
-const laborGrandTotal = computed(() =>
-  laborGroups.value.reduce((total, group) => total + groupTotal(group.rows), 0),
-);
-
-/* =========================================================
-   5. 당일 경비 현황
-========================================================= */
-const expense = reactive({
-  consumable: 0,
-  meal: 0,
-  directEtc: 0,
-  salesAdmin: 0,
-  indirectEtc1: 0,
-  indirectEtc2: 0,
-  etc: "",
-});
-
-const directExpenseTotal = computed(
-  () =>
-    (Number(expense.consumable) || 0) +
-    (Number(expense.meal) || 0) +
-    (Number(expense.directEtc) || 0),
-);
-
-const indirectExpenseTotal = computed(
-  () =>
-    (Number(expense.salesAdmin) || 0) +
-    (Number(expense.indirectEtc1) || 0) +
-    (Number(expense.indirectEtc2) || 0),
-);
-
-const expenseTotal = computed(
-  () => directExpenseTotal.value + indirectExpenseTotal.value,
-);
-
-/* =========================================================
-   6. 생산금액
-========================================================= */
-const production = reactive({
-  deliveryAmount: 0,
-  deliveryEtc: "",
-  rawMaterialCost: 0,
-  subMaterialCost: 0,
-  directLaborCost: 0,
+// DB tb_daily_mgmt와 1:1 매칭하는 단일 저장 객체 (계산식 및 비고 제외)
+const initialDailyMgmt = () => ({
+  dailyId: null,
+  rawPrevStockQty: 0,
+  rawPrevStockAmt: 0,
+  rawReceiptQty: 0,
+  rawReceiptAmt: 0,
+  rawReturnQty: 0,
+  rawReturnAmt: 0,
+  rawDefectQty: 0,
+  rawDefectAmt: 0,
+  rawOutsourceQty: 0,
+  rawOutsourceAmt: 0,
+  rawUsageQty: 0,
+  rawUsageAmt: 0,
+  rawOutboundQty: 0,
+  rawOutboundAmt: 0,
+  subPrevStockQty: 0,
+  subPrevStockAmt: 0,
+  subReceiptQty: 0,
+  subReceiptAmt: 0,
+  subReturnQty: 0,
+  subReturnAmt: 0,
+  subDefectQty: 0,
+  subDefectAmt: 0,
+  subOutsourceQty: 0,
+  subOutsourceAmt: 0,
+  subUsageQty: 0,
+  subUsageAmt: 0,
+  subOutboundQty: 0,
+  subOutboundAmt: 0,
+  productPrevStockQty: 0,
+  productPrevStockAmt: 0,
+  productProdQty: 0,
+  productProdAmt: 0,
+  productOutsourceProdQty: 0,
+  productOutsourceProdAmt: 0,
+  productDefectQty: 0,
+  productDefectAmt: 0,
+  productOutsourceQty: 0,
+  productOutsourceAmt: 0,
+  productShipmentQty: 0,
+  productShipmentAmt: 0,
+  productReturnQty: 0,
+  productReturnAmt: 0,
+  mgmtDayMaleCnt: 0,
+  mgmtDayFemaleCnt: 0,
+  mgmtDayWorkHour: 0,
+  mgmtDayHourlyCost: 0,
+  regularDayMaleCnt: 0,
+  regularDayFemaleCnt: 0,
+  regularDayWorkHour: 0,
+  regularDayHourlyCost: 0,
+  dailyMaleDayMaleCnt: 0,
+  dailyMaleDayFemaleCnt: 0,
+  dailyMaleDayWorkHour: 0,
+  dailyMaleDayHourlyCost: 0,
+  dailyFemaleDayMaleCnt: 0,
+  dailyFemaleDayFemaleCnt: 0,
+  dailyFemaleDayWorkHour: 0,
+  dailyFemaleDayHourlyCost: 0,
+  mgmtOvertimeMaleCnt: 0,
+  mgmtOvertimeFemaleCnt: 0,
+  mgmtOvertimeWorkHour: 0,
+  regularOvertimeMaleCnt: 0,
+  regularOvertimeFemaleCnt: 0,
+  regularOvertimeWorkHour: 0,
+  dailyMaleOvertimeMaleCnt: 0,
+  dailyMaleOvertimeFemaleCnt: 0,
+  dailyMaleOvertimeWorkHour: 0,
+  dailyFemaleOvertimeMaleCnt: 0,
+  dailyFemaleOvertimeFemaleCnt: 0,
+  dailyFemaleOvertimeWorkHour: 0,
+  mgmtNightMaleCnt: 0,
+  mgmtNightFemaleCnt: 0,
+  mgmtNightWorkHour: 0,
+  regularNightMaleCnt: 0,
+  regularNightFemaleCnt: 0,
+  regularNightWorkHour: 0,
+  dailyMaleNightMaleCnt: 0,
+  dailyMaleNightFemaleCnt: 0,
+  dailyMaleNightWorkHour: 0,
+  dailyMaleNightHourlyCost: 0,
+  dailyFemaleNightMaleCnt: 0,
+  dailyFemaleNightFemaleCnt: 0,
+  dailyFemaleNightWorkHour: 0,
+  dailyFemaleNightHourlyCost: 0,
+  suppliesDirectCost: 0,
+  mealDirectCost: 0,
+  etcDirectCost: 0,
+  adminEtcIndirectCost: 0,
+  depreciationIndirectCost: 0,
+  financeIndirectCost: 0,
   indirectLaborCost: 0,
-  manufacturingExpense: 0,
-  salesAdminExpense: 0,
-  outsourceCost: 0,
-  costEtc: "",
 });
+const dailyMgmt = reactive(initialDailyMgmt());
 
-const materialSubtotal = computed(
-  () =>
-    (Number(production.rawMaterialCost) || 0) +
-    (Number(production.subMaterialCost) || 0),
+// 화면 반복 렌더링용 필드명. 저장 데이터는 모두 dailyMgmt에만 존재
+const rawQtyFields = ["rawPrevStockQty", "rawReceiptQty", "rawReturnQty", "rawDefectQty", "rawOutsourceQty", "rawUsageQty", "rawOutboundQty"].concat("currentQty");
+const rawAmtFields = ["rawPrevStockAmt", "rawReceiptAmt", "rawReturnAmt", "rawDefectAmt", "rawOutsourceAmt", "rawUsageAmt", "rawOutboundAmt"].concat("currentAmt");
+const subQtyFields = ["subPrevStockQty", "subReceiptQty", "subReturnQty", "subDefectQty", "subOutsourceQty", "subUsageQty", "subOutboundQty"].concat("currentQty");
+const subAmtFields = ["subPrevStockAmt", "subReceiptAmt", "subReturnAmt", "subDefectAmt", "subOutsourceAmt", "subUsageAmt", "subOutboundAmt"].concat("currentAmt");
+const prodQtyFields = ["productPrevStockQty", "productProdQty", "productOutsourceProdQty", "productDefectQty", "productOutsourceQty", "productShipmentQty", "productReturnQty"].concat("currentQty");
+const prodAmtFields = ["productPrevStockAmt", "productProdAmt", "productOutsourceProdAmt", "productDefectAmt", "productOutsourceAmt", "productShipmentAmt", "productReturnAmt"].concat("currentAmt");
+
+const number = (v) => Number(v) || 0;
+const stockCurrent = computed(() => ({
+  rawQty: number(dailyMgmt.rawPrevStockQty) + number(dailyMgmt.rawReceiptQty) - number(dailyMgmt.rawUsageQty),
+  rawAmt: number(dailyMgmt.rawPrevStockAmt) + number(dailyMgmt.rawReceiptAmt) - number(dailyMgmt.rawUsageAmt),
+  subQty: number(dailyMgmt.subPrevStockQty) + number(dailyMgmt.subReceiptQty) - number(dailyMgmt.subReturnQty) - number(dailyMgmt.subDefectQty) - number(dailyMgmt.subUsageQty) - number(dailyMgmt.subOutboundQty),
+  // 엑셀에서 부자재 현재고 금액은 계산식이 없으므로 표시하지 않음
+  subAmt: null,
+  prodQty: number(dailyMgmt.productPrevStockQty) + number(dailyMgmt.productProdQty) + number(dailyMgmt.productOutsourceProdQty) - number(dailyMgmt.productShipmentQty) - number(dailyMgmt.productReturnQty),
+  prodAmt: number(dailyMgmt.productPrevStockAmt) + number(dailyMgmt.productProdAmt) + number(dailyMgmt.productOutsourceProdAmt) - number(dailyMgmt.productDefectAmt) - number(dailyMgmt.productShipmentAmt) - number(dailyMgmt.productReturnAmt),
+}));
+
+// 인건비는 배열 없이 각 DB 필드를 직접 사용하며, 계산 결과만 화면에 표시
+const laborAmount = (maleCnt, femaleCnt, workHour, hourlyCost) =>
+  (number(maleCnt) + number(femaleCnt)) * number(workHour) * number(hourlyCost);
+
+const dayLaborTotal = computed(() =>
+  laborAmount(dailyMgmt.mgmtDayMaleCnt, dailyMgmt.mgmtDayFemaleCnt, dailyMgmt.mgmtDayWorkHour, dailyMgmt.mgmtDayHourlyCost) +
+  laborAmount(dailyMgmt.regularDayMaleCnt, dailyMgmt.regularDayFemaleCnt, dailyMgmt.regularDayWorkHour, dailyMgmt.regularDayHourlyCost) +
+  laborAmount(dailyMgmt.dailyMaleDayMaleCnt, dailyMgmt.dailyMaleDayFemaleCnt, dailyMgmt.dailyMaleDayWorkHour, dailyMgmt.dailyMaleDayHourlyCost) +
+  laborAmount(dailyMgmt.dailyFemaleDayMaleCnt, dailyMgmt.dailyFemaleDayFemaleCnt, dailyMgmt.dailyFemaleDayWorkHour, dailyMgmt.dailyFemaleDayHourlyCost)
 );
-
-const laborSubtotal = computed(
-  () =>
-    (Number(production.directLaborCost) || 0) +
-    (Number(production.indirectLaborCost) || 0),
+const overtimeLaborTotal = computed(() =>
+  laborAmount(dailyMgmt.mgmtOvertimeMaleCnt, dailyMgmt.mgmtOvertimeFemaleCnt, dailyMgmt.mgmtOvertimeWorkHour, (dailyMgmt.mgmtDayHourlyCost * 1.5)) +
+  laborAmount(dailyMgmt.regularOvertimeMaleCnt, dailyMgmt.regularOvertimeFemaleCnt, dailyMgmt.regularOvertimeWorkHour, (dailyMgmt.regularDayHourlyCost * 1.5)) +
+  laborAmount(dailyMgmt.dailyMaleOvertimeMaleCnt, dailyMgmt.dailyMaleOvertimeFemaleCnt, dailyMgmt.dailyMaleOvertimeWorkHour, (dailyMgmt.dailyMaleDayHourlyCost * 1.5)) +
+  laborAmount(dailyMgmt.dailyFemaleOvertimeMaleCnt, dailyMgmt.dailyFemaleOvertimeFemaleCnt, dailyMgmt.dailyFemaleOvertimeWorkHour, (dailyMgmt.dailyFemaleDayHourlyCost * 1.5))
 );
-
-const expenseSubtotal = computed(
-  () =>
-    (Number(production.manufacturingExpense) || 0) +
-    (Number(production.salesAdminExpense) || 0),
+const nightLaborTotal = computed(() =>
+  laborAmount(dailyMgmt.mgmtNightMaleCnt, dailyMgmt.mgmtNightFemaleCnt, dailyMgmt.mgmtNightWorkHour, (dailyMgmt.mgmtDayHourlyCost * 1.5)) +
+  laborAmount(dailyMgmt.regularNightMaleCnt, dailyMgmt.regularNightFemaleCnt, dailyMgmt.regularNightWorkHour, (dailyMgmt.regularDayHourlyCost * 1.5)) +
+  laborAmount(dailyMgmt.dailyMaleNightMaleCnt, dailyMgmt.dailyMaleNightFemaleCnt, dailyMgmt.dailyMaleNightWorkHour, dailyMgmt.dailyMaleNightHourlyCost) +
+  laborAmount(dailyMgmt.dailyFemaleNightMaleCnt, dailyMgmt.dailyFemaleNightFemaleCnt, dailyMgmt.dailyFemaleNightWorkHour, dailyMgmt.dailyFemaleNightHourlyCost)
 );
+const laborGrandTotal = computed(() => dayLaborTotal.value + overtimeLaborTotal.value + nightLaborTotal.value);
 
-const productionCostTotal = computed(
-  () =>
-    materialSubtotal.value +
-    laborSubtotal.value +
-    expenseSubtotal.value +
-    (Number(production.outsourceCost) || 0),
-);
+const directExpenseTotal = computed(() => number(dailyMgmt.suppliesDirectCost) + number(dailyMgmt.mealDirectCost) + number(dailyMgmt.etcDirectCost));
+const indirectExpenseTotal = computed(() => number(dailyMgmt.adminEtcIndirectCost) + number(dailyMgmt.depreciationIndirectCost) + number(dailyMgmt.financeIndirectCost));
+const expenseTotal = computed(() => directExpenseTotal.value + indirectExpenseTotal.value);
+const production = computed(() => ({
+  deliveryAmount: number(dailyMgmt.productProdAmt) + number(dailyMgmt.productOutsourceProdAmt),
+  rawMaterialCost: number(dailyMgmt.rawUsageAmt) + number(dailyMgmt.rawOutboundAmt),
+  subMaterialCost: number(dailyMgmt.subUsageAmt),
+  directLaborCost: laborGrandTotal.value,
+  indirectLaborCost: number(dailyMgmt.indirectLaborCost),
+  manufacturingExpense: directExpenseTotal.value,
+  salesAdminExpense: indirectExpenseTotal.value,
+  outsourceCost: number(dailyMgmt.productOutsourceAmt),
+}));
+const materialSubtotal = computed(() => production.value.rawMaterialCost + production.value.subMaterialCost);
+const laborSubtotal = computed(() => production.value.directLaborCost + production.value.indirectLaborCost);
+const expenseSubtotal = computed(() => production.value.manufacturingExpense + production.value.salesAdminExpense);
+const productionCostTotal = computed(() => materialSubtotal.value + laborSubtotal.value + expenseSubtotal.value + production.value.outsourceCost);
+const normalProfit = computed(() => production.value.deliveryAmount - productionCostTotal.value);
+const profitRate = computed(() => production.value.deliveryAmount ? normalProfit.value / production.value.deliveryAmount * 100 : 0);
 
-const normalProfit = computed(
-  () => (Number(production.deliveryAmount) || 0) - productionCostTotal.value,
-);
-
-const profitRate = computed(() => {
-  const deliveryAmount = Number(production.deliveryAmount) || 0;
-  return deliveryAmount === 0 ? 0 : (normalProfit.value / deliveryAmount) * 100;
-});
-
-const applyCalculatedValues = () => {
-  production.rawMaterialCost = Number(rawStock.useAmt) || 0;
-  production.subMaterialCost = Number(subStock.useAmt) || 0;
-  production.directLaborCost = laborGrandTotal.value;
-  production.indirectLaborCost = 0;
-  production.manufacturingExpense = directExpenseTotal.value;
-  production.salesAdminExpense = indirectExpenseTotal.value;
-  production.outsourceCost =
-    (Number(rawStock.outsourceAmt) || 0) +
-    (Number(subStock.outsourceAmt) || 0) +
-    (Number(prodStock.outsourceAmt) || 0);
-};
-
-/* =========================================================
-   조회
-========================================================= */
+// 조회 API는 프로젝트의 실제 메서드가 확인되면 연결 필요.
+// 조회 결과는 Object.assign(dailyMgmt, initialDailyMgmt(), res.data...)로 매핑.
 const srhInfo = async () => {
-  try {
-    const params = {
-      dailyDate: displayDailyDate.value,
-    };
-
-    console.log("조회조건", params);
-
-    laborGroups.value.forEach((group) =>
-      group.rows.forEach((row) => calculateLaborRow(row)),
-    );
-
-    applyCalculatedValues();
-  } catch (error) {
-    console.error("조회 중 오류 발생:", error);
-    handleApiError(error);
-  }
+  console.log("조회조건", { dailyDate: displayDailyDate.value });
 };
 
-/* =========================================================
-   저장
-========================================================= */
 const saveInfo = async () => {
   try {
-    applyCalculatedValues();
-
-    const params = {
-      dailyInfo: form,
-      rawStock,
-      subStock,
-      prodStock,
-      laborList: laborGroups.value.flatMap((group) => group.rows),
-      expense,
-      production,
-    };
-
+    // 화면/계산 필드 없이 tb_daily_mgmt에 대응하는 단일 평면 객체만 전송
+    const params = { ...dailyMgmt };
+    // 신규 저장 시 dailyId는 null이며 서버에서 생성/확정해야 합니다.
+    await ApiBase.saveDailyMgmt(params);
     console.log("저장 데이터", params);
     vSuccess("저장되었습니다.");
   } catch (error) {
@@ -1118,28 +837,51 @@ const saveInfo = async () => {
     handleApiError(error);
   }
 };
+const printPage = () => window.print();
+const formatNumber = value => value == null ? "" : number(value).toLocaleString("ko-KR", { maximumFractionDigits: 6 });
+const formatPercent = value => `${number(value).toLocaleString("ko-KR", { maximumFractionDigits: 2 })}%`;
 
-/* =========================================================
-   인쇄
-========================================================= */
-const printPage = () => {
-  applyCalculatedValues();
-  window.print();
-};
+onMounted( async () => {
+   dailyMgmt.dailyId = dialogRef?.value?.data?.dailyId ?? null
 
-/* =========================================================
-   표시
-========================================================= */
-const formatNumber = (value) => {
-  return Number(value || 0).toLocaleString("ko-KR", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
-};
+   if (!isEmpty(dailyMgmt.dailyId)) {
+    const res = await ApiBase.getDailyMgmtInfo(dailyMgmt.dailyId);
 
-const formatPercent = (value) => {
-  return `${Number(value || 0).toLocaleString("ko-KR", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}%`;
-};
+    Object.assign(dailyMgmt,  res);
+   }else{
+
+   }
+
+});
+
+
+
+const downloadDailyMgmt = async () => {
+    if (!dailyMgmt.dailyId) {
+        vInfo('저장 후 다운로드 가능합니다.')
+        return
+    }
+
+    try {
+        const params = {
+            typeCd: 'M',
+            dailyId: dailyMgmt.dailyId
+        }
+
+        const res = await ApiBase.downloadDailyReport(params)
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `생산일보통합대장_${dailyMgmt.dailyDate}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
+        handleApiError(error)
+    }
+}
+
 </script>
 
 <style scoped>
@@ -1486,4 +1228,5 @@ const formatPercent = (value) => {
     font-size: 8px;
   }
 }
+.stock-current { display: block; min-height: 24px; line-height: 24px; }
 </style>
