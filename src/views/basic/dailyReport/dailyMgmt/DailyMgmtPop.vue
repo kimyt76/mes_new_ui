@@ -42,7 +42,7 @@
     <section class="report-section">
       <div class="section-title">1. 원료 당일 재고 현황</div>
       <div class="table-wrapper">
-        <table class="report-table stock-table">
+        <table class="report-table stock-table"  @keydown="handleTableKeydown">
           <colgroup>
             <col style="width: 12%" />
             <col style="width: 11%" />
@@ -104,7 +104,7 @@
     <section class="report-section">
       <div class="section-title">2. 부자재 당일 재고 현황</div>
       <div class="table-wrapper">
-        <table class="report-table stock-table">
+        <table class="report-table stock-table" @keydown="handleTableKeydown">
           <colgroup>
             <col style="width: 12%" />
             <col style="width: 11%" />
@@ -167,7 +167,7 @@
     <section class="report-section">
       <div class="section-title">3. 완제품 당일 재고 현황</div>
       <div class="table-wrapper">
-        <table class="report-table stock-table">
+        <table class="report-table stock-table" @keydown="handleTableKeydown">
           <colgroup>
             <col style="width: 12%" />
             <col style="width: 11%" />
@@ -231,7 +231,7 @@
       <div class="section-title">4. 당일 인건비 현황(정규직, 일용직)</div>
 
       <div class="table-wrapper">
-        <table class="report-table labor-table">
+        <table class="report-table labor-table" @keydown="handleTableKeydown">
           <colgroup>
             <col style="width: 25%" />
             <col style="width: 9%" />
@@ -645,6 +645,7 @@ import { ApiBase } from "@/api/apiBase";
 import { useAlertStore } from "@/stores/alert";
 import { isEmpty } from '@/util/common';
 import { handleApiError } from "@/util/errorHandler";
+import { handleTableKeydown } from '@/util/tableKeyboard';
 import { computed, inject, onMounted, reactive, ref } from "vue";
 
 const dialogRef = inject("dialogRef");
