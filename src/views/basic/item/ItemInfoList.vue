@@ -98,8 +98,8 @@
             <Column field="unit"            header="단위"     :style="{ width: '50px', textAlign:'center'}" />
             <Column field="Spec"            header="규격"     :style="{ width: '80px', textAlign:'center'}" />
             <Column field="customerName"    header="거래처"   :style="{ width: '210px'}" />
-            <Column field="businessManager" header="영업담당자"  :style="{ width: '80px', textAlign:'center'}"  />
-            <Column field="labManager"      header="담당연구원"  :style="{ width: '80px', textAlign:'center'}"  />
+            <Column field="chargeSalesman" header="영업담당자"  :style="{ width: '80px', textAlign:'center'}"  />
+            <Column field="chargeResearcher"      header="담당연구원"  :style="{ width: '80px', textAlign:'center'}"  />
             <Column field="itemCategory1Name"   header="제품유형(대)"  :style="{ width: '120px', textAlign:'center'}"  />
             <Column field="itemCategory2Name"   header="제품유형(중)"  :style="{ width: '120px', textAlign:'center'}"  />
         </DataTable>
