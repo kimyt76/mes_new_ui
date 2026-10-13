@@ -32,7 +32,7 @@
             <th class="cellBorder cellHeader">제조일자</th>
             <td class="cellBorder">{{ form.prodDate }}</td>
             <th class="cellBorder cellHeader">제조량</th>
-            <td class="cellBorder">{{ form.prodQty || 0}} kg</td>
+            <td class="cellBorder">{{ formatQty(form.prodQty) }} kg</td>
             <th class="cellBorder cellHeader">생산수율</th>
             <td class="cellBorder">{{ form.prodYield }} %</td>
             <th class="cellBorder cellHeader">생산처</th>
@@ -88,8 +88,10 @@
                 <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
                 <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
                 <Button label="제조공정기록서" @click="downloadMatProc" />
-                <Button v-if="isComplate" label="제조완료" @click="complateMake" />
+                <Button label="제조완료" @click="complateMake" />
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+
+                <Button label="새로고침" @click="refresh" />
             </div>
         </div>
     </div>
@@ -154,6 +156,9 @@
                             v-model="form.prodQty"
                             class="w-full"
                             suffix=" kg"
+                             :minFractionDigits="0"
+                            :maxFractionDigits="6"
+                            :useGrouping="true"
                         />
                         <label>제조량</label>
                     </FloatLabel>
@@ -234,10 +239,12 @@
 import { ApiProc } from '@/api/apiProc';
 import BaseHotTable from '@/components/BaseHotTable.vue';
 import { useAlertStore } from '@/stores/alert';
+import { isEmpty } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import QrCodePop from '@/views/common/QrCodePop.vue';
-import { useConfirm, useDialog } from 'primevue';
+import { useDialog } from 'primevue';
 import { computed, inject, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import MakeComplatePop from './MakeComplatePop.vue';
 import MakeQtyPopup from './MakeQtyPopup.vue';
 import ProcMakeStartPop from './ProcMakeStartPop.vue';
 
@@ -462,27 +469,33 @@ const applyQrToList = async () => {
 }
 
 const checkVavlid = () =>{
-    if (totalCount.value !== checkedCount.value) {
+    if (isEmpty(makeEtcInfo.maker)) {
         vInfo('작업자를 등록하세요!!')
+        return false
+    }
+    if (isEmpty(makeEtcInfo.confirmer)) {
+        vInfo('확인자를 등록하세요!!')
         return false
     }
     if (totalCount.value !== checkedCount.value) {
         vInfo('확인자를 입력하세요!!.')
         return false
     }
+
+    return true
 }
 
 const saveInfo = async () => {
-    if (!checkVavlid()) return
-
+    //if (!checkVavlid()) return
     try {
         const params = {
             workOrderInfo: form,
             makeBomList: matUseDataList.value,
             makeEtcInfo: makeEtcInfo,
         }
+
         const res = await ApiProc.saveMakeInfo(params)
-        vSuccess(res.message)
+        vSuccess('저장되었습니다')
         checkComplete()
     } catch (err) {
         handleApiError(err)
@@ -558,7 +571,6 @@ const applyPopupResultToRow = (type, row, data) => {
         row.makeConfirmer = data.workerName ?? row.workerName
     }
 }
-const confirm = useConfirm()
 const complateMake = () => {
     if (!checkVavlid()) return
 
@@ -567,28 +579,38 @@ const complateMake = () => {
         return false
     }
 
-    confirm.require({
-        header: '제조완료 확인',
-        message: '제조을 완료하고, 제조출고를 진행하시겠습니까?',
-        icon: 'pi pi-exclamation-triangle',
-        accept: async () => {
-            try{
-                const params = {
-                    procStatus: '22',
-                    batchStatus: '22',
-                    workProcId: form.workProcId,
-                    workBatchId: form.workBatchId,
-                    procCd: form.procCd,
-                    testNo: form.testNo,
-                }
-                const res = await ApiProc.completeMake(params)
-                vSuccess('정상적으로 제조완료 처리하였습니다!')
-                closeDialog()
-            }catch(err){
-                handleApiError(err)
-            }
-        }
-    });
+    dialog.open(MakeComplatePop, {
+        props: {
+            header: '제조완료 확인',
+            modal: true,
+            maximizable: false,
+            draggable: false,
+        },
+        data: {
+            form:form,
+        },
+        onClose: (event) => {
+            closeDialog()
+        },
+    })
+
+}
+
+const formatQty = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return '0'
+    }
+
+    const num = Number(value)
+
+    if (!Number.isFinite(num)) {
+        return '0'
+    }
+
+    return num.toLocaleString('ko-KR', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 6
+    })
 }
 
 onMounted(async () => {
@@ -655,6 +677,11 @@ const downloadMatProc = async () =>{
         vError('엑셀 다운로드 실패')
     }
 }
+
+const refresh = async () =>{
+    await loadMakeInfo()
+}
+
 
 const closeDialog = () => {
     dialogRef.value.close()
