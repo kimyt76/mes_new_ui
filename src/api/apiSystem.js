@@ -51,6 +51,9 @@ export const  ApiSystem = {
       throw err.response
     }
   },
+  changePassword: async(params) => {
+        return await API_URL.post('/systemMgmt/changePassword', params)
+   },
 
 
 /* 메뉴관리 */

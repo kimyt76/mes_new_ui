@@ -145,6 +145,12 @@
             <div class="flex gap-2 justify-end pt-3">
                 <Button
                     v-if="isReadOnly"
+                    label="패스워드변경"
+                    severity="secondary"
+                    @click="changePassword"
+                ></Button>
+                <Button
+                    v-if="['김연태', '조경호'].includes(userId)"
                     label="패스워드초기화"
                     severity="secondary"
                     @click="passwordInit"
@@ -154,19 +160,102 @@
             </div>
         </template>
     </Card>
+
+    <!-- 패스워드 변경 팝업 -->
+<Dialog
+    v-model:visible="passwordDialogVisible"
+    header="패스워드 변경"
+    :modal="true"
+    :draggable="false"
+    :closable="true"
+    :style="{ width: '450px' }"
+>
+    <div class="flex flex-column gap-4 pt-3">
+
+        <!-- 사용자 ID -->
+        <FloatLabel variant="on">
+            <InputText
+                :modelValue="form.userId"
+                inputId="changeUserId"
+                class="w-full"
+                readonly
+            />
+            <label for="changeUserId">사용자 ID</label>
+        </FloatLabel>
+
+        <!-- 새 패스워드 -->
+        <FloatLabel variant="on">
+            <Password
+                v-model="passwordForm.password"
+                inputId="newPassword"
+                toggleMask
+                :feedback="false"
+                class="w-full"
+                :inputClass="'w-full pr-8'"
+            />
+            <label for="newPassword">새 패스워드</label>
+        </FloatLabel>
+
+        <!-- 새 패스워드 확인 -->
+        <FloatLabel variant="on">
+            <Password
+                v-model="passwordForm.confirmPassword"
+                inputId="newConfirmPassword"
+                toggleMask
+                :feedback="false"
+                class="w-full"
+                :inputClass="'w-full pr-8'"
+            />
+            <label for="newConfirmPassword">
+                새 패스워드 확인
+            </label>
+        </FloatLabel>
+
+    </div>
+
+    <template #footer>
+        <div class="flex justify-content-end gap-2">
+            <Button
+                label="취소"
+                severity="secondary"
+                outlined
+                @click="passwordDialogVisible = false"
+            />
+            <Button
+                label="변경"
+                icon="pi pi-check"
+                :loading="passwordSaving"
+                @click="savePassword"
+            />
+        </div>
+    </template>
+</Dialog>
+
 </template>
 
 
 <script setup>
 import { ApiSystem } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
+import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
 import { inject, onMounted, reactive, ref } from 'vue';
 
+const  {userId} = useAuthStore()
 const dialogRef = inject('dialogRef')
 const { vError, vSuccess ,vInfo, vWarning} = useAlertStore()
 const isReadOnly = ref(false)
 const submitted = ref(false)
+// 패스워드 변경 팝업
+const passwordDialogVisible = ref(false)
+const passwordSaving = ref(false)
+
+// 패스워드 변경 입력값
+const passwordForm = reactive({
+    password: '',
+    confirmPassword: ''
+})
+
 
 /**
  *  사용 유무 초기화
@@ -209,6 +298,72 @@ const saveInfo = async () =>{
   }
 }
 
+/**
+ * 패스워드 변경 팝업 열기
+ */
+const changePassword = () => {
+
+    if (isEmpty(form.userId)) {
+        return vWarning('사용자 ID가 없습니다.')
+    }
+
+    // 기존 입력값 초기화
+    passwordForm.password = ''
+    passwordForm.confirmPassword = ''
+
+    passwordDialogVisible.value = true
+}
+
+/**
+ * 패스워드 변경 저장
+ */
+const savePassword = async () => {
+    if (passwordSaving.value) {
+        return
+    }
+
+    if (isEmpty(passwordForm.password)) {
+        return vWarning('새 패스워드를 입력하세요.')
+    }
+
+    if (passwordForm.password.length < 3) {
+        return vWarning('패스워드는 3자리 이상이어야 합니다.')
+    }
+
+    if (isEmpty(passwordForm.confirmPassword)) {
+        return vWarning('패스워드 확인을 입력하세요.')
+    }
+
+    if (passwordForm.password !== passwordForm.confirmPassword) {
+        return vWarning('패스워드와 패스워드 확인이 일치하지 않습니다.')
+    }
+
+    try {
+
+        passwordSaving.value = true
+
+        const params = {
+            userId: form.userId,
+            password: passwordForm.password
+        }
+
+        const res = await ApiSystem.changePassword(params)
+        vSuccess("변경되었습니다.")
+
+        passwordDialogVisible.value = false
+
+        passwordForm.password = ''
+        passwordForm.confirmPassword = ''
+    } catch (err) {
+        vError(
+            err.response?.data?.message ||
+            '패스워드 변경 중 오류가 발생했습니다.'
+        )
+    } finally {
+        passwordSaving.value = false
+
+    }
+}
 onMounted( async () =>{
     if ( !isEmpty(dialogRef.value.data)) {
         const res = await ApiSystem.getUserInfo(dialogRef.value.data)
