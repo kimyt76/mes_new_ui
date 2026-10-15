@@ -195,7 +195,15 @@ onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
     procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "31", "32", "99"];
-    procStatuss.value = procStatuss.value.filter(v => want.includes(v.code));
+    procStatuss.value = [
+        { code: 'ALL', codeNm: '전체' },
+        ...procStatuss.value
+        .filter(v => want.includes(v.code))
+        .map(v => ({
+            ...v,
+            codeNm: v.code === "31" ? "코팅중" : v.codeNm
+        }))
+    ]
 })
 
 const home = ref({

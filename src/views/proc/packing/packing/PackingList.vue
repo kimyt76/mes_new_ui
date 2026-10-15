@@ -30,7 +30,7 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.procStatus" :options="processStates"
+                <Select v-model="form.procStatus" :options="procStatuss"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 100px"
@@ -101,7 +101,7 @@ const selectedItem = ref([])
 const dialog = useDialog()
 const dt = ref(null);
 const packingList = ref([])
-const processStates = ref([])
+const procStatuss = ref([])
 const areaCds = ref([])
 const form = reactive({
   strDate: minMonth(todayKST()),
@@ -187,9 +187,17 @@ const srhList = async () =>{
 
 onMounted( async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
-    processStates.value = await ApiCommon.getCodeList('PROC_STATUS')
+    procStatuss.value = await ApiCommon.getCodeList('PROC_STATUS')
     const want = ["00", "51", "52", "99"];
-    processStates.value = processStates.value.filter(v => want.includes(v.code));
+    procStatuss.value = [
+        { code: 'ALL', codeNm: '전체' },
+        ...procStatuss.value
+        .filter(v => want.includes(v.code))
+        .map(v => ({
+            ...v,
+            codeNm: v.code === "51" ? "포장중" : v.codeNm
+        }))
+    ]
 })
 
 const home = ref({
