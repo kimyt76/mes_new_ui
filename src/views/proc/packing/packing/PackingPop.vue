@@ -5,7 +5,6 @@
             <!-- 1. 작업지시 정보 -->
             <div class="section-block">
                 <div class="section-label">1. 작업지시 정보</div>
-
                 <table class="info-table">
                     <colgroup>
                         <col class="th-col" />
@@ -67,7 +66,6 @@
                     </tbody>
                 </table>
             </div>
-
             <!-- 2. 투입자재 정보 -->
             <div class="section-block">
                 <div class="section-label">2. 투입자재 정보</div>
@@ -96,7 +94,6 @@
                             <Column header="작업불량"   field="workBadQty"  :style="{ width: '120px' }" :colspan="2" />
                         </Row>
                     </ColumnGroup>
-
                     <Column field="no"          :style="{ width: '50px', textAlign: 'center' }"></Column>
                     <Column field="testNos"     :style="{ width: '150px' , textAlign: 'center'}">
                         <template #body="slotProps">
@@ -130,7 +127,6 @@
                     <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
                 </DataTable>
             </div>
-
             <!-- 3, 4 하단 -->
             <div class="bottom-wrap">
                 <!-- 3. 작업수행 정보 -->
@@ -138,7 +134,7 @@
                     <div class="section-header">
                         <div class="section-label">3. 작업수행 정보</div>
                         <div class="section-actions">
-                            <Button label="신규등록" size="small" @click="openPop('W')" />
+                            <Button v-if="btnStatus !== '00' && btnStatus !== '52'" label="신규등록" size="small" @click="openPop('W')" />
                         </div>
                     </div>
                     <div class="section-body">
@@ -206,27 +202,27 @@
             <!-- <Button v-if="!isStarted" label="저장" @click="saveInfo" /> -->
             <Button label="기록서" @click="downloadExcel" />
             <Button label="바코드" @click="openPop('B')" />
-            <Button  v-if="btnStatus !== '00' && btnStatus !== '32'" label="작업완료" @click="workComplete" />
+            <Button  v-if="btnStatus !== '00' && btnStatus !== '52'" label="작업완료" @click="workComplete" />
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </div>
     </div>
 </template>
-
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import { useAlertStore } from '@/stores/alert';
+import { handleApiError } from '@/util/errorHandler';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import ProdUsePop2 from '../../common/ProdUsePop2.vue';
 import WorkRecordPop from '../../common/WorkRecordPop.vue';
 import ProcPackingStartPop from './ProcPackingStartPop.vue';
-
-const { vWarning, vSuccess, vInfo } = useAlertStore()
+const { vWarning, vSuccess, vInfo, vError } = useAlertStore()
 const dialog = useDialog();
 const dialogRef = inject('dialogRef');
 const isStarted = ref(false)
+const isComplete = ref(false)
 const prodList = ref([])
 const workRecordList = ref([])
 const form = reactive({
@@ -240,10 +236,8 @@ const form = reactive({
     itemCd: '',
     testNo: '',
     expiryDate: '',
-
     procCd : 'PRC005'
 });
-
 // 작업지시정보
 const itemInfo = reactive({
     itemCd: '',
@@ -263,7 +257,6 @@ const itemInfo = reactive({
     displayYield: '',
     stdYield: '',
 });
-
 // 투입자재정보
 const createProdRow = (i = 0) => ({
     no: i + 1,
@@ -280,7 +273,6 @@ const createProdRow = (i = 0) => ({
     unit: '',
     workProcId: form.workProcId,
 });
-
 // 작업수행정보
 const createWorkRecordRow = (i = 0) => ({
     no: i + 1,
@@ -294,7 +286,6 @@ const createWorkRecordRow = (i = 0) => ({
     itemCd: form.itemCd,
     wokRecordId: '',
 });
-
 // 종합정보
 const workOrderInfo = reactive({
     totUseQty: '',
@@ -304,7 +295,6 @@ const workOrderInfo = reactive({
     etc: '',
     memo: '',
 });
-
 /**
  * 총 사용량
  */
@@ -313,7 +303,6 @@ const totalUseQty = computed(() => {
         return sum + Number(row.useQty || 0)
     }, 0)
 })
-
 /**
  * 총 생산수량
  */
@@ -322,7 +311,6 @@ const totalProdQty = computed(() => {
         return sum + Number(row.prodQty || 0)
     }, 0)
 })
-
 /**
  * 생산수율
  */
@@ -332,7 +320,6 @@ const totalProdYield = computed(() => {
         (totalProdQty.value / totalUseQty.value) * 100
     ).toFixed(2)
 })
-
 /**
  * 리스트 값 변경 시
  * workOrderInfo 값 자동 갱신
@@ -348,16 +335,16 @@ watch(
         immediate: true
     }
 )
-
 let workRecordId = ref('')
 const selectRow = (row) => {
+    if (btnStatus.value === '00' || btnStatus.value === '52') return
     workRecordId.value = row.data.workRecordId;
-    if ( isEmpty(workRecordId.value) ) return
+    if (!workRecordId.value) return
     openPop('W')
 }
-
 //투입정보
 const selectRowClick = (row) => {
+    if (btnStatus.value === '00' || btnStatus.value === '52') return
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',
@@ -384,20 +371,18 @@ const selectRowClick = (row) => {
             workProcId: form.workProcId,
         }
         ,onClose: (event) =>{
-            if (event) {
+            if (event?.data) {
                 row.testNos = event.data.testNos
                 row.reqQty = event.data.reqQty
                 row.useQty = event.data.useQty
                 row.badQty = event.data.badQty
                 row.workBadQty = event.data.workBadQty
-
                 workOrderInfo.useQty = event.data.totUseQty
             }
             callPackingInfo()
         }
     })
 }
-
 const popupConfig = {
     S: {
         title: '포장시작',
@@ -418,13 +403,10 @@ const popupConfig = {
         height: '250px'
     }
 }
-
 const openPop = (type) => {
     const config = popupConfig[type]
     if (!config?.component) return
-
     let itemList = []
-
     itemList.push({
         itemCd: itemInfo.itemCd,
         itemName: itemInfo.itemName,
@@ -433,7 +415,6 @@ const openPop = (type) => {
         qty: 0,
         printCnt: 1,
     })
-
     dialog.open(config.component, {
         props: {
             header: config.title,
@@ -468,11 +449,9 @@ const openPop = (type) => {
         }
     })
 };
-
 const confirm = useConfirm()
 const workComplete = () =>{
     if(!checkComplete()) return
-
     confirm.require({
         header: '포장완료 확인',
         message: '포장작업을 완료하시겠습니까?',
@@ -496,7 +475,6 @@ const workComplete = () =>{
         }
     });
 }
-
 const checkComplete = () =>{
     if (workRecordList.value.length === 0 ) {
         vWarning('작업수행정보가 없습니다.')
@@ -504,10 +482,8 @@ const checkComplete = () =>{
     }
     // 그 중 testNos 없는 것 체크
     if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){  return false}
-
     return true
 }
-
 const fillRows = (list = [], rowCount, createRow) => {
     return Array.from({ length: rowCount }, (_, i) => ({
         ...createRow(i),
@@ -515,23 +491,18 @@ const fillRows = (list = [], rowCount, createRow) => {
         no: i + 1, // 번호 강제 유지
     }));
 };
-
 const btnStatus = ref('')
-
 const callPackingInfo = async () =>{
     const params = {
         workProcId: dialogRef.value.data.workProcId,
         procCd: form.procCd,
         itemCd: dialogRef.value.data.itemCd
     };
-
     const res = await ApiProc.getProcProdInfo(params);
-
     Object.assign(itemInfo, res.itemInfo)
     Object.assign(workOrderInfo, res.workOrderProcInfo)
     prodList.value = fillRows(res.prodList, 10, createProdRow);
     workRecordList.value = fillRows(res.workRecordList, 5, createWorkRecordRow);
-
     form.areaCd = workOrderInfo.areaCd
     form.lotNo = workOrderInfo.lotNo
     form.workOrderDateSeq = workOrderInfo.workOrderDateSeq
@@ -540,47 +511,36 @@ const callPackingInfo = async () =>{
     form.workBatchId = workOrderInfo.workBatchId
     form.itemName = itemInfo.itemName
     form.itemCd = itemInfo.itemCd
-
-    btnStatus.value = workOrderInfo.procStatus
-
-    if (workOrderInfo.procStatus === '00'){
-        isStarted.value = true
-    }else if (workOrderInfo.procStatus === '32'){
-        isComplete.value = true
-    }
+    btnStatus.value = String(workOrderInfo.procStatus ?? '').trim()
+    isStarted.value = btnStatus.value === '00'
+    isComplete.value = btnStatus.value === '52'
 }
-
 onMounted( () => {
     callPackingInfo()
 });
-
-
 // 기록서 엑셀 다운로드
 const downloadExcel = async () =>{
     const params = {
         itemCd : itemInfo.itemCd,
-        procCd : 'PRC004',
+        procCd : 'PRC005',
         workProcId : form.workProcId,
     }
-
     try {
         const blob = await ApiProc.downloadRecord(params)
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = `${workOrderInfo.makeNo}_[충전제풐]_${form.itemName}.xlsx`
+        a.download = `${workOrderInfo.makeNo}_[포장제품]_${form.itemName}.xlsx`
         a.click()
         window.URL.revokeObjectURL(url)
     } catch {
         vError('엑셀 다운로드 실패')
     }
 }
-
 const closeDialog = () => {
     dialogRef.value.close();
 };
 </script>
-
 <style scoped>
 .pop-wrap {
     height: 100%;
@@ -597,18 +557,15 @@ const closeDialog = () => {
     overflow: hidden;
     padding: 8px 12px 6px;
 }
-
 .coating-pop-footer {
     flex: 0 0 auto;
     padding: 10px 12px 12px;
     border-top: 1px solid #e5e7eb;
     background: #fff;
 }
-
 .section-block {
     margin-bottom: 10px;
 }
-
 .section-label {
     display: inline-block;
     font-size: 15px;
@@ -616,21 +573,17 @@ const closeDialog = () => {
     margin-bottom: 4px;
     color: #334155;
 }
-
 .info-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
-
 .info-table .th-col {
     width: 9%;
 }
-
 .info-table .td-col {
     width: 16%;
 }
-
 .cellBorder {
     border: 0.5px solid #cfd8e3;
     text-align: center;
@@ -639,14 +592,12 @@ const closeDialog = () => {
     word-break: break-word;
     line-height: 1.2;
 }
-
 .cellHeader {
     background-color: #8D6E63;
     color: white;
     font-weight: 700;
     height: 30px;
 }
-
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
     background-color: #8D6E63;
     color: white;
@@ -655,27 +606,22 @@ const closeDialog = () => {
     font-weight: 700;
     padding: 4px 6px;
 }
-
 :deep(.material-table .p-datatable-thead > tr > th) {
     height: 30px;
 }
-
 :deep(.material-table .p-datatable-tbody > tr > td) {
     height: 30px;
     padding: 4px 6px;
     font-size: 15px;
 }
-
 :deep(.work-table .p-datatable-thead > tr > th) {
     height: 30px;
 }
-
 :deep(.work-table .p-datatable-tbody > tr > td) {
     height: 30px;
     padding: 4px 6px;
     font-size: 15px;
 }
-
 .bottom-wrap {
     display: grid;
     grid-template-columns: 6fr 4fr;
@@ -683,55 +629,45 @@ const closeDialog = () => {
     align-items: start;
     height: 300px;
 }
-
 .section-box {
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
-
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 4px;
 }
-
 .section-body {
     display: block;
     min-height: 0;
 }
-
 .section-actions {
     display: flex;
     gap: 8px;
 }
-
 .summary-section {
     height: 100%;
 }
-
 .summary-section .section-body {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
 }
-
 .summary-table {
     width: 100%;
     height: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
-
 .summary-table .summary-col-th {
     width: 28%;
 }
-
 .summary-table .summary-col-td {
     width: 72%;
 }
-
 .summary-table th,
 .summary-table td {
     height: 32px;
@@ -741,34 +677,27 @@ const closeDialog = () => {
     vertical-align: middle;
     box-sizing: border-box;
 }
-
 .summary-table th[colspan='2'] {
     width: auto;
 }
-
 .summary-table .cellHeader {
     width: auto !important;   /* 기존 cellHeader width 덮어쓰기 */
     min-width: 0 !important;
 }
-
 .summary-table tbody tr:first-child th {
     text-align: center;
 }
-
 .summary-table tbody tr:not(:first-child) th {
     text-align: center;
     white-space: nowrap;
 }
-
 .summary-table tbody tr:not(:first-child) td {
     text-align: center;
 }
-
 :deep(.coating-pop-footer .p-button) {
     padding: 0.5rem 0.9rem;
     font-size: 15px;
 }
-
 .mt-3 {
     margin-top: 0.5rem !important;
 }

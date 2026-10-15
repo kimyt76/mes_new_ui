@@ -536,13 +536,10 @@ const callCoatingInfo = async () =>{
     form.itemName = itemInfo.itemName
     form.itemCd = itemInfo.itemCd
 
-    btnStatus.value = workOrderInfo.procStatus
+    btnStatus.value = String(workOrderInfo.procStatus ?? '').trim()
 
-    if (workOrderInfo.procStatus === '00'){
-        isStarted.value = true
-    }else if (workOrderInfo.procStatus === '32'){
-        isComplete.value = true
-    }
+    isStarted.value = btnStatus.value === '00'
+    isComplete.value = btnStatus.value === '32'
 }
 
 onMounted( () => {

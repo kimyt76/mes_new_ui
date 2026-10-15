@@ -478,7 +478,7 @@ const checkVavlid = () =>{
         return false
     }
     if (totalCount.value !== checkedCount.value) {
-        vInfo('확인자를 입력하세요!!.')
+        vInfo('제조목록을 확인하세요!!.')
         return false
     }
 
