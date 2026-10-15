@@ -107,8 +107,9 @@
                  <!-- 반려 -->
                 <span v-if="slotProps.data.confirmStatus === 'R'"
                     style="
-                        color: #1976d2;
+                        color: #999;
                         font-weight: bold;
+                        cursor: default;
                         "
                     >반려
                 </span>
@@ -126,7 +127,7 @@
          <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
-                <span v-if="slotProps.data.confirmStatus !== 'C'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
+                <span v-if="!['C', 'R'].includes(slotProps.data.confirmStatus)" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
                         font-weight: bold;

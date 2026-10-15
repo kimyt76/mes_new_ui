@@ -136,6 +136,7 @@ const form = reactive({
 
     typeCd: 'J',
     confirmStatus: '',
+    moveStatus: 'J',
     moveStockId: '',
 })
 

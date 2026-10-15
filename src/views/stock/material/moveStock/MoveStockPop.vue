@@ -142,6 +142,7 @@ const form = reactive({
     areaCd:'',
     confirmStatus:'W',
     typeCd: 'J',
+    moveStatus: 'J',
     moveStockId: '',
 })
 
@@ -149,6 +150,12 @@ const saveInfo = async () =>{
     if( form.srcStorageCd === '' || form.tarStorageCd === '' ) return vWarning('보내는 창고와 받는 창고를 선택해주세요.')
     if( form.srcStorageCd === form.tarStorageCd ) return vWarning('보내는 창고와 받는 창고가 동일합니다.')
     if( moveStockList.value.length <= 0 ) return vWarning('이동 요청할 품목을 추가해주세요.')
+
+    const invalidRows = moveStockList.value.filter(row => !row.testNo?.trim())
+
+    if (invalidRows.length > 0) {
+        return vWarning('시험번호가 입력되지 않은 항목이 있습니다.')
+    }
 
     try{
         const param = {
