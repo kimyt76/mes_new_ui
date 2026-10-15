@@ -115,6 +115,7 @@ const saveInfo = async () => {
             workProcId: dialogRef.value.data.workProcId,
             workBatchId: dialogRef.value.data.workBatchId,
             procCd: 'PRC003',
+            prodInfoId: dialogRef.value.data.row.prodInfoId,
         }
         const params = {
             prodInfo: summaryRow,
@@ -168,12 +169,16 @@ const searchByBarcode = async () =>{
 
 onMounted( async () =>{
     let prodUseId = dialogRef.value.data.row.prodUseId
+    let prodInfoId = dialogRef.value.data.row.prodInfoId
     title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
 
     setTimeout(() => {
         barcodeInputRef.value?.$el?.querySelector('input')?.focus()
     }, 100)
+console.log('prodInfoId', prodInfoId)
 console.log('prodUseId', prodUseId)
+
+
     if (!isEmpty(prodUseId)) {
         workUseList.value = await ApiProc.getProdUseList(prodUseId)
     }

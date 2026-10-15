@@ -345,6 +345,7 @@ const selectRow = (row) => {
 //투입정보
 const selectRowClick = (row) => {
     if (btnStatus.value === '00' || btnStatus.value === '52') return
+    if (!row.matName || !String(row.matName).trim()) return
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',
@@ -544,17 +545,26 @@ const closeDialog = () => {
 <style scoped>
 .pop-wrap {
     height: 100%;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     font-size: 15px;
     background: #fff;
+}
+.pop-scale {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 /* 전체 내용을 2% 축소 */
 .pop-body {
     flex: 1 1 auto;
-    overflow: hidden;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: auto;
     padding: 8px 12px 6px;
 }
 .coating-pop-footer {
@@ -624,10 +634,11 @@ const closeDialog = () => {
 }
 .bottom-wrap {
     display: grid;
-    grid-template-columns: 6fr 4fr;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
     gap: 14px;
     align-items: start;
-    height: 300px;
+    height: auto;
+    min-height: 0;
 }
 .section-box {
     display: flex;

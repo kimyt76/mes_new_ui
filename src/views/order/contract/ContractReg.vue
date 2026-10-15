@@ -292,8 +292,11 @@ const onChangeRow = (data) =>{
 
 watch(() => form.contractDate, async (newVal, oldVal) => {
   if ( !isEmpty(newVal)) {
-    if ( oldVal !==  newVal ){
-    form.seq = await ApiCommon.getNextSeq('tb_contract_mst','contract_Date', newVal)
+    console.log('oldVal', oldVal)
+    console.log('newVal', newVal)
+    if ( oldVal !==  formatDate(newVal) ){
+        form.seq = await ApiCommon.getNextSeq('tb_contract_mst','contract_Date', formatDate(newVal))
+        console.log('form.seq', form.seq)
     }
   }
 })
@@ -430,6 +433,8 @@ const openPop = (type) =>{
             if ( type === 'C') {
                 form.clientName = event.data.clientName
                 form.clientId = event.data.clientId
+                form.managerName = event.data.businessManagerName
+                form.managerId = event.data.businessManagerName
             }else if ( type === 'U') {
                 form.managerName = event.data.memberNm
                 form.managerId = event.data.userId

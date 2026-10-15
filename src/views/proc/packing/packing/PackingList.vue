@@ -121,27 +121,33 @@ const handleDateChange = () =>{
 }
 
 const selectRowClick = (row) =>{
-
-
     dialog.open(PackingPop, {
-        props:{
+        props: {
             header: '포장지시 및 기록',
             modal: true,
             maximizable: false,
             draggable: false,
             style: {
-                width: '90vw',          // 🔹 팝업 가로 폭
+                width: '95vw',
                 maxWidth: '1800px',
-                height: '800px',
-                overflow: 'auto'
+                height: '95dvh',
+                maxHeight: '95dvh',
+                display: 'flex',
+                flexDirection: 'column'
+            },
+            contentStyle: {
+                flex: '1 1 auto',
+                minHeight: '0',
+                overflow: 'hidden',
+                padding: '0'
             },
             pt: {
                 root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'auto' } }
-            },
+                content: { style: { overflow: 'hidden' } }
+            }
         },
         data: row,
-        onClose:(event) => {
+        onClose: (event) => {
             srhList();
         },
     })

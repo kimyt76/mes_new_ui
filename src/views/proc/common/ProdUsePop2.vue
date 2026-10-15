@@ -159,6 +159,7 @@ const saveInfo = async () => {
             workProcId: dialogRef.value.data.workProcId,
             workBatchId: dialogRef.value.data.workBatchId,
             procCd: procCd.value,
+            prodInfoId: dialogRef.value.data.row.prodInfoId,
         }
         const params = {
             prodInfo: summaryRow,

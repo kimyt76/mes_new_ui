@@ -121,31 +121,36 @@ const handleDateChange = () =>{
 
 const selectRowClick = (id, cd) =>{
     dialog.open(ChargePop, {
-        props:{
+        props: {
             header: '충전지시 및 기록',
             modal: true,
             maximizable: false,
             draggable: false,
             style: {
-                width: '88vw',
+                width: '95vw',
                 maxWidth: '1600px',
-                height: '90vh'
+                height: '95dvh',
+                maxHeight: '95dvh',
+                display: 'flex',
+                flexDirection: 'column'
             },
             contentStyle: {
+                flex: '1 1 auto',
+                minHeight: '0',
                 overflow: 'hidden',
                 padding: '0'
             },
             pt: {
                 root: { style: { overflow: 'hidden' } },
                 content: { style: { overflow: 'hidden' } }
-            },
+            }
         },
-       data:{
+        data: {
             workProcId: id,
             procCd: form.procCd,
             itemCd: cd,
         },
-        onClose:(event) => {
+        onClose: (event) => {
         },
     })
 }

@@ -1,6 +1,6 @@
 <template>
-    <div class="pop-wrap">
-        <div class="coating-pop-scale">
+<div class="pop-wrap">
+    <div class="pop-scale">
         <div class="pop-body">
             <!-- 1. 작업지시 정보 -->
             <div class="section-block">
@@ -346,6 +346,7 @@ const selectRow = (row) => {
 //투입정보
 const selectRowClick = (row) => {
     if (btnStatus.value === '00' || btnStatus.value === '42') return
+    if (!row.matName || !String(row.matName).trim()) return
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',
@@ -545,18 +546,27 @@ const closeDialog = () => {
 <style scoped>
 .pop-wrap {
     height: 100%;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     font-size: 15px;
     background: #fff;
 }
 /* 전체 내용을 2% 축소 */
+.pop-scale {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
 .pop-body {
     flex: 1 1 auto;
-    overflow: hidden;
-    padding: 1px 4px 2px;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 8px 12px 6px;
 }
 .pop-footer {
     flex: 0 0 auto;
@@ -625,10 +635,11 @@ const closeDialog = () => {
 }
 .bottom-wrap {
     display: grid;
-    grid-template-columns: 6fr 4fr;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
     gap: 14px;
     align-items: start;
-    height: 300px;
+    height: auto;
+    min-height: 0;
 }
 .section-box {
     display: flex;
