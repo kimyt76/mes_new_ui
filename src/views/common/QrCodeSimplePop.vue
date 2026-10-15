@@ -1,3 +1,4 @@
+
 <template>
 <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
     <template #start>
@@ -14,7 +15,7 @@
                 />
             <label for="on_label">바코드(시험번호)</label>
             </FloatLabel>
-            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600"  @click="addRow"/>
+            <Button label="검색" icon="pi pi-search" class="bg-blue-500 text-white hover:bg-blue-600" @click="addRow"/>
             <Button label="초기화" icon="pi pi-refresh" severity="secondary" type="button" @click="init" />
         </div>
     </template>
@@ -40,14 +41,13 @@
     <Button label="저장" severity="success" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
-
 </template>
 
 <script setup>
 import { ApiQc } from '@/api/apiQc';
 import { useAlertStore } from '@/stores/alert';
 import { handleApiError } from '@/util/errorHandler';
-import { inject, nextTick, onMounted, ref } from 'vue';
+import { inject, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 const { vSuccess, vWarning, vInfo } = useAlertStore()
 const dialogRef = inject('dialogRef')
@@ -58,18 +58,33 @@ const testNo = ref('')
 let scanTimer = null
 let lastKeyTime = 0
 let scannerKeyCount = 0
+let scanStartTime = 0
+let scanInputCount = 0
+let scanFastCount = 0
+let scanPasteDetected = false
+
+const SCAN_INTERVAL = 100
+const SCAN_WAIT = 120
+const SCAN_MIN_LENGTH =11
 
 const isSearching = ref(false)
 const lastProcessedBarcode = ref('')
 
+const resetScanState = () => {
+    clearTimeout(scanTimer)
+    scanTimer = null
+    lastKeyTime = 0
+    scannerKeyCount = 0
+    scanStartTime = 0
+    scanInputCount = 0
+    scanFastCount = 0
+    scanPasteDetected = false
+}
+
 const init = async () =>{
     testNo.value = ''
     lastProcessedBarcode.value = ''
-    scannerKeyCount = 0
-    lastKeyTime = 0
-
-    clearTimeout(scanTimer)
-
+    resetScanState()
     await focusBarcode()
 }
 
@@ -77,139 +92,123 @@ const handleKeydown = (event) =>{
     if (event.key === 'Enter') {
         return
     }
-
+    if (event.ctrlKey || event.altKey || event.metaKey) {
+        return
+    }
+    if (event.key.length !== 1) {
+        return
+    }
     const now = Date.now()
-
-    if (lastKeyTime > 0) {
+    if (lastKeyTime === 0 || now - lastKeyTime > 300) {
+        scanStartTime = now
+        scanInputCount = 1
+        scanFastCount = 0
+        scannerKeyCount = 0
+    } else {
+        scanInputCount++
         const diff = now - lastKeyTime
-
-        // 스캐너는 일반적으로 문자간 입력속도가 매우 빠름
-        if (diff < 50) {
+        if (diff <= SCAN_INTERVAL) {
+            scanFastCount++
             scannerKeyCount++
-        } else {
-            // 직접 입력으로 판단
-            scannerKeyCount = 0
         }
     }
-
     lastKeyTime = now
 }
 
-const handleBarcodeInput = () =>{
+const handleBarcodeInput = (event) =>{
     clearTimeout(scanTimer)
-
-    const barcode = testNo.value?.trim()
-
+    const barcode = String(testNo.value ?? '').trim()
     if (!barcode) {
-        scannerKeyCount = 0
+        resetScanState()
         return
     }
-
-    /*
-     * QR / 바코드 스캐너는 짧은 시간에 연속으로 값을 입력하기 때문에
-     * scannerKeyCount가 일정 횟수 이상이면 스캔으로 판단한다.
-     *
-     * 직접 입력은 Enter를 눌러야 조회된다.
-     */
+    if (isSearching.value) {
+        return
+    }
+    // 스캐너가 문자열을 한 번에 입력하는 경우
+    if (event?.inputType === 'insertFromPaste') {
+        scanPasteDetected = true
+    }
+    // 키보드 이벤트 없이 전체 문자열이 입력되는 장치 대응
+    if (scanInputCount === 0 && barcode.length >= SCAN_MIN_LENGTH) {
+        scanPasteDetected = true
+    }
     scanTimer = setTimeout(() => {
-        if (scannerKeyCount >= 2 && barcode) {
+        const currentBarcode = String(testNo.value ?? '').trim()
+        if (!currentBarcode || isSearching.value) {
+            return
+        }
+        const elapsed = scanStartTime > 0 ? lastKeyTime - scanStartTime : 0
+        const isFastScan =
+            scanInputCount >= SCAN_MIN_LENGTH &&
+            scanFastCount >= Math.max(3, Math.floor((scanInputCount - 1) * 0.6)) &&
+            elapsed <= Math.max(500, scanInputCount * SCAN_INTERVAL)
+
+        if (currentBarcode.length === SCAN_MIN_LENGTH && (isFastScan || scanPasteDetected)) {
             addRow()
         }
-
-    }, 80)
+    }, SCAN_WAIT)
 }
 
 const handleEnter = async () =>{
     clearTimeout(scanTimer)
-
-    const barcode = testNo.value?.trim()
-
-    if (!barcode) {
-        return vWarning('바코드 또는 시험번호를 입력해주세요.');
-    }
-
-    /*
-     * 스캐너가 마지막에 Enter를 같이 전송하는 경우
-     * 이미 자동 조회한 값이면 다시 조회하지 않는다.
-     */
-    if (lastProcessedBarcode.value === barcode) {
-        testNo.value = ''
-        lastProcessedBarcode.value = ''
-        scannerKeyCount = 0
-
-        await focusBarcode()
-
+    const barcode = String(testNo.value ?? '').trim()
+    if (!barcode || isSearching.value) {
         return
     }
-
+    if (lastProcessedBarcode.value === barcode) {
+        return
+    }
     await addRow()
 }
 
 const addRow = async () =>{
-    const barcode = testNo.value?.trim();
-
+    const barcode = String(testNo.value ?? '').trim()
     if (!barcode) {
         return vWarning('바코드 또는 시험번호를 입력해주세요.');
     }
-
     if (isSearching.value) {
         return
     }
-
     if (lastProcessedBarcode.value === barcode) {
         return
     }
-
+    clearTimeout(scanTimer)
     isSearching.value = true
     lastProcessedBarcode.value = barcode
-
     try {
         const res = await ApiQc.getItemTestNoInfo(barcode);
-
         if (!res) {
             testNo.value = '';
             lastProcessedBarcode.value = ''
-            scannerKeyCount = 0
-
+            resetScanState()
             await focusBarcode()
-
             return vWarning('조회된 품목이 없습니다.');
         }
-
         const item = {
             testNo: res.testNo,
             itemCd: res.itemCd,
             itemName: res.itemName,
             itemTypeCd: res.itemTypeCd || ''
         };
-
         const exists = itemList.value.some(o => o.testNo === item.testNo);
-
         if (exists) {
             testNo.value = '';
             lastProcessedBarcode.value = ''
-            scannerKeyCount = 0
-
+            resetScanState()
             await focusBarcode()
-
             return vWarning('이미 추가된 시험번호입니다.');
         }
-
         itemList.value.push(item);
-
         testNo.value = '';
         lastProcessedBarcode.value = ''
-        scannerKeyCount = 0
-        lastKeyTime = 0
-
+        resetScanState()
         await focusBarcode();
-
     } catch (err) {
         lastProcessedBarcode.value = ''
+        resetScanState()
         handleApiError(err);
-
         await focusBarcode()
-
     } finally {
         isSearching.value = false
     }
@@ -217,9 +216,7 @@ const addRow = async () =>{
 
 const focusBarcode = async () => {
     await nextTick();
-
     const el = barcodeInput.value?.$el
-
     if (el instanceof HTMLInputElement) {
         el.focus()
     } else {
@@ -243,6 +240,9 @@ onMounted(() =>{
     focusBarcode()
 })
 
+onUnmounted(() => {
+    clearTimeout(scanTimer)
+})
 </script>
 
 <style scoped>
