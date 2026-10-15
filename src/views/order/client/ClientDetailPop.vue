@@ -161,7 +161,7 @@
         <div class="grid mb-1">
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.groupsCode" class="w-full" />
+                    <InputText v-model="form.groupsCd" class="w-full" />
                     <label>그룹사코드</label>
                 </FloatLabel>
             </div>
