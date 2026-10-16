@@ -70,6 +70,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
+import { ApiSystem } from '@/api/apiSystem';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { useConfirm } from 'primevue';
@@ -141,22 +142,26 @@ onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     const popupForm = dialogRef.value?.data?.form
 
+    console.log('popupForm', popupForm)
+
     if (popupForm) {
         Object.assign(form, popupForm)
     }
+
     Object.assign(form, popupForm)
     allStorages.value = await ApiSystem.getStorageCodeList()
-
+  console.log('popupForm', allStorages.value)
     const params = {
         procCd: form.procCd,
         areaCd: form.areaCd
     }
-
+ console.log('params', params)
     const res = await ApiProc.getWorkerList(params)
     workerList.value = res.data.map(item => ({
         codeNm: item.workerName,
         code: item.workerName
     }));
+    console.log('workerList.value', workerList.value)
 })
 
 const closeDialog = () =>{
