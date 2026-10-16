@@ -50,6 +50,7 @@
             </FloatLabel>
 
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"></Button>
+            <Button label="초기화" icon="pi pi-refresh" severity="secondary" type="button" @click="resetSearch" />
         </div>
         </template>
     </Toolbar>
@@ -158,6 +159,15 @@ const srchItemList = async () => {
     loading.value = false
 };
 
+const resetSearch = () => {
+    form.itemName = '';
+    form.itemCd = '';
+    form.customerName = '';
+    form.itemCategory1 = '';
+    form.itemCategory2 = '';
+    form.functionalTypeCd = '';
+    form.itemTypeCd = null;
+};
 
 onMounted( async () => {
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD');
