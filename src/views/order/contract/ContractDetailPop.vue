@@ -102,7 +102,7 @@
                         v-model="slotProps.data.qty"
                         class="w-full"
                         :min="0"
-                        :maxFractionDigits="0"
+                        :maxFractionDigits="4"
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', 'text-align': 'right' }"
                          @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -115,7 +115,7 @@
                     v-model="slotProps.data.unitPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="4"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -128,7 +128,7 @@
                         v-model="slotProps.data.supplyPrice"
                         class="w-full"
                         :min="0"
-                        :maxFractionDigits="0"
+                        :maxFractionDigits="4"
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', 'text-align': 'right' }"
                     />
@@ -140,7 +140,7 @@
                     v-model="slotProps.data.vatPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="4"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                 />
@@ -152,7 +152,7 @@
                     v-model="slotProps.data.totPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="4"
                     :useGrouping="true"
                     :inputStyle="{ width: '150px', 'text-align': 'right' }"
                 />
@@ -349,6 +349,9 @@ const openPop = (type) =>{
             if ( type === 'C') {
                 form.clientName = event.data.clientName
                 form.clientId = event.data.clientId
+                form.managerName = event.data.businessManagerName
+                form.managerId = event.data.businessManagerName
+                form.clientNo = event.data.businessNo
             }else if ( type === 'U') {
                 form.managerName = event.data.memberNm
                 form.managerId = event.data.userId

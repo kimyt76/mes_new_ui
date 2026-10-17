@@ -45,7 +45,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
-                        <InputText v-model="form.clientCd" class="w-full"/>
+                        <InputText v-model="form.clientNo" class="w-full"/>
                     </IconField>
                     <label>고객사 코드</label>
                 </FloatLabel>
@@ -124,7 +124,7 @@
                     v-model="slotProps.data.unitPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="4"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -137,7 +137,7 @@
                         v-model="slotProps.data.supplyPrice"
                         class="w-full"
                         :min="0"
-                        :maxFractionDigits="0"
+                        :maxFractionDigits="4"
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', 'text-align': 'right' }"
                     />
@@ -149,7 +149,7 @@
                     v-model="slotProps.data.vatPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="4"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                 />
@@ -161,7 +161,7 @@
                     v-model="slotProps.data.totPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="4"
                     :useGrouping="true"
                     :inputStyle="{ width: '150px', 'text-align': 'right' }"
                 />
@@ -243,7 +243,7 @@ const itemDialog = ref(false)
 const form = reactive({
     contractDate: '',
     seq:'',
-    clientCd:'',
+    clientNo:'',
     clientName:'',
     clientId:'',
     managerName:'',
@@ -292,8 +292,6 @@ const onChangeRow = (data) =>{
 
 watch(() => form.contractDate, async (newVal, oldVal) => {
   if ( !isEmpty(newVal)) {
-    console.log('oldVal', oldVal)
-    console.log('newVal', newVal)
     if ( oldVal !==  formatDate(newVal) ){
         form.seq = await ApiCommon.getNextSeq('tb_contract_mst','contract_Date', formatDate(newVal))
         console.log('form.seq', form.seq)
@@ -325,10 +323,10 @@ const saveInfo = async () =>{
     if (isEmpty(form.clientName)) return vWarning('고객사를 선택해주세요.')
     if (isEmpty(form.managerName)) return vWarning('담당자를 선택해주세요.')
 
-    // if(attachFile.value <= 0 ){
-    //     vInfo("산출물을 등록하세요")
-    //     return
-    // }
+    if(attachFile.value <= 0 ){
+        vInfo("산출물을 등록하세요")
+        return
+    }
 
     try{
         const request = {
@@ -435,6 +433,7 @@ const openPop = (type) =>{
                 form.clientId = event.data.clientId
                 form.managerName = event.data.businessManagerName
                 form.managerId = event.data.businessManagerName
+                form.clientNo = event.data.businessNo
             }else if ( type === 'U') {
                 form.managerName = event.data.memberNm
                 form.managerId = event.data.userId
