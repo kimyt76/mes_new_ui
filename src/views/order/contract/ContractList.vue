@@ -163,11 +163,17 @@ const selectRowClick = (id) => {
             modal: true,
             maximizable: false,
             draggable: false,
+
             style: {
                 width: '90vw',
                 maxWidth: '1800px',
                 height: '800px',
-                overflow: 'hidden'
+                maxHeight: '90vh'
+            },
+            contentStyle: {
+                overflowY: 'auto',
+                overflowX: 'auto',
+                minHeight: '0'
             },
             pt: {
                 root: {
@@ -177,7 +183,9 @@ const selectRowClick = (id) => {
                 },
                 content: {
                     style: {
-                        overflow: 'hidden'
+                        overflowY: 'auto',
+                        overflowX: 'auto',
+                        minHeight: '0'
                     }
                 }
             }
@@ -185,9 +193,9 @@ const selectRowClick = (id) => {
         data: id,
         onClose: (event) => {
             const savedContractId = event?.data
-            // 등록 팝업에서 저장 후 ID를 반환한 경우에만 상세 팝업 실행
+            // 등록 후 상세 팝업 실행
             if (isNew && !isEmpty(savedContractId)) {
-                console.log('저장된 contractId:', savedContractId)
+                //console.log('저장된 contractId:', savedContractId)
                 selectRowClick(savedContractId)
             }
         }
