@@ -167,23 +167,27 @@ const form = reactive({
     userId: userId,
 })
 
-const saveInfo = async () =>{
-    try{
+const saveInfo = async () => {
+    try {
         const params = {
-            bomInfo : form,
-            bomRecipeList : recipeList.value,
+            bomInfo: form,
+            bomRecipeList: recipeList.value,
+            deleteBomRecipe: deleteBomRecipe.value
         }
-
+console.log('params', params)
         const res = await ApiLab.saveBomInfo(params)
+
         vSuccess(res.message)
         closeDialog()
-    }catch(err){
+
+    } catch (err) {
         handleApiError(err)
     }
 }
 
-const handleSelected = (obj) =>{
+const handleSelected = (obj) => {
     addRow(obj)
+    itemDialog.value = false
 }
 
 const openPop = (type) =>{
@@ -230,6 +234,7 @@ const openPop = (type) =>{
         },
     })
 }
+const deleteBomRecipe = ref([])
 
 const recipeSort = () =>{
      // 5) orderDist 재정렬 (1부터)
@@ -238,12 +243,52 @@ const recipeSort = () =>{
   })
 }
 
-const addRow = ()=>{
+const addRow = (obj) => {
+    // 추가 버튼 클릭 시 품목 팝업 열기
+    if (!obj) {
+        itemDialog.value = true
+        return
+    }
 
+    const items = Array.isArray(obj) ? obj : [obj]
+
+    items.forEach(item => {
+        // 품목 중복 검사
+        const exists = recipeList.value.some(
+            row => row.realItemCd === item.itemCd
+        )
+
+        if (exists) return
+
+        recipeList.value.push({
+            bomProcId: null,
+            orderDist: 0,
+            realItemCd: item.itemCd,
+            realItemName: item.itemName,
+            qty: 0,
+            etc: ''
+        })
+    })
+
+    recipeSort()
 }
+const removeRow = (index) => {
+    const row = recipeList.value[index]
 
-const removeRow = (index) =>{
-    recipeList.value.splice(index,1)
+    if (!row) return
+
+    // DB에 저장된 기존 데이터만 삭제 ID 보관
+    if (row.bomItemId != null && row.bomItemId !== '') {
+        if (!deleteBomRecipe.value.includes(row.bomItemId)) {
+            deleteBomRecipe.value.push(row.bomItemId)
+        }
+    }
+
+    // 화면에서 행 삭제
+    recipeList.value.splice(index, 1)
+
+    // 순번 재정렬
+    recipeSort()
 }
 
 onMounted( async () =>{
