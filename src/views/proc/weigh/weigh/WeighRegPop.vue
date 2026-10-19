@@ -111,12 +111,15 @@ import Tabs from 'primevue/tabs'
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import * as XLSX from 'xlsx'
 
+import { ApiQc } from '@/api/apiQc.js'
 import BagWeightInfoPop from '../../common/BagWeightInfoPop.vue'
 import BagWeightPop from '../../common/BagWeightPop.vue'
 import ProcStartPop from '../../common/ProcStartPop.vue'
 import WorkerPop from '../../common/WorkerPop.vue'
 import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
+const isBarcodePopupOpen = ref(false)
+const isBarcodeScanning = ref(false)
 const { vSuccess, vWarning, vInfo } = useAlertStore()
 const { userId } = useAuthStore()
 const dialogRef = inject('dialogRef')
@@ -167,6 +170,7 @@ onBeforeUnmount(() => {
 
 const handleScannerKeydown = (event) => {
     const now = Date.now()
+    if (isBarcodePopupOpen.value || isBarcodeScanning.value) return
 
     if (now - lastScanTime.value > SCAN_INTERVAL) {
         scanBuffer.value = ''
@@ -192,23 +196,67 @@ const handleScannerKeydown = (event) => {
 }
 
 // 스캔 데이터 파싱 및 매칭 (itemCd 추출 기능 포함)
-const handleScannedCode = (barcode) => {
-    if (isStarted.value) return vWarning('칭량시작 상태가 아닙니다. 칭량시작 버튼을 먼저 눌러주세요.')
+const handleScannedCode = async (barcode) => {
 
-    const extractedItemCd = barcode.split('|')[0].trim()
-    form.barcode = extractedItemCd
-
-    const targetRows = matUseDataList.value.filter(r => String(r.itemCd ?? '').trim() === extractedItemCd)
-    if (targetRows.length === 0) return vWarning(`스캔된 품목코드[${extractedItemCd}]가 처방 리스트에 없습니다.`)
-
-    const targetRow = targetRows.find(r => !String(r.testNo ?? '').trim())
-    if (!targetRow) return vWarning('해당 품목의 모든 처방이 이미 칭량 완료 상태입니다.')
-
-    if (targetRow.phase && sangGubunOptions.value.includes(targetRow.phase)) {
-        activeSangGubun.value = targetRow.phase
+    if (isStarted.value) {
+        return vWarning('칭량시작 상태가 아닙니다. 칭량시작 버튼을 먼저 눌러주세요.')
     }
 
-    openLookupPopup('ITEM_CODE', targetRow)
+    // 조회 중이거나 바코드 팝업이 열려 있으면 중복 실행 방지
+    if (isBarcodeScanning.value || isBarcodePopupOpen.value) return
+
+    isBarcodeScanning.value = true
+
+    try {
+        const testNo = String(barcode ?? '').trim()
+        if (!testNo) return
+
+        form.barcode = testNo
+
+        // 시험번호로 품목코드 조회
+        const res = await ApiQc.getItemTestNoInfo(testNo)
+
+        const itemInfo = res?.data ?? res
+        const itemCd = String(itemInfo?.itemCd ?? '').trim()
+
+        if (!itemCd) {
+            return vWarning(`시험번호[${testNo}]에 해당하는 품목정보가 없습니다.`)
+        }
+
+        // 처방 리스트에서 품목코드 비교
+        const targetRows = matUseDataList.value.filter(
+            r => String(r.itemCd ?? '').trim() === itemCd
+        )
+
+        if (targetRows.length === 0) {
+            return vWarning(`스캔된 품목코드[${itemCd}]가 처방 리스트에 없습니다.`)
+        }
+
+        // 시험번호가 없는 행 검색
+        const targetRow = targetRows.find(
+            r => !String(r.testNo ?? '').trim()
+        )
+
+        if (!targetRow) {
+            return vWarning('해당 품목의 모든 처방이 이미 칭량 완료 상태입니다.')
+        }
+
+        if (
+            targetRow.phase &&
+            sangGubunOptions.value.includes(targetRow.phase)
+        ) {
+            activeSangGubun.value = targetRow.phase
+        }
+
+        // 바코드 팝업 호출
+        openLookupPopup('ITEM_CODE', targetRow)
+
+    } catch (err) {
+        handleApiError(err)
+    } finally {
+        // 조회 완료 후 중복 실행 방지 상태 해제
+        isBarcodeScanning.value = false
+    }
 }
 
 // Computed 옵션 및 필터링 리스트
@@ -437,6 +485,14 @@ const calcTotalQty = (row) => {
 }
 
 const openLookupPopup = (type, row = null) => {
+    // 바코드 팝업 중복 실행 방지
+    if (type === 'ITEM_CODE') {
+        if (isBarcodePopupOpen.value) return
+        if (row?.itemCd === 'JRMSC00011') return
+
+        isBarcodePopupOpen.value = true
+    }
+
     const popupMap = {
         ITEM_CODE: { title: '바코드 칭량 입력', comp: WeighBarcodeRegPop },
         CONTAINER_WEIGHT: { title: '용기무게 선택', comp: BagWeightPop },
@@ -446,36 +502,48 @@ const openLookupPopup = (type, row = null) => {
         DEFAULT: { title: '칭량 시작', comp: ProcStartPop }
     }
 
-    if (type === 'ITEM_CODE' && row?.itemCd === 'JRMSC00011') return
-
     const selected = popupMap[type] || popupMap.DEFAULT
     const shouldPassRow = ['ITEM_CODE', 'CONTAINER_WEIGHT', 'WEIGH_USER', 'CONFIRM_USER', 'CONTAINER_WEIGHT1'].includes(type)
 
-    dialog.open(selected.comp, {
-        props: {
-            header: selected.title, modal: true, draggable: false,
-            style: { overflow: 'hidden' },
-            pt: { root: { style: { overflow: 'hidden' } }, content: { style: { overflow: 'hidden' } } }
-        },
-        data: { form, ...(shouldPassRow ? { row } : {}), type },
-        onClose: (event) => {
-            if (event?.data && shouldPassRow && row) {
-                applyPopupResultToRow(type, row, event.data)
-
-                // 💡 팝업창에서 데이터를 수령하여 row에 매핑한 직후 총량을 재계산하여 그리드 동기화
-                row.totalQty = calcTotalQty(row)
-                const hot = hotTable.value?.hotInstance || hotTable.value
-                if (hot?.setDataAtRowProp) {
-                    const viewRowIndex = currentTabList.value.findIndex(r => r === row)
-                    if (viewRowIndex !== -1) {
-                        hot.setDataAtRowProp(viewRowIndex, 'totalQty', row.totalQty, 'calcTotalQty')
-                    }
+     try {
+        dialog.open(selected.comp, {
+            props: {
+                header: selected.title, modal: true, draggable: false,
+                style: { overflow: 'hidden' },
+                pt: { root: { style: { overflow: 'hidden' } }, content: { style: { overflow: 'hidden' } } }
+            },
+            data: { form, ...(shouldPassRow ? { row } : {}), type },
+            onClose: (event) => {
+                // 바코드 팝업 닫힘 처리
+                if (type === 'ITEM_CODE') {
+                    isBarcodePopupOpen.value = false
+                    scanBuffer.value = ''
                 }
-            } else {
-                loadWeighInfo()
+
+                if (event?.data && shouldPassRow && row) {
+                    applyPopupResultToRow(type, row, event.data)
+
+                    // 💡 팝업창에서 데이터를 수령하여 row에 매핑한 직후 총량을 재계산하여 그리드 동기화
+                    row.totalQty = calcTotalQty(row)
+                    const hot = hotTable.value?.hotInstance || hotTable.value
+                    if (hot?.setDataAtRowProp) {
+                        const viewRowIndex = currentTabList.value.findIndex(r => r === row)
+                        if (viewRowIndex !== -1) {
+                            hot.setDataAtRowProp(viewRowIndex, 'totalQty', row.totalQty, 'calcTotalQty')
+                        }
+                    }
+                } else {
+                    loadWeighInfo()
+                }
             }
+        })
+    }catch(err){
+        if (type === 'ITEM_CODE') {
+                isBarcodePopupOpen.value = false
         }
-    })
+        handleApiError(err)
+    }
+
 }
 
 const applyPopupResultToRow = (type, row, data) => {
