@@ -18,7 +18,7 @@
                 <label for="on_label1">사업자번호</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <InputText id="on_label1" v-model="form.saleManagerName" style="width: 180px" />
+                <InputText id="on_label1" v-model="form.businessManagerName" style="width: 180px" />
                 <label for="on_label1">영업담당자</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -109,7 +109,7 @@ const form  =reactive({
   strDate: minMonth(todayKST(), 3),
   endDate: todayKST(),
   clientName : '',
-  saleManagerName: '',
+  businessManagerName: '',
   businessNo: '',
   managerRank2From: 'ALL',
   managerRank2To: 'ALL',
