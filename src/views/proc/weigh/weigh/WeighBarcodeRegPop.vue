@@ -280,10 +280,10 @@ const saveInfo = async () => {
   // 저장 로직 구현
   const testNosArray = stockItemList.value.map(item => item.testNo)
 
-  if ( orderQty.value !== totalWeighQty.value) {
-    vWarning('지시량값과 칭량값이 틀립니다.')
-    return
-  }
+//   if ( orderQty.value !== totalWeighQty.value) {
+//     vWarning('지시량값과 칭량값이 틀립니다.')
+//     return
+//   }
 
   const params = {
     weighInfo : {
@@ -310,8 +310,6 @@ const saveInfo = async () => {
   }catch(err){
     handleApiError(err)
   }
-
-
 
   dialogRef.value.close(params1)
 }
