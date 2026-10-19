@@ -388,10 +388,10 @@ const checkPrevPhaseCompleted = (startIndex, nextIndex) => {
 
         const hasIncomplete = rows.some(row => row.makeYn !== 'Y')
 
-        if (hasIncomplete) {
-            vInfo(`${phase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
-            return false
-        }
+        // if (hasIncomplete) {
+        //     vInfo(`${phase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
+        //     return false
+        // }
     }
 
     return true
@@ -526,7 +526,7 @@ const openLookupPopup = (type, row) => {
             itemName: form.itemName,
             lotNo: form.lotNo,
             testNo: form.testNo,
-            qty: 0,
+            qty: form.prodQty,
             printCnt: 1,
         })
     }
@@ -648,6 +648,17 @@ const bindMakeInfo = (data) => {
     if ( data.workOrderInfo?.batchStatus < '21') {
         isStarted.value = true
     }
+
+    const batchStatus = String(data.workOrderInfo?.batchStatus ?? '')
+    const procStatus = String(data.workOrderInfo?.procStatus ?? '')
+
+    console.log('batchStatus:', batchStatus)
+    console.log('procStatus:', procStatus)
+
+     // 21 미만이면 제조시작 버튼 표시
+    // 21 이상이면 저장 버튼 표시
+    isStarted.value = batchStatus !== '' && batchStatus < '21'
+
     checkComplete()
 }
 
