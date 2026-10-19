@@ -708,7 +708,7 @@
     </div>
 
     <div class="flex justify-end gap-2 mt-4">
-        <Button label="작성완료" />
+        <Button label="작성완료" class="p-button-secondary" @click="completeProc"></Button>
         <Button label="공정검사서(QC)" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
     </div>
 
@@ -888,6 +888,14 @@ const totQty = computed(() => {
         (sampleInfo.qty9 || 0)
     ).toFixed(1)
 })
+
+const completeProc = async () =>{
+console.log('form.qcProcTestMstId',form.qcProcTestMstId)
+    const res = await ApiQc.completeQcProcTest(form.qcProcTestMstId);
+
+    vSuccess("작업완료되었습니다.")
+    closeDialog()
+}
 
 /* =========================================================
  * 저장
@@ -1092,6 +1100,10 @@ onMounted(async () => {
         await nextTick()
     }
 )
+
+const closeDialog = () =>{
+    dialogRef.value.close()
+}
 
 const downloadExcel =async () =>{
   try {
