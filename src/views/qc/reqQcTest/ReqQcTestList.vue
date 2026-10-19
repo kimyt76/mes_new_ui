@@ -99,7 +99,6 @@
                 <FloatLabel variant="on">
 
                     <Select v-model="form.passState" :options="passStates"
-
                     optionLabel="codeNm"
 
                     optionValue="code"
@@ -129,13 +128,9 @@
 </form>
 
 <div class="flex items-center justify-end gap-2 mb-2">
-
     <Button label="시험일지(PDF)" severity="info" @click="printPdf"></Button>
-
     <Button label="재검사요청" class="p-button-warn" @click="reqTestPop"></Button>
-
     <Button label="검사요청" class="p-button-contrast" @click="selectBtnClick('I',selectItem)"></Button>
-
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
 
 </div>
@@ -850,41 +845,44 @@ const selectBtnClick = (type, data) =>{
 }
 
 
-
-const selectRowClick = (type, id, passState) =>{
+const selectRowClick = (type, id, passState) => {
     let title = ''
     let componentPop = null
 
-    if(type === 'I'){
+    if (type === 'I') {
         title = '검사등록/수정'
-        componentPop= ReqQcTestPop
-    }else if(type === 'D'){
+        componentPop = ReqQcTestPop
+    } else if (type === 'D') {
         title = '검사요청내역'
-        componentPop= ReqQcTestDetailPop
+        componentPop = ReqQcTestDetailPop
     }
 
-    // 기본 props
     const baseProps = {
         header: title,
         modal: true,
         maximizable: false,
-        draggable: false,
+        draggable: false
     }
-     // type === 'I'일 때만 추가
+
     if (type === 'I') {
-         baseProps.style = {
+        baseProps.style = {
             width: '95vw',
             maxWidth: '1900px',
-            height: '680px',
-            maxHeight: '79vh',
+            height: 'min(750px, 90dvh)',
+            maxHeight: '90dvh',
+            display: 'flex',
+            flexDirection: 'column',
             overflow: 'hidden'
         }
 
         baseProps.pt = {
-            root: { style: { overflow: 'hidden' } },
             content: {
                 style: {
-                    overflow: 'hidden'
+                    flex: '1 1 auto',
+                    minHeight: '0',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
                 }
             }
         }
@@ -895,7 +893,7 @@ const selectRowClick = (type, id, passState) =>{
         data: {
             qcTestId: id,
             type: type,
-            passState: passState,
+            passState: passState
         },
         onClose: () => {
             srhList()
