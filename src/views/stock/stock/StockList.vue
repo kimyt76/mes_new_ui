@@ -47,7 +47,7 @@
         </FloatLabel>
 
         <FloatLabel variant="on">
-          <InputText v-model="form.itemCd" style="width: 120px" />
+          <InputText v-model="form.itemCd" style="width: 150px" />
           <label>품목코드</label>
         </FloatLabel>
 
@@ -102,6 +102,7 @@
     v-model:first="first"
     :value="stockList"
      :key="tableKey"
+     :loading="loading"
     dataKey="_rowKey"
     paginator
     :rows="20"
@@ -159,6 +160,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import { addDay, formatQty, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { onMounted, reactive, ref, watch } from 'vue';
 
@@ -168,7 +170,7 @@ const types = ref([
   { code: 'ITEM', codeNm: '품목' },
   { code: 'TEST', codeNm: '시험번호' },
 ]);
-
+const loading =ref(false)
 const areaCds = ref([]);
 const itemTypeCds = ref([]);
 const dynamicColumns = ref([]);
@@ -186,28 +188,37 @@ const form = reactive({
 const tableKey = ref(0)
 
 const srhList = async () => {
+
   first.value = 0
 
   dynamicColumns.value = []
   stockList.value = []
 
-  const params = {
-    ...form,
-    areaCd: form.areaCd === 'ALL' ? null : form.areaCd
+  loading.value = true
+  try{
+    const params = {
+        ...form,
+        areaCd: form.areaCd === 'ALL' ? null : form.areaCd
+    }
+
+    const res = await ApiStock.getStockItemList(params)
+    dynamicColumns.value = res.dynamicColumns || []
+
+    stockList.value = (res.rows || []).map((row, index) => ({
+        ...row,
+        _rowKey:
+        form.type === 'TEST'
+            ? `${row.itemCd}_${row.testNo ?? ''}_${index}`
+            : `${row.itemCd}_${index}`,
+    }))
+
+    tableKey.value++
+  }catch(err){
+    handleApiError(err)
+  }finally{
+    loading.value = false
   }
 
-  const res = await ApiStock.getStockItemList(params)
-  dynamicColumns.value = res.dynamicColumns || []
-
-  stockList.value = (res.rows || []).map((row, index) => ({
-    ...row,
-    _rowKey:
-      form.type === 'TEST'
-        ? `${row.itemCd}_${row.testNo ?? ''}_${index}`
-        : `${row.itemCd}_${index}`,
-  }))
-
-  tableKey.value++
 }
 
 watch(
