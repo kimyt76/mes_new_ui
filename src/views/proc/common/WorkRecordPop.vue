@@ -73,6 +73,7 @@
          <!-- 3줄: 버튼 -->
         <div class="flex justify-end gap-2 mt-2">
             <Button label="저장" icon="pi pi-check" @click="saveInfo"/>
+            <Button label="삭제" severity="danger" @click="deleteWorkRecode"/>
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </template>
@@ -82,10 +83,12 @@
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import SingleDatePicker from '@/components/SingleDatePicker.vue';
+import { useAlertStore } from '@/stores/alert';
 import { todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, reactive, ref } from 'vue';
 
+const { vSuccess, vWarning} = useAlertStore()
 const dialogRef = inject('dialogRef');
 const workRecordList = ref([])
 const label = ref('사용량');
@@ -114,6 +117,13 @@ const formatHHmm = (date) => {
   return `${hh}:${mm}`;
 };
 
+const deleteWorkRecode = async () =>{
+     const res = await ApiProc.deleteWorkRecode(form.workRecordId)
+
+     vSuccess("삭제되었습니다.")
+     dialogRef.value.close()
+}
+
 const saveInfo = async () =>{
     try{
         workRecordList.value.push({
@@ -129,7 +139,7 @@ const saveInfo = async () =>{
         })
 
         const res = await ApiProc.saveWorkRecordInfo(workRecordList.value)
-
+        vSuccess("저장되었습니다.")
         dialogRef.value.close({
             ...form,
             workStartTime: formatHHmm(form.workStartTime),
@@ -139,6 +149,8 @@ const saveInfo = async () =>{
         handleApiError(err)
     }
 }
+
+
 
 onMounted( async () => {
     const procCd = dialogRef.value?.data?.form?.procCd
