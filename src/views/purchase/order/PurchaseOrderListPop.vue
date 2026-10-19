@@ -107,7 +107,7 @@ const form = reactive({
     itemCd:'',
     itemName:'',
     customerName:'',
-    inYn:'N',
+    endYn:'N',
 })
 
 const searchList = async () =>{

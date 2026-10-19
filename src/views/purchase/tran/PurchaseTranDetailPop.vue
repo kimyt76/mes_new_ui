@@ -182,12 +182,13 @@
 
         <Column field="expiryDate" header="사용기한" :style="{ width: '120px' }">
           <template #body="slotProps">
-            <DatePicker
-              v-model="slotProps.data.expiryDate"
-              class="cell-date"
-              :inputStyle="{ textAlign: 'center' }"
-            />
-          </template>
+                <DatePicker
+                    :modelValue="toDate(slotProps.data.expiryDate)"
+                    @update:modelValue="(value) => slotProps.data.expiryDate = formatDate(value)"
+                    dateFormat="yy-mm-dd"
+                    :inputStyle="{ width: '120px', textAlign: 'center' }"
+                />
+            </template>
         </Column>
 
         <Column field="testNo" header="시험번호" :style="{ width: '150px' }">
@@ -232,7 +233,7 @@ import { ApiCommon } from '@/api/apiCommon'
 import { ApiPurchase } from '@/api/apiPurchase'
 import { useAlertStore } from '@/stores/alert'
 import { useAuthStore } from '@/stores/auth'
-import { calculateVAT, isEmpty, todayKST } from '@/util/common'
+import { calculateVAT, formatDate, isEmpty, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue'
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue'
@@ -466,19 +467,19 @@ const onChangeRow = row => {
 }
 
 const removeRow = idx => {
-  if (isAllSelected.value) {
-    purchaseItemList.value.forEach(row => {
-      if (row.purItemId) deletedItemIds.value.push(row.purItemId)
-    })
+    if (isAllSelected.value) {
+        purchaseItemList.value.forEach(row => {
+        if (row.purItemId) deletedItemIds.value.push(row.purItemId)
+        })
 
-    purchaseItemList.value = []
-    return
-  }
+        purchaseItemList.value = []
+        return
+    }
 
-  const row = purchaseItemList.value[idx]
-  if (row?.purItemId) deletedItemIds.value.push(row.purItemId)
+    const row = purchaseItemList.value[idx]
+    if (row?.purItemId) deletedItemIds.value.push(row.purItemId)
 
-  purchaseItemList.value.splice(idx, 1)
+    purchaseItemList.value.splice(idx, 1)
 }
 
 onMounted(async () => {
@@ -494,6 +495,20 @@ onMounted(async () => {
 
 const closeDialog = () => {
   dialogRef.value.close()
+}
+
+const toDate = (value) => {
+    if (!value) return null
+
+    if (value instanceof Date) return value
+
+    // YYYY-MM-DD 문자열을 로컬 날짜로 변환
+    const [year, month, day] = String(value)
+        .substring(0, 10)
+        .split('-')
+        .map(Number)
+
+    return new Date(year, month - 1, day)
 }
 </script>
 
