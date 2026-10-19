@@ -251,7 +251,7 @@
     </div>
   </div>
 
-  <div class="flex gap-2 mt-3">
+  <div class="popup-footer flex gap-2 mt-3">
     <Button label="저장" class="p-button-success" @click="saveInfo"></Button>
     <Button label="성적서(PDF)"  class="p-button-info"  @click="printPdf"  />
     <Button label="성적서(EXCEL)" icon="pi pi-file-excel" severity="success"  @click="downLoadExcel('C')" />
@@ -394,7 +394,6 @@ const onAfterChange = (changes, source) => {
 }
 
 const saveInfo = async () =>{
-
     if(isEmpty(form.sampleTesterId)) return vWarning('검체채취자 정보를 입력하세요')
     if(isEmpty(form.orderTesterId)) return vWarning('시험지시자 정보를 입력하세요')
 
@@ -407,10 +406,10 @@ const saveInfo = async () =>{
 
         const res = await ApiQc.updateQcTestInfo(params)
         vSuccess(res.message)
+        closeDialog()
     }catch(err){
         handleApiError(err)
     }
-
 }
 
 const printPdf = async () =>{
@@ -630,66 +629,84 @@ const closeDialog = () =>{
 
 <style scoped>
 .popup-wrap {
-  display: flex;
-  flex-direction: column;
-  height: 620px;
-  min-height: 0;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
 }
 
+/* 좌우 콘텐츠 영역 */
 .content-wrap {
-  display: flex;
-  width: 100%;
-  height: 520px;
-  min-height: 0;
-  overflow: hidden;
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
 }
 
+/* 왼쪽 입력 폼 */
 .left-panel {
-  flex: 0 0 32%;
-  min-width: 0;
-  min-height: 0;
-  border: 1px solid #dcdfe6;
-  padding: 12px 12px;
-  box-sizing: border-box;
-  overflow: hidden;
+    flex: 0 0 32%;
+    min-width: 0;
+    min-height: 0;
+
+    border: 1px solid #dcdfe6;
+    padding: 12px;
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
+/* 오른쪽 검사 항목 */
 .right-panel {
-  flex: 0 0 68%;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid #dcdfe6;
-  padding: 12px 8px;
-  box-sizing: border-box;
+    flex: 0 0 68%;
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid #dcdfe6;
+    padding: 12px 8px;
+    box-sizing: border-box;
+
+    overflow: hidden;
 }
 
 .right-toolbar {
-  flex: 0 0 auto;
+    flex: 0 0 auto;
 }
 
 .table-area {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
+/* 날짜 입력 */
 .req-date-box :deep(.p-datepicker) {
-  width: auto;
+    width: auto;
 }
 
 .req-date-box :deep(.p-inputtext) {
-  width: 100px;
+    width: 100px;
 }
 
-::v-deep(.break-words) {
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  text-decoration: underline;
-  cursor: pointer;
+/* HOT 셀 */
+:deep(.break-words) {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.popup-footer {
+    flex: 0 0 auto;
+    padding: 10px 4px 4px;
+    border-top: 1px solid #e5e7eb;
+    flex-wrap: wrap;
 }
 </style>
