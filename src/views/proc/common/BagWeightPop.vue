@@ -19,19 +19,35 @@
 
 <script setup>
 import { ApiProc } from '@/api/apiProc';
+import { useAlertStore } from '@/stores/alert';
+import { isEmpty } from '@/util/common';
 import { inject, onMounted, ref } from 'vue';
 
+const {vSuccess, vWarning} = useAlertStore()
 const dialogRef = inject('dialogRef');
 const selectItem = ref(null)
 const weightList = ref([])
+const workProcId = ref(null)
+const weighId = ref(null)
 
 onMounted( async () => {
   const res = await ApiProc.getBagWeightList()
   weightList.value = res.data
+  workProcId.value = dialogRef.value.data.row.workProcId
+  weighId.value = dialogRef.value.data.row.weighId
 });
 
-const onRowClick = (event) => {
-  dialogRef.value.close(event.data);
+const onRowClick = async (event) => {
+
+    if (isEmpty(weighId.value) )  return vWarning('품목값이 없습니다. 관리자에게 문의하세요!!')
+    const params ={
+        workProcId: workProcId.value,
+        weighId: weighId.value,
+        bagWeight: event.data.weight
+    }
+
+    const res = ApiProc.updateBagWeigh(params)
+    dialogRef.value.close(event.data);
 };
 
 const closeDialog = () => {
