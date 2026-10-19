@@ -40,13 +40,13 @@
             </div>
             <div class="col-3">
             <FloatLabel variant="on">
-                <InputText v-model="form.bomVer" class="w-full"  readonly/>
+                <InputText v-model="form.bomVer" class="w-full" readonly/>
                 <label>BOM 버전</label>
             </FloatLabel>
             </div>
             <div class="col-3">
             <FloatLabel variant="on">
-                <InputNumber v-model="form.qty" class="w-full"  readonly/>
+                <InputNumber v-model="form.qty" class="w-full" />
                 <label>기본수량</label>
             </FloatLabel>
             </div>
@@ -65,7 +65,7 @@
     <div class="flex justify-end gap-2">
     <Button
         label="추가+"
-        @click="addRow"
+        @click="openItemPop"
         class="p-button-xm"
     />
     </div>
@@ -135,7 +135,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { isEmpty } from '@/util/common';
+import { isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue';
 import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
@@ -174,7 +174,7 @@ const saveInfo = async () => {
             bomRecipeList: recipeList.value,
             deleteBomRecipe: deleteBomRecipe.value
         }
-console.log('params', params)
+
         const res = await ApiLab.saveBomInfo(params)
 
         vSuccess(res.message)
@@ -188,6 +188,10 @@ console.log('params', params)
 const handleSelected = (obj) => {
     addRow(obj)
     itemDialog.value = false
+}
+
+const openItemPop = () =>{
+    itemDialog.value = true
 }
 
 const openPop = (type) =>{
@@ -244,12 +248,6 @@ const recipeSort = () =>{
 }
 
 const addRow = (obj) => {
-    // 추가 버튼 클릭 시 품목 팝업 열기
-    if (!obj) {
-        itemDialog.value = true
-        return
-    }
-
     const items = Array.isArray(obj) ? obj : [obj]
 
     items.forEach(item => {
@@ -293,7 +291,7 @@ const removeRow = (index) => {
 
 onMounted( async () =>{
     approvalStates.value = await ApiCommon.getCodeList('approval_state')
-    form.bomId = dialogRef.value.data
+    form.bomId = dialogRef.value.data.bomId
 
     if ( !isEmpty(form.bomId)){
         const res = await ApiLab.getBomInfo(form.bomId)
@@ -301,6 +299,8 @@ onMounted( async () =>{
         Object.assign(form, res.bomInfo)
         recipeList.value = res.bomRecipeList
         recipeSort()
+    }else{
+        form.bomVer = todayKST()
     }
 })
 

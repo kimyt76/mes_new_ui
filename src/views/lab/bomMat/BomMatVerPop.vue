@@ -62,7 +62,7 @@
     <div class="flex justify-end gap-2">
     <Button
         label="추가+"
-        @click="addRowR"
+        @click="openItemPop"
         class="p-button-xm"
     />
     </div>
@@ -77,10 +77,10 @@
         selectionMode="single"
         class="my-table fixed-datatable"
     >
-        <Column field="orderDist"       header="No."       :style="{ width: '40px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="realItemCd"      header="품목코드"  :style="{ width: '120px'}" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }"></Column>
-        <Column field="qty"     header="수량"    :style="{ width: '100px'}"  style="text-align: right;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="orderDist"       header="No."       :style="{ width: '40px'}"></Column>
+        <Column field="realItemCd"      header="품목코드"  :style="{ width: '120px'}"></Column>
+        <Column field="realItemName"    header="품목명"    :style="{ width: '500px'}" bodyClass="break-words" style="text-align: left;"></Column>
+        <Column field="qty"     header="수량"    :style="{ width: '100px'}"  style="text-align: right;">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.qty"
@@ -92,7 +92,7 @@
                     />
             </template>
         </Column>
-        <Column field="etc" header="적요"    :style="{ width: '240px'}" style="text-align: left;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="etc" header="적요"    :style="{ width: '240px'}" style="text-align: left;">
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.etc"
@@ -101,7 +101,7 @@
                     />
             </template>
         </Column>
-        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: center;" :pt="{ columnHeaderContent: 'justify-center' }">
+        <Column field="actions" header="-"    :style="{ width: '20px'}" style="text-align: center;">
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRow(slotProps.index)"></i>
             </template>
@@ -142,7 +142,7 @@ import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, shallowRef } from 'vue';
 
 const  { userId } = useAuthStore()
-const {   vSuccess, vInfo} = useAlertStore()
+const { vSuccess, vInfo} = useAlertStore()
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const currentComponet = shallowRef(null)
@@ -177,6 +177,10 @@ const saveInfo = async () =>{
     }catch(err){
         handleApiError(err)
     }
+}
+
+const openItemPop = () =>{
+    itemDialog.value = true
 }
 
 const handleSelected = (obj) =>{
@@ -232,8 +236,28 @@ const recipeSort = () =>{
   })
 }
 
-const addRow = ()=>{
+const addRow = (obj)=>{
+    const items = Array.isArray(obj) ? obj : [obj]
 
+    items.forEach(item => {
+        // 품목 중복 검사
+        const exists = recipeList.value.some(
+            row => row.realItemCd === item.itemCd
+        )
+
+        if (exists) return
+
+        recipeList.value.push({
+            bomProcId: null,
+            orderDist: 0,
+            realItemCd: item.itemCd,
+            realItemName: item.itemName,
+            qty: 0,
+            etc: ''
+        })
+    })
+
+    recipeSort()
 }
 
 const removeRow = (index) =>{
@@ -242,7 +266,7 @@ const removeRow = (index) =>{
 
 onMounted( async () =>{
     approvalStates.value = await ApiCommon.getCodeList('approval_state')
-    form.bomId = dialogRef.value.data
+    form.bomId = dialogRef.value.data.bomId
 
     if ( !isEmpty(form.bomId)){
         const res = await ApiLab.getBomInfo(form.bomId)
