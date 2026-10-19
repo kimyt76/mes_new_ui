@@ -6,7 +6,7 @@
             <div class="col-3 flex align-items-center gap-2">
                 <FloatLabel variant="on">
                     <DatePicker v-model="form.purDate"/>
-                    <label>발주일</label>
+                    <label>입고일</label>
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
@@ -156,8 +156,13 @@
         </Column>
         <Column field="expiryDate"        header="사용기한"    :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <DatePicker v-model="slotProps.data.expiryDate" :inputStyle="{ width: '120px', textAlign: 'center' }" />
-          </template>
+                <DatePicker
+                    :modelValue="toDate(slotProps.data.expiryDate)"
+                    @update:modelValue="(value) => slotProps.data.expiryDate = formatDate(value)"
+                    dateFormat="yy-mm-dd"
+                    :inputStyle="{ width: '120px', textAlign: 'center' }"
+                />
+            </template>
         </Column>
         <Column field="testNo"        header="시험번호"    :style="{ width: '110px',  textAlign: 'center'}" >
             <template #body="slotProps">
@@ -215,7 +220,7 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiPurchase } from '@/api/apiPurchase';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
-import { calculateVAT, isEmpty, todayKST } from '@/util/common';
+import { calculateVAT, formatDate, isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { handleTableKeydown } from '@/util/tableKeyboard';
 import CustomerListPop from '@/views/basic/customer/CustomerListPop.vue';
@@ -438,6 +443,20 @@ onMounted( async () => {
 
 const closeDialog = () =>{
     dialogRef.value.close()
+}
+
+const toDate = (value) => {
+    if (!value) return null
+
+    if (value instanceof Date) return value
+
+    // YYYY-MM-DD 문자열을 로컬 날짜로 변환
+    const [year, month, day] = String(value)
+        .substring(0, 10)
+        .split('-')
+        .map(Number)
+
+    return new Date(year, month - 1, day)
 }
 
 </script>
