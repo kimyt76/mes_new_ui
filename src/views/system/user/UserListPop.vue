@@ -95,6 +95,7 @@ const form = reactive({
   memberNm: '',
   userId: '',
   deptNm:'',
+  useYn:'Y',
 })
 
 const searchList = async () =>{
