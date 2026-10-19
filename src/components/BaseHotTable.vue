@@ -3,10 +3,10 @@
 </template>
 
 <script setup>
-import Handsontable from 'handsontable'
-import 'handsontable/styles/handsontable.min.css'
-import 'handsontable/styles/ht-theme-main.min.css'
-import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import Handsontable from 'handsontable';
+import 'handsontable/styles/handsontable.min.css';
+import 'handsontable/styles/ht-theme-main.min.css';
+import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 
 defineOptions({ inheritAttrs: false })
 
@@ -118,6 +118,7 @@ onMounted(() => {
     height: props.height,
     stretchH: props.stretchH,
 
+    imeFastEdit: true,
 
     licenseKey: 'non-commercial-and-evaluation',
     className: 'ht-theme-main',
