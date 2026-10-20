@@ -56,6 +56,19 @@ export const ApiProc = {
         }
     },
 
+    deleteWorkRecode: async(id) => {
+        return  await API_URL.get(`/procCommon/deleteWorkRecode/${id}`)
+    },
+
+    getProcStartCnt: async(param) => {
+        return  await API_URL.post('/procCommon/getProcStartCnt',param)
+    },
+
+    getProcEndCnt: async(param) => {
+        return  await API_URL.get('/procCommon/getProcEndCnt',param)
+    },
+
+
     /**
      *  작업수행정보 저장
      * @param {*} params
@@ -202,6 +215,9 @@ export const ApiProc = {
 
             throw new Error('파일 다운로드 중 오류가 발생했습니다.')
         }
+    },
+    updateBagWeigh: async(params) => {
+        return await API_URL.post(`/procWeigh/updateBagWeigh`, params)
     },
 
     // =================================제조 ==========================================================//
