@@ -111,6 +111,8 @@ const dialogRef = inject('dialogRef')
 const workUseList = ref([])
 const title = ref('')
 let procCd = ref('')
+let passStatus = ref('') // 공정 pass 여부
+let testState = ref('') // 공정 pass 여부
 
 const calcTot = (row) => {
     const use = Number(row.useQty) || 0
@@ -123,7 +125,7 @@ const calcTot = (row) => {
         return
     }
 
-    row.totUseQty = use - bad - workBad
+    row.totUseQty = use + bad + workBad
 }
 
 const saveInfo = async () => {
@@ -131,6 +133,11 @@ const saveInfo = async () => {
         vWarning('저장할 데이터가 없습니다.')
         return
     }
+
+    // if (passStatus.value !== 'PASS' || testState.value !== 'END' ) {
+    //     vWarning('현재 사용 가능한 상태가 아닙니다..')
+    //     return
+    // }
 
     try{
         const totalReqQty = workUseList.value.reduce((sum, row) => sum + (Number(row.reqQty) || 0), 0)
@@ -165,7 +172,8 @@ const saveInfo = async () => {
             prodInfo: summaryRow,
             prodUseList: workUseList.value
         }
-         //부모로 전달전에 prod 업데이트
+
+        //부모로 전달전에 prod 업데이트
         const res = await ApiProc.saveProdInfo(params)
         // 부모로 집계 데이터 전달
         dialogRef.value.close(summaryRow)
@@ -192,6 +200,10 @@ const searchByBarcode = async () =>{
             vWarning('조회 결과가 없습니다.')
             return
         }
+
+        passStatus.value = res.passStatus
+        testState.value = res.testState
+
         workUseList.value.push({
             no: workUseList.value.length + 1,
             testNo: res.testNo,
