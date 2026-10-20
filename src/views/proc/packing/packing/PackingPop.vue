@@ -39,7 +39,7 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} Kg</td>
                             <th class="cellBorder cellHeader" rowspan="2">LOT<br />표기</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ workOrderInfo.lotNo || 0 }}<br />
@@ -345,7 +345,7 @@ const selectRow = (row) => {
 //투입정보
 const selectRowClick = (row) => {
     if (btnStatus.value === '00' || btnStatus.value === '52') return
-    if (!row.matName || !String(row.matName).trim()) return
+    if (!row.prodInfoId) return
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',
@@ -380,7 +380,6 @@ const selectRowClick = (row) => {
                 row.workBadQty = event.data.workBadQty
                 workOrderInfo.useQty = event.data.totUseQty
             }
-            callPackingInfo()
         }
     })
 }
@@ -495,9 +494,9 @@ const fillRows = (list = [], rowCount, createRow) => {
 const btnStatus = ref('')
 const callPackingInfo = async () =>{
     const params = {
-        workProcId: dialogRef.value.data.workProcId,
-        procCd: form.procCd,
-        itemCd: dialogRef.value.data.itemCd
+        workProcId: form.workProcId || dialogRef.value.data.workProcId,
+        procCd: form.procCd || dialogRef.value.data.procCd,
+        itemCd: form.itemCd || dialogRef.value.data.itemCd
     };
     const res = await ApiProc.getProcProdInfo(params);
     Object.assign(itemInfo, res.itemInfo)

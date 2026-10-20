@@ -39,7 +39,7 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} Kg</td>
                             <th class="cellBorder cellHeader" rowspan="2">LOT<br />표기</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ workOrderInfo.lotNo || 0 }}<br />
@@ -345,8 +345,12 @@ const selectRow = (row) => {
 }
 //투입정보
 const selectRowClick = (row) => {
+    console.log('aaaaa', row.prodInfoId)
     if (btnStatus.value === '00' || btnStatus.value === '42') return
-    if (!row.matName || !String(row.matName).trim()) return
+
+
+    if (!row.prodInfoId) return
+
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',
@@ -365,26 +369,34 @@ const selectRowClick = (row) => {
                 '960px': '95vw'
             }
         },
-        data:{
+        data: {
             row,
             areaCd: form.areaCd,
             procCd: form.procCd,
             workBatchId: form.workBatchId,
-            workProcId: form.workProcId,
-        }
-        ,onClose: (event) =>{
-            if (event?.data) {
-                row.testNos = event.data.testNos
-                row.reqQty = event.data.reqQty
-                row.useQty = event.data.useQty
-                row.badQty = event.data.badQty
-                row.workBadQty = event.data.workBadQty
-                workOrderInfo.useQty = event.data.totUseQty
-            }
-            callChargeInfo()
+            workProcId: form.workProcId
+        },
+        onClose: (event) => {
+            if (!event?.data) return
+
+            const result = event.data
+
+            // 팝업을 호출한 선택 행만 업데이트
+            Object.assign(row, {
+                testNos: result.testNos,
+                reqQty: result.reqQty,
+                useQty: result.useQty,
+                badQty: result.badQty,
+                workBadQty: result.workBadQty,
+                totUseQty: result.totUseQty
+            })
+
+            // 전체 리스트 재조회 제거
+            // callPackingInfo()
         }
     })
 }
+
 const popupConfig = {
     S: {
         title: '충전시작',
@@ -496,9 +508,9 @@ const fillRows = (list = [], rowCount, createRow) => {
 const btnStatus = ref('')
 const callChargeInfo = async () =>{
     const params = {
-        workProcId: dialogRef.value.data.workProcId,
-        procCd: form.procCd,
-        itemCd: dialogRef.value.data.itemCd
+        workProcId: form.workProcId || dialogRef.value.data.workProcId,
+        procCd: form.procCd || dialogRef.value.data.procCd,
+        itemCd: form.itemCd || dialogRef.value.data.itemCd
     };
     const res = await ApiProc.getProcProdInfo(params);
     Object.assign(itemInfo, res.itemInfo)

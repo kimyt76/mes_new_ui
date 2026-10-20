@@ -39,11 +39,11 @@
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} EA</td>
+                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} Kg</td>
                             <th class="cellBorder cellHeader" rowspan="2">폭 너비(mm) 및<br />겔 Sheet 적층수</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ itemInfo.sheetSpec || 0 }}<br />
-                                {{ itemInfo.sheetStacking || 0 }} kg
+                                {{ itemInfo.sheetStacking || 0 }} sheet 적층
                             </td>
                             <th class="cellBorder cellHeader" rowspan="2">기준무게<br />(필름제외)</th>
                             <td class="cellBorder" rowspan="2">
@@ -80,6 +80,8 @@
                     dataKey="prodUseId"
                     show-gridlines
                     class="my-table material-table"
+                     @row-click="(event) => selectRowClick(event.data)"
+
                 >
                     <ColumnGroup type="header">
                         <Row>
@@ -99,23 +101,7 @@
                         </Row>
                     </ColumnGroup>
                     <Column field="no"          :style="{ width: '40px', textAlign: 'center' }"></Column>
-                    <Column field="testNos"     :style="{ width: '110px' , textAlign: 'center'}">
-                        <template #body="slotProps">
-                             <div
-                                 style="
-                                        width: 100%;
-                                        height: 100%;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        cursor: pointer;
-                                    "
-                                @click="selectRowClick(slotProps.data)"
-                                >
-                                {{ slotProps.data.testNos}}
-                            </div>
-                        </template>
-                    </Column>
+                    <Column field="testNos" :style="{ width: '110px', textAlign: 'center' }" />
                     <Column field="matName"     :style="{ width: '220px' }"></Column>
                     <Column field="specInfo"    :style="{ width: '150px' , textAlign: 'center'}"/>
                     <Column field="exAppearance" :style="{ width: '170px' , textAlign: 'center'}"/>
@@ -359,7 +345,8 @@ const selectRow = (row) => {
 //투입정보
 const selectRowClick = (row) => {
     if (isStarted.value || isComplete.value) return
-    if (!row.matName || !String(row.matName).trim()) return
+    if (!row.prodInfoId) return
+
     dialog.open(ProdUsePop, {
         props: {
             header: '사용량 입력',
@@ -499,7 +486,10 @@ const checkComplete = () =>{
         return false
     }
     // 그 중 testNos 없는 것 체크
-    if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){  return false}
+    if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){
+        vWarning('등록된 자재정보가 없습니다.')
+        return false
+    }
 
     return true
 }
@@ -516,9 +506,9 @@ const btnStatus = ref('')
 
 const callCoatingInfo = async () =>{
     const params = {
-        workProcId: dialogRef.value.data.workProcId,
-        procCd: dialogRef.value.data.procCd,
-        itemCd: dialogRef.value.data.itemCd
+        workProcId: form.workProcId || dialogRef.value.data.workProcId,
+        procCd: form.procCd || dialogRef.value.data.procCd,
+        itemCd: form.itemCd || dialogRef.value.data.itemCd
     };
 
     const res = await ApiProc.getProcProdInfo(params);
