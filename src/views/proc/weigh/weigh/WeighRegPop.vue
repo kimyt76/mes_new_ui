@@ -543,14 +543,16 @@ const openLookupPopup = (type, row = null) => {
         }
         handleApiError(err)
     }
-
 }
 
 const applyPopupResultToRow = (type, row, data) => {
     if (type === 'ITEM_CODE') {
         row.weighQty = data.weighQty ?? row.weighQty
         row.testNoJoin = data.testNo ?? row.testNo
-        row.weighYn = 'Y'
+
+        if (  row.weighQty ===  row.orderQty ) {
+            row.weighYn = 'Y'
+        }
     } else if (type === 'CONTAINER_WEIGHT') {
         row.bagWeight = data.weight ?? row.weight
     } else if (type === 'WEIGH_USER') {
@@ -579,9 +581,9 @@ const normalizeRows = (rows) => (rows ?? []).map((r, idx) => {
 
 const loadWeighInfo = async () => {
     const params = {
-        workProcId: dialogRef.value.data.workProcId,
-        itemCd: dialogRef.value.data.itemCd,
-        procCd: form.procCd,
+        workProcId: form.workProcId || dialogRef.value.data.workProcId,
+        itemCd: form.itemCd || dialogRef.value.data.itemCd,
+        procCd: form.procCd || dialogRef.value.data.procCd,
     }
     const data = await ApiProc.getWeighInfo(params)
     Object.assign(form, data.workOrderInfo || {})
