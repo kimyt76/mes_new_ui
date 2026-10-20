@@ -210,6 +210,10 @@ export const ApiStock = {
         return await API_URL.post('/adjust/saveAdjust', params)
     },
 
+    deleteAdjust: async(id) => {
+        return await API_URL.get(`/adjust/deleteAdjust/${id}`)
+    },
+
     /***************제품출고**************************************************************************** */
     getProdOutList: async(params) => {
         try{

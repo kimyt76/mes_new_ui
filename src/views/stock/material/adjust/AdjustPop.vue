@@ -106,6 +106,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
+    <Button label="전체삭제" severity="danger" @click="deleteAll" />
     <Button label="저장" severity="success" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
@@ -138,7 +139,7 @@ import ItemListMultiPop from '@/views/basic/item/ItemListMultiPop.vue'
 import QrCodeSimplePop from '@/views/common/QrCodeSimplePop.vue'
 import StorageListPop from '@/views/system/storage/StorageListPop.vue'
 import UserListPop from '@/views/system/user/UserListPop.vue'
-import { useDialog } from 'primevue'
+import { useConfirm, useDialog } from 'primevue'
 import { inject, onMounted, reactive, ref } from 'vue'
 
 const { vSuccess, vWarning, vInfo } = useAlertStore()
@@ -148,6 +149,9 @@ const dialogRef = inject('dialogRef')
 const tranTypeCds = ref([])
 const adjustItemList = ref([])
 const itemDialog = ref(false)
+const confirm = useConfirm()
+const isDeleting = ref(false)
+const deleteTranItemIds = ref([])
 const form = reactive({
     tranDate: '',
     seq:  0,
@@ -219,11 +223,55 @@ const checkTestNo = async (row) =>{
     }
 }
 
-const removeRow = (index) =>{
-    if ( !isEmpty(form.tranId)  ) return vWarning('저장된 품목은 삭제할수 없습니다. 관리자에게 문의하세요')
+const removeRow = (index) => {
+    const row = adjustItemList.value[index]
+    if (!row) return
+
+    // DB에 저장된 상세 품목이면 삭제 ID 수집
+    if (!isEmpty(row.tranItemId)) {
+        if (!deleteTranItemIds.value.includes(row.tranItemId)) {
+            deleteTranItemIds.value.push(row.tranItemId)
+        }
+    }
+
+    // 화면에서 제거
     adjustItemList.value.splice(index, 1)
+
+    console.log('삭제 대상 ID:', deleteTranItemIds.value)
 }
 
+const deleteAll = () => {
+    if (isEmpty(form.tranId)) {
+        return vWarning('저장된 데이터가 없습니다.')
+    }
+
+    confirm.require({
+        header: '전체삭제 확인',
+        message: '전체를 삭제하시겠습니까?',
+        icon: 'pi pi-exclamation-triangle',
+        rejectLabel: '아니오',
+        acceptLabel: '예',
+        acceptClass: 'p-button-danger',
+
+        accept: async () => {
+            if (isDeleting.value) return
+
+            isDeleting.value = true
+
+            try {
+                await ApiStock.deleteAdjust(form.tranId)
+
+                vSuccess('전체 삭제되었습니다.')
+                closeDialog()
+
+            } catch (err) {
+                handleApiError(err)
+            } finally {
+                isDeleting.value = false
+            }
+        }
+    })
+}
 
 const openPop = (type) =>{
     let title = ''
@@ -280,8 +328,9 @@ const saveInfo = async () =>{
 
     try{
         const params = {
-            adjustInfo : form,
-            adjustItemList : adjustItemList.value,
+            adjustInfo: form,
+            adjustItemList: adjustItemList.value,
+            deleteTranItemIds: deleteTranItemIds.value,
         }
 
         const res = await ApiStock.saveAdjust(params)
