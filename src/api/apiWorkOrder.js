@@ -39,6 +39,15 @@ export const ApiWorkOrder = {
       return await API_URL.post('/workOrder/saveWorkOrderInfo', params)
   },
 
+  resetWorkOrderProc: async(params) => {
+      return await API_URL.post('/workOrder/resetWorkOrderProc', params)
+  },
+  cancelWorkOrderProc: async(params) => {
+      return await API_URL.post('/workOrder/cancelWorkOrderProc', params)
+  },
+
+
+
 //   worker
   getWorkerAllList: async(params) =>{
     const res = await API_URL.post('/worker/getWorkerAllList', params)
