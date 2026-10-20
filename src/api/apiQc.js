@@ -223,6 +223,9 @@ export const ApiQc = {
             throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
         }
     },
+    completeQcProcTest: async(id) =>{
+        return await API_URL.get(`/qcProcTest/completeQcProcTest/${id}`)
+    },
 
     /**
      * 공정검사 유형
