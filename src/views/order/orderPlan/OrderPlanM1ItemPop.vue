@@ -43,10 +43,10 @@ const form = reactive({
 
 const saveInfo = async () => {
 
-    if (!form.value) {
-        vWarning('발주구분을 입력해주세요.');
-        return;
-    }
+    // if (!form.value) {
+    //     vWarning('발주구분을 입력해주세요.');
+    //     return;
+    // }
 
     try {
         const params = {
