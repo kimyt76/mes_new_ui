@@ -99,15 +99,29 @@ const form = reactive({
     itemName: '',
     managerName: '',
 
-    procCd: '',
+    procCd: 'PRC003',
     workBatchId: '',
     workProcId: '',
     procStatus: '31',
     batchStatus: '31',
 })
 
-const saveInfo = () => {
+const saveInfo =async() => {
     if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
+
+    // 2. 기존 작업 데이터 건수 조회
+     console.log('form.workProcId:', form.workProcId)
+     const params = {
+        procCd : "PRC003",
+        workProcId : form.workProcId,
+     }
+     const cntRes = await ApiProc.getProcStartCnt(params)
+     const cnt = Number(cntRes.data?.data ?? 0)
+     console.log('공정 시작 조회 cnt:', cnt)
+     // 3. 기존 데이터가 있으면 시작 차단
+     if (cnt > 0) {
+         return vWarning('이미 시작된 코팅작업입니다.')
+     }
 
     confirm.require({
         header: '코팅시작확인',

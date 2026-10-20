@@ -107,9 +107,21 @@ const form = reactive({
     batchStatus: '51',
 })
 
-const saveInfo = () => {
+const saveInfo = async () => {
     if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
     if ( isEmpty(form.managerName)) return vWarning('담당자를 등록하세요')
+
+    // 2. 기존 작업 데이터 건수 조회
+     const params = {
+        procCd : "PRC005",
+        workProcId : form.workProcId,
+     }
+     const cntRes = await ApiProc.getProcStartCnt(params)
+     const cnt = Number(cntRes.data?.data ?? 0)
+     // 3. 기존 데이터가 있으면 시작 차단
+     if (cnt > 0) {
+         return vWarning('이미 시작된 포장작업입니다.')
+     }
     confirm.require({
         header: '포장시작확인',
         message: '해당 작업을 시작하시겠습니까?\n내용을 다시 한 번 확인해 주세요.\n시작 후에는 취소할 수 없습니다.',
