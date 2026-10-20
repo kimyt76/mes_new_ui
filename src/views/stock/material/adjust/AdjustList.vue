@@ -10,7 +10,7 @@
                 @change="handleDateChange"
             />
             <FloatLabel variant="on">
-                <Select v-model="form.tranCd" :options="tranCds"
+                <Select v-model="form.tranTypeCd" :options="tranCds"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 150px"
@@ -104,6 +104,7 @@ const form = reactive({
     srcStorageName: '',
     itemName: '',
     itemCd:'',
+    tranTypeCd: '',
 })
 
 const handleDateChange = () =>{
