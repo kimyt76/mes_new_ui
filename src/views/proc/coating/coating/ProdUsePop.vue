@@ -81,7 +81,7 @@ const calcTot = (row) => {
         return
     }
 
-    row.totUsQty = use - bad - workBad
+    row.totUsQty = use + bad + workBad
 }
 
 const saveInfo = async () => {
@@ -107,7 +107,7 @@ const saveInfo = async () => {
             badQty: totalBadQty,
             workBadQty: totalWorkBadQty,
             //row 정보
-            itemCd: dialogRef.value.data.itemCd,
+            itemCd: dialogRef.value.data.row.itemCd,
             specInfo: rowData.specInfo,
             exAppearance: rowData.exAppearance,
             packingSpecValue: rowData.packingSpecValue,
