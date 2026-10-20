@@ -79,7 +79,14 @@
         </Column>
         <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="moveStatus"   header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="procStatusName"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="procStatus"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" >
+            <template #body="slotProps">
+                {{ slotProps.data.procStatus === '00' ? '작업지시'
+                    : slotProps.data.procStatus === '51' ? '포장중'
+                    : slotProps.data.procStatus === '52' ? '포장완료'
+                    : '' }}
+            </template>
+        </Column>
     </DataTable>
 </div>
 </template>
