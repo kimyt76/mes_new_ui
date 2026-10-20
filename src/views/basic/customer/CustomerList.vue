@@ -17,7 +17,7 @@
                 <label for="on_label1">거래처명</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <InputText id="on_label1" v-model="form.customerCd" style="width: 180px" />
+                <InputText id="on_label1" v-model="form.businessNo" style="width: 180px" />
                 <label for="on_label1">거래처코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
@@ -97,7 +97,7 @@ const dt = ref(null)
 const form  =reactive({
     customerType: null,
     customerName: '',
-    customerCd: '',
+    businessNo: '',
     customerManager: '',
 })
 
