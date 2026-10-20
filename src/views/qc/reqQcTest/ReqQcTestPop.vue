@@ -132,7 +132,7 @@
               :maxFractionDigits="6"
               :inputStyle="{ width: '100%', 'text-align': 'right' }"
             />
-            <label> 검체채취량 ({{ ['M1', 'M3'].includes(form.itemTypeCd) ? 'kg' : 'ea' }}) </label>
+            <label> 검체채취량 ({{ ['M1', 'M3'].includes(form.itemTypeCd) ? 'g(ml)' : 'ea' }}) </label>
           </FloatLabel>
         </div>
         <div class="col-4">
@@ -188,6 +188,7 @@
               v-model="form.confirmDate"
               showIcon
               class="w-full"
+
             />
             <label>판정일자</label>
           </FloatLabel>
@@ -301,7 +302,8 @@ const form = reactive({
     reqTesterId: '',
     reqTesterName: '',
 
-    testerId: userId,
+    testerId: '',
+    testerName: '',
     orderTesterId: '',
     confirmTesterId:'',
     sampleTesterId: '',
@@ -397,6 +399,7 @@ const saveInfo = async () =>{
     if(isEmpty(form.sampleTesterId)) return vWarning('검체채취자 정보를 입력하세요')
     if(isEmpty(form.orderTesterId)) return vWarning('시험지시자 정보를 입력하세요')
 
+
     try{
         const params = {
             qcTestInfo : form,
@@ -478,16 +481,16 @@ const openPop = (type) =>{
             if ( event ) {
                 if ( type === 'T' ) {
                     form.testerId = event.data.userId
-                    form.testerName = event.data.memberNm
+                    form.testerName = event.data.userId
                 }else if( type === 'O' ) {
                     form.orderTesterId = event.data.userId
-                    form.orderTesterName = event.data.memberNm
+                    form.orderTesterId = event.data.memberNm
                 }else if( type === 'C' ) {
                     form.confirmTesterId = event.data.userId
-                    form.confirmTesterName = event.data.memberNm
+                    form.confirmTesterId = event.data.memberNm
                 }else if( type === 'S' ) {
                     form.sampleTesterId = event.data.userId
-                    form.sampleTesterName = event.data.memberNm
+                    form.sampleTesterId = event.data.memberNm
                 }else if( type === 'M' ) {
                     if ( event.data.length === 0 ){
                         vWarning("검사유형 정보가 없습니다. 품목검사정보를 등록하세요!!")
@@ -613,11 +616,7 @@ onMounted( async () =>{
             testerName: row.testerName || memberNm,
             passState: row.passState || '시험중'
         }))
-    }else{
-        vWarning("검사유형 정보가 없습니다. 품목검사정보를 등록하세요!!")
-        return
     }
-
 })
 
 const closeDialog = () =>{
