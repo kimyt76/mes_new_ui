@@ -19,11 +19,25 @@ export default defineConfig({
         },
     },
     plugins: [
-        vue(),
-        Components({
-            resolvers: [PrimeVueResolver()]
-        })
-    ],
+    vue(),
+    Components({
+        resolvers: [
+            {
+                type: 'component',
+                resolve: (name) => {
+                    if (name === 'DatePicker') {
+                        return {
+                            name: 'default',
+                            from: '@/components/CommDatePicker.vue'
+                        }
+                    }
+                    return null
+                }
+            },
+            PrimeVueResolver()
+        ]
+    })
+],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))

@@ -1,4 +1,5 @@
 import '@/assets/styles.scss';
+import CommDatePicker from '@/components/CommDatePicker.vue';
 import Aura from '@primeuix/themes/aura';
 import { createPinia } from 'pinia';
 import 'primeflex/primeflex.css';
@@ -52,5 +53,6 @@ app.use(PrimeVue, {
     }
 });
 app.use(ConfirmationService);
+app.component('DatePicker', CommDatePicker)
 
 app.mount('#app');

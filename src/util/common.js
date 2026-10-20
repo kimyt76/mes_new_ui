@@ -88,17 +88,17 @@ export function formatQty(value){
   return v.toLocaleString('ko-KR', { maximumFractionDigits: 6 })
 }
 
-export function formatDate (value) {
+// export function formatDate (value) {
 
-  if (!value) return ''
+//   if (!value) return ''
 
-  const d = new Date(value)
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  //console.log('yyyy', `${yyyy}-${mm}-${dd}`)
-  return `${yyyy}-${mm}-${dd}`
-}
+//   const d = new Date(value)
+//   const yyyy = d.getFullYear()
+//   const mm = String(d.getMonth() + 1).padStart(2, '0')
+//   const dd = String(d.getDate()).padStart(2, '0')
+//   //console.log('yyyy', `${yyyy}-${mm}-${dd}`)
+//   return `${yyyy}-${mm}-${dd}`
+// }
 
 /**
  *   빈 값 체크
@@ -336,3 +336,74 @@ export const makeLikeCondition = (list, columnName) => {
     .map(word => `${columnName} LIKE '%${word}%'`)
     .join(' OR ');
 };
+
+
+/**
+ * yyyy-MM-dd 문자열 -> Date 객체
+ * 로컬 날짜 기준으로 생성하여 UTC 날짜 변경 방지
+ */
+export function parseDate(value) {
+    if (!value) return null
+
+    if (value instanceof Date) {
+        return isNaN(value.getTime()) ? null : value
+    }
+
+    const match = String(value).trim().match(
+        /^(\d{4})-(\d{2})-(\d{2})$/
+    )
+
+    if (!match) return null
+
+    const [, year, month, day] = match
+
+    const date = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+    )
+
+    // 잘못된 날짜 검증
+    if (
+        date.getFullYear() !== Number(year) ||
+        date.getMonth() + 1 !== Number(month) ||
+        date.getDate() !== Number(day)
+    ) {
+        return null
+    }
+
+    return date
+}
+
+
+/**
+ * Date 객체 또는 날짜 문자열 -> yyyy-MM-dd
+ *
+ * 기존 MES 사용처 호환성 유지
+ * yyyy-MM-dd 문자열은 시간대 변환 없이 반환
+ */
+export function formatDate(value) {
+    if (!value) return ''
+
+    if (typeof value === 'string') {
+        const str = value.trim()
+
+        // 날짜만 있는 문자열은 그대로 사용
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+            return parseDate(str) ? str : ''
+        }
+    }
+
+    // 기존 날짜시간 문자열 지원
+    const date = value instanceof Date
+        ? value
+        : new Date(value)
+
+    if (isNaN(date.getTime())) return ''
+
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+
+    return `${yyyy}-${mm}-${dd}`
+}
