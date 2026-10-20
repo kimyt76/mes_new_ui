@@ -251,12 +251,15 @@ watch(barcode, (newVal) => {
 
 /** 칭량량 변경 시 호출 */
 const onChangeRow = async (row) => {
-  // 여기서 행 단위로 total 계산이나 유효성 체크 가능
-  if ( (Number(totalWeighQty.value)||0) > (Number(orderQty.value)||0) ) {
-    vWarning('지시량보다 칭량량이 많습니다.')
-    row.weighQty = 0
-    return
-  }
+    // 소수점 6자리까지 반올림
+    const totalQty = Math.round((Number(totalWeighQty.value) || 0) * 10000000)
+    const targetQty = Math.round((Number(orderQty.value) || 0) * 10000000)
+
+    if (totalQty > targetQty) {
+        vWarning('지시량보다 칭량량이 많습니다.')
+        row.weighQty = 0
+        return
+    }
 }
 
 /** 행 삭제 */
