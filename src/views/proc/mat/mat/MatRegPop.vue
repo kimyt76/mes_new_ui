@@ -628,10 +628,10 @@ const fetchMakeInfo = async () => {
 }
 
 const createMakeInfoParams = () => ({
-    workBatchId: dialogRef.value.data.workBatchId,
-    workProcId: dialogRef.value.data.workProcId,
-    itemCd: dialogRef.value.data.itemCd,
-    procCd: form.procCd,
+    workBatchId: form.workBatchId || dialogRef.value.data.workBatchId,
+    workProcId: form.workProcId || dialogRef.value.data.workProcId,
+    itemCd: form.itemCd || dialogRef.value.data.itemCd,
+    procCd: form.procCd || dialogRef.value.data.procCd,
 })
 
 const bindMakeInfo = (data) => {
@@ -651,9 +651,6 @@ const bindMakeInfo = (data) => {
 
     const batchStatus = String(data.workOrderInfo?.batchStatus ?? '')
     const procStatus = String(data.workOrderInfo?.procStatus ?? '')
-
-    console.log('batchStatus:', batchStatus)
-    console.log('procStatus:', procStatus)
 
      // 21 미만이면 제조시작 버튼 표시
     // 21 이상이면 저장 버튼 표시
