@@ -65,7 +65,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <InputNumber v-model="form.reqQty" :inputStyle="{ width: '156px' }" />
-                    <label> 검사요청량 ({{ ['M1', 'M3'].includes(form.itemTypeCd) ? 'kg' : 'ea' }}) </label>
+                    <label> 검사요청량 ({{ ['M1', 'M3'].includes(form.itemTypeCd) ? 'g(ml)' : 'ea' }}) </label>
                 </FloatLabel>
             </div>
             <div class="col-6">

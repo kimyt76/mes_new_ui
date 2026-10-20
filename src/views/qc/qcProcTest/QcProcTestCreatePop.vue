@@ -6,7 +6,7 @@
             <div >
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
-                        <InputText v-model="form.testerName" class="w-full pr-10"/>
+                        <InputText v-model="form.testerId" class="w-full pr-10"/>
                         <InputIcon class="pi pi-search"  @click="openPop"/>
                     </IconField>
                     <label>점검자</label>
@@ -51,8 +51,8 @@ const dialogRef = inject('dialogRef')
 const dialog = useDialog()
 const qcProcTestTypes = ref([])
 const form = reactive({
-    testerName: '',
-    testerId: '',
+    testerName: memberNm,
+    testerId: userId,
     qcTestType: '',
     workBatchId: '',
     testState: 'I',
@@ -84,8 +84,8 @@ const openPop = () =>{
         },
         onClose: event =>{
             if ( event) {
-                form.testerId = event.data.memberNm
                 form.testerId = event.data.userId
+                form.testerName = event.data.userId
             }
         }
     })
