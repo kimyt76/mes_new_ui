@@ -197,6 +197,7 @@ const toggleEndYn = async (row) =>{
     const newValue = row.itemEndYn === 'Y' ? 'N' : 'Y'
 
     const params = {
+        purOrderId: row.purOrderId,
         purOrderItemId: row.purOrderItemId,
         itemEndYn: newValue
     }
