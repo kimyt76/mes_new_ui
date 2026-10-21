@@ -191,6 +191,9 @@ watch(() => form.itemTypeCd, (newVal) => {
 })
 
 const saveInfo = async() =>{
+
+    if (isEmpty(form.itemTypeCd)) return vWarning('품목구분을 입력하세요')
+
     const params = {
       ...form
     }
