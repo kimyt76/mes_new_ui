@@ -136,7 +136,7 @@ const removeRowClick = async() =>{
     try {
         if (ids.length === 0) return  vInfo('삭제할 작업지시를 선택해주세요.')
 
-        if (!confirm(`선택된 ${ids.length}건을 삭제하시겠습니까?`)) return
+        if (!confirm(`선택된 ${ids.length}건을 삭제하시겠습니까? 삭제 후 복원은 불가능합니다.`)) return
         const res = await ApiWorkOrder.deleteWorkOrders(ids)
 
         vSuccess(res.message)
