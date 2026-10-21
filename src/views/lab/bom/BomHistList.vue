@@ -57,7 +57,7 @@
             :value="bomList"
             :loading="loading"
             selectionMode="single"
-            dataKey="bomId"
+            dataKey="rowNum"
             paginator :rows="20"
             :rowsPerPageOptions="[20,30,40]"
             tableStyle="table-layout: fixed; width: 100%"

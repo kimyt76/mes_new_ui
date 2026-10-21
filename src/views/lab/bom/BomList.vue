@@ -38,8 +38,8 @@
 
     <!-- 오른쪽: 버튼 -->
     <div class="flex items-center gap-2">
-        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('N')"></Button>
-        <Button label="BOM버전" icon="pi pi-plus" severity="secondary" @click="selectRowClick('B')"></Button>
+        <!-- <Button label="신규" icon="pi pi-plus" severity="secondary" @click="openPop('N')"></Button> -->
+        <Button label="BOM버전" icon="pi pi-plus" severity="secondary" @click="openPop"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
 </div>
@@ -50,7 +50,7 @@
             :value="bomList"
             :loading="loading"
             selectionMode="single"
-            dataKey="bomId"
+            dataKey="rowNum"
             paginator :rows="20"
             :rowsPerPageOptions="[20,30,40]"
             tableStyle="table-layout: fixed; width: 100%"
@@ -68,7 +68,7 @@
             <Column field="itemCd"    header="품목코드"  :style="{ width: '90px'}"  />
             <Column field="itemName"  header="품목명"    :style="{ width: '520px'}" bodyClass="break-words" >
                 <template #body="slotProps">
-                    <div @click="selectRowClick(slotProps.data.bomId)" class="clickable-cell">
+                    <div @click="selectRowClick(slotProps.data)" class="clickable-cell">
                         {{ slotProps.data.itemName }}
                     </div>
                 </template>
@@ -135,35 +135,58 @@ const srchList = async () => {
     }
 };
 
+const selectRowClick = (row) => {
+    selectedItem.value = row
+
+    dialog.open(BomDetailPop, {
+        props: {
+            header: 'BOM상세',
+            modal: true,
+            draggable: false,
+            style: {
+                width: '81vw',          // 🔹 팝업 가로 폭
+                maxWidth: '1400px',
+                height: '900px',
+                maxHeight: '90vh',
+            },
+            pt: {
+            content: {
+                style: {
+                    maxHeight: 'calc(90vh - 4rem)', // 헤더/푸터 높이 제외 영역
+                    overflow: 'auto',               // 🔥 스크롤 활성화
+                        }
+                    }
+            }
+        },
+        data: {
+            row: row,
+        },
+        onClose: (event) =>{
+            srchList()
+        }
+    } )
+}
 
 /**
- * 상세화면
+ * 신규, 버전업상세화면
  * @param item
  * @param index
  */
-const selectRowClick = (id) => {
-    let title = ''
-
-    if ( id === 'N' ) {
-        title = 'BOM신규'
-        currentComponet.value = BomDetailPop
-    }else if ( id === 'B' ){
-        title = 'BOM추가'
-        currentComponet.value = BomVerPop
-        if ( isEmpty(selectedItem.value)) {
-            vInfo('변경할 BOM을 선택하세요!!')
-            return
-        }
-
-        id = selectedItem.value.bomId
-    }else{
-        title = 'BOM상세'
-        currentComponet.value = BomDetailPop
+const openPop = () => {
+    if ( isEmpty(selectedItem.value)) {
+        vInfo('변경할 BOM을 선택하세요!!')
+        return
     }
 
-    dialog.open(currentComponet, {
+    const id = selectedItem.value.bomId
+
+    if (isEmpty(id)) {
+        return vInfo('등록된 BOM 정보가 없습니다.')
+    }
+
+    dialog.open(BomVerPop, {
         props:{
-            header: title,
+            header: 'BOM추가',
             modal: true,
             maximizable: false,
             draggable: true,

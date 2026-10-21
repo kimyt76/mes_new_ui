@@ -127,7 +127,7 @@
     <DataTable
         v-model:selection="selectedRow"
         :value="recipeList"
-        dataKey="bomItecmId"
+        dataKey="_rowKey"
         scrollHeight="350px"
         show-gridlines
         scrollable
@@ -179,8 +179,11 @@
             </template>
             <!-- 👇 여기 합계 footer -->
             <template #footer>
-                <div style="text-align: right; width: 50px; padding-right: 4px;" class="footer-cell">
-                {{ totalRealContent.toFixed(2) }}
+                <div
+                    style="text-align: right; width: 90px; padding-right: 4px;"
+                    class="footer-cell"
+                >
+                    {{ totalRealContent }}
                 </div>
             </template>
         </Column>
@@ -218,7 +221,7 @@
         class="my-table fixed-datatable"
     >
         <Column field="orderDist"   header="No."    :style="{ width: '20px'}" />
-        <Column field="phase"       header="공정"   :style="{ width: '60px', textAligh:'center'}"  >
+        <Column field="phase"       header="공정"   :style="{ width: '60px', textAlign:'center'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.phase"
@@ -227,7 +230,7 @@
                     />
             </template>
         </Column>
-        <Column field="procType"       header="제조구분"  :style="{ width: '100px', textAligh:'center'}"  >
+        <Column field="procType"       header="제조구분"  :style="{ width: '100px', textAlign:'center'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.procType"
@@ -235,7 +238,7 @@
                     />
             </template>
         </Column>
-        <Column field="matProc"  header="제조공정"    :style="{ width: '400px', textAligh:'center'}" >
+        <Column field="matProc"  header="제조공정"    :style="{ width: '400px', textAlign:'center'}" >
             <template #body="slotProps">
                 <Textarea
                     v-model="slotProps.data.matProc" rows="2" style="resize: none;"
@@ -291,7 +294,7 @@
                     />
             </template>
         </Column>
-        <Column field="m"  header="P2"    :style="{ width: '70px'}"  >
+        <Column field="p2"  header="P2"    :style="{ width: '70px'}"  >
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.p2"
@@ -307,7 +310,7 @@
                     />
             </template>
         </Column>
-        <Column field="actions"     header="-"          :style="{ width: '20px', textAligh:'center'}" >
+        <Column field="actions"     header="-"          :style="{ width: '20px', textAlign:'center'}" >
             <template #body="slotProps">
                 <i class="pi pi-trash cursor-pointer" @click="removeRowP(slotProps.index)"></i>
             </template>
@@ -315,7 +318,7 @@
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
+    <Button label="저장" class="p-button-secondary" :loading="saving" :disabled="saving" @click="saveInfo"></Button>
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog"></Button>
 </div>
 
@@ -332,20 +335,40 @@ import ItemListSinglePop from '@/views/basic/item/ItemListSinglePop.vue';
 import ClientListPop from '@/views/order/client/ClientListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
+import { useConfirm } from 'primevue/useconfirm';
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 import RecipeListPop from '../recipe/RecipeListPop.vue';
 import BomListPop from './BomListPop.vue';
 import BomProcPop from './BomProcPop.vue';
 
-const totalRealContent = computed(() =>
-  recipeList.value.reduce(
-    (sum, row) => sum + (Number(row.realContent) || 0),
-    0,
-  ),
-)
+// 소수점 8자리까지 정수로 환산하여 부동소수점 오차 없이 합산
+const CONTENT_SCALE = 100000000n
+const toScaledContent = (value) => {
+    const text = String(value ?? '').trim()
+    if (!/^(?:\d+)(?:\.\d{1,8})?$/.test(text)) return null
+    const [integer, fraction = ''] = text.split('.')
+    return BigInt(integer) * CONTENT_SCALE + BigInt(fraction.padEnd(8, '0') || '0')
+}
+
+const totalScaledContent = computed(() => recipeList.value.reduce((sum, row) => {
+    return sum + (toScaledContent(row.realContent) ?? 0n)
+}, 0n))
+
+const formatScaledContent = (scaled) => {
+    const whole = scaled / CONTENT_SCALE
+    const fraction = String(scaled % CONTENT_SCALE).padStart(8, '0').replace(/0+$/, '')
+    return fraction ? `${whole}.${fraction}` : String(whole)
+}
+
+const totalRealContent = computed(() => formatScaledContent(totalScaledContent.value))
+let nextRowKey = 0
+const normalizeRecipeRows = (rows) => (Array.isArray(rows) ? rows : []).map(row => ({
+    ...row,
+    _rowKey: ++nextRowKey,
+}))
 
 const  { userId } = useAuthStore()
-const { vSuccess, vInfo } = useAlertStore()
+const { vSuccess, vInfo, vWarning } = useAlertStore()
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
 const currentComponet = shallowRef(null)
@@ -374,26 +397,79 @@ const form = reactive({
     bomId : '',
     userId: userId,
 })
-
+const confirm = useConfirm()
 const removeAll = () =>{
-    recipeList.value = []
+    if (recipeList.value.length === 0) {
+        return vWarning('삭제할 데이터가 없습니다.')
+    }
+    if (isEmpty(form.bomId)) return vWarning('저장된 BOM이 없어 전체삭제할 수 없습니다.')
+
+    confirm.require({
+        header: '전체 삭제 확인',
+        message: '전체 데이터를 삭제하시겠습니까?',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: '예',
+        rejectLabel: '아니오',
+        accept: async  () => {
+            try {
+                // DB 전체 삭제 API 호출
+                await ApiLab.deleteRecipeAll(form.bomId)
+                // 화면 초기화
+                recipeList.value = []
+                deleteBomRecipe.value = []
+                selectedRow.value = null
+                selectedRowIndex.value = null
+                vSuccess('전체 데이터가 삭제되었습니다.')
+
+                // 필요하면 재조회
+                 //await searchList()
+
+            } catch (err) {
+                handleApiError(err)
+            }
+        }
+    })
+
 }
 
-const saveInfo = async () =>{
-    try{
-        const params = {
-            bomInfo : form,
-            bomRecipeList : recipeList.value,
-            bomProcList : bomProcList.value,
-            deleteBomRecipe : deleteBomRecipe.value,
-            deleteBomProc : deleteBomProc.value,
-        }
+const saving = ref(false)
+const saveInfo = async () => {
+    if (saving.value) return
+    if (!String(form.itemCd ?? '').trim()) return vWarning('품목코드를 입력해 주세요.')
+    if (recipeList.value.length === 0) return vWarning('원료구성정보가 없습니다.')
 
+    for (let i = 0; i < recipeList.value.length; i++) {
+        const row = recipeList.value[i]
+        if (!String(row.realItemCd ?? '').trim()) {
+            return vWarning(`${i + 1}번째 행의 품목코드를 입력해 주세요.`)
+        }
+        const content = toScaledContent(row.realContent)
+        if (content === null || content <= 0n) {
+            return vWarning(`${i + 1}번째 행의 함량을 올바르게 입력해 주세요. (0 초과, 소수점 8자리 이내)`)
+        }
+    }
+    if (totalScaledContent.value !== 100n * CONTENT_SCALE) {
+        return vWarning(`원료 함량 합계가 100이 아닙니다.\n현재 합계: ${totalRealContent.value}`)
+    }
+
+    saving.value = true
+    try {
+        const params = {
+            bomInfo: { ...form },
+            bomRecipeList: recipeList.value.map(({ _rowKey, ...row }) => row),
+            bomProcList: bomProcList.value,
+            deleteBomRecipe: deleteBomRecipe.value,
+            deleteBomProc: deleteBomProc.value,
+        }
         const res = await ApiLab.saveBomInfo(params)
-        vSuccess(res.message)
-        closeDialog()
-    }catch(err){
+        if (res?.bomId != null) form.bomId = res.bomId
+        vSuccess(res?.message || '저장되었습니다.')
+        // 신규 등록 시 API가 bomId를 반환해야 재조회할 수 있습니다.
+        if (!isEmpty(form.bomId)) await loadBomInfo()
+    } catch (err) {
         handleApiError(err)
+    } finally {
+        saving.value = false
     }
 }
 
@@ -435,9 +511,11 @@ const openPop = (type) =>{
         title = 'BOM 목록'
         currentComponet.value = BomListPop
     }else if ( type === 'I') {
+        title = '품목 목록'
         currentComponet.value = ItemListSinglePop
     }
 
+    if (!currentComponet.value) return
     dialog.open( currentComponet.value, {
         props: {
             header: title,
@@ -465,7 +543,7 @@ const openPop = (type) =>{
                 addRowR(event.data)
             }else if ( type === 'B') {
                 addRowPop(event.data)
-            }else if ( type === 'B') {
+            }else if ( type === 'I') {
                 form.itemCd = event.data.itemCd
                 form.itemName = event.data.itemName
             }
@@ -561,6 +639,7 @@ const addRowR = (obj)=>{
   }else {
       // 2) obj가 없거나 빈 배열이면 → 빈 행 하나 추가
     rowsToInsert.push({
+      _rowKey: ++nextRowKey,
       orderDist: 0,
       phase: '',
       realItemCd: '',
@@ -640,22 +719,58 @@ const removeRowP = (index) => {
     })
 }
 
-onMounted( async () =>{
-    prodTypes.value = await ApiLab.getProdTypeList()
-    approvalStates.value = await ApiCommon.getCodeList('approval_state')
-    form.bomId = dialogRef.value.data
+const loadBomInfo = async () => {
+    try {
+        if (isEmpty(form.bomId)) return
 
-    if ( !isEmpty(form.bomId)){
         const res = await ApiLab.getBomInfo(form.bomId)
 
-        Object.assign(form, res.bomInfo)
-        recipeList.value = res.bomRecipeList
+        Object.assign(form, res.bomInfo || {})
+
+        recipeList.value = normalizeRecipeRows(res.bomRecipeList)
+        bomProcList.value = res.bomProcList || []
+
         recipeSort()
-        bomProcList.value =res.bomProcList
+
+        // 삭제 대상 초기화
+        deleteBomRecipe.value = []
+        deleteBomProc.value = []
+
+        selectedRow.value = null
+        selectedRowIndex.value = null
+
+    } catch (err) {
+        throw err
+    }
+}
+
+onMounted(async () => {
+    try {
+        prodTypes.value = await ApiLab.getProdTypeList()
+        approvalStates.value = await ApiCommon.getCodeList('approval_state')
+    } catch (err) {
+        handleApiError(err)
+    }
+
+    const payload = dialogRef.value?.data
+    const selected = payload?.row ?? payload
+    if (selected && typeof selected === 'object') {
+        form.bomId = selected.bomId ?? ''
+        form.itemCd = selected.itemCd ?? ''
+        form.itemName = selected.itemName ?? ''
+    } else {
+        form.bomId = selected ?? ''
+    }
+
+    try {
+        await loadBomInfo()
+    } catch (err) {
+        handleApiError(err)
     }
 
     document.addEventListener('click', handleDocumentClick)
 })
+
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleDocumentClick)
 })
