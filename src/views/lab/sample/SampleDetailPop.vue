@@ -130,6 +130,7 @@ import { ApiLab } from '@/api/apiLab';
 import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { isEmpty, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, reactive, ref, watch } from 'vue';
 
 const dialogRef = inject('dialogRef');
@@ -177,7 +178,7 @@ const saveInfo = async () =>{
     vSuccess(res.message)
     //closeDialog()
   }catch(err){
-    vError(err.massage)
+    handleApiError(err)
   }
 }
 
@@ -188,14 +189,14 @@ watch (() => form.formulation , (newVal) =>{
 })
 
 onMounted( async () =>{
+    form.sampleId = dialogRef.value.data
+
     formulationCds.value = await ApiCommon.getCodeList('formulation_cd')
     areaCds.value = await ApiCommon.getCodeList('AREA')
     areaCds.value = areaCds.value.filter(i => !['A003'].includes(i.code))
     form.reqDate = todayKST()
 
-    form.sampleId = dialogRef.value.data
-
-    if ( !isEmpty(dialogRef.value) ) {
+    if ( !isEmpty(form.sampleId) ) {
         const  res = await ApiLab.getSampleInfo(form.sampleId)
         Object.assign(form, res)
         form.formulation = res.formulationCd
