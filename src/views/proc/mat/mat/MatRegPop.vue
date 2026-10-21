@@ -487,6 +487,7 @@ const checkVavlid = () =>{
 
 const saveInfo = async () => {
     //if (!checkVavlid()) return
+
     try {
         const params = {
             workOrderInfo: form,
@@ -551,7 +552,6 @@ const openLookupPopup = (type, row) => {
                 }
                 return
             }
-
             if (shouldPassRow && row) {
                 applyPopupResultToRow(type, row, event.data)
                 return
@@ -565,12 +565,14 @@ const openLookupPopup = (type, row) => {
 const applyPopupResultToRow = (type, row, data) => {
     if (type === 'makeQty') {
         row.makeQty = data ?? row.orderQty
+        row.makeYn = 'Y'
     } else if (type === 'MAKE_USER') {
         row.maker = data.workerName ?? row.workerName
     } else if (type === 'CONFIRM_USER') {
         row.makeConfirmer = data.workerName ?? row.workerName
     }
 }
+
 const complateMake = () => {
     if (!checkVavlid()) return
 
