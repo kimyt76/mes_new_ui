@@ -193,7 +193,7 @@ import { inject, onMounted, reactive, ref, watch } from 'vue';
 
 const { userId } = useAuthStore()
 const dialogRef = inject('dialogRef');
-const { vError, vSuccess} = useAlertStore()
+const { vError, vSuccess, vWarning} = useAlertStore()
 const itemTypeCds = ref([])
 const itemCategory1s = ref([])
 const itemCategory2s = ref([])
@@ -246,8 +246,6 @@ const saveInfo = async () =>{
     if (isEmpty(form.packingSpecUnit ))  return vWarning('단위별포장규격(단위)을 입력하세요!!')
     if (isEmpty(form.theoryProdNumber1 ))  return vWarning('이론생산계수1을 입력하세요!!')
     if (isEmpty(form.theoryProdNumber2 ))  return vWarning('이론생산계수2를 입력하세요!!')
-    if (isEmpty(form.itemCategory1 ))  return vWarning('제품유형(대분류)을 입력하세요!!')
-    if (isEmpty(form.itemCategory2 ))  return vWarning('제품유형(중분류)을 입력하세요!!')
 
     try{
         const params = {

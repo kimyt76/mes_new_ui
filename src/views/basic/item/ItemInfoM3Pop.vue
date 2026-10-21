@@ -124,7 +124,7 @@ import { isEmpty } from '@/util/common';
 import { onMounted, reactive, ref } from 'vue';
 
 const { userId } = useAuthStore()
-const { vError, vSuccess} = useAlertStore()
+const { vError, vSuccess, vWarning } = useAlertStore()
 const itemTypeCds = ref([])
 const itemCategory1s = ref([])
 const itemCategory2s = ref([])
