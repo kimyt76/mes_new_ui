@@ -258,6 +258,11 @@ export const ApiLab = {
     }
   },
 
+  deleteRecipeAll: async(id) => {
+      return await API_URL.get(`/bom/deleteRecipeAll/${id}`)
+  },
+
+
   /**
    *
    */
