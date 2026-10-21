@@ -253,7 +253,7 @@ const orderDialog = ref(false)
 const itemDialog = ref(false)
 const isCopy = ref(false)
 const selectedItem = ref([])
-const deletedItemIds = ref([])
+const deleteTestNos = ref([])
 const vatTypes = ref([])
 const purchaseItemList = ref([])
 
@@ -290,15 +290,13 @@ const saveInfo = async () => {
     const params = {
       purchaseInfo: form,
       purchaseItemList: purchaseItemList.value,
-      deletePurchaseItems: deletedItemIds.value
+      deleteTestNos: deleteTestNos.value
     }
 
-    const res = isCopy.value
-      ? await ApiPurchase.savePurchaseInfo(params)
-      : await ApiPurchase.updatePurchaseInfo(params)
+    const res = await ApiPurchase.updatePurchaseInfo(params)
 
     vSuccess(res.message)
-    deletedItemIds.value = []
+    deleteTestNos.value = []
     isCopy.value = false
     closeDialog()
   } catch (err) {
@@ -328,9 +326,9 @@ const copyPurInfo = async () => {
 
 const deletePur = async () => {
   const hasInYn = purchaseItemList.value.some(v => v.inYn === 'Y')
-  if (hasInYn) return vWarning('이미 입고 처리된 항목이 있습니다.')
+  //if (hasInYn) return vWarning('이미 입고 처리된 항목이 있습니다.')
 
-  if (!confirm('현재 구매항목 삭제합니다. \n 정말 삭제하시겠습니까?')) return
+  if (!confirm('현재 구매항목 전체를 삭제합니다. \n 정말 삭제하시겠습니까?')) return
 
   const res = await ApiPurchase.deletePurchase(form.purId)
   vSuccess(res.message)
@@ -469,7 +467,7 @@ const onChangeRow = row => {
 const removeRow = idx => {
     if (isAllSelected.value) {
         purchaseItemList.value.forEach(row => {
-        if (row.purItemId) deletedItemIds.value.push(row.purItemId)
+        if (row.purItemId) deleteTestNos.value.push(row.testNo)
         })
 
         purchaseItemList.value = []
@@ -477,7 +475,7 @@ const removeRow = idx => {
     }
 
     const row = purchaseItemList.value[idx]
-    if (row?.purItemId) deletedItemIds.value.push(row.purItemId)
+    if (row?.testNo) deleteTestNos.value.push(row.testNo)
 
     purchaseItemList.value.splice(idx, 1)
 }
