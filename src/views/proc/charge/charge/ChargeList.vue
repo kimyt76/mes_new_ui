@@ -30,7 +30,7 @@
                 <label for="on_label1">품목코드</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.procState" :options="procStatuss"
+                <Select v-model="form.procStatus" :options="procStatuss"
                    optionLabel="codeNm"
                    optionValue="code"
                 style="width: 100px"
@@ -117,7 +117,7 @@ const form = reactive({
   itemCd: '',
   itemName: '',
   clientName: '',
-  procState: '',
+  procStatus: '',
 
   procCd : 'PRC004',
 })

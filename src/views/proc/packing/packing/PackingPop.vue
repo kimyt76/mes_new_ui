@@ -345,7 +345,7 @@ const selectRow = (row) => {
 //투입정보
 const selectRowClick = (row) => {
     if (btnStatus.value === '00' || btnStatus.value === '52') return
-    if (!row.prodInfoId) return
+    if (!row.matName && !row.prodInfoId ) return
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',

@@ -345,7 +345,7 @@ const selectRow = (row) => {
 //투입정보
 const selectRowClick = (row) => {
     if (isStarted.value || isComplete.value) return
-    if (!row.prodInfoId) return
+    if (!row.matName && !row.prodInfoId ) return
 
     dialog.open(ProdUsePop, {
         props: {

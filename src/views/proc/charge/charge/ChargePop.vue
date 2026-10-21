@@ -345,11 +345,8 @@ const selectRow = (row) => {
 }
 //투입정보
 const selectRowClick = (row) => {
-    console.log('aaaaa', row.prodInfoId)
     if (btnStatus.value === '00' || btnStatus.value === '42') return
-
-
-    if (!row.prodInfoId) return
+    if (!row.matName && !row.prodInfoId ) return
 
     dialog.open(ProdUsePop2, {
         props: {
