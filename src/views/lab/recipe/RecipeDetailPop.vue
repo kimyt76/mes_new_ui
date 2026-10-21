@@ -86,7 +86,7 @@
 
   <!-- 하단 버튼 -->
   <div class="flex gap-2 justify-end mt-1 pt-3">
-    <Button label="BOM연결" class="btn-save" @click="openPop('N')" />
+    <!-- <Button label="BOM연결" class="btn-save" @click="openPop('N')" /> -->
     <Button label="저장" class="p-button-secondary" @click="saveInfo('S')" />
     <Button label="전성분(수출)" class="btn-save" @click="downloadIngredient('S')" />
     <Button label="단가" class="btn-save" @click="downloadRecipe('S')" />
@@ -169,83 +169,88 @@ const onAfterSelection = (row, col, row2, col2) => {
   lastSelected.value = [row, col, row2, col2]
 }
 
-// ✅ afterChange: 품목코드/함량/원가 변경 처리
+// 화면에 표시되는 순서와 저장할 sortDist를 일치시킵니다.
+const renumberRows = () => {
+  recipeList.value.forEach((row, index) => {
+    row.sortDist = index + 1
+  })
+}
+
+// DB에서 조회한 sortDist 순서로 정렬합니다.
+// 엑셀 붙여넣기로 마지막에 이동한 기존 1번 행도 제자리로 이동합니다.
+const sortBySortDist = () => {
+  recipeList.value.sort((a, b) => {
+    const an = Number(a.sortDist)
+    const bn = Number(b.sortDist)
+    const av = Number.isInteger(an) && an > 0 ? an : Number.MAX_SAFE_INTEGER
+    const bv = Number.isInteger(bn) && bn > 0 ? bn : Number.MAX_SAFE_INTEGER
+    return av - bv
+  })
+  renumberRows()
+}
+
+const calcUnitPrice = (row) => {
+  const content = Number(row.content)
+  const inPrice = Number(row.inPrice)
+  row.unitPrice = Number.isFinite(content) && Number.isFinite(inPrice) && inPrice > 0
+    ? Number((content * inPrice * 0.001 * 0.01).toFixed(7))
+    : 0
+}
+
+// 엑셀 붙여넣기에서도 품목 조회 및 단가 계산을 모두 수행합니다.
 const onAfterChange = async (changes, source) => {
-  if (!alive.value) return
-  if (!changes || source === 'loadData') return
+  if (!alive.value || !changes || source === 'loadData') return
 
-  for (const [row, prop, oldVal, newVal] of changes) {
-    if (!alive.value) return
-    const rowData = recipeList.value[row]
-    if (!rowData) continue
+  const lookups = []
+  for (const [rowIndex, prop, oldVal, newVal] of changes) {
+    const rowData = recipeList.value[rowIndex]
+    if (!rowData || newVal === oldVal) continue
 
-    // 품목코드 변경
-    if (prop === 'itemCd' && newVal && newVal !== oldVal) {
-      try {
-        let res = null
-
-        if (newVal.charAt(0).toUpperCase() === 'J') {
-          res = await ApiItem.getItemInfo(newVal)
-        } else {
-          const tmp = await ApiLab.getNewMaterialInfo(newVal)
-          res = tmp?.getNewMaterialInfo
-        }
-
-        // ✅ await 이후 닫힘 방지 체크
-        if (!alive.value) return
-
-        if (res) {
-          rowData.inPrice = res.inPrice || 0
-          const content = Number(rowData.content)
-          if (!isNaN(content) && res.inPrice != null) {
-            const unitPrice = content * res.inPrice * 0.001 * 0.01
-            rowData.unitPrice = parseFloat(unitPrice.toFixed(7))
+    if (prop === 'itemCd' && newVal) {
+      const itemCd = String(newVal).trim()
+      lookups.push((async () => {
+        try {
+          let itemInfo
+          if (itemCd.toUpperCase().startsWith('J')) {
+            itemInfo = await ApiItem.getItemInfo(itemCd)
           } else {
-            rowData.unitPrice = 0
+            const result = await ApiLab.getNewMaterialInfo(itemCd)
+            itemInfo = result?.getNewMaterialInfo
           }
-        } else {
-          rowData.inPrice = 0
-          rowData.unitPrice = 0
+          if (!alive.value || String(rowData.itemCd ?? '').trim() !== itemCd) return
+          rowData.inPrice = itemInfo?.inPrice ?? 0
+          calcUnitPrice(rowData)
+        } catch (err) {
+          console.error('품목 조회 오류:', itemCd, err)
         }
-      } catch (err) {
-        console.error('품목 조회 오류:', err)
-      }
+      })())
+    } else if (prop === 'content' || prop === 'inPrice') {
+      calcUnitPrice(rowData)
     }
+  }
 
-    // 함량 변경 시 단가 재계산
-    if (prop === 'content' && newVal !== oldVal) {
-      const content = Number(newVal)
-      const inPrice = Number(rowData.inPrice)
-      if (!isNaN(content) && !isNaN(inPrice) && inPrice > 0) {
-        rowData.unitPrice = parseFloat((content * inPrice * 0.001 * 0.01).toFixed(7))
-      } else {
-        rowData.unitPrice = 0
-      }
-    }
+  if (lookups.length) await Promise.all(lookups)
+  if (!alive.value) return
 
-    // 원가 변경 시 단가 재계산
-    if (prop === 'inPrice' && newVal !== oldVal) {
-      const inPrice = Number(newVal)
-      const content = Number(rowData.content)
-      if (!isNaN(content) && !isNaN(inPrice) && inPrice > 0) {
-        rowData.unitPrice = parseFloat((content * inPrice * 0.001 * 0.01).toFixed(7))
-      } else {
-        rowData.unitPrice = 0
-      }
-    }
+  if (source === 'CopyPaste.paste') {
+    // 기존 sortDist 순서가 뒤섞였으면 먼저 정렬한 후 1부터 다시 번호 부여.
+    // (예: 10, 11, ... 22, 1 -> 1, 10, 11, ... 22)
+    // 번호가 없는 행만 있다면 엑셀에서 붙여넣은 배열 순서를 유지.
+    const numbered = recipeList.value.filter(r => Number(r.sortDist) > 0)
+    const outOfOrder = numbered.some((r, i) =>
+      i > 0 && Number(r.sortDist) < Number(numbered[i - 1].sortDist)
+    )
+    if (outOfOrder) sortBySortDist()
+    else renumberRows()
+    await nextTick()
   }
 }
 
-// ✅ 행 추가
+// 행 추가
 const addRow = () => {
-  const nextSort =
-    recipeList.value.length > 0
-      ? Math.max(...recipeList.value.map(r => r.sortDist || 0)) + 1
-      : 1
-
   recipeList.value.push({
     id: nextRowId.value++,
-    sortDist: nextSort,
+    sortDist: null,
     phase: '',
     itemCd: '',
     itemName: '',
@@ -253,16 +258,21 @@ const addRow = () => {
     inPrice: 0,
     unitPrice: 0,
   })
+  renumberRows()
 }
 
-// ✅ 선택 영역 삭제(필요하면 사용)
+// 선택 영역 삭제
 const removeRow = () => {
   if (!lastSelected.value) {
     vWarning('삭제할 행을 선택하세요.')
     return
   }
-  const [startRow, , endRow] = lastSelected.value
-  recipeList.value.splice(startRow, endRow - startRow + 1)
+  const [r1, , r2] = lastSelected.value
+  const start = Math.min(r1, r2)
+  const count = Math.abs(r2 - r1) + 1
+  recipeList.value.splice(start, count)
+  renumberRows()
+  lastSelected.value = null
 }
 
 // ✅ 팝업 오픈
@@ -310,11 +320,12 @@ const openPop = (type) => {
 // ✅ 저장
 const saveInfo = async () => {
   try {
+    renumberRows()
     const params = { recipeInfo: form, recipeList: recipeList.value }
     const res = await ApiLab.saveRecipeInfo(params)
 
     vSuccess(res.message)
-    form.recipeId = res.data.recipeId
+    form.recipeId = res.data?.recipeId ?? form.recipeId
   } catch (err) {
     handleApiError(err)
   }
@@ -394,6 +405,9 @@ onMounted(async () => {
     if (!alive.value) return
     Object.assign(form, res.recipeInfo)
     recipeList.value = res.recipeList || []
+    sortBySortDist()
+  } else {
+    renumberRows()
   }
 })
 </script>
