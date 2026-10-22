@@ -45,7 +45,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <IconField iconPosition="left">
-                        <InputText v-model="form.clientNo" class="w-full"/>
+                        <InputText v-model="form.clientCd" class="w-full"/>
                     </IconField>
                     <label>고객사 코드</label>
                 </FloatLabel>
@@ -220,7 +220,7 @@ const form = reactive({
     seq:'',
     clientName:'',
     clientId:'',
-    clientNo:'',
+    clientCd:'',
     managerName:'',
     managerId:'',
     vatType:'',

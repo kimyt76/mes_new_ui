@@ -83,7 +83,7 @@
             </template>
         </Column>
         <Column field="poNo"            header="PO NO"    :style="{ width: '130px'}" ></Column>
-        <Column field="clientNo"        header="고객사코드"   :style="{ width: '100px'}" />
+        <Column field="clientCd"      header="고객사코드"   :style="{ width: '100px'}" />
         <Column field="clientName"      header="고객사명"   :style="{ width: '250px'}" />
         <Column field="managerName"     header="담당자명"   :style="{ width: '90px', textAlign: 'center'}" />
         <Column field="orderType"       header="수주유형"   :style="{ width: '80px', textAlign: 'center'}" />

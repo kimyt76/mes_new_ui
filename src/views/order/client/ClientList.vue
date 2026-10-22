@@ -85,7 +85,7 @@
         <Column field="threeYearAgo"        :header="String(year3)" :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.threeYearAgo).toLocaleString() }}</template>
         </Column>
-        <Column field="firstDelaDate"       header="최초거래일자"  style="text-align: center;"  :style="{ width: '110px'}" "/>
+        <Column field="firstTradeDate"       header="최초거래일자"  style="text-align: center;"  :style="{ width: '110px'}" "/>
         <Column field="lastDelaDate"        header="최종거래일자"  style="text-align: center;"  :style="{ width: '110px'}" "/>
         <Column field="managerRank"         header="관리등급"     style="text-align: center;"   :style="{ width: '80px'}" "/>
     </DataTable>
