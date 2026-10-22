@@ -771,7 +771,9 @@ const form = reactive({
     testType: '',
     workBatchId: '',
     batchStatus: '',
-    qcProcTestMstId: ''
+    qcProcTestMstId: '',
+    workProcId: '',
+    procCd: '',
 })
 
 /* =========================================================
@@ -989,9 +991,11 @@ const loadTabData = async (qcProcTestMstId, testType) => {
             qcProcTestMstId: qcProcTestMstId,
             testType: testType,
             batchStatus: form.batchStatus,
-            workBatchId: form.workBatchId
+            workBatchId: form.workBatchId,
+            workProcId: form.workProcId,
+            procCd: form.procCd,
         }
-
+console.log('params', params )
         const res = await ApiQc.getQcProcTestTabInfo(params)
         console.log('Tab data loaded:',res)
         /* =============================================
@@ -1095,6 +1099,8 @@ onMounted(async () => {
         form.batchStatus =dialogRef.value.data.batchStatus
         form.workBatchId =dialogRef.value.data.workBatchId
         testState.value =dialogRef.value.data.testState
+        form.workProcId = dialogRef.value.data.row.workProcId
+        form.procCd = dialogRef.value.data.row.procCd
 
         await loadTabData(form.qcProcTestMstId, 'S' )
         await nextTick()

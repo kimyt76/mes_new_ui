@@ -189,6 +189,7 @@ const selectRowClick = (row) =>{
             qcType: row.qcTestType,
             batchStatus: row.batchStatus,
             testState: row.testState,
+            row: row,
         },
         onClose: event => {
             srhList()
