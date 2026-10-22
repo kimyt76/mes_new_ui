@@ -88,7 +88,7 @@
                     v-model="slotProps.data.qty"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="6"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     />
@@ -291,15 +291,21 @@ const removeRow = (index) => {
 
 onMounted( async () =>{
     approvalStates.value = await ApiCommon.getCodeList('approval_state')
-    form.bomId = dialogRef.value.data.bomId
+    const row  = dialogRef.value.data.row
 
-    if ( !isEmpty(form.bomId)){
-        const res = await ApiLab.getBomInfo(form.bomId)
+    console.log('row', row)
+    console.log('row', row.itemCd)
+    console.log('row', row.itemName)
+
+    if ( !isEmpty(row.bomId)){
+        const res = await ApiLab.getBomInfo(row.bomId)
 
         Object.assign(form, res.bomInfo)
         recipeList.value = res.bomRecipeList
         recipeSort()
     }else{
+        form.itemCd = row.itemCd
+        form.itemName = row.itemName
         form.bomVer = todayKST()
     }
 })

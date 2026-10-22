@@ -31,7 +31,7 @@
     </Toolbar>
     </form>
     <div class="flex items-center justify-end gap-2 mb-2">
-        <Button label="신규" icon="pi pi-plus" severity="secondary" @click="openPop"></Button>
+        <!-- <Button label="신규" icon="pi pi-plus" severity="secondary" @click="openPop"></Button> -->
         <Button label="BOM버전" icon="pi pi-plus" severity="secondary" @click="openBomVerPop"></Button>
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
     </div>
@@ -42,7 +42,7 @@
             :value="bomList"
             :loading="loading"
             selectionMode="single"
-            dataKey="bomId"
+            dataKey="rowNum"
             paginator :rows="20"
             :rowsPerPageOptions="[20,30,40]"
             tableStyle="table-layout: fixed; width: 100%"
@@ -162,9 +162,7 @@ const openBomVerPop = () =>{
  * 상세화면
  */
 const selectRowClick = (row) => {
-
     console.log('row', row)
-
     dialog.open(BomMatDetailPop, {
         props:{
             header: 'BOM상세',
@@ -183,7 +181,7 @@ const selectRowClick = (row) => {
         }
         },
         data: {
-            bomId : row.bomId,
+            row : row,
         },
         onClose:(event) => {
             srchList()
