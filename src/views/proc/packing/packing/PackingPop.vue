@@ -45,8 +45,8 @@
                                 {{ workOrderInfo.lotNo || 0 }}<br />
                             </td>
                             <th class="cellBorder cellHeader" rowspan="2">비고</th>
-                            <td class="cellBorder" rowspan="2">
-                                <Textarea v-model="workOrderInfo.etc" rows="2"  class="w-full" style="resize: none;"/>
+                            <td class="cellBorder cursor-pointer" rowspan="2" @click="openProcMemo">
+                                {{ workOrderInfo.etc || '' }}
                             </td>
                         </tr>
                         <tr>
@@ -59,8 +59,8 @@
                             <th class="cellBorder cellHeader">작업공정도</th>
                             <td class="cellBorder" colspan="5">{{ itemInfo.workFlow }}</td>
                             <th class="cellBorder cellHeader">특이사항</th>
-                            <td class="cellBorder">
-                                <Textarea v-model="workOrderInfo.memo" rows="1"  class="w-full" style="resize: none;"/>
+                            <td class="cellBorder cursor-pointer" @click="openProcMemo" >
+                                {{ workOrderInfo.memo || '' }}
                             </td>
                         </tr>
                     </tbody>
@@ -215,6 +215,7 @@ import { handleApiError } from '@/util/errorHandler';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
+import ProcMemoPop from '../../common/ProcMemoPop.vue';
 import ProdUsePop2 from '../../common/ProdUsePop2.vue';
 import WorkRecordPop from '../../common/WorkRecordPop.vue';
 import ProcPackingStartPop from './ProcPackingStartPop.vue';
@@ -315,10 +316,15 @@ const totalProdQty = computed(() => {
  * 생산수율
  */
 const totalProdYield = computed(() => {
-    if (totalUseQty.value === 0) return 0
-    return (
-        (totalProdQty.value / totalUseQty.value) * 100
-    ).toFixed(2)
+    const prodQty = Number(totalProdQty.value)
+    const coatingQty = Number(workOrderInfo.coatingProdQty)
+console.log('prodQty', prodQty)
+console.log('coatingQty', coatingQty)
+    if (!Number.isFinite(prodQty) || !Number.isFinite(coatingQty) || coatingQty <= 0) {
+        return '0.00'
+    }
+
+    return ((prodQty / (coatingQty)) * 100).toFixed(2)
 })
 /**
  * 리스트 값 변경 시
@@ -379,10 +385,33 @@ const selectRowClick = (row) => {
                 row.badQty = event.data.badQty
                 row.workBadQty = event.data.workBadQty
                 workOrderInfo.useQty = event.data.totUseQty
+                callPackingInfo()
             }
         }
     })
 }
+const openProcMemo = () => {
+    if (!workOrderInfo.workProcId) {
+        return vWarning('작업공정 정보가 없습니다.')
+    }
+
+    dialog.open(ProcMemoPop, {
+        props: {
+            header: '비고 / 특이사항',
+            style: { width: '600px' },
+            modal: true,
+        },
+        data: {
+            workProcId: workOrderInfo.workProcId,
+        },
+        onClose: (options) => {
+            if (options?.data?.saved) {
+                callPackingInfo()
+            }
+        },
+    })
+}
+
 const popupConfig = {
     S: {
         title: '포장시작',

@@ -61,12 +61,12 @@
                             <th class="cellBorder cellHeader">작업공정도</th>
                             <td class="cellBorder" colspan="3">{{ itemInfo.workFlow }}</td>
                             <th class="cellBorder cellHeader">비고</th>
-                            <td class="cellBorder">
-                                <Textarea v-model="workOrderInfo.etc" rows="1" class="w-full" style="resize: none;"/>
+                            <td class="cellBorder cursor-pointer" @click="openProcMemo">
+                                {{ workOrderInfo.etc || '' }}
                             </td>
                             <th class="cellBorder cellHeader">특이사항</th>
-                            <td class="cellBorder">
-                                <Textarea v-model="workOrderInfo.memo" rows="1"  class="w-full" style="resize: none;"/>
+                            <td class="cellBorder cursor-pointer" @click="openProcMemo" >
+                                {{ workOrderInfo.memo || '' }}
                             </td>
                         </tr>
                     </tbody>
@@ -203,6 +203,7 @@ import { isEmpty } from '@/util/common';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
+import ProcMemoPop from '../../common/ProcMemoPop.vue';
 import WorkRecordPop from '../../common/WorkRecordPop.vue';
 import ProcCoatingStartPop from './ProcCoatingStartPop.vue';
 import ProdUsePop from './ProdUsePop.vue';
@@ -314,7 +315,7 @@ const totalProdQty = computed(() => {
 const totalProdYield = computed(() => {
     if (totalUseQty.value === 0) return 0
     return (
-        (totalProdQty.value / totalUseQty.value) * 100
+        ( totalUseQty.value/workOrderInfo.orderQty) * 100
     ).toFixed(2)
 })
 
@@ -381,6 +382,28 @@ const selectRowClick = (row) => {
             }
             callCoatingInfo()
         }
+    })
+}
+
+const openProcMemo = () => {
+    if (!workOrderInfo.workProcId) {
+        return vWarning('작업공정 정보가 없습니다.')
+    }
+
+    dialog.open(ProcMemoPop, {
+        props: {
+            header: '비고 / 특이사항',
+            style: { width: '600px' },
+            modal: true,
+        },
+        data: {
+            workProcId: workOrderInfo.workProcId,
+        },
+        onClose: (options) => {
+            if (options?.data?.saved) {
+                callCoatingInfo()
+            }
+        },
     })
 }
 
