@@ -437,8 +437,8 @@ const popupConfig = {
     W: {
         title: '작업수행정보',
         component: WorkRecordPop,
-        width: '530px',
-        height: '250px'
+        width: '540px',
+        height: '260px'
     }
 }
 const openPop = (type) => {
@@ -489,6 +489,7 @@ const openPop = (type) => {
 };
 const confirm = useConfirm()
 const workComplete = () =>{
+
     if(!checkComplete()) return
     confirm.require({
         header: '충전완료 확인',
@@ -519,7 +520,11 @@ const checkComplete = () =>{
         return false
     }
     // 그 중 testNos 없는 것 체크
-    if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){  return false}
+    if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){
+        vWarning('미등록 작업이 있습니다.')
+        return false
+    }
+
     return true
 }
 const fillRows = (list = [], rowCount, createRow) => {

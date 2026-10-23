@@ -423,8 +423,8 @@ const popupConfig = {
     W: {
         title: '작업수행정보',
         component: WorkRecordPop,
-        width: '530px',
-        height: '250px'
+        width: '540px',
+        height: '260px'
     }
 }
 
