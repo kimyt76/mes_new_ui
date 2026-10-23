@@ -134,7 +134,7 @@ const vatTypes = ref([])
 const orderTypes = ref([])
 const currentComponent = shallowRef(null)
 const form = reactive({
-  strDate: minMonth(todayKST(), 1),
+  strDate: minMonth(todayKST(), 12),
   endDate:  todayKST(),
   itemCd: '',
   itemName: '',
