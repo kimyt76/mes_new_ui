@@ -63,7 +63,12 @@
         <div class="grid">
             <div class="col-12">
                 <FloatLabel variant="on">
-                    <Textarea v-model="form.memo" rows="1" class="w-full" autoResize />
+                    <Textarea
+                        v-model="form.memo"
+                        rows="1"
+                        class="w-full memo-textarea"
+                        :autoResize="false"
+                    />
                     <label>비고</label>
                 </FloatLabel>
             </div>
@@ -74,8 +79,10 @@
     <DataTable
         :value="itemList"
         class="my-table"
-        showGridlines=""
-        >
+        showGridlines
+        scrollable
+        scrollHeight="400px"
+    >
         <Column field="itemCd"      header="품목코드" style="width: 120px"/>
         <Column field="itemName"    header="품목명" style="width: 400px"/>
         <Column field="testNo"    header="시험번호" style="width: 110px"/>
@@ -157,6 +164,18 @@ const closeDialog = () => {
   text-align: center;
   font-family: monaco, Consolas;
   padding: 8px;
+}
+/* 비고 입력창 내부 스크롤 */
+:deep(.memo-textarea) {
+    height: 40px !important;
+    max-height: 40px !important;
+    overflow-y: auto !important;
+    resize: none !important;
+}
+
+/* 리스트 스크롤 영역 */
+:deep(.my-table .p-datatable-table-container) {
+    overflow-y: auto;
 }
 
 </style>
