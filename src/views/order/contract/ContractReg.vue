@@ -433,7 +433,7 @@ const openPop = (type) =>{
                 form.clientId = event.data.clientId
                 form.managerName = event.data.businessManagerName
                 form.managerId = event.data.businessManagerName
-                form.clientNo = event.data.businessNo
+                form.clientCd = event.data.businessNo
             }else if ( type === 'U') {
                 form.managerName = event.data.memberNm
                 form.managerId = event.data.userId
