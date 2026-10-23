@@ -132,7 +132,6 @@
     <Button label="재검사요청" class="p-button-warn" @click="reqTestPop"></Button>
     <Button label="검사요청" class="p-button-contrast" @click="selectBtnClick('I',selectItem)"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-
 </div>
 
 <div>

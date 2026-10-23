@@ -511,7 +511,7 @@ const addRows = (rows)  =>{
 
     const mappedRows = rows.map((row, idx) => ({
         checked: false,
-        testTypeMethodId: row.testTypeMethodId ?? null,
+        qcTestTypeMethodId: row.qcTestTypeMethodId ?? null,
         orderDist: startOrder+idx+1,
         testItem: row.testItem ?? '',
         testMethod: row.testMethod ?? '',
@@ -530,7 +530,7 @@ const addRows = (rows)  =>{
 const addRow = () => {
   const newRow = {
     checked: false,
-    testTypeMethodId: null,
+    qcTestTypeMethodId: null,
     orderDist: qcTestTypeMethodList.value.length + 1,
     testItem: '',
     testMethod: '',
@@ -565,10 +565,10 @@ const removeRow = () =>{
 
     checkedRows.forEach(row => {
 
-        if (row.testTypeMethodId) {
+        if (row.qcTestTypeMethodId) {
 
-            if (!deleteIds.value.includes(row.testTypeMethodId)) {
-                deleteIds.value.push(row.testTypeMethodId)
+            if (!deleteIds.value.includes(row.qcTestTypeMethodId)) {
+                deleteIds.value.push(row.qcTestTypeMethodId)
             }
         }
     })

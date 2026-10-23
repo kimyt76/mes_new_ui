@@ -48,6 +48,9 @@ export const ApiQc = {
             throw err.response
         }
     },
+    deleteQcTest: async(id) =>{
+        return await API_URL.get(`/qcTest/deleteQcTest/${id}`)
+    },
 
     /**
      * 품질검사 상세정보 저장
@@ -172,8 +175,11 @@ export const ApiQc = {
             throw err.response
         }
     },
-    saveQcTestTypeMethod: async(params) => {
-        return await API_URL.post('/qcTestType/saveQcTestTypeMethod' , params)
+    saveTestTypeMethod: async(params) => {
+        return await API_URL.post('/qcTestType/saveTestTypeMethod' , params)
+    },
+    deleteTestTypeMethod: async(params) => {
+        return await API_URL.post('/qcTestType/deleteTestTypeMethod' , params)
     },
 
     /**

@@ -995,7 +995,7 @@ const loadTabData = async (qcProcTestMstId, testType) => {
             workProcId: form.workProcId,
             procCd: form.procCd,
         }
-console.log('params', params )
+
         const res = await ApiQc.getQcProcTestTabInfo(params)
         console.log('Tab data loaded:',res)
         /* =============================================

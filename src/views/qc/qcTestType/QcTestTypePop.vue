@@ -11,7 +11,7 @@
 <div>
     <BaseHotTable
         ref="hotRef"
-        :data="qcTestTypeMethodList"
+        :data="testTypeMethodList"
         :colHeaders="colHeaders"
         :columns="columns"
         :colWidths="colWidths"
@@ -42,12 +42,13 @@
 import { ApiQc } from '@/api/apiQc';
 import BaseHotTable from '@/components/BaseHotTable.vue';
 import { useAlertStore } from '@/stores/alert';
+import { useConfirm } from 'primevue';
 import { computed, inject, onMounted, ref } from 'vue';
 
 const { vSuccess } = useAlertStore()
 
 const hotRef = ref(null)
-const qcTestTypeMethodList = ref([])
+const testTypeMethodList = ref([])
 const dialogRef = inject('dialogRef')
 const deleteIds = ref([])
 
@@ -128,22 +129,22 @@ const columns = [
 ]
 
 const selectedRows = computed(() => {
-    return qcTestTypeMethodList.value.filter(row => row.checked)
+    return testTypeMethodList.value.filter(row => row.checked)
 })
 
 const isAllSelected = computed(() => {
     return (
-        qcTestTypeMethodList.value.length > 0 &&
-        selectedRows.value.length === qcTestTypeMethodList.value.length
+        testTypeMethodList.value.length > 0 &&
+        selectedRows.value.length === testTypeMethodList.value.length
     )
 })
 
 const saveInfo = async () => {
-    qcTestTypeMethodList.value.forEach(row => {
+    testTypeMethodList.value.forEach(row => {
         row.itemCd = itemCd.value
     })
 
-    const saveList = qcTestTypeMethodList.value.map(row => {
+    const saveList = testTypeMethodList.value.map(row => {
         const {
             checked,
             actions,
@@ -154,11 +155,14 @@ const saveInfo = async () => {
     })
 
     const params = {
+        qcTestInfo: {
+                    itemCd:itemCd.value
+                },
         deleteIds: deleteIds.value,
-        qcTestTypeMethodList: saveList
+        testTypeMethodList: saveList
     }
 
-    const res = await ApiQc.saveQcTestTypeMethod(params)
+    const res = await ApiQc.saveTestTypeMethod(params)
 
     vSuccess(res.message)
 
@@ -166,34 +170,35 @@ const saveInfo = async () => {
 }
 
 const addRow = () => {
-    if (!Array.isArray(qcTestTypeMethodList.value)) {
-        qcTestTypeMethodList.value = []
+    if (!Array.isArray(testTypeMethodList.value)) {
+        testTypeMethodList.value = []
     }
 
     //let sortNum = 1
 
-    // if (qcTestTypeMethodList.value.length > 0) {
-    //     const orderList = qcTestTypeMethodList.value
+    // if (testTypeMethodList.value.length > 0) {
+    //     const orderList = testTypeMethodList.value
     //         .map(row => Number(row.orderDist) || 0)
 
     //     sortNum = Math.max(...orderList) + 1
     // }
 
-    qcTestTypeMethodList.value.push({
+    testTypeMethodList.value.push({
         checked: false,
         itemCd: itemCd.value,
         testItem: '',
         testMethod: '',
         testSpec: '',
         testResult: '',
-        orderDist: ''
+        orderDist: '',
+        testTypeMethodId: '',
     })
 
     refreshHot()
 }
 
 const removeRow = (index) => {
-    const row = qcTestTypeMethodList.value[index]
+    const row = testTypeMethodList.value[index]
 
     if (!row) {
         return
@@ -205,27 +210,53 @@ const removeRow = (index) => {
         }
     }
 
-    qcTestTypeMethodList.value.splice(index, 1)
+    testTypeMethodList.value.splice(index, 1)
 
     refreshHot()
 }
 
-const removeALLRows = () => {
-    if (qcTestTypeMethodList.value.length === 0) {
+const confirm = useConfirm()
+const removeALLRows =  () => {
+    if (testTypeMethodList.value.length === 0) {
         return
     }
 
-    qcTestTypeMethodList.value.forEach(row => {
-        if (row.testTypeMethodId) {
-            if (!deleteIds.value.includes(row.testTypeMethodId)) {
-                deleteIds.value.push(row.testTypeMethodId)
+    confirm.require({
+        header: '전체 삭제 확인',
+        message: '전체 데이터를 삭제하시겠습니까?\n삭제 후 저장 시 복구할 수 없습니다.',
+        icon: 'pi pi-exclamation-triangle',
+        rejectLabel: '취소',
+        acceptLabel: '삭제',
+        acceptClass: 'p-button-danger',
+
+        accept: async () => {
+            // 기존 데이터 삭제 ID 수집
+            testTypeMethodList.value.forEach(row => {
+                if (row.testTypeMethodId) {
+                    if (!deleteIds.value.includes(row.testTypeMethodId)) {
+                        deleteIds.value.push(row.testTypeMethodId)
+                    }
+                }
+            })
+
+            const params  = {
+                qcTestInfo: {
+                    itemCd:itemCd.value
+                },
+                deleteIds: deleteIds.value
             }
+
+            // 화면 전체 삭제
+            const res = await ApiQc.deleteTestTypeMethod(params)
+
+            testTypeMethodList.value = []
+            deleteIds.value = []
+
+            // Handsontable 갱신
+            refreshHot()
+            vSuccess('전체 삭제되었습니다.')
         }
     })
-
-    qcTestTypeMethodList.value = []
-
-    refreshHot()
 }
 
 const afterChange = (changes, source) => {
@@ -240,7 +271,7 @@ const afterChange = (changes, source) => {
     changes.forEach(([row, prop, oldValue, newValue]) => {
 
         if (prop === 'orderDist') {
-            qcTestTypeMethodList.value[row].orderDist =
+            testTypeMethodList.value[row].orderDist =
                 newValue === null || newValue === ''
                     ? null
                     : Number(newValue)
@@ -271,7 +302,7 @@ const afterOnCellMouseDown = (event, coords) => {
 const toggleAllCheck = () => {
     const checked = !isAllSelected.value
 
-    qcTestTypeMethodList.value.forEach(row => {
+    testTypeMethodList.value.forEach(row => {
         row.checked = checked
     })
 
@@ -294,7 +325,7 @@ onMounted(async () => {
 
     const res = await ApiQc.getQcTestTypeMethod(itemCd.value)
 
-    qcTestTypeMethodList.value = (res || []).map(row => ({
+    testTypeMethodList.value = (res || []).map(row => ({
         ...row,
         checked: false
     }))

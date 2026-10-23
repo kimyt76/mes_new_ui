@@ -65,7 +65,19 @@ export const ApiProc = {
     },
 
     getProcEndCnt: async(param) => {
-        return  await API_URL.get('/procCommon/getProcEndCnt',param)
+        return  await API_URL.post('/procCommon/getProcEndCnt',param)
+    },
+
+    getProcMemo: async(id) => {
+        try{
+            const res = await API_URL.get(`/procCommon/getProcMemo/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
+    updateProcMemo: async(param) => {
+        return  await API_URL.post('/procCommon/updateProcMemo',param)
     },
 
 

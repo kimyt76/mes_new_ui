@@ -80,7 +80,7 @@
             <div class="col-3">
                 <FloatLabel variant="on">
                     <Select v-model="form.endYn"
-                            :options="useYns"
+                            :options="endYns"
                             optionLabel="codeNm"
                             optionValue="code" class="w-full" />
                     <label>종료여부</label>
@@ -133,7 +133,10 @@ const itemTypeCds = ref([])
 const testStates = ref([])
 const passStates = ref([])
 const selectedItem = ref([])
-const useYns = ref([])
+const endYns = ref([
+    {code: 'Y', codeNm: '종료'},
+    {code: 'N', codeNm: '사용중'},
+])
 const form  = reactive({
     itemTypeCd: null,
     itemCd: null,
@@ -179,7 +182,6 @@ const openPop = () =>{
         },
         onClose:(event) => {
             if(event){
-                console.log ('event', event)
                 form.customerName = event.data.customerName
                 form.customerCd = event.data.customerCd
             }
@@ -221,10 +223,9 @@ onMounted(async () =>{
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD')
     testStates.value = await ApiCommon.getCodeList('TEST_STATE')
     passStates.value = await ApiCommon.getCodeList('PASS_STATE')
-    useYns.value = await ApiCommon.getCodeList('USE_YN')
+    form.testNo = dialogRef.value.data.testNo
+    const res = await ApiQc.getItemTestNoInfo(form.testNo)
 
-    const res = await ApiQc.getItemTestNoInfo(dialogRef.value.data.testNo)
-    // Initialize form with retrieved data
     Object.assign(form, res)
 })
 

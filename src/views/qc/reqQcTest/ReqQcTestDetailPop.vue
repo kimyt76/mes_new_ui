@@ -197,8 +197,8 @@ const deleteInfo = async () =>{
         return;
     }
 
-    const res = await ApiQc.deleteQcTest(form.qcTestId)
-    vSuccess(res.message)
+    const res = await ApiQc.deleteQcTest(form.testNo)
+    vSuccess('삭제되었습니다.')
     closeDialog()
 }
 

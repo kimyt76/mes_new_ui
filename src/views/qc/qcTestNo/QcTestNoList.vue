@@ -184,9 +184,9 @@ const home = ref({
     icon: 'pi pi-home'
 });
 const items = ref([
-    { label: '시험번호내역관리' },
-    { label: '시험번호내역' },
-    { label: '시험번호내역목록' },
+    { label: '시험번호' },
+    { label: '시험번호별내역' },
+    { label: '시험번호별내역목록' },
 ]);
 </script>
 

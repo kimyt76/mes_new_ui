@@ -68,7 +68,13 @@
         <Column field="orderDist"           header="배치번호"   :style="{ width: '80px', textAlign:'center'}" />
         <Column field="makeNo"              header="제조번호"   :style="{ width: '100px', textAlign:'center'}" />
         <Column field="lotNo"               header="로트번호"   :style="{ width: '100px', textAlign:'center'}" bodyClass="break-words"/>
-        <Column field="batchStatusName"     header="배치상태"   :style="{ width: '90px', textAlign:'center'}" />
+        <Column field="batchStatusName"     header="배치상태"   :style="{ width: '90px', textAlign:'center'}">
+            <template #body="slotProps">
+                <div @click="selectResetClick(slotProps.data)" class="clickable-cell">
+                    {{ slotProps.data.batchStatusName }}
+                </div>
+            </template>
+        </Column>
         <Column field="weighOrderDate"      header="칭량일자"   :style="{ width: '100px', textAlign:'center'}" />
         <Column field="matOrderDate"        header="제조일자"   :style="{ width: '100px', textAlign:'center'}" />
         <Column field="coatingOrderDate"    header="코팅일자"   :style="{ width: '100px', textAlign:'center'}" />
@@ -111,6 +117,11 @@ const srhList = async () =>{
         ...form
     }
     workOrderList.value = await ApiWorkOrder.getWorkOrderProgressList(params)
+}
+
+
+const selectResetClick = (row) => {
+    console.log('selectResetClick', row)
 }
 
 const selectRowClick = (id) =>{

@@ -1,6 +1,7 @@
 <template>
 <div class="flex flex-col mt-2">
     <DataTable
+        v-model="first"
         :value="workOrderList"
         scrollable
         scrollHeight="flex"
@@ -12,8 +13,8 @@
                 {{ slotProps.index + 1 + first }}
             </template>
         </Column>
-        <Column field="poNo"            header="지시일"   :style="{ width: '120px'}" />
-        <Column field="workProcDate"    header="제조번호"    :style="{ width: '150px'}" />
+        <Column field="procOrderDate"            header="지시일"   :style="{ width: '120px'}" />
+        <Column field="makeNo"    header="제조번호"    :style="{ width: '150px'}" />
         <Column field="lotNo"           header="LOT번호"    :style="{ width: '150px'}" />
     </DataTable>
 </div>
@@ -27,6 +28,7 @@
 import { ApiOrder } from '@/api/apiOrders';
 import { inject, onMounted, reactive, ref } from 'vue';
 
+const first = ref(0)
 const dialogRef = inject('dialogRef')
 const workOrderList = ref([])
 const form = reactive({
