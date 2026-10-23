@@ -61,16 +61,24 @@
               <Column field="itemTypeName"      header="품목구분"   :style="{ width: '80px', textAlign: 'center'}"/>
               <Column field="itemCd"            header="품목코드"   :style="{ width: '110px', textAlign: 'center'}"/>
               <Column field="itemName"          header="품목명"     :style="{ width: '260px'}"/>
-              <Column field="lotNo"             header="LOT NO"    :style="{ width: '120px', textAlign: 'left'}"/>
+              <Column field="lotNo"             header="LOT NO"    :style="{ width: '180px', textAlign: 'left'}"/>
               <Column field="makeNo"            header="제조번호"   :style="{ width: '140px', textAlign: 'center'}"/>
-              <Column field="stockQty"               header="수량"      :style="{ width: '100px', textAlign: 'right'}">
+              <Column field="stockQty"          header="수량"      :style="{ width: '90px', textAlign: 'right'}">
                  <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
               </Column>
               <Column field="pallet"            header="파렛트(예상)":style="{ width: '110px', textAlign: 'right'}">
                  <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
              </Column>
-             <Column field="passStateName"      header="품질"   :style="{ width: '80px', textAlign: 'center'}">
-
+             <Column field="passState"      header="품질"   :style="{ width: '80px', textAlign: 'center'}">
+                <template #body="slotProps">
+                    {{ slotProps.data.passState === 'REQ' ? '시험대기'
+                        : slotProps.data.passState === 'ING' ? '시험중'
+                        : slotProps.data.passState === 'ING2' ? '검토대기'
+                        : slotProps.data.passState === 'ING3' ? '승인대기'
+                        : slotProps.data.passState === 'PASS' ? '적합'
+                        : slotProps.data.passState === 'FAIL' ? '부적합'
+                        : '' }}
+                </template>
              </Column>
              <Column field="storageName"       header="창고"   :style="{ width: '120px', textAlign: 'center'}"/>
             </DataTable>

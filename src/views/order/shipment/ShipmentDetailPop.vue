@@ -6,7 +6,7 @@
             <div class="col-3 flex align-items-center gap-2">
                 <FloatLabel variant="on">
                     <DatePicker v-model="form.shipmentDate" show-icon  readonly/>
-                    <label>출고일자</label>
+                    <label>등록번호</label>
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
@@ -255,7 +255,7 @@ const managedItems = ref([
 const saveInfo = async () =>{
     if (shipmentItemList.value.length === 0 ) return vWarning("출고품목을 등록하세요")
     if (isEmpty(form.clientId) ) return vWarning("고객사를 입력하세요")
-    if (form.shipmentYn === 'Y' ) return vWarning("출고확정 건입니다.")
+   /// if (form.shipmentYn === 'Y' ) return vWarning("출고확정 건입니다.")
 
     try{
         const formData = new FormData()

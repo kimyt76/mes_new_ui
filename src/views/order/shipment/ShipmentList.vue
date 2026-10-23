@@ -107,7 +107,7 @@
                 <span
                     :class="{ 'status-editable': slotProps.data.shipmentYn === 'N' }"
                 >
-                    {{ slotProps.data.shipmentYn === 'Y' ? '진행중' : '출고확정' }}
+                    {{ slotProps.data.shipmentYn === 'N' ? '진행중' : '출고확정' }}
                 </span>
             </template>
         </Column>

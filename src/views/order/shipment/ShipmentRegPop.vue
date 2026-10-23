@@ -6,7 +6,7 @@
             <div class="col-3 flex align-items-center gap-2">
                 <FloatLabel variant="on">
                     <DatePicker v-model="form.shipmentDate" show-icon />
-                    <label>출고일자</label>
+                    <label>등록번호</label>
                 </FloatLabel>
                 <span class="center-dash">-</span>
                 <FloatLabel variant="on">
@@ -74,7 +74,7 @@
                            :options="shipmentYns"
                             optionLabel="codeNm"
                             optionValue="code" class="w-full" />
-                    <label>출고확상태</label>
+                    <label>출고확정상태</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
@@ -143,7 +143,17 @@
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="lotNo"       header="LOT"       :style="{ width: '170px', 'text-align': 'center' }" ></Column>
         <Column field="makeNo"      header="제조번호"   :style="{ width: '170px', 'text-align': 'center' }" ></Column>
-        <Column field="qcStatus"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
+        <Column field="passState"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" >
+            <template #body="slotProps">
+                    {{ slotProps.data.passState === 'REQ' ? '시험대기'
+                        : slotProps.data.passState === 'ING' ? '시험중'
+                        : slotProps.data.passState === 'ING2' ? '검토대기'
+                        : slotProps.data.passState === 'ING3' ? '승인대기'
+                        : slotProps.data.passState === 'PASS' ? '적합'
+                        : slotProps.data.passState === 'FAIL' ? '부적합'
+                        : '' }}
+                </template>
+        </Column>
         <Column field="stockQty"    header="재고수량"   :style="{ width: '100px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
         </Column>
