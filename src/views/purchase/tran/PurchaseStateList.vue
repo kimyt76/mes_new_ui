@@ -68,6 +68,7 @@
     <DataTable
         ref="dt"
         v-model:selection="selectedItem"
+        dataKey="purItemId"
         :value="purchaseList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -75,8 +76,6 @@
         scrollable
         showGridlines
         tableStyle="min-width: 140rem; table-layout: fixed;"
-
-        selectionMode="single"
         class="my-table"
         >
         <Column selectionMode="multiple"    headerStyle="width: 3rem" style="text-align: center;"></Column>
@@ -112,9 +111,9 @@
                 {{ Number(slotProps.data.totPrice).toLocaleString() }}
             </template>
         </Column>
-        <Column field="testStateName"    header="시험상태"  :style="{ width: '80px',textAlign:'center'}" />
-        <Column field="passStateName"    header="판정상태"  :style="{ width: '80px',textAlign:'center'}" />
-        <Column field="areaName"     header="구역"      :style="{ width: '90px',textAlign:'center'}" />
+        <Column field="testStateName"   header="시험상태"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="passStateName"   header="판정상태"  :style="{ width: '80px',textAlign:'center'}" />
+        <Column field="areaName"        header="구역"      :style="{ width: '90px',textAlign:'center'}" />
     </DataTable>
 </div>
 
@@ -153,6 +152,7 @@ const form  = reactive({
 })
 
 const srhList = async () =>{
+    selectedItem.value = []
     const params = {
         ...form
     }
@@ -160,9 +160,7 @@ const srhList = async () =>{
     purchaseList.value = await ApiPurchase.getPurchaseDetailList(params)
 }
 
-const handleDateChange = () =>{
-
-}
+const handleDateChange = () =>{ }
 
 const printOut = async () =>{
     const params = {
@@ -191,6 +189,9 @@ const barcodePrint = () =>{
         data:{
             menuType:'PUR',
             itemList : selectedItem.value,
+        },
+        onClose: (event) => {
+            selectedItem.value = []
         }
     })
 }
