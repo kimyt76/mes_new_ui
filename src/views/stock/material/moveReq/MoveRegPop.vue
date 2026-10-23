@@ -264,7 +264,7 @@ const selectRowDblClick = (row) =>{
         itemCd: itemCd.value,
         itemName: itemName.value,
         itemTypeCd: itemTypeCd.value,
-        qty: 0,
+        qty: row.data.qty,
     })
 
     itemName.value = ''
