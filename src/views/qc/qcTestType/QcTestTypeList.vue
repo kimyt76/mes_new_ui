@@ -51,7 +51,7 @@
 <div>
     <DataTable
         ref="dt"
-        :value="qcTestTypeList"
+        :value="testTypeMethodList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -69,7 +69,16 @@
             </template>
         </Column>
         <Column field="testItemJoin"  header="시험항목"  :style="{ width: '400px', textAlign:'center'}" />
-        <Column field="regYn"         header="등록여부"  :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="regYn"         header="등록여부"  :style="{ width: '100px', textAlign:'center'}" >
+            <template #body="slotProps">
+                <span
+                    class="action-link"
+                    :class="slotProps.data.regYn === 'Y' ? 'action-register' : 'action-edit'"
+                >
+                    {{ slotProps.data.regYn === 'Y' ? '[등록]' : '[미등록]' }}
+                </span>
+            </template>
+        </Column>
      </DataTable>
 </div>
 
@@ -85,10 +94,10 @@ import QcTestTypePop from './QcTestTypePop.vue';
 
 const dt = ref(null)
 const dialog = useDialog()
-const qcTestTypeList = ref([])
+const testTypeMethodList = ref([])
 const itemTypeCds = ref([])
 const totalCount = computed(() => {
-  return Array.isArray(qcTestTypeList.value) ? qcTestTypeList.value.length : 0
+  return Array.isArray(testTypeMethodList.value) ? testTypeMethodList.value.length : 0
 })
 const regYns = ref([
     { codeNm: '등록', code: 'Y' },
@@ -130,7 +139,7 @@ const srhList = async () =>{
     const param = {
         ...form
     }
-    qcTestTypeList.value = await ApiQc.getQcTestTypeList(param)
+    testTypeMethodList.value = await ApiQc.getTestTypeMethodList(param)
 }
 
 onMounted( async () => {
@@ -156,7 +165,7 @@ const downloadExcel = () =>{
     return;
   }
 
-  exportToExcel(qcTestTypeList.value, "품질검사유형리스트", cols);
+  exportToExcel(testTypeMethodList.value, "품질검사유형리스트", cols);
 }
 
 </script>

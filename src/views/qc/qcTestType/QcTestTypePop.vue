@@ -11,7 +11,7 @@
 <div>
     <BaseHotTable
         ref="hotRef"
-        :data="testTypeMethodList"
+        :data="qcTestTypeMethodList"
         :colHeaders="colHeaders"
         :columns="columns"
         :colWidths="colWidths"
@@ -48,7 +48,7 @@ import { computed, inject, onMounted, ref } from 'vue';
 const { vSuccess } = useAlertStore()
 
 const hotRef = ref(null)
-const testTypeMethodList = ref([])
+const qcTestTypeMethodList = ref([])
 const dialogRef = inject('dialogRef')
 const deleteIds = ref([])
 
@@ -129,22 +129,22 @@ const columns = [
 ]
 
 const selectedRows = computed(() => {
-    return testTypeMethodList.value.filter(row => row.checked)
+    return qcTestTypeMethodList.value.filter(row => row.checked)
 })
 
 const isAllSelected = computed(() => {
     return (
-        testTypeMethodList.value.length > 0 &&
-        selectedRows.value.length === testTypeMethodList.value.length
+        qcTestTypeMethodList.value.length > 0 &&
+        selectedRows.value.length === qcTestTypeMethodList.value.length
     )
 })
 
 const saveInfo = async () => {
-    testTypeMethodList.value.forEach(row => {
+    qcTestTypeMethodList.value.forEach(row => {
         row.itemCd = itemCd.value
     })
 
-    const saveList = testTypeMethodList.value.map(row => {
+    const saveList = qcTestTypeMethodList.value.map(row => {
         const {
             checked,
             actions,
@@ -170,20 +170,20 @@ const saveInfo = async () => {
 }
 
 const addRow = () => {
-    if (!Array.isArray(testTypeMethodList.value)) {
-        testTypeMethodList.value = []
+    if (!Array.isArray(qcTestTypeMethodList.value)) {
+        qcTestTypeMethodList.value = []
     }
 
     //let sortNum = 1
 
-    // if (testTypeMethodList.value.length > 0) {
-    //     const orderList = testTypeMethodList.value
+    // if (qcTestTypeMethodList.value.length > 0) {
+    //     const orderList = qcTestTypeMethodList.value
     //         .map(row => Number(row.orderDist) || 0)
 
     //     sortNum = Math.max(...orderList) + 1
     // }
 
-    testTypeMethodList.value.push({
+    qcTestTypeMethodList.value.push({
         checked: false,
         itemCd: itemCd.value,
         testItem: '',
@@ -198,7 +198,7 @@ const addRow = () => {
 }
 
 const removeRow = (index) => {
-    const row = testTypeMethodList.value[index]
+    const row = qcTestTypeMethodList.value[index]
 
     if (!row) {
         return
@@ -210,14 +210,14 @@ const removeRow = (index) => {
         }
     }
 
-    testTypeMethodList.value.splice(index, 1)
+    qcTestTypeMethodList.value.splice(index, 1)
 
     refreshHot()
 }
 
 const confirm = useConfirm()
 const removeALLRows =  () => {
-    if (testTypeMethodList.value.length === 0) {
+    if (qcTestTypeMethodList.value.length === 0) {
         return
     }
 
@@ -231,7 +231,7 @@ const removeALLRows =  () => {
 
         accept: async () => {
             // 기존 데이터 삭제 ID 수집
-            testTypeMethodList.value.forEach(row => {
+            qcTestTypeMethodList.value.forEach(row => {
                 if (row.testTypeMethodId) {
                     if (!deleteIds.value.includes(row.testTypeMethodId)) {
                         deleteIds.value.push(row.testTypeMethodId)
@@ -249,7 +249,7 @@ const removeALLRows =  () => {
             // 화면 전체 삭제
             const res = await ApiQc.deleteTestTypeMethod(params)
 
-            testTypeMethodList.value = []
+            qcTestTypeMethodList.value = []
             deleteIds.value = []
 
             // Handsontable 갱신
@@ -271,7 +271,7 @@ const afterChange = (changes, source) => {
     changes.forEach(([row, prop, oldValue, newValue]) => {
 
         if (prop === 'orderDist') {
-            testTypeMethodList.value[row].orderDist =
+            qcTestTypeMethodList.value[row].orderDist =
                 newValue === null || newValue === ''
                     ? null
                     : Number(newValue)
@@ -302,7 +302,7 @@ const afterOnCellMouseDown = (event, coords) => {
 const toggleAllCheck = () => {
     const checked = !isAllSelected.value
 
-    testTypeMethodList.value.forEach(row => {
+    qcTestTypeMethodList.value.forEach(row => {
         row.checked = checked
     })
 
@@ -323,9 +323,9 @@ onMounted(async () => {
     itemCd.value = dialogRef.value.data.itemCd
     itemName.value = dialogRef.value.data.itemName
 
-    const res = await ApiQc.getQcTestTypeMethod(itemCd.value)
+    const res = await ApiQc.getTestTypeMethod(itemCd.value)
 
-    testTypeMethodList.value = (res || []).map(row => ({
+    qcTestTypeMethodList.value = (res || []).map(row => ({
         ...row,
         checked: false
     }))

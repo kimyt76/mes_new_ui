@@ -43,7 +43,7 @@
         <div class="list-section mt-3 h-[500px]">
           <div class="overflow-auto">
             <DataTable
-                :value="qcTestTypeList"
+                :value="qcTestTypeMethodList"
                 paginator :rows="20"
                 :rowsPerPageOptions="[20,30,40]"
                 scrollHeight="500px"
@@ -76,10 +76,10 @@ import { ApiQc } from '@/api/apiQc';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
-const qcTestTypeList = ref([])
+const qcTestTypeMethodList = ref([])
 const itemTypeCds = ref([])
 const totalCount = computed(() => {
-  return Array.isArray(qcTestTypeList.value) ? qcTestTypeList.value.length : 0
+  return Array.isArray(qcTestTypeMethodList.value) ? qcTestTypeMethodList.value.length : 0
 })
 const regYns = ref([
     { codeNm: '등록', code: 'Y' },
@@ -96,7 +96,7 @@ const srhList = async () =>{
     const param = {
         ...form
     }
-    qcTestTypeList.value = await ApiQc.getQcTestTypeList(param)
+    qcTestTypeMethodList.value = await ApiQc.getqcTestTypeMethodList(param)
 }
 
 const selectRowClick = async (row) =>{

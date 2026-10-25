@@ -151,25 +151,25 @@ export const ApiQc = {
      * 품질검사유형
      * @returns
      */
-    getQcTestTypeList : async(params) =>{
+    getTestTypeMethodList : async(params) =>{
         try{
-            const res = await API_URL.post('/qcTestType/getQcTestTypeList', params)
+            const res = await API_URL.post('/qcTestType/getTestTypeMethodList', params)
             return res.data
         }catch(err){
             throw err.response
         }
     },
-    getQcTestTypeMethod : async(id) => {
+    getTestTypeMethod : async(id) => {
         try{
-            const res = await API_URL.get(`/qcTestType/getQcTestTypeMethod/${id}` )
+            const res = await API_URL.get(`/qcTestType/getTestTypeMethod/${id}` )
             return res.data
         }catch(err){
             throw err.response
         }
     },
-    getQcTestTypeMethodComp : async(params) => {
+    getTestTypeMethodComp : async(params) => {
         try{
-            const res = await API_URL.post('/qcTestType/getQcTestTypeMethodComp', params)
+            const res = await API_URL.post('/qcTestType/getTestTypeMethodComp', params)
             return res.data
         }catch(err){
             throw err.response
