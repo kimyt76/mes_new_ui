@@ -48,13 +48,13 @@
 
 <script setup>
 import { ApiMonitoring } from '@/api/apiMonitoring';
+import { formatNumber } from '@/util/common';
 import { onMounted, ref } from 'vue';
 
 const matMonitoringList = ref([])
 
 onMounted( async () =>{
     const res = await ApiMonitoring.getMatMonitoring();
-console.log('res', res)
     matMonitoringList.value = res
 })
 
