@@ -237,15 +237,17 @@
         <Button label="삭제" outlined severity="danger" size="small" @click="removeRow" />
       </div>
 
-      <div class="table-area mt-2">
+      <div ref="tableArea" class="table-area mt-2">
         <BaseHotTable
           ref="hotTable"
           :data="qcTestTypeMethodList"
           :colHeaders="colHeaders"
-          :columns="columns"
+          :columns="fittedColumns"
           :rowHeaders="false"
-          :height="430"
+          :height="tableHeight"
+          :width="tableWidth"
           stretchH="none"
+          v-if="tableWidth > 0 && tableHeight > 0"
           :afterChange="onAfterChange"
         />
       </div>
@@ -273,7 +275,7 @@ import { isEmpty, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
-import { inject, onMounted, reactive, ref } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import QcTestTypeListPop from '../qcTestType/QcTestTypeListPop.vue';
 
 const { userId, memberNm } = useAuthStore()
@@ -281,6 +283,33 @@ const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialogRef = inject('dialogRef')
 const dialog = useDialog()
 const hotTable = ref(null)
+const tableArea = ref(null)
+const tableWidth = ref(0)
+const tableHeight = ref(0)
+let tableResizeObserver = null
+
+// 실제 표시 공간 기준. 세로 스크롤바(최대 약 17px) 여유 확보
+const fittedColumns = computed(() => {
+    const baseWidths = [40, 35, 95, 265, 180, 95, 105, 90, 90]
+    const available = Math.max(0, tableWidth.value - 20)
+    const total = baseWidths.reduce((sum, w) => sum + w, 0)
+    let used = 0
+    return columns.map((column, index) => {
+        const width = index === columns.length - 1
+            ? Math.max(0, available - used)
+            : Math.floor(available * baseWidths[index] / total)
+        used += width
+        return { ...column, width }
+    })
+})
+
+const measureTable = () => {
+    if (!tableArea.value) return
+    tableWidth.value = Math.floor(tableArea.value.clientWidth)
+    tableHeight.value = Math.floor(tableArea.value.clientHeight)
+}
+
+onBeforeUnmount(() => tableResizeObserver?.disconnect())
 const isOrderType = ref(false)
 const isExpirDate = ref(false)
 const testStates = ref([])
@@ -336,59 +365,59 @@ const colHeaders = [
 
 const columns = [
     {
-      data: 'orderDist',
-      readOnly: true,
-      className: 'htCenter',
-      width: 50
+        data: 'orderDist',
+        readOnly: true,
+        className: 'htCenter',
+        width: 40
     },
-  {
-    data: 'checked',
-    type: 'checkbox',
-    className: 'htCenter',
-    width: 40
-  },
-  {
-    data: 'testItem',
-    type: 'text',
-    className: 'htCenter',
-    width: 110
-  },
-  {
-    data: 'testMethod',
-    type: 'text',
-    className: 'htLeft',
-    width: 330
-  },
-  {
-    data: 'testSpec',
-    type: 'text',
-    className: 'htLeft',
-    width: 210
-  },
-  {
-    data: 'testResult',
-    type: 'text',
-    className: 'htLeft',
-    width: 130
-  },
-  {
-    data: 'testDateString',
-    type: 'text',
-    className: 'htCenter',
-    width: 120
-  },
-  {
-    data: 'testerName',
-    type: 'text',
-    className: 'htCenter',
-    width: 100
-  },
-  {
-    data: 'passState',
-    type: 'text',
-    className: 'htCenter',
-    width: 100
-  }
+    {
+        data: 'checked',
+        type: 'checkbox',
+        className: 'htCenter',
+        width: 35
+    },
+    {
+        data: 'testItem',
+        type: 'text',
+        className: 'htCenter',
+        width: 95
+    },
+    {
+        data: 'testMethod',
+        type: 'text',
+        className: 'htLeft',
+        width: 265
+    },
+    {
+        data: 'testSpec',
+        type: 'text',
+        className: 'htLeft',
+        width: 180
+    },
+    {
+        data: 'testResult',
+        type: 'text',
+        className: 'htLeft',
+        width: 95
+    },
+    {
+        data: 'testDateString',
+        type: 'text',
+        className: 'htCenter',
+        width: 105
+    },
+    {
+        data: 'testerName',
+        type: 'text',
+        className: 'htCenter',
+        width: 90
+    },
+    {
+        data: 'passState',
+        type: 'text',
+        className: 'htCenter',
+        width: 90
+    }
 ]
 
 const onAfterChange = (changes, source) => {
@@ -579,6 +608,12 @@ const removeRow = () =>{
 }
 
 onMounted( async () =>{
+    await nextTick()
+    measureTable()
+    if (tableArea.value) {
+        tableResizeObserver = new ResizeObserver(measureTable)
+        tableResizeObserver.observe(tableArea.value)
+    }
     testStates.value = await ApiCommon.getCodeList('test_state')
     passStates.value = await ApiCommon.getCodeList('pass_state')
 
@@ -681,6 +716,8 @@ const closeDialog = () =>{
 
 .table-area {
     flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
 }
