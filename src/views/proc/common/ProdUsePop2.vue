@@ -111,8 +111,6 @@ const dialogRef = inject('dialogRef')
 const workUseList = ref([])
 const title = ref('')
 let procCd = ref('')
-let passStatus = ref('') // 공정 pass 여부
-let testState = ref('') // 공정 pass 여부
 
 const calcTot = (row) => {
     const use = Number(row.useQty) || 0
@@ -133,11 +131,6 @@ const saveInfo = async () => {
         vWarning('저장할 데이터가 없습니다.')
         return
     }
-
-    // if (passStatus.value !== 'PASS' || testState.value !== 'END' ) {
-    //     vWarning('현재 사용 가능한 상태가 아닙니다..')
-    //     return
-    // }
 
     try{
         const totalReqQty = workUseList.value.reduce((sum, row) => sum + (Number(row.reqQty) || 0), 0)
@@ -173,6 +166,19 @@ const saveInfo = async () => {
             prodUseList: workUseList.value
         }
 
+        const invalidRow = workUseList.value.find(row => {
+            const use = Number(row.useQty) || 0
+            const bad = Number(row.badQty) || 0
+            const workBad = Number(row.workBadQty) || 0
+
+            return use < bad + workBad
+        })
+
+        if (invalidRow) {
+            vWarning('사용량보다 불량값이 큰 항목이 있습니다.')
+            return
+        }
+
         //부모로 전달전에 prod 업데이트
         const res = await ApiProc.saveProdInfo(params)
         // 부모로 집계 데이터 전달
@@ -201,8 +207,11 @@ const searchByBarcode = async () =>{
             return
         }
 
-        passStatus.value = res.passStatus
-        testState.value = res.testState
+        if (res.passState !== 'PASS' || res.testState !== 'END') {
+            vWarning('현재 사용 가능한 상태가 아닙니다.')
+            barcode.value = ''
+            return
+        }
 
         workUseList.value.push({
             no: workUseList.value.length + 1,
@@ -214,6 +223,8 @@ const searchByBarcode = async () =>{
             badQty: 0,
             workBadQty: 0,
             totUseQty: 0,
+            prodUseId: res.prodUseId ?? null,
+            prodInfoId: res.prodInfoId ?? null,
         })
 
         barcode.value = ''
@@ -232,7 +243,6 @@ const loadInventoryList = async (areaCd) => {
 
   storageList.value = res.storageList || []
   stockItemHistList.value = res.stockItemHistList || []
-  console.log('stockItemHistList.value ', stockItemHistList.value )
 
   dynamicColumns.value = storageList.value.map((item) => ({
     field: String(item.storageCd).toUpperCase(),
@@ -240,8 +250,12 @@ const loadInventoryList = async (areaCd) => {
   }))
 }
 
+const prodUseId =ref('')
+const prodInfoId =ref('')
+
 onMounted( async () =>{
-    let prodUseId = dialogRef.value.data.row.prodUseId
+    prodUseId.value = dialogRef.value.data.row.prodUseId
+    prodInfoId.value = dialogRef.value.data.row.prodInfoId
     procCd.value = dialogRef.value.data.procCd
 
     title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
@@ -250,8 +264,12 @@ onMounted( async () =>{
         barcodeInputRef.value?.$el?.querySelector('input')?.focus()
     }, 100)
 
-    if (!isEmpty(prodUseId)) {
-        workUseList.value = await ApiProc.getProdUseList(prodUseId)
+    if (!isEmpty(prodInfoId.value)) {
+        workUseList.value = await ApiProc.getProdUseList(prodInfoId.value)
+
+        workUseList.value.forEach(row => {
+            calcTot(row)
+        })
     }
 
     //우측 재고리스트
