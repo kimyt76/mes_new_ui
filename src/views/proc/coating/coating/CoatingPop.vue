@@ -77,7 +77,7 @@
                 <div class="section-label">2. 투입자재 정보</div>
                 <DataTable
                     :value="prodList"
-                    dataKey="prodUseId"
+                    dataKey="prodInfoId"
                     show-gridlines
                     class="my-table material-table"
                      @row-click="(event) => selectRowClick(event.data)"

@@ -71,7 +71,7 @@
                 <div class="section-label">2. 투입자재 정보</div>
                 <DataTable
                     :value="prodList"
-                    dataKey="prodUseId"
+                    dataKey="prodInfoId"
                     show-gridlines
                     class="my-table material-table"
                     scrollable
@@ -318,8 +318,8 @@ const totalProdQty = computed(() => {
 const totalProdYield = computed(() => {
     const prodQty = Number(totalProdQty.value)
     const coatingQty = Number(workOrderInfo.coatingProdQty)
-console.log('prodQty', prodQty)
-console.log('coatingQty', coatingQty)
+//console.log('prodQty', prodQty)
+//console.log('coatingQty', coatingQty)
     if (!Number.isFinite(prodQty) || !Number.isFinite(coatingQty) || coatingQty <= 0) {
         return '0.00'
     }
