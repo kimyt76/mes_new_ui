@@ -479,8 +479,8 @@ const openPop = (type) => {
     })
 };
 const confirm = useConfirm()
-const workComplete = () =>{
-    if(!checkComplete()) return
+const workComplete = async () =>{
+    if(!await checkComplete()) return
     confirm.require({
         header: '포장완료 확인',
         message: '포장작업을 완료하시겠습니까?',
@@ -504,11 +504,20 @@ const workComplete = () =>{
         }
     });
 }
-const checkComplete = () =>{
+const checkComplete = async () =>{
     if (workRecordList.value.length === 0 ) {
         vWarning('작업수행정보가 없습니다.')
         return false
     }
+
+    //배치 상태를을 가져와서 전 단계가 끝났는지 확인 로직
+    const res = await ApiProc.getStatusEndCheck(form.workProcId)
+
+    if ( res.batchStatus < '51') {
+        vWarning('충전 공정이 끝나지 않았습니다.')
+        return false
+    }
+
     // 그 중 testNos 없는 것 체크
     if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){
         vWarning('미등록 작업이 있습니다.')

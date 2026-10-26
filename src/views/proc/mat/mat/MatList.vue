@@ -121,10 +121,10 @@ const handleDateChange = () =>{
 
 
 const selectRowClick = (row) =>{
-    // if ( row.batchStatus > '12') {
-    //     vWarning('칭량이 완료된 건만 제조작업이 가능합니다.')
-    //     return;
-    // }
+    if ( row.batchStatus > '12') {
+        vWarning('칭량이 완료된 건만 제조작업이 가능합니다.')
+        return;
+    }
 
     dialog.open(MatRegPop, {
         props:{

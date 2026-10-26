@@ -475,9 +475,9 @@ const openPop = (type) => {
 };
 
 const confirm = useConfirm()
-const workComplete = () =>{
+const workComplete = async  () =>{
 
-    if(!checkComplete()) return
+    if(!await checkComplete()) return
 
     confirm.require({
         header: '코팅완료 확인',
@@ -503,11 +503,19 @@ const workComplete = () =>{
     });
 }
 
-const checkComplete = () =>{
+const checkComplete = async () =>{
     if (workRecordList.value.length === 0 ) {
         vWarning('작업수행정보가 없습니다.')
         return false
     }
+    //배치 상태를을 가져와서 전 단계가 끝났는지 확인 로직
+    const res = await ApiProc.getStatusEndCheck(form.workProcId)
+
+    if ( res.batchStatus < '31') {
+        vWarning('칭량 또는 제조 공정이 끝나지 않았습니다.')
+        return false
+    }
+
     // 그 중 testNos 없는 것 체크
     if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){
         vWarning('등록된 자재정보가 없습니다.')
