@@ -513,7 +513,7 @@ const openLookupPopup = (type, row = null) => {
                 pt: { root: { style: { overflow: 'hidden' } }, content: { style: { overflow: 'hidden' } } }
             },
             data: { form, ...(shouldPassRow ? { row } : {}), type },
-            onClose: (event) => {
+            onClose: async  (event) => {
                 // 바코드 팝업 닫힘 처리
                 if (type === 'ITEM_CODE') {
                     isBarcodePopupOpen.value = false
@@ -535,6 +535,11 @@ const openLookupPopup = (type, row = null) => {
                 } else {
                     loadWeighInfo()
                 }
+
+                // 바코드 칭량 저장 후 재조회
+                if (type === 'ITEM_CODE' && event?.data) {
+                    await loadWeighInfo()
+                }
             }
         })
     }catch(err){
@@ -550,8 +555,10 @@ const applyPopupResultToRow = (type, row, data) => {
         row.weighQty = data.weighQty ?? row.weighQty
         row.testNoJoin = data.testNo ?? row.testNo
 
-        if (  row.weighQty ===  row.orderQty ) {
+        if (Number(row.weighQty) === Number(row.orderQty)) {
             row.weighYn = 'Y'
+        } else {
+            row.weighYn = 'N'
         }
     } else if (type === 'CONTAINER_WEIGHT') {
         row.bagWeight = data.weight ?? row.weight

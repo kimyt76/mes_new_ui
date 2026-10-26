@@ -43,7 +43,7 @@
         class="my-table"
         :value="stockItemList"
         scrollable
-        scrollHeight="420px"
+        scrollHeight="flex"
         showGridlines
       >
         <Column field="no"      header="No" :style="{ width: '40px' }"  />
@@ -86,7 +86,7 @@
         class="my-table"
         :value="stockItemHistList"
         scrollable
-        scrollHeight="420px"
+        scrollHeight="flex"
         :tableStyle="{ minWidth: '600px' }"
         showGridlines
       >
@@ -117,7 +117,7 @@
   <!-- 하단 버튼 -->
   <div class="bottom-area">
     <Button label="저장" class="p-button-secondary" @click="saveInfo" />
-    <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+    <Button label="닫기" outlined @click="closeDialog" />
   </div>
 </template>
 
@@ -283,10 +283,20 @@ const saveInfo = async () => {
   // 저장 로직 구현
   const testNosArray = stockItemList.value.map(item => item.testNo)
 
-//   if ( orderQty.value !== totalWeighQty.value) {
-//     vWarning('지시량값과 칭량값이 틀립니다.')
-//     return
-//   }
+  const weighQty = Number(totalWeighQty.value) || 0
+  const targetQty = Number(orderQty.value) || 0
+
+    // 1. 칭량량 0 체크
+    if (weighQty <= 0) {
+        vWarning('칭량량을 입력해 주세요.')
+        return
+    }
+
+    // 2. 지시량과 칭량량 비교 (소수점 6자리 기준)
+    if (Math.round(targetQty * 1000000) !== Math.round(weighQty * 1000000)) {
+        vWarning('지시량과 칭량량이 일치하지 않습니다.')
+        return
+    }
 
   const params = {
     weighInfo : {
@@ -301,6 +311,10 @@ const saveInfo = async () => {
     weighList : stockItemList.value,
     deleteWeighItems: deleteWeighItems.value,
   }
+
+  console.log('totalWeighQty:', totalWeighQty.value)
+console.log('weighInfo.weighQty:', params.weighInfo.weighQty)
+console.log('weighList:', params.weighList)
 
   const params1 = {
     weighQty: totalWeighQty.value,
@@ -470,22 +484,36 @@ const checkEarlierTestNo = (testNo) => {
 /* 좌/우 테이블 레이아웃 */
 .content-area {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 18px;
   height: 400px;
+  min-height: 0;
 }
 .panel {
   border: 1px solid #ddd;
   padding: 8px;
   border-radius: 6px;
   background: #fff;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.panel :deep(.p-datatable) {
+  flex: 1;
+  min-height: 0;
 }
 
-/* 하단 버튼 */
+/* 하단 버튼: 테이블 영역 아래에 배치 */
 .bottom-area {
   margin-top: 14px;
+  padding: 8px 0;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  position: relative;
 }
 
 /* ✅ 요청하신 헤더 스타일 그대로 */
