@@ -153,8 +153,7 @@ const saveInfo = async () => {
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('area')
     const popupForm = dialogRef.value?.data?.form
-
-    console.log('popupForm', popupForm)
+    //console.log('popupForm', popupForm)
 
     if (popupForm) {
         Object.assign(form, popupForm)
@@ -162,18 +161,18 @@ onMounted( async () =>{
 
     Object.assign(form, popupForm)
     allStorages.value = await ApiSystem.getStorageCodeList()
-  console.log('popupForm', allStorages.value)
+  //console.log('popupForm', allStorages.value)
     const params = {
         procCd: form.procCd,
         areaCd: form.areaCd
     }
- console.log('params', params)
+ //console.log('params', params)
     const res = await ApiProc.getWorkerList(params)
     workerList.value = res.data.map(item => ({
         codeNm: item.workerName,
         code: item.workerName
     }));
-    console.log('workerList.value', workerList.value)
+    //console.log('workerList.value', workerList.value)
 })
 
 const closeDialog = () =>{
