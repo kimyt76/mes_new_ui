@@ -105,10 +105,8 @@ const saveInfo = async () => {
         workProcId : form.workProcId,
      }
      const cntRes = await ApiProc.getProcStartCnt(params)
-     const cnt = Number(cntRes.data?.data ?? 0)
-     console.log('공정 시작 조회 cnt:', cnt)
      // 3. 기존 데이터가 있으면 시작 차단
-     if (cnt > 0) {
+     if (cntRes.data > 0) {
          return vWarning('이미 시작된 칭량 작업입니다.')
      }
 
