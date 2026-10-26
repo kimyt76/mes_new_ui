@@ -79,7 +79,14 @@ export const ApiProc = {
     updateProcMemo: async(param) => {
         return  await API_URL.post('/procCommon/updateProcMemo',param)
     },
-
+    getStatusEndCheck: async(id) => {
+        try{
+            const res = await API_URL.get(`/procCommon/getStatusEndCheck/${id}`)
+            return res.data
+        }catch(err){
+            throw err.response
+        }
+    },
 
     /**
      *  작업수행정보 저장
