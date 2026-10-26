@@ -18,7 +18,7 @@
                 <!-- 시작시간 -->
                 <div class="col-4">
                     <FloatLabel variant="on" class="w-full">
-                        <InputGroup class="time-input-group">
+                        <InputGroup ref="startTimeGroupRef" class="time-input-group">
                             <InputText
                                 v-model="startTimeText"
                                 placeholder="HH:mm"
@@ -44,7 +44,7 @@
                 <!-- 종료시간 -->
                 <div class="col-4">
                     <FloatLabel variant="on" class="w-full">
-                        <InputGroup class="time-input-group">
+                        <InputGroup ref="endTimeGroupRef" class="time-input-group">
                             <InputText
                                 v-model="endTimeText"
                                 placeholder="HH:mm"
@@ -127,7 +127,7 @@
     </Card>
 
     <!-- 시간 선택용 DatePicker: 입력창만 화면 밖에 배치 -->
-    <div class="time-picker-anchor">
+    <div ref="startAnchorRef" class="time-picker-anchor">
         <DatePicker
             ref="startPickerRef"
             v-model="startTimePicker"
@@ -135,9 +135,12 @@
             hourFormat="24"
             appendTo="body"
             :manualInput="false"
+            :showOnFocus="true"
             @update:modelValue="value => onPickerChange('start', value)"
+            @show="positionTimePopup('start')"
         />
-
+    </div>
+    <div ref="endAnchorRef" class="time-picker-anchor">
         <DatePicker
             ref="endPickerRef"
             v-model="endTimePicker"
@@ -145,7 +148,9 @@
             hourFormat="24"
             appendTo="body"
             :manualInput="false"
+            :showOnFocus="true"
             @update:modelValue="value => onPickerChange('end', value)"
+            @show="positionTimePopup('end')"
         />
     </div>
 </template>
@@ -191,6 +196,10 @@ const endTimePicker = ref(null);
 // DatePicker 컴포넌트 참조
 const startPickerRef = ref(null);
 const endPickerRef = ref(null);
+const startTimeGroupRef = ref(null);
+const endTimeGroupRef = ref(null);
+const startAnchorRef = ref(null);
+const endAnchorRef = ref(null);
 
 // Date -> HH:mm
 const formatHHmm = (date) => {
@@ -287,26 +296,66 @@ const onTimeBlur = (type) => {
     }
 };
 
+// 시간 선택 팝업을 해당 입력창 바로 아래로 이동 (입력/저장 로직 변경 없음)
+const positionTimePopup = async (type) => {
+    await nextTick();
+    requestAnimationFrame(() => {
+        const group = type === 'start' ? startTimeGroupRef.value : endTimeGroupRef.value;
+        const groupEl = group?.$el ?? group;
+        if (!groupEl) return;
+
+        const panels = [...document.querySelectorAll('.p-datepicker-panel')];
+        const panel = panels.reverse().find(el => el.getClientRects().length > 0);
+        if (!panel) return;
+
+        const rect = groupEl.getBoundingClientRect();
+        const panelWidth = panel.getBoundingClientRect().width;
+        const left = Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 8));
+
+        panel.style.setProperty('position', 'fixed', 'important');
+        panel.style.setProperty('left', `${left}px`, 'important');
+        panel.style.setProperty('top', `${rect.bottom + 2}px`, 'important');
+        panel.style.setProperty('transform', 'none', 'important');
+    });
+};
+
 // 시간 선택 아이콘 클릭
 const openTimePicker = async (type) => {
-    await nextTick();
-
     const picker = type === 'start'
         ? startPickerRef.value
-        : endPickerRef.value;
+        : endPickerRef.value
 
-    if (!picker) return;
+    const group = type === 'start'
+        ? startTimeGroupRef.value
+        : endTimeGroupRef.value
 
-    // PrimeVue DatePicker 오버레이 열기
-    if (typeof picker.showOverlay === 'function') {
-        picker.showOverlay();
-    } else {
-        // 버전별 API 차이를 위한 대체 처리
-        const input = picker.$el?.querySelector?.('input');
-        input?.focus();
-        input?.click();
+    const anchor = type === 'start'
+        ? startAnchorRef.value
+        : endAnchorRef.value
+
+    if (!picker || !group || !anchor) return
+
+    const groupEl = group.$el ?? group
+    const rect = groupEl.getBoundingClientRect()
+
+    // 팝업 기준점을 해당 시간 입력창 아래로 이동
+    anchor.style.left = `${rect.left}px`
+    anchor.style.top = `${rect.bottom}px`
+
+    await nextTick()
+
+    // 숨겨진 DatePicker의 실제 입력 요소를 통해 팝업 열기
+    const pickerEl = picker.$el
+    const inputEl = pickerEl?.querySelector?.('input')
+        ?? (pickerEl?.tagName === 'INPUT' ? pickerEl : null)
+
+    if (!inputEl) {
+        console.error('DatePicker 입력 요소를 찾을 수 없습니다.')
+        return
     }
-};
+
+    inputEl.click()
+}
 
 // DatePicker에서 시간 선택
 const onPickerChange = (type, value) => {
@@ -365,9 +414,7 @@ const saveInfo = async () => {
         }];
 
         await ApiProc.saveWorkRecordInfo(params);
-
         vSuccess('저장되었습니다.');
-
         dialogRef.value.close({
             ...form,
         });
@@ -460,12 +507,14 @@ const closeDialog = () => {
     background: var(--p-datepicker-dropdown-hover-background, #e2e8f0);
 }
 
-/* 시간 선택용 DatePicker 입력창은 화면 밖에 배치 */
+/* 시간 선택용 DatePicker 위치 기준점 */
 .time-picker-anchor {
     position: fixed;
-    left: -9999px;
+    left: 0;
     top: 0;
     width: 1px;
     height: 1px;
+    opacity: 0;
+    pointer-events: none;
 }
 </style>
