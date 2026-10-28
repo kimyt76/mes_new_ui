@@ -49,6 +49,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model:first="first"
         v-model:selection="selectedItem"
         :value="itemStockList"
         data-key="itemCd"
@@ -57,6 +58,11 @@
         showGridlines
         scrollable
     >
+        <Column header="No" :style="{ width: '40px', textAlign:'center'}">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
         <Column field="itemCd"          header="품목코드"       :style="{ width: '120px', 'text-align': 'center'}"  />
         <Column field="itemTypeName"    header="품목구분"       :style="{ width: '80px', 'text-align': 'center'}"  />
         <Column field="itemName"        header="품목명"         :style="{ width: '300px'}"  />
@@ -106,6 +112,7 @@ import { ref } from 'vue';
 
 const { vInfo, vWarning} = useAlertStore()
 let rowIdSeq = 0
+const first = ref(0)
 const bomDialog = ref(false)
 const selectedItem = ref([])
 const itemBomList = ref([])
