@@ -83,10 +83,11 @@
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
+        scrollable
         class="my-table"
         showGridlines
      >
-        <Column selectionMode="single" headerStyle="width: 1rem" style="text-align: center;"/>
+        <Column selectionMode="single" headerStyle="width: 0.5rem" style="text-align: center;"/>
          <Column field="moveStockDateSeq" header="일자-No"    :style="{ width: '100px', textAlign: 'center' }" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data)" style="text-decoration: underline; cursor: pointer;">
@@ -104,7 +105,7 @@
                 </template>
         </Column>
          <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
-         <Column field="moveStatusName" header="진행상태"   :style="{ width: '60px', textAlign: 'center'}" >
+         <Column field="moveStatusName" header="진행상태"   :style="{ width: '70px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
                 <span v-if="slotProps.data.moveStatus === 'Q'" @click="openMovePop(slotProps.data.moveStockId)"
@@ -138,7 +139,7 @@
         </Column>
          <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
             <template #body="slotProps">
-                 <!-- 등록 -->
+                 <!-- 요청 -->
                 <span v-if="slotProps.data.moveStatus === 'Q'"
                     style="
                         color: #1976d2;
@@ -146,7 +147,7 @@
                         "
                     > -
                 </span>
-                 <!-- 등록 -->
+                 <!-- 진행 -->
                 <span v-if="slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
                     style="
                         color: #1976d2;
@@ -154,7 +155,7 @@
                         cursor: pointer;
                         text-decoration: underline;
                         "
-                    >[등록]
+                    >[완료]
                 </span>
                 <!-- 완료 -->
                 <span v-else-if="slotProps.data.moveStatus === 'C'"
@@ -251,8 +252,22 @@ const openMovePop = (id) =>{
             draggable: true,
             style: {
                 width: '1800px',
-                height: '650px'
+                height: '650px',
+                overflow: 'hidden'
             },
+            pt: {
+            root: {
+                style: {
+                    overflow: 'hidden'
+                }
+            },
+            content: {
+                style: {
+                    overflow: 'hidden',
+                    minHeight: '0'
+                }
+            }
+        },
             maximizable: true
         },
         data: {

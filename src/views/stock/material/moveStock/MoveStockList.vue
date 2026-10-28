@@ -73,6 +73,7 @@
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
+        scrollable
         class="my-table"
         showGridlines
      >
@@ -93,7 +94,7 @@
              {{ Number(slotProps.data.qty).toLocaleString() }}
         </Column>
          <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
-         <Column field="etc"            header="비고"       :style="{ width: '180px'}" />
+         <Column field="etc"            header="비고"       :style="{ width: '150px'}" />
          <Column field="confirmStatus"  header="확인상태"   :style="{ width: '70px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 대기 -->
@@ -124,7 +125,7 @@
                 </span>
             </template>
         </Column>
-         <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
+         <Column field="confirm"        header="확인"       :style="{ width: '60px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
                 <span v-if="!['C', 'R'].includes(slotProps.data.confirmStatus)" @click="openMoveConfirmPop(slotProps.data.moveStockId)"

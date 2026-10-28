@@ -104,9 +104,10 @@
     <DataTable
         :value="procList"
         class="my-table" showGridlines
+        scrollable scrollHeight="330px"
         @row-click="selectRowClick"
         >
-      <Column header="#" style="width: 40px">
+      <Column header="NO" style="width: 40px" :headerStyle="{ textAlign: 'center' }" :bodyStyle="{ textAlign: 'center' }">
         <template #body="slotProps">
           {{ slotProps.index + 1 }}
         </template>
@@ -124,8 +125,14 @@
         :value="stockList"
         class="my-table"
         showGridlines
+        scrollable scrollHeight="330px"
         @row-dblclick="selectRowDblClick"
         >
+      <Column header="NO" style="width: 40px" :headerStyle="{ textAlign: 'center' }" :bodyStyle="{ textAlign: 'center' }">
+        <template #body="slotProps">
+          {{ slotProps.index + 1 }}
+        </template>
+      </Column>
       <Column field="testNo"    header="시험번호" style="width: 100px" />
       <Column field="tranDate"  header="입고일자" style="width: 100px" />
       <Column field="qty"       header="재고량" style="width: 90px; text-align: right">
@@ -138,8 +145,8 @@
 
   <div class="table-box move-table">
     <div class="table-title">이동내역</div>
-    <DataTable :value="moveItemList" class="my-table" showGridlines>
-      <Column header="#" style="width: 40px">
+    <DataTable :value="moveItemList" class="my-table" showGridlines scrollable scrollHeight="330px">
+      <Column header="NO" style="width: 40px" :headerStyle="{ textAlign: 'center' }" :bodyStyle="{ textAlign: 'center' }">
         <template #body="slotProps">
           {{ slotProps.index + 1 }}
         </template>
@@ -157,8 +164,8 @@
 </div>
 
 <div class="button-area">
-  <Button v-if="form.moveStatus === 'Q'" label="저장" severity="success" @click="saveInfo" />
-  <Button label="닫기" outlined @click="closeDialog" />
+  <Button v-if="form.moveStatus === 'Q'" label="저장" severity="success" size="small" @click="saveInfo" />
+  <Button label="닫기" severity="secondary" size="small" outlined @click="closeDialog" />
 </div>
 
 
@@ -267,8 +274,6 @@ const selectRowDblClick = (row) =>{
         qty: row.data.qty,
     })
 
-    itemName.value = ''
-    itemTypeCd.value = ''
 }
 
 const saveInfo = async () =>{
@@ -361,19 +366,23 @@ const closeDialog = () => {
   align-items: flex-start;
   gap: 24px;
   width: 100%;
+  min-height: 0;
 }
 
 .table-box {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .request-table {
   width: 670px;
+  flex-shrink: 0;
 }
 
 .stock-table {
-  width: 300px;
+  width: 380px;
+  flex-shrink: 0;
 }
 
 .move-table {
@@ -391,14 +400,19 @@ const closeDialog = () => {
 }
 
 .button-area {
-  position: fixed;
-  left: 20px;
-  right: 20px;
-  bottom: 18px;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   display: flex;
-  gap: 4px;
-  padding-top: 14px;
-  background: #fafafa;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 16px;
+  margin-top: 12px;
+  background: #f8fafc;
+  border-top: 1px solid #d8e2f0;
+  border-radius: 0 0 6px 6px;
 }
 
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
@@ -412,5 +426,20 @@ const closeDialog = () => {
 ::v-deep(.my-table .p-datatable-tbody > tr > td) {
   font-size: 13px;
   padding: 4px 8px;
+}
+
+:deep(.my-table .p-datatable-table-container) {
+  scrollbar-width: thin;
+  scrollbar-color: #aab4c0 #f1f5f9;
+}
+
+:deep(.my-table .p-datatable-table-container::-webkit-scrollbar) {
+  width: 7px;
+  height: 7px;
+}
+
+:deep(.my-table .p-datatable-table-container::-webkit-scrollbar-thumb) {
+  background: #aab4c0;
+  border-radius: 8px;
 }
 </style>
