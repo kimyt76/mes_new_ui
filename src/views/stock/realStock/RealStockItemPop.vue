@@ -45,9 +45,9 @@ const hotTable = ref(null)
 const colHeaders = ['품목코드', '품목명', '시험번호', '장부수량', '실사수량', '차이', '비고']
 //Handsontable 컬럼 정의
 const columns = [
-  { data: 'itemCd', type: 'text', className: 'htCenter', width: 130, readOnly: true },
-  { data: 'itemName', type: 'text', width: 300 , readOnly: true},
-  { data: 'testNo', type: 'text', className: 'htCenter', width: 120, readOnly: true },
+  { data: 'itemCd', type: 'text', className: 'htCenter', width: 130 },
+  { data: 'itemName', type: 'text', width: 300 },
+  { data: 'testNo', type: 'text', className: 'htCenter', width: 120 },
   { data: 'docStockQty', type: 'numeric', className: 'htRight', width: 110 ,numericFormat: {
     pattern: '0,0.[000000]'
   }},

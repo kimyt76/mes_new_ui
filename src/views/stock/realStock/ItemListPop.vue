@@ -72,6 +72,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import { useAlertStore } from '@/stores/alert';
+import { isEmpty } from '@/util/common';
 import { inject, onMounted, reactive, ref } from 'vue';
 
 const dialogRef = inject('dialogRef')
@@ -93,6 +94,8 @@ onMounted( async () =>{
 })
 
 const searchList = async () =>{
+    if (  isEmpty(form.testNo) && isEmpty(form.itemName) &&  isEmpty(form.testNo) )  return vInfo('품목코드 또는 품목명 또는 시험번호 3개중에 1개를 입력하세요')
+
     const params = {
         ...form
     }

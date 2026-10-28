@@ -43,14 +43,15 @@
             <td class="cellBorder">
                 <InputText
                     v-model="makeEtcInfo.maker"
-                    class="w-full"
+                    class="w-full text-center"
+
                 />
             </td>
             <th class="cellBorder cellHeader">확인자</th>
             <td class="cellBorder">
                 <InputText
                     v-model="makeEtcInfo.confirmer"
-                    class="w-full"
+                    class="w-full text-center"
                 />
             </td>
             <th class="cellBorder cellHeader">고객사</th>
