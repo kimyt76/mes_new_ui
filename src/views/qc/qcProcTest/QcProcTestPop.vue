@@ -114,13 +114,13 @@
                                 <tr>
                                     <th class="cellBorder cellHeader">장기보존시험</th>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="sampleInfo.qty4" class="w-full" />
+                                        <InputNumber v-model="sampleInfo.qty4"  class="w-full" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">누액</th>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="sampleInfo.qty5" class="w-full"/>
+                                        <InputNumber v-model="sampleInfo.qty5"  class="w-full"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -343,7 +343,7 @@
                                         <input type="time" v-model="item.testTime" class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line1" class="w-full" />
+                                        <InputNumber v-model="item.line1" :minFractionDigits="0" :maxFractionDigits="3"class="w-full" />
                                     </td>
                                     <td class="cellBorder">
                                         <div class="flex justify-center gap-4">
@@ -397,7 +397,7 @@
                                         <input type="time" v-model="item.testTime" class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line1" class="w-full" />
+                                        <InputNumber v-model="item.line1" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
                                         <div class="flex justify-center gap-4">
@@ -458,19 +458,19 @@
                                         <input type="time" v-model="item.testTime" class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line1" class="w-full" />
+                                        <InputNumber v-model="item.line1" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line2" class="w-full" />
+                                        <InputNumber v-model="item.line2" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line3" class="w-full" />
+                                        <InputNumber v-model="item.line3" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line4" class="w-full" />
+                                        <InputNumber v-model="item.line4" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line5" class="w-full" />
+                                        <InputNumber v-model="item.line5" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
                                         <div class="flex justify-center gap-4">
@@ -524,7 +524,7 @@
                                         <input type="time" v-model="item.testTime" class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line1" class="w-full" />
+                                        <InputNumber v-model="item.line1" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
                                         <div class="flex justify-center gap-4">
@@ -586,19 +586,19 @@
                                         <input type="time" v-model="item.testTime" class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line1" class="w-full" />
+                                        <InputNumber v-model="item.line1" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line2" class="w-full"/>
+                                        <InputNumber v-model="item.line2" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full"/>
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line3" class="w-full"/>
+                                        <InputNumber v-model="item.line3" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full"/>
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line4" class="w-full" />
+                                        <InputNumber v-model="item.line4" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line5" lass="w-full"/>
+                                        <InputNumber v-model="item.line5" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full"/>
                                     </td>
                                     <td class="cellBorder">
                                         <div class="flex justify-center gap-4">
@@ -660,19 +660,19 @@
                                         <input type="time" v-model="item.testTime" class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line1" class="w-full" />
+                                        <InputNumber v-model="item.line1" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line2" class="w-full"/>
+                                        <InputNumber v-model="item.line2" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full"/>
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line3" class="w-full"/>
+                                        <InputNumber v-model="item.line3" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full"/>
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line4" class="w-full" />
+                                        <InputNumber v-model="item.line4" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full" />
                                     </td>
                                     <td class="cellBorder">
-                                        <InputNumber v-model="item.line5" lass="w-full"/>
+                                        <InputNumber v-model="item.line5" :minFractionDigits="0" :maxFractionDigits="6"  class="w-full"/>
                                     </td>
                                     <td class="cellBorder">
                                         <div class="flex justify-center gap-4">
