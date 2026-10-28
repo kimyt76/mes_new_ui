@@ -38,6 +38,7 @@
                 <label for="on_label">제조상태</label>
             </FloatLabel>
             <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
+            <Button label="초기화" icon="pi pi-refresh" severity="secondary" type="button" @click="resetSearch" />
             </div>
         </template>
     </Toolbar>
@@ -50,6 +51,7 @@
         ref="dt"
         :value="matList"
         paginator :rows="20"
+        :loading ="loading"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
         scrollable
@@ -57,7 +59,7 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
-        <Column field="areaCd"          header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"          header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
@@ -91,20 +93,22 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
-import { minMonth, todayKST } from '@/util/common';
+import { todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import MatRegPop from './MatRegPop.vue';
 
 const { vWarning} = useAlertStore()
+const loading = ref(false)
 const dialog = useDialog()
 const dt = ref(null);
 const matList = ref([])
 const procStatuss = ref([])
 const areaCds = ref([])
 const form = reactive({
-  strDate:  minMonth(todayKST()),
+  strDate:  todayKST(),
   endDate: todayKST(),
   areaCd: '',
   clientName: '',
@@ -118,7 +122,7 @@ const form = reactive({
 const handleDateChange = () =>{}
 
 const selectRowClick = (row) =>{
-    console.log('row',  row)
+    //console.log('row',  row)
     // if (row.batchStatus !== '12') {
     //     vWarning('칭량이 완료된 건만 제조작업이 가능합니다.')
     //     return
@@ -157,11 +161,19 @@ const selectRowClick = (row) =>{
 
 // form
 const srhList = async () =>{
-    const params = {
-        ...form
+    loading.value =true
+
+    try{
+        const params = {
+            ...form
+        }
+        // api
+        matList.value = await ApiProc.getProcList(params);
+    }catch(err){
+        handleApiError(err)
+    }finally{
+        loading.value =false
     }
-    // api
-    matList.value = await ApiProc.getProcList(params);
 }
 
 onMounted( async () => {
@@ -178,6 +190,19 @@ onMounted( async () => {
         }))
     ]
 })
+
+const resetSearch = () =>{
+    form.strDate =  todayKST()
+    form.endDate =  todayKST()
+    form.areaCd = ''
+    form.clientName = ''
+    form.itemCd = ''
+    form.itemName = ''
+    form.procStatus = ''
+
+    form.procCd = 'PRC002',
+    srhList()
+}
 
 const home = ref({
     icon: 'pi pi-home'
