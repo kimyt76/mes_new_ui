@@ -656,7 +656,9 @@ const bindMakeInfo = (data) => {
 
      // 21 미만이면 제조시작 버튼 표시
     // 21 이상이면 저장 버튼 표시
-    isStarted.value = batchStatus !== '' && batchStatus < '21'
+    console.log('procStatus', procStatus )
+
+    isStarted.value = procStatus !== '' && procStatus === '00'
 
     checkComplete()
 }
