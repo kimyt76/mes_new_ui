@@ -359,15 +359,16 @@ const selectRowClick = (row) => {
             draggable: false,
             style: {
                 width: '1800px',
-                height: '400px'
+                height: '550px',
+                maxWidth: '98vw',
+                maxHeight: '95vh'
             },
             contentStyle: {
                 height: 'calc(100% - 60px)',
-                overflow: 'auto'
-            },
-            breakpoints: {
-                '1280px': '90vw',
-                '960px': '95vw'
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '0'
             }
         },
         data:{
