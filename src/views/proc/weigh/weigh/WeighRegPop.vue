@@ -66,7 +66,7 @@
         <Tab v-for="sg in sangGubunOptions" :key="sg" :value="sg">{{ sg }}</Tab>
       </TabList>
 
-      <TabPanel v-for="sg in sangGubunOptions" :key="sg" :value="sg">
+      <TabPanel :value="activeSangGubun">
         <BaseHotTable
           ref="hotTable"
           :data="currentTabList"
@@ -90,7 +90,7 @@
       <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
       <Button label="공정기록서" @click="downloadProc" />
       <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
-      <Button v-if="isComplate" label="창량완료" @click="completeWeight" />
+      <Button v-if="isComplate" label="칭량완료" @click="completeWeight" />
       <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
   </div>
@@ -120,7 +120,7 @@ import WeighBarcodeRegPop from './WeighBarcodeRegPop.vue'
 
 const isBarcodePopupOpen = ref(false)
 const isBarcodeScanning = ref(false)
-const { vSuccess, vWarning, vInfo } = useAlertStore()
+const { vSuccess, vWarning } = useAlertStore()
 const { userId } = useAuthStore()
 const dialogRef = inject('dialogRef')
 const dialog = useDialog()
@@ -145,19 +145,17 @@ const SCAN_INTERVAL = 100
 const lastMouseDown = ref({ row: -1, col: -1, time: 0 })
 
 const ALL_TAB = 'ALL'
-const FIELD = {
-  DIST_ORDER: 'orderDist',
-  SUNGSANG: 'appearance',
-  SANGGUBUN: 'phase',
-  WEIGH_YN: 'weighYn',
-  SELECTED: 'selected',
+const FIELD = { DIST_ORDER: 'orderDist', SUNGSANG: 'appearance', SANGGUBUN: 'phase', WEIGH_YN: 'weighYn', SELECTED: 'selected' }
+const LOOKUP_PROP = { CONTAINER: '__lookup_container', WEIGHER: '__lookup_weighUser', CONFIRM: '__lookup_confirmUser' }
+const POPUPS = {
+  ITEM_CODE: { title: '바코드 칭량 입력', comp: WeighBarcodeRegPop },
+  CONTAINER_WEIGHT: { title: '용기무게 선택', comp: BagWeightPop },
+  CONTAINER_WEIGHT1: { title: '용기무게 입력', comp: BagWeightInfoPop },
+  WEIGH_USER: { title: '칭량자 선택', comp: WorkerPop },
+  CONFIRM_USER: { title: '확인자 선택', comp: WorkerPop },
+  S: { title: '칭량 시작', comp: ProcStartPop }
 }
-
-const LOOKUP_PROP = {
-  CONTAINER: '__lookup_container',
-  WEIGHER: '__lookup_weighUser',
-  CONFIRM: '__lookup_confirmUser',
-}
+const ROW_POPUPS = new Set(['ITEM_CODE', 'CONTAINER_WEIGHT', 'CONTAINER_WEIGHT1', 'WEIGH_USER', 'CONFIRM_USER'])
 
 // 스캐너 이벤트 등록/해제
 onMounted(() => {
@@ -169,144 +167,74 @@ onBeforeUnmount(() => {
 })
 
 const handleScannerKeydown = (event) => {
-    const now = Date.now()
-    if (isBarcodePopupOpen.value || isBarcodeScanning.value) return
-
-    if (now - lastScanTime.value > SCAN_INTERVAL) {
-        scanBuffer.value = ''
+  if (isBarcodePopupOpen.value || isBarcodeScanning.value) return
+  const now = Date.now()
+  if (now - lastScanTime.value > SCAN_INTERVAL) scanBuffer.value = ''
+  lastScanTime.value = now
+  if (event.key === 'Enter') {
+    const barcode = scanBuffer.value.trim()
+    scanBuffer.value = ''
+    if (barcode) {
+      form.barcode = barcode
+      handleScannedCode(barcode)
     }
-
-    lastScanTime.value = now
-
-    if (event.key === 'Enter') {
-        const barcode = scanBuffer.value.trim()
-
-        scanBuffer.value = ''
-
-        if (barcode) {
-            form.barcode = barcode
-            console.log('스캔 barcode = ', barcode)
-            handleScannedCode(barcode)
-        }
-
-    } else if (event.key.length === 1) {
-
-        scanBuffer.value += event.key
-    }
+  } else if (event.key.length === 1) {
+    scanBuffer.value += event.key
+  }
 }
 
-// 스캔 데이터 파싱 및 매칭 (itemCd 추출 기능 포함)
 const handleScannedCode = async (barcode) => {
-
-    if (isStarted.value) {
-        return vWarning('칭량시작 상태가 아닙니다. 칭량시작 버튼을 먼저 눌러주세요.')
-    }
-
-    // 조회 중이거나 바코드 팝업이 열려 있으면 중복 실행 방지
-    if (isBarcodeScanning.value || isBarcodePopupOpen.value) return
-
-    isBarcodeScanning.value = true
-
-    try {
-        const testNo = String(barcode ?? '').trim()
-        if (!testNo) return
-
-        form.barcode = testNo
-
-        // 시험번호로 품목코드 조회
-        const res = await ApiQc.getItemTestNoInfo(testNo)
-
-        const itemInfo = res?.data ?? res
-        const itemCd = String(itemInfo?.itemCd ?? '').trim()
-
-        if (!itemCd) {
-            return vWarning(`시험번호[${testNo}]에 해당하는 품목정보가 없습니다.`)
-        }
-
-        // 처방 리스트에서 품목코드 비교
-        const targetRows = matUseDataList.value.filter(
-            r => String(r.itemCd ?? '').trim() === itemCd
-        )
-
-        if (targetRows.length === 0) {
-            return vWarning(`스캔된 품목코드[${itemCd}]가 처방 리스트에 없습니다.`)
-        }
-
-        // 시험번호가 없는 행 검색
-        const targetRow = targetRows.find(
-            r => !String(r.testNo ?? '').trim()
-        )
-
-        if (!targetRow) {
-            return vWarning('해당 품목의 모든 처방이 이미 칭량 완료 상태입니다.')
-        }
-
-        if (
-            targetRow.phase &&
-            sangGubunOptions.value.includes(targetRow.phase)
-        ) {
-            activeSangGubun.value = targetRow.phase
-        }
-
-        // 바코드 팝업 호출
-        openLookupPopup('ITEM_CODE', targetRow)
-
-    } catch (err) {
-        handleApiError(err)
-    } finally {
-        // 조회 완료 후 중복 실행 방지 상태 해제
-        isBarcodeScanning.value = false
-    }
+  if (isStarted.value) return vWarning('칭량시작 버튼을 먼저 눌러주세요.')
+  if (isBarcodeScanning.value || isBarcodePopupOpen.value) return
+  isBarcodeScanning.value = true
+  try {
+    const testNo = String(barcode ?? '').trim()
+    if (!testNo) return
+    form.barcode = testNo
+    const res = await ApiQc.getItemTestNoInfo(testNo)
+    const itemCd = String((res?.data ?? res)?.itemCd ?? '').trim()
+    if (!itemCd) return vWarning(`시험번호[${testNo}]에 해당하는 품목정보가 없습니다.`)
+    const targetRows = matUseDataList.value.filter(r => String(r.itemCd ?? '').trim() === itemCd)
+    if (!targetRows.length) return vWarning(`스캔된 품목코드[${itemCd}]가 처방 리스트에 없습니다.`)
+    // 기존과 동일하게 testNo가 비어 있는 행 우선 선택
+    const targetRow = targetRows.find(r => !String(r.testNo ?? '').trim())
+    if (!targetRow) return vWarning('해당 품목의 모든 처방이 이미 칭량 완료 상태입니다.')
+    if (targetRow.phase && sangGubunOptions.value.includes(targetRow.phase)) activeSangGubun.value = targetRow.phase
+    openLookupPopup('ITEM_CODE', targetRow)
+  } catch (err) {
+    handleApiError(err)
+  } finally {
+    isBarcodeScanning.value = false
+  }
 }
 
 // Computed 옵션 및 필터링 리스트
 const SUNGSANG_EMPTY = '공백'
 
-const sungsangOptions = computed(() => {
-  return [...new Set(
-    matUseDataList.value.map(r => {
-      const value = String(r?.[FIELD.SUNGSANG] ?? '').trim()
-      return value || SUNGSANG_EMPTY
-    })
-  )]
-})
-
+const sungsangOptions = computed(() => [...new Set(matUseDataList.value.map(r => String(r.appearance ?? '').trim() || SUNGSANG_EMPTY))])
 const sungsangCheckedMap = reactive({})
-watch(sungsangOptions, (opts) => {
+watch(sungsangOptions, opts => {
   opts.forEach(ss => { if (sungsangCheckedMap[ss] === undefined) sungsangCheckedMap[ss] = true })
   Object.keys(sungsangCheckedMap).forEach(k => { if (!opts.includes(k)) delete sungsangCheckedMap[k] })
 }, { immediate: true })
 
-const sangGubunOptions = computed(() => {
-  const list = matUseDataList.value.map(r => r?.[FIELD.SANGGUBUN]).filter(Boolean)
-  return [ALL_TAB, ...[...new Set(list)].sort()]
-})
-
+const sangGubunOptions = computed(() => [ALL_TAB, ...[...new Set(matUseDataList.value.map(r => r.phase).filter(Boolean))].sort()])
 const activeSangGubun = ref(ALL_TAB)
-watch(sangGubunOptions, (opts) => {
+watch(sangGubunOptions, opts => {
   if (!opts.includes(activeSangGubun.value)) activeSangGubun.value = ALL_TAB
 }, { immediate: true })
 
-const currentTabList = computed(() => {
-  const tab = activeSangGubun.value
-  const allowedSs = new Set(Object.entries(sungsangCheckedMap).filter(([, v]) => v).map(([k]) => k))
-
-  return matUseDataList.value.filter(r => {
-    const sg = String(r?.[FIELD.SANGGUBUN] ?? '')
-    const rawSs = String(r?.[FIELD.SUNGSANG] ?? '').trim()
-    const ss = rawSs || SUNGSANG_EMPTY
-
-    const tabOk = (tab === ALL_TAB) || (sg === tab)
-    const ssOk = allowedSs.size ? allowedSs.has(ss) : true
-
-    return tabOk && ssOk
-  })
-})
+const currentTabList = computed(() => matUseDataList.value.filter(row => {
+  const tabMatches = activeSangGubun.value === ALL_TAB || String(row.phase ?? '') === activeSangGubun.value
+  const selected = Object.entries(sungsangCheckedMap).filter(([, enabled]) => enabled).map(([name]) => name)
+  const appearance = String(row.appearance ?? '').trim() || SUNGSANG_EMPTY
+  return tabMatches && (!selected.length || selected.includes(appearance))
+}))
 const totalMatCount = computed(() => currentTabList.value.length)
-const finishedCount = computed(() => currentTabList.value.filter(r => r?.[FIELD.WEIGH_YN] === 'Y').length)
+const finishedCount = computed(() => currentTabList.value.filter(r => r.weighYn === 'Y').length)
 const allChecked = computed({
-  get: () => currentTabList.value.length > 0 && currentTabList.value.every(r => r?.[FIELD.SELECTED]),
-  set: (v) => currentTabList.value.forEach(r => { r[FIELD.SELECTED] = v })
+  get: () => currentTabList.value.length > 0 && currentTabList.value.every(r => r.selected),
+  set: checked => currentTabList.value.forEach(r => { r.selected = checked })
 })
 
 // Handsontable 설정
@@ -395,8 +323,11 @@ const completeWeight = async () => {
         accept: async () => {
             try {
                 const params = {
-                    procStatus: '12', batchStatus: '12',
-                    workProcId: form.workProcId, workBatchId: form.workBatchId, procCd: form.procCd
+                    procStatus: '12',
+                    batchStatus: '12',
+                    workProcId: form.workProcId,
+                    workBatchId: form.workBatchId,
+                    procCd: form.procCd
                 }
                 await ApiProc.completeWeight(params)
                 vSuccess('정상적으로 칭량완료 처리하였습니다!')
@@ -409,10 +340,20 @@ const completeWeight = async () => {
 }
 
 const saveInfo = async () => {
+    // 전체 목록에서 칭량완료(Y)인 행만 추출
+    const saveList = matUseDataList.value.filter(
+        row => row.weighYn === 'Y'
+    )
+    if (saveList.length === 0) {
+        vWarning('칭량완료된 품목이 없습니다.')
+        return
+    }
+
     try {
-        const res = await ApiProc.saveWeighInfo({ workOrderInfo: form, weightBomList: matUseDataList.value })
+        const res = await ApiProc.saveWeighInfo({ workOrderInfo: form, weightBomList: saveList  })
         vSuccess(res.message)
-        checkComplete()
+        await loadWeighInfo()
+        //checkComplete()
     } catch(err) {
         handleApiError(err)
     }
@@ -421,63 +362,49 @@ const saveInfo = async () => {
 const checkComplete = () => {
     if (form.procStatus === '11' && totalMatCount.value === finishedCount.value) {
         isComplate.value = true
+    }else{
+        isComplate.value = false
     }
 }
 
 const handleAfterChange = (changes, source) => {
   if (!changes || source === 'loadData') return
-
-  for (const [rowIndex, prop, , newVal] of changes) {
-    const row = matUseDataList.value[rowIndex]
+  for (const [rowIndex, prop] of changes) {
+    const row = currentTabList.value[rowIndex]
     if (!row) continue
-
-    if (prop === FIELD.WEIGH_YN) {
-      row[FIELD.WEIGH_YN] = newVal
-    }
-
-    // 칭량이나 용기무게가 변경되면 실시간으로 총량을 다시 계산하여 그리드에 반영
     if (['weighQty', 'bagWeight'].includes(prop)) {
-        const total = calcTotalQty(row)
-        row.totalQty = total
-        const hot = hotTable.value?.hotInstance || hotTable.value
-        if (hot?.setDataAtRowProp) {
-            hot.setDataAtRowProp(rowIndex, 'totalQty', total, 'calcTotalQty')
-        }
+      row.totalQty = calcTotalQty(row)
+      // 변경된 행 객체를 직접 수정하므로 필터링된 탭에서도 올바른 행에 반영
+      const hot = hotTable.value?.hotInstance || hotTable.value
+      hot?.render?.()
     }
   }
 }
 
 const handleCellClickFromHot = (event, coords) => {
   if (isStarted.value || !coords || coords.row < 0 || coords.col < 0) return
-
-  const rowData = currentTabList.value[coords.row]
-  if (!rowData) return
-
-  const now = Date.now()
-  const cols = hotColumns.value.map(col => col.data)
-
-  const clickActions = {
-    itemCd: () => openLookupPopup('ITEM_CODE', rowData),
-    itemName: () => openLookupPopup('ITEM_CODE', rowData),
-    [LOOKUP_PROP.CONTAINER]: () => openLookupPopup('CONTAINER_WEIGHT', rowData),
-    [LOOKUP_PROP.WEIGHER]: () => openLookupPopup('WEIGH_USER', rowData),
-    [LOOKUP_PROP.CONFIRM]: () => openLookupPopup('CONFIRM_USER', rowData),
-    bagWeight: () => {
-      const isSameCell = lastMouseDown.value.row === coords.row && lastMouseDown.value.col === coords.col
-      if (isSameCell && (now - lastMouseDown.value.time < 300)) {
-        openLookupPopup('CONTAINER_WEIGHT1', rowData)
-        lastMouseDown.value = { row: -1, col: -1, time: 0 }
-      }
+  const row = currentTabList.value[coords.row]
+  if (!row) return
+  const prop = hotColumns.value[coords.col]?.data
+  const lookup = {
+    itemCd: 'ITEM_CODE', itemName: 'ITEM_CODE',
+    [LOOKUP_PROP.CONTAINER]: 'CONTAINER_WEIGHT',
+    [LOOKUP_PROP.WEIGHER]: 'WEIGH_USER',
+    [LOOKUP_PROP.CONFIRM]: 'CONFIRM_USER'
+  }
+  if (lookup[prop]) openLookupPopup(lookup[prop], row)
+  if (prop === 'bagWeight') {
+    const last = lastMouseDown.value
+    if (last.row === coords.row && last.col === coords.col && Date.now() - last.time < 300) {
+      openLookupPopup('CONTAINER_WEIGHT1', row)
+      lastMouseDown.value = { row: -1, col: -1, time: 0 }
+      return
     }
   }
-
-  const clickedProp = cols[coords.col]
-  if (clickActions[clickedProp]) clickActions[clickedProp]()
-
-  lastMouseDown.value = { row: coords.row, col: coords.col, time: now }
+  lastMouseDown.value = { row: coords.row, col: coords.col, time: Date.now() }
 }
 
-// 💡 안전한 수치 계산식으로 복원 (용기무게 누락 문제 완전 해결)
+// 칭량량 + 용기무게
 const calcTotalQty = (row) => {
   const weighQty = toNumber(row.weighQty) ?? 0
   const bagWeight = toNumber(row.bagWeight) ?? 0
@@ -485,90 +412,63 @@ const calcTotalQty = (row) => {
 }
 
 const openLookupPopup = (type, row = null) => {
-    // 바코드 팝업 중복 실행 방지
-    if (type === 'ITEM_CODE') {
-        if (isBarcodePopupOpen.value) return
-        if (row?.itemCd === 'JRMSC00011') return
-
-        isBarcodePopupOpen.value = true
-    }
-
-    const popupMap = {
-        ITEM_CODE: { title: '바코드 칭량 입력', comp: WeighBarcodeRegPop },
-        CONTAINER_WEIGHT: { title: '용기무게 선택', comp: BagWeightPop },
-        CONTAINER_WEIGHT1: { title: '용기무게 입력', comp: BagWeightInfoPop },
-        WEIGH_USER: { title: '칭량자 선택', comp: WorkerPop },
-        CONFIRM_USER: { title: '확인자 선택', comp: WorkerPop },
-        DEFAULT: { title: '칭량 시작', comp: ProcStartPop }
-    }
-
-    const selected = popupMap[type] || popupMap.DEFAULT
-    const shouldPassRow = ['ITEM_CODE', 'CONTAINER_WEIGHT', 'WEIGH_USER', 'CONFIRM_USER', 'CONTAINER_WEIGHT1'].includes(type)
-
-     try {
-        dialog.open(selected.comp, {
-            props: {
-                header: selected.title, modal: true, draggable: false,
-                style: { overflow: 'hidden' },
-                pt: { root: { style: { overflow: 'hidden' } }, content: { style: { overflow: 'hidden' } } }
-            },
-            data: { form, ...(shouldPassRow ? { row } : {}), type },
-            onClose: async  (event) => {
-                // 바코드 팝업 닫힘 처리
-                if (type === 'ITEM_CODE') {
-                    isBarcodePopupOpen.value = false
-                    scanBuffer.value = ''
-                }
-
-                if (event?.data && shouldPassRow && row) {
-                    applyPopupResultToRow(type, row, event.data)
-
-                    // 💡 팝업창에서 데이터를 수령하여 row에 매핑한 직후 총량을 재계산하여 그리드 동기화
-                    row.totalQty = calcTotalQty(row)
-                    const hot = hotTable.value?.hotInstance || hotTable.value
-                    if (hot?.setDataAtRowProp) {
-                        const viewRowIndex = currentTabList.value.findIndex(r => r === row)
-                        if (viewRowIndex !== -1) {
-                            hot.setDataAtRowProp(viewRowIndex, 'totalQty', row.totalQty, 'calcTotalQty')
-                        }
-                    }
-                } else {
-                    loadWeighInfo()
-                }
-
-                // 바코드 칭량 저장 후 재조회
-                if (type === 'ITEM_CODE' && event?.data) {
-                    await loadWeighInfo()
-                }
-            }
-        })
-    }catch(err){
+  if (type === 'ITEM_CODE') {
+    if (isBarcodePopupOpen.value || row?.itemCd === 'JRMSC00011') return
+    isBarcodePopupOpen.value = true
+  }
+  const popup = POPUPS[type] ?? POPUPS.S
+  const hasRow = ROW_POPUPS.has(type)
+  try {
+    dialog.open(popup.comp, {
+      props: {
+        header: popup.title, modal: true, draggable: false,
+        style: { overflow: 'hidden' },
+        pt: { root: { style: { overflow: 'hidden' } }, content: { style: { overflow: 'hidden' } } }
+      },
+      data: { form, ...(hasRow ? { row } : {}), type },
+      onClose: async event => {
         if (type === 'ITEM_CODE') {
-                isBarcodePopupOpen.value = false
+          isBarcodePopupOpen.value = false
+          scanBuffer.value = ''
         }
-        handleApiError(err)
-    }
+        if (event?.data && hasRow && row) {
+          applyPopupResultToRow(type, row, event.data)
+          row.totalQty = calcTotalQty(row)
+          const hot = hotTable.value?.hotInstance || hotTable.value
+          hot?.render?.()
+        } else {
+          await loadWeighInfo()
+        }
+        // 바코드 입력은 팝업 자체 저장 후 최신 데이터 조회
+        if (type === 'ITEM_CODE' && event?.data) await loadWeighInfo()
+      }
+    })
+  } catch (err) {
+    if (type === 'ITEM_CODE') isBarcodePopupOpen.value = false
+    handleApiError(err)
+  }
 }
 
 const applyPopupResultToRow = (type, row, data) => {
-    if (type === 'ITEM_CODE') {
-        row.weighQty = data.weighQty ?? row.weighQty
-        row.testNoJoin = data.testNo ?? row.testNo
-
-        if (Number(row.weighQty) === Number(row.orderQty)) {
-            row.weighYn = 'Y'
-        } else {
-            row.weighYn = 'N'
-        }
-    } else if (type === 'CONTAINER_WEIGHT') {
-        row.bagWeight = data.weight ?? row.weight
-    } else if (type === 'WEIGH_USER') {
-        row.weigher = data.workerName ?? row.workerName
-    } else if (type === 'CONFIRM_USER') {
-        row.confirmer = data.workerName ?? row.workerName
-    } else if (type === 'CONTAINER_WEIGHT1') {
-        row.bagWeight = data ?? row.weight
-    }
+  switch (type) {
+    case 'ITEM_CODE':
+      row.weighQty = data.weighQty ?? row.weighQty
+      row.testNoJoin = data.testNo ?? row.testNo
+      row.weighYn = Number(row.weighQty) === Number(row.orderQty) ? 'Y' : 'N'
+      break
+    case 'CONTAINER_WEIGHT':
+      row.bagWeight = data.weight ?? row.weight
+      break
+    case 'CONTAINER_WEIGHT1':
+      row.bagWeight = data ?? row.weight
+      break
+    case 'WEIGH_USER':
+      row.weigher = data.workerName ?? row.workerName
+      break
+    case 'CONFIRM_USER':
+      row.confirmer = data.workerName ?? row.workerName
+      break
+  }
 }
 
 const normalizeRows = (rows) => (rows ?? []).map((r, idx) => {
@@ -664,8 +564,8 @@ const downloadProc = async () => {
         a.download =`${form?.makeNo || ''}_칭량기록.xlsx`
         a.click()
         window.URL.revokeObjectURL(url)
-    } catch {
-        vError('엑셀 다운로드 실패')
+    } catch (err) {
+        handleApiError(err)
     }
 }
 
@@ -693,19 +593,6 @@ const closeDialog = () => dialogRef.value?.close()
 }
 td .custom-cell {
   background-color: rgb(245 245 245);
-}
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.tab-active {
-  background: #2f6fff;
-  color: white;
 }
 .cellHeader,
 .cellBorder {
