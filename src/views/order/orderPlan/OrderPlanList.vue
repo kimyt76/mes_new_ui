@@ -138,6 +138,7 @@
         <DataTable
             ref="dt"
             :value="orderPlanList"
+            :loading="loading"
             scrollable
             scrollHeight="flex"
             showGridlines
@@ -419,6 +420,7 @@
 import { ApiOrder } from '@/api/apiOrders'
 import DateRangePicker from '@/components/DateRangePicker.vue'
 import { minMonth, todayKST } from '@/util/common'
+import { handleApiError } from '@/util/errorHandler.js'
 import { exportToExcel } from '@/util/exportToExcel'
 import { useDialog } from 'primevue/usedialog'
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -434,6 +436,7 @@ import WorkOrderPop from './workOrderPop.vue'
  * 실제 프로젝트의 파일경로에 맞게 변경
  * ============================================================
  */
+const loading = ref(false)
 const dialog = useDialog()
 const dt = ref(null)
 const orderPlanList = ref([])
@@ -579,11 +582,20 @@ const formatNumber = (value) => {
 // 조회
 // ============================================================
 const srhList = async () => {
-    const params = {
-        ...form
-    }
+    loading.value = true
+    try {
 
-    orderPlanList.value = await ApiOrder.getOrderPlanList( params )
+        const params = {
+            ...form
+        }
+
+        orderPlanList.value = await ApiOrder.getOrderPlanList( params )
+    }catch(err){
+        handleApiError(err)
+        loading.value = false
+    }finally {
+        loading.value = false
+    }
 }
 
 // ============================================================
