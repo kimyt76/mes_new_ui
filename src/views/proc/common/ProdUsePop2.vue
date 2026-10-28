@@ -1,4 +1,6 @@
 <template>
+<div class="usage-popup-layout">
+    <div class="usage-popup-header">
     <div class="label mt-2">
          {{ title }}
     </div>
@@ -15,13 +17,18 @@
         </FloatLabel>
     </div>
 
-<div class="flex gap-1 mt-2">
+</div>
+
+<div class="usage-popup-tables flex gap-1 mt-2">
     <!-- 좌측 -->
-    <div class="basis-[60%] min-w-0">
+    <div class="basis-[60%] min-w-0 usage-table-panel">
         <DataTable
             :value="workUseList"
+            scrollable
+            scrollHeight="flex"
+            :tableStyle="{ minWidth: '1050px' }"
             show-gridlines
-            class="my-table"
+            class="my-table usage-left-table"
         >
          <Column field="no"         header="NO"   :style="{ width: '30px', textAlign: 'center'}" ></Column>
          <Column field="testNo"     header="시험번호"   :style="{ width: '110px', textAlign: 'center'}" ></Column>
@@ -50,20 +57,20 @@
         </Column>
         </DataTable>
     </div>
-    <!-- 우측 재고현황 테이블 -->
-    <div class="basis-[40%] min-w-0 overflow-x-auto">
+    <!-- 우측 재고현황 테이블: 스크롤만 변경 -->
+    <div class="basis-[40%] min-w-0 usage-table-panel stock-scroll-area">
         <DataTable
-            class="my-table"
+            class="my-table stock-history-table"
             :value="stockItemHistList"
             scrollable
-            scrollHeight="420px"
-            :tableStyle="{ minWidth: '600px' }"
+            scrollHeight="flex"
+            :tableStyle="{ minWidth: (480 + dynamicColumns.length * 140) + 'px' }"
             showGridlines
         >
-            <Column field="no"          header="No"         :style="{ width: '40px', textAlign:'center' }"   />
-            <Column field="testNo"      header="시험번호"   :style="{ width: '110px', textAlign:'center' }" />
-            <Column field="inDate"      header="입고일"     :style="{ width: '110px', textAlign:'center' }" />
-            <Column field="expiryDate"  header="사용기한"   :style="{ width: '110px', textAlign:'center' }" />
+            <Column field="no" header="No" :style="{ width: '40px', minWidth: '40px', textAlign: 'center' }" />
+            <Column field="testNo" header="시험번호" :style="{ width: '110px', minWidth: '110px', textAlign: 'center' }" />
+            <Column field="inDate" header="입고일" :style="{ width: '110px', minWidth: '110px', textAlign: 'center' }" />
+            <Column field="expiryDate" header="사용기한" :style="{ width: '110px', minWidth: '110px', textAlign: 'center' }" />
             <!-- 가변 컬럼 -->
             <Column
                 v-for="col in dynamicColumns"
@@ -71,24 +78,25 @@
                 :field="col.field"
                 :header="col.header"
                 :style="{ width: '140px', minWidth: '140px' }"
-                >
+            >
                 <template #body="{ data }">
                     <div class="text-right">{{ formatQty(data[col.field]) }}</div>
                 </template>
             </Column>
-            <Column field="totQty" header="합계" >
-            <template #body="{ data }">
-                <div class="text-right">{{ formatQty(data.totQty) }}</div>
-            </template>
+            <Column field="totQty" header="합계" :style="{ width: '110px', minWidth: '110px' }">
+                <template #body="{ data }">
+                    <div class="text-right">{{ formatQty(data.totQty) }}</div>
+                </template>
             </Column>
         </DataTable>
     </div>
 </div>
 
-    <div class="flex justify-start mt-3 gap-2">
+    <div class="usage-popup-footer flex justify-start mt-3 gap-2">
         <Button label="저장" icon="pi pi-check" @click="saveInfo"/>
         <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
+</div>
 </template>
 
 <script setup>
@@ -237,10 +245,11 @@ const loadInventoryList = async (areaCd) => {
   const params = {
     itemCd: dialogRef.value.data.row.itemCd,
     areaCd,
+    type: 'TEST'
   }
 
   const res = await ApiStock.getStockItemHistList(params)
-
+console.log('res', res)
   storageList.value = res.storageList || []
   stockItemHistList.value = res.stockItemHistList || []
 
@@ -297,5 +306,45 @@ const closeDialog = () =>{
   font-weight: 700;
   margin-bottom: 6px;
   font-size: larger;
+}
+
+/* 팝업 내부는 고정 레이아웃: 상단 / 테이블 / 하단 버튼 */
+.usage-popup-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+.usage-popup-header, .usage-popup-footer {
+    flex: 0 0 auto;
+}
+.usage-popup-tables {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+.usage-table-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+/* PrimeVue DataTable 자체를 남은 높이에 맞춤 */
+:deep(.usage-table-panel .p-datatable) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+}
+:deep(.usage-table-panel .p-datatable-table-container) {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow: auto !important;
+}
+.usage-popup-footer {
+    padding-bottom: 2px;
 }
 </style>
