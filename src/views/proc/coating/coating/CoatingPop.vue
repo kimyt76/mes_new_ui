@@ -168,7 +168,7 @@
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">총사용량</th>
-                                    <td class="cellBorder">{{ workOrderInfo.useQty || 0 }} kg</td>
+                                    <td class="cellBorder">{{ totalUseQty || 0 }} kg</td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">생산수량</th>
