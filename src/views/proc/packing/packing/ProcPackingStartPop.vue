@@ -140,7 +140,7 @@ const saveInfo = async () => {
                     batchStatus: '51',
                 }
 
-                const res = await ApiProc.startProcCharge(param)
+                const res = await ApiProc.startProcPacking(param)
                 vSuccess('포장작업이 가능합니다.')
                 closeDialog()
             } catch (err) {
