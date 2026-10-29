@@ -143,14 +143,14 @@
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="lotNo"       header="LOT"       :style="{ width: '170px', 'text-align': 'center' }" ></Column>
         <Column field="makeNo"      header="제조번호"   :style="{ width: '170px', 'text-align': 'center' }" ></Column>
-        <Column field="passState"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" >
+        <Column field="qcStatus"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" >
             <template #body="slotProps">
-                    {{ slotProps.data.passState === 'REQ' ? '시험대기'
-                        : slotProps.data.passState === 'ING' ? '시험중'
-                        : slotProps.data.passState === 'ING2' ? '검토대기'
-                        : slotProps.data.passState === 'ING3' ? '승인대기'
-                        : slotProps.data.passState === 'PASS' ? '적합'
-                        : slotProps.data.passState === 'FAIL' ? '부적합'
+                    {{ slotProps.data.qcStatus === 'REQ' ? '시험대기'
+                        : slotProps.data.qcStatus === 'ING' ? '시험중'
+                        : slotProps.data.qcStatus === 'ING2' ? '검토대기'
+                        : slotProps.data.qcStatus === 'ING3' ? '승인대기'
+                        : slotProps.data.qcStatus === 'PASS' ? '적합'
+                        : slotProps.data.qcStatus === 'FAIL' ? '부적합'
                         : '' }}
                 </template>
         </Column>
@@ -331,7 +331,7 @@ const selectedRow = (obj) =>{
         itemName: o.itemName,
         lotNo: '',
         makeNo: '',
-        passState: '',
+        qcStatus: '',
         storageCd: o.storageCd,
         stockQty: o.qty,
         qty: o.qty,
@@ -363,7 +363,7 @@ const selectedRow1 = (obj) =>{
         itemName: o.itemName,
         lotNo: o.lotNo,
         makeNo: o.makeNo,
-        passState: o.passState,
+        qcStatus: o.qcStatus,
         storageCd: o.storageCd,
         stockQty: o.stockQty,
         qty: o.stockQty,

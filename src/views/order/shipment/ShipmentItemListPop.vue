@@ -69,14 +69,14 @@
               <Column field="pallet"            header="파렛트(예상)":style="{ width: '110px', textAlign: 'right'}">
                  <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
              </Column>
-             <Column field="passState"      header="품질"   :style="{ width: '80px', textAlign: 'center'}">
+             <Column field="qcStatus"      header="품질"   :style="{ width: '80px', textAlign: 'center'}">
                 <template #body="slotProps">
-                    {{ slotProps.data.passState === 'REQ' ? '시험대기'
-                        : slotProps.data.passState === 'ING' ? '시험중'
-                        : slotProps.data.passState === 'ING2' ? '검토대기'
-                        : slotProps.data.passState === 'ING3' ? '승인대기'
-                        : slotProps.data.passState === 'PASS' ? '적합'
-                        : slotProps.data.passState === 'FAIL' ? '부적합'
+                    {{ slotProps.data.qcStatus === 'REQ' ? '시험대기'
+                        : slotProps.data.qcStatus === 'ING' ? '시험중'
+                        : slotProps.data.qcStatus === 'ING2' ? '검토대기'
+                        : slotProps.data.qcStatus === 'ING3' ? '승인대기'
+                        : slotProps.data.qcStatus === 'PASS' ? '적합'
+                        : slotProps.data.qcStatus === 'FAIL' ? '부적합'
                         : '' }}
                 </template>
              </Column>
@@ -151,7 +151,7 @@ const selectedRow = () =>{
         vInfo('선택된 항목이 없습니다.');
         return;
     }
-    emit('selected', selectedItem.value);
+    console.log('selectedItem.value',  selectedItem.value)
     selectedItem.value = []
 }
 
