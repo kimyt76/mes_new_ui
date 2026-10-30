@@ -318,12 +318,16 @@ const totalProdQty = computed(() => {
 const totalProdYield = computed(() => {
     const prodQty = Number(totalProdQty.value)
     const coatingQty = Number(workOrderInfo.coatingProdQty)
+     const orderQty = Number(workOrderInfo.orderQty)
 //console.log('prodQty', prodQty)
 //console.log('coatingQty', coatingQty)
-    if (!Number.isFinite(prodQty) || !Number.isFinite(coatingQty) || coatingQty <= 0) {
+    if (
+        !Number.isFinite(prodQty) ||
+        !Number.isFinite(orderQty) ||
+        orderQty <= 0
+    ) {
         return '0.00'
     }
-
     return (
         ( prodQty/workOrderInfo.orderQty) * 100
     ).toFixed(2)
