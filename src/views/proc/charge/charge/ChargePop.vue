@@ -324,7 +324,9 @@ const totalProdYield = computed(() => {
         return '0.00'
     }
 
-    return ((prodQty / (coatingQty)) * 100).toFixed(2)
+    return (
+        ( prodQty /workOrderInfo.orderQty) * 100
+    ).toFixed(2)
 })
 /**
  * 리스트 값 변경 시

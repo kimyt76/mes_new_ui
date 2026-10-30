@@ -487,9 +487,18 @@ const checkVavlid = () =>{
 }
 
 const saveInfo = async () => {
-    //if (!checkVavlid()) return
+    if (!checkVavlid()) return
+
 
     try {
+        // 투입량이 있으면 makeYn = 'Y'
+        matUseDataList.value.forEach(row => {
+            row.makeYn = row.makeQty !== null &&
+                         row.makeQty !== undefined &&
+                         row.makeQty !== '' &&
+                         Number(row.makeQty) > 0 ? 'Y' : 'N'
+        })
+
         const params = {
             workOrderInfo: form,
             makeBomList: matUseDataList.value,
