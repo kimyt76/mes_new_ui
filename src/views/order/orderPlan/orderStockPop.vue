@@ -14,14 +14,14 @@
         </Column>
         <Column field="itemTypeName"  header="품목구분"   frozen :style="{ width: '90px', textAlign:'center'}" />
         <Column field="matName"       header="BOM"  frozen :style="{ width: '90px', textAlign:'center'}" />
-        <Column field="requiredQuantity"         header=" 소요량"   :style="{ width: '100px', textAlign:'right'}">
-            <template #body="slotProps">
-                {{ (slotProps.data.requiredQuantity ?? 0).toLocaleString() }}
-            </template>
-        </Column>
-        <Column field="reqQty"         header=" 필요량"   :style="{ width: '100px', textAlign:'right'}">
+        <Column field="reqQty"         header="소요량"   :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">
                 {{ (slotProps.data.reqQty ?? 0).toLocaleString() }}
+            </template>
+        </Column>
+        <Column field="requiredQuantity"         header=" 필요량"   :style="{ width: '100px', textAlign:'right'}">
+            <template #body="slotProps">
+                {{ (slotProps.data.requiredQuantity ?? 0).toLocaleString() }}
             </template>
         </Column>
         <Column field="orderType" header="공급"     :style="{ width: '80px', textAlign:'center'}" />
