@@ -67,7 +67,7 @@ const sendMail = async () =>{
             ...form
         }
         const res = await ApiPurchaseOrder.orderMail(params)
-        vSuccess(res.data.message)
+        vSuccess('발주메일이 발송되었습니다.')
     }catch(err) {
         handleApiError(err)
     }
