@@ -215,12 +215,13 @@ const searchByBarcode = async () =>{
             return
         }
 
-        if (res.passState !== 'PASS' || res.testState !== 'END') {
-            vWarning('현재 사용 가능한 상태가 아닙니다.')
-            barcode.value = ''
-            return
+        if ( res.itemTypeCd !== 'M6' ){
+            if (res.passState !== 'PASS' || res.testState !== 'END') {
+                vWarning('현재 사용 가능한 상태가 아닙니다.')
+                barcode.value = ''
+                return
+            }
         }
-
         workUseList.value.push({
             no: workUseList.value.length + 1,
             testNo: res.testNo,
