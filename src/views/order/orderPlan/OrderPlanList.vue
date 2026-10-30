@@ -168,7 +168,13 @@
             <Column field="clientName"  header="고객사명" frozen :style="{ width: '100px' }" />
             <Column field="managerId"   header="담당자" frozen :style="{ width: '75px', textAlign: 'center' }" />
             <Column field="itemCd"      header="품목코드" frozen :style="{ width: '100px', textAlign: 'center' }" />
-            <Column field="itemName"    header="품목명" frozen :style="{ width: '210px' }" />
+            <Column field="itemName" header="품목명" frozen style="width: 210px; min-width: 210px; max-width: 210px;" >
+                <template #body="{ data }">
+                    <div style="white-space: normal; overflow-wrap: anywhere; line-height: 1.4;">
+                        {{ data.itemName }}
+                    </div>
+                </template>
+            </Column>
             <!-- =====================================================
                  주문수량
             ====================================================== -->
