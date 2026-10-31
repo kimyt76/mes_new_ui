@@ -101,8 +101,8 @@
     <Column field="tsQty" header="검사샘플" :style="{ width: '100px', textAlign:'right'}" >
       <template #body="slotProps">{{ formatNumber(slotProps.data.tsQty) }}</template>
     </Column>
-    <Column field="adjQty" header="폐기" :style="{ width: '100px', textAlign:'right'}" >
-      <template #body="slotProps">{{ formatNumber(slotProps.data.adjQty) }}</template>
+    <Column field="rsQty" header="폐기" :style="{ width: '100px', textAlign:'right'}" >
+      <template #body="slotProps">{{ formatNumber(slotProps.data.rsQty) }}</template>
     </Column>
     <Column field="etcQty" header="기타" :style="{ width: '100px', textAlign:'right'}">
       <template #body="slotProps">{{ formatNumber(slotProps.data.etcQty) }}</template>
@@ -133,9 +133,7 @@ const form = reactive({
   stdDate: todayKST(),
   itemName: '',
   itemCd: '',
-
-  strDate: '',
-  endDate: '',
+  searchType:'DAY',
   itemTypeCd: 'M1'
 });
 

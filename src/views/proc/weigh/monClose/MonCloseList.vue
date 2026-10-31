@@ -128,6 +128,8 @@ const form = reactive({
   itemName: '',
   itemCd: '',
 
+  stdDate: '',
+  searchType:'MONTH',
   strDate: '',
   endDate: '',
   itemTypeCd: 'M1'
@@ -187,10 +189,8 @@ const setMonthDateRange = () => {
   const year = Number(form.year);
   const month = Number(form.month);
 
-  form.strDate = `${year}-${pad2(month)}-01`;
-
-  const lastDay = new Date(year, month, 0).getDate();
-  form.endDate = `${year}-${pad2(month)}-${pad2(lastDay)}`;
+  // 월간 조회 기준일 (yyyy-MM)
+  form.stdDate = `${year}-${pad2(month)}`;
 };
 
 watch(() => [form.year, form.month], () => {
