@@ -199,11 +199,12 @@ const toggleEndYn = async (row) =>{
     const params = {
         purOrderId: row.purOrderId,
         purOrderItemId: row.purOrderItemId,
-        itemEndYn: newValue
+        itemEndYn: newValue,
+        inYn: newValue,
     }
-    await ApiPurchaseOrder.updatePurchaseOrderItemEndYn(params)
-
+    await ApiPurchaseOrder.updatePurOrderItemEndYn(params)
     row.itemEndYn = newValue
+    srhList()
 }
 
 const selectRowClick = (id, purOrderId) =>{
