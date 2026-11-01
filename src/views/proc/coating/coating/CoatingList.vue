@@ -79,13 +79,21 @@
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
         </Column>
         <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="moveStatus"    header="이동요청"   :style="{ width: '80px', textAlign: 'center'}" />
+        <Column field="moveStatus"      header="이동요청"   :style="{ width: '80px', textAlign: 'center'}">
+            <template #body="slotProps">
+                {{ slotProps.data.moveStatus === 'Q' ? '요청'
+                    : slotProps.data.moveStatus === 'C' ? '완료'
+                    : slotProps.data.moveStatus === 'I' ? '진행'
+                    : '미요청' }}
+            </template>
+        </Column>
         <Column field="procStatusName"   header="코팅상태"   :style="{ width: '80px', textAlign: 'center'}" >
             <template #body="slotProps">
                 {{ slotProps.data.procStatus === '00' ? '작업지시'
                     : slotProps.data.procStatus === '31' ? '코팅중'
                     : slotProps.data.procStatus === '32' ? '코팅완료'
-                    : '' }}
+                    : slotProps.data.procStatus === '99' ? '작업취소'
+                    : '작업지시' }}
             </template>
         </Column>
     </DataTable>

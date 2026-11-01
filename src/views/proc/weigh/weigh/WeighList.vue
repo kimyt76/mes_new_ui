@@ -78,7 +78,8 @@
                 {{ slotProps.data.procStatus === '00' ? '작업지시'
                     : slotProps.data.procStatus === '11' ? '칭량중'
                     : slotProps.data.procStatus === '12' ? '칭량완료'
-                    : '' }}
+                    : slotProps.data.procStatus === '99' ? '작업취소'
+                    : '작업지시' }}
             </template>
         </Column>
         <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
