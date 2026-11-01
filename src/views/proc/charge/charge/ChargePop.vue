@@ -1,5 +1,7 @@
 <template>
 <div class="pop-wrap">
+    <LoadingOverlay :visible="loading" />
+
     <div class="pop-scale">
         <div class="pop-body">
             <!-- 1. 작업지시 정보 -->
@@ -197,16 +199,33 @@
             </div>
         </div>
         <!-- 하단 버튼 -->
-        <div class="pop-footer flex gap-2">
+        <div class="coating-pop-footer flex gap-2">
             <Button v-if="isStarted" label="작업시작" @click="openPop('S')" />
-            <!-- <Button v-if="!isStarted" label="저장" @click="saveInfo" /> -->
             <Button label="기록서" @click="downloadExcel" />
-            <Button label="바코드" @click="openPop('B')" />
-            <Button  v-if="btnStatus !== '00' && btnStatus !== '42'" label="작업완료" @click="workComplete" />
-            <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+            <Button label="바코드"
+              icon="pi pi-qrcode"
+              severity="secondary"
+              @click="openPop('B')" />
+            <Button
+                v-if="btnStatus !== '00' && btnStatus !== '42'"
+                label="작업완료"
+                :loading="loading"
+                :disabled="loading"
+                @click="workComplete"
+            />
+             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+
+            <Button
+                v-if="btnStatus === '42'"
+                label="수정"
+                severity="info"
+                class="ml-auto"
+                :disabled="loading"
+                @click="workUpdate"
+            />
         </div>
     </div>
-    </div>
+</div>
 </template>
 <script setup>
 import { ApiProc } from '@/api/apiProc';
@@ -219,7 +238,9 @@ import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import ProdUsePop2 from '../../common/ProdUsePop2.vue';
 import WorkRecordPop from '../../common/WorkRecordPop.vue';
 import ProcChargeStartPop from './ProcChargeStartPop.vue';
+
 const { vWarning, vSuccess, vInfo, vError } = useAlertStore()
+const loading = ref(false)
 const dialog = useDialog();
 const dialogRef = inject('dialogRef');
 const isStarted = ref(false)
@@ -296,6 +317,20 @@ const workOrderInfo = reactive({
     etc: '',
     memo: '',
 });
+
+const workUpdate = async () =>{
+    try{
+        const params = {
+            workProcId: form.workProcId,
+            workBatchId: form.workBatchId,
+        }
+        const res = await ApiProc.updateProcStatus(params)
+        callChargeInfo()
+    }catch(err){
+        handleApiError(err)
+    }
+}
+
 /**
  * 총 사용량
  */
@@ -498,13 +533,28 @@ const openPop = (type) => {
 };
 const confirm = useConfirm()
 const workComplete = async () =>{
+    if (loading.value) return
 
-    if(!await checkComplete()) return
+    // 작업 완료 검증
+    loading.value = true
+
+    try {
+        if (!await checkComplete()) return
+    } catch (err) {
+        handleApiError(err)
+        return
+    } finally {
+        loading.value = false
+    }
+
     confirm.require({
         header: '충전완료 확인',
         message: '충전작업을 완료하시겠습니까?',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
+            if (loading.value) return
+            loading.value = true
+
             try{
                 const params = {
                     procStatus: '42',
@@ -519,6 +569,8 @@ const workComplete = async () =>{
                 closeDialog()
             }catch(err){
                 handleApiError(err)
+            }finally{
+                loading.value = false
             }
         }
     });
@@ -627,11 +679,22 @@ const closeDialog = () => {
     overflow-y: auto;
     padding: 8px 12px 6px;
 }
-.pop-footer {
+.coating-pop-footer {
     flex: 0 0 auto;
-    padding: 10px 12px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 16px 14px;
+    margin-top: 6px;
+
     border-top: 1px solid #e5e7eb;
     background: #fff;
+}
+
+:deep(.coating-pop-footer .p-button) {
+    padding: 0.5rem 0.9rem;
+    font-size: 14px;
 }
 .section-block {
     margin-bottom: 10px;

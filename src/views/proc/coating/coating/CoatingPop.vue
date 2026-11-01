@@ -1,5 +1,6 @@
 <template>
     <div class="pop-wrap">
+        <LoadingOverlay :visible="loading" />
         <div class="pop-scale">
         <div class="pop-body">
             <!-- 1. 작업지시 정보 -->
@@ -188,18 +189,39 @@
         <div class="coating-pop-footer flex gap-2">
             <Button v-if="isStarted" label="작업시작" @click="openPop('S')" />
             <Button label="기록서" @click="downloadExcel" />
-            <Button label="바코드" @click="openPop('B')" />
-            <Button  v-if="btnStatus !== '00' && btnStatus !== '32'" label="작업완료" @click="workComplete" />
-            <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+            <Button label="바코드"
+              icon="pi pi-qrcode"
+              severity="secondary"
+              @click="openPop('B')" />
+
+            <Button
+                v-if="btnStatus !== '00' && btnStatus !== '32'"
+                label="작업완료"
+                :loading="loading"
+                :disabled="loading"
+                @click="workComplete"
+            />
+             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+
+            <Button
+                v-if="btnStatus === '32'"
+                label="수정"
+                severity="info"
+                class="ml-auto"
+                :disabled="loading"
+                @click="workUpdate"
+            />
         </div>
     </div>
-    </div>
+
+</div>
 </template>
 
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import QrCodePop from '@/views/common/QrCodePop.vue';
 import { useConfirm, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
@@ -209,6 +231,7 @@ import ProcCoatingStartPop from './ProcCoatingStartPop.vue';
 import ProdUsePop from './ProdUsePop.vue';
 
 const { vWarning, vSuccess, vInfo } = useAlertStore()
+const loading = ref(false)
 const dialog = useDialog();
 const dialogRef = inject('dialogRef');
 const isStarted = ref(false)
@@ -290,6 +313,19 @@ const workOrderInfo = reactive({
     etc: '',
     memo: '',
 });
+
+const workUpdate = async () =>{
+    try{
+        const params = {
+            workProcId: form.workProcId,
+            workBatchId: form.workBatchId,
+        }
+        const res = await ApiProc.updateProcStatus(params)
+        callCoatingInfo()
+    }catch(err){
+        handleApiError(err)
+    }
+}
 
 /**
  * 총 사용량
@@ -475,16 +511,33 @@ const openPop = (type) => {
 };
 
 const confirm = useConfirm()
-const workComplete = async  () =>{
 
-    if(!await checkComplete()) return
+const workComplete = async () => {
+    if (loading.value) return
+
+    // 작업 완료 검증
+    loading.value = true
+
+    try {
+        if (!await checkComplete()) return
+    } catch (err) {
+        handleApiError(err)
+        return
+    } finally {
+        loading.value = false
+    }
 
     confirm.require({
         header: '코팅완료 확인',
         message: '코팅작업을 완료하시겠습니까?',
         icon: 'pi pi-exclamation-triangle',
+
         accept: async () => {
-            try{
+            if (loading.value) return
+
+            loading.value = true
+
+            try {
                 const params = {
                     procStatus: '32',
                     batchStatus: '32',
@@ -492,15 +545,19 @@ const workComplete = async  () =>{
                     workBatchId: form.workBatchId,
                     procCd: form.procCd,
                 }
-                //console.log('params', params)
+
                 const res = await ApiProc.completeCoating(params)
+
                 vSuccess('정상적으로 코팅작업을 완료하였습니다!')
                 closeDialog()
-            }catch(err){
+
+            } catch (err) {
                 handleApiError(err)
+            } finally {
+                loading.value = false
             }
         }
-    });
+    })
 }
 
 const checkComplete = async () =>{
