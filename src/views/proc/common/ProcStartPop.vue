@@ -1,3 +1,4 @@
+
 <template>
 <Card style="width: 34rem; height: 18rem;">
     <template #content>
@@ -5,34 +6,34 @@
             <div class="col-6">
                 <FloatLabel variant="on">
                     <Select v-model="form.areaCd" :options="areaCds"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
-                    readonly
+                        optionLabel="codeNm"
+                        optionValue="code"
+                        class="w-full"
+                        readonly
                     />
                     <label for="on_label">구역</label>
                 </FloatLabel>
             </div>
             <div class="col-6">
                 <FloatLabel variant="on">
-                    <InputText v-model="form.workOrderDateSeq" class="w-full" readonly  />
+                    <InputText v-model="form.workOrderDateSeq" class="w-full" readonly />
                     <label>작업지시번호</label>
                 </FloatLabel>
             </div>
             <div class="col-6">
-                 <FloatLabel variant="on">
+                <FloatLabel variant="on">
                     <InputText v-model="form.makeNo" class="w-full" readonly />
                     <label>제조번호</label>
                 </FloatLabel>
             </div>
             <div class="col-6">
-                 <FloatLabel variant="on">
+                <FloatLabel variant="on">
                     <InputText v-model="form.lotNo" class="w-full" readonly />
                     <label>LOT번호</label>
                 </FloatLabel>
             </div>
             <div class="col-12">
-                 <FloatLabel variant="on">
+                <FloatLabel variant="on">
                     <InputText v-model="form.itemName" class="w-full" readonly />
                     <label>품목명</label>
                 </FloatLabel>
@@ -40,20 +41,22 @@
             <div class="col-12">
                 <FloatLabel variant="on">
                     <Select v-model="form.storageCd" :options="storages"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
+                        optionLabel="codeNm"
+                        optionValue="code"
+                        class="w-full"
                     />
                     <label for="on_label">작업처</label>
                 </FloatLabel>
             </div>
         </div>
         <div class="flex justify-end gap-2">
-            <Button label="작업시작" class="p-button-secondary" @click="saveInfo" />
+            <Button label="작업시작" class="p-button-secondary"
+                :disabled="loading"
+                :loading="loading"
+                @click="saveInfo" />
             <Button label="닫기" outlined class="ml-2" @click="closeDialog"></Button>
         </div>
     </template>
-
 </Card>
 </template>
 
@@ -68,10 +71,14 @@ import { useConfirm } from 'primevue';
 import { computed, inject, onMounted, reactive, ref } from 'vue';
 
 const confirm = useConfirm()
-const { vSuccess, vWarning, vInfo} = useAlertStore()
+const { vSuccess, vWarning, vInfo } = useAlertStore()
 const dialogRef = inject('dialogRef')
 const areaCds = ref([])
-const allStorages = ref([]);
+const allStorages = ref([])
+
+// 중복 클릭 방지
+const loading = ref(false)
+
 const filteredStorages = computed(() => {
     if (!form.areaCd) return [];
     return allStorages.value.filter(s => s.areaCd === form.areaCd && s.m1Yn === 'Y');
@@ -96,47 +103,69 @@ const form = reactive({
 })
 
 const saveInfo = async () => {
-    if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
+    // 중복 실행 방지
+    if (loading.value) return
+    if (isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
 
-     // 2. 기존 작업 데이터 건수 조회
+    loading.value = true
+
+    try {
+        // 2. 기존 작업 데이터 건수 조회
         console.log('form.workProcId:', form.workProcId)
-     const params = {
-        procCd : "PRC001",
-        workProcId : form.workProcId,
-     }
-     const cntRes = await ApiProc.getProcStartCnt(params)
-     // 3. 기존 데이터가 있으면 시작 차단
-     if (cntRes.data > 0) {
-         return vWarning('이미 시작된 칭량 작업입니다.')
-     }
-
-    confirm.require({
-        header: '칭량시작확인',
-        message: '해당 작업을 시작하시겠습니까?\n내용을 다시 한 번 확인해 주세요.\n시작 후에는 취소할 수 없습니다.',
-        icon: 'pi pi-exclamation-triangle',
-        accept: async () => {
-            try {
-                const param = {
-                    procCd: form.procCd,
-                    itemCd: form.itemCd,
-                    workProcId: form.workProcId,
-                    workBatchId: form.workBatchId,
-                    storageCd: form.storageCd,
-                    procStatus: '11',
-                    batchStatus: '11',
-                }
-
-                const res = await ApiProc.startProcWeigh(param)
-                vSuccess("칭량 작업이 시작되었습니다.")
-                closeDialog()
-            } catch (err) {
-                handleApiError(err)
-            }
+        const params = {
+            procCd: "PRC001",
+            workProcId: form.workProcId,
         }
-    });
+        const cntRes = await ApiProc.getProcStartCnt(params)
+
+        // 3. 기존 데이터가 있으면 시작 차단
+        if (cntRes.data > 0) {
+            vWarning('이미 시작된 칭량 작업입니다.')
+            loading.value = false
+            return
+        }
+
+        confirm.require({
+            header: '칭량시작확인',
+            message: '해당 작업을 시작하시겠습니까?\n내용을 다시 한 번 확인해 주세요.\n시작 후에는 취소할 수 없습니다.',
+            icon: 'pi pi-exclamation-triangle',
+            accept: async () => {
+                try {
+                    const param = {
+                        procCd: form.procCd,
+                        itemCd: form.itemCd,
+                        workProcId: form.workProcId,
+                        workBatchId: form.workBatchId,
+                        storageCd: form.storageCd,
+                        procStatus: '11',
+                        batchStatus: '11',
+                    }
+
+                    const res = await ApiProc.startProcWeigh(param)
+                    vSuccess("칭량 작업이 시작되었습니다.")
+                    closeDialog()
+                } catch (err) {
+                    handleApiError(err)
+                } finally {
+                    loading.value = false
+                }
+            },
+            reject: () => {
+                loading.value = false
+            },
+            onHide: () => {
+                // 확인창을 X 또는 ESC 등으로 닫은 경우
+                // 저장 진행 중에는 잠금을 해제하지 않음
+                if (!saving.value) loading.value = false
+            }
+        })
+    } catch (err) {
+        handleApiError(err)
+        loading.value = false
+    }
 }
 
-onMounted( async () =>{
+onMounted(async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
     const popupForm = dialogRef.value?.data?.form
 
@@ -146,15 +175,12 @@ onMounted( async () =>{
     Object.assign(form, popupForm)
     allStorages.value = (await ApiSystem.getStorageCodeList())
         .filter(item => !['WS001', 'WS101'].includes(item.code))
-    })
+})
 
-const closeDialog = () =>{
+const closeDialog = () => {
     dialogRef.value.close()
 }
-
-
 </script>
 
 <style scoped>
-
 </style>
