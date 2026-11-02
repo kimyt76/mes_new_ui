@@ -279,7 +279,12 @@ onMounted( async ()=>{
         : (list?.itemName ?? ''); // 혹시 단건으로 올 때 대비
 
     let workProcIds = Array.isArray(list) ? list.map(row => row.workProcId).filter(id => id != null) : (list?.workProcId ? [list.workProcId] : []);
-    itemList.value = await ApiProc.getProcItemList(workProcIds);
+    const res = await ApiProc.getProcItemList(workProcIds);
+
+    itemList.value = (res || []).map(item => ({
+        ...item,
+        qty: Number(item.orderQty ?? 0)
+    }))
     form.workProcIds = workProcIds
 })
 
