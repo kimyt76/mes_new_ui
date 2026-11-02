@@ -49,6 +49,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         :value="matList"
         paginator :rows="20"
         :loading ="loading"
@@ -59,6 +60,11 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
+        <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
         <Column field="areaName"          header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="제조지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
@@ -101,6 +107,7 @@ import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import MatRegPop from './MatRegPop.vue';
 
+const first = ref(0)
 const { vWarning} = useAlertStore()
 const loading = ref(false)
 const dialog = useDialog()

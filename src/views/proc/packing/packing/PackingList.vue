@@ -49,7 +49,8 @@
 <div>
     <DataTable
         ref="dt"
-         v-model:selection="selectedItem"
+        v-model="first"
+        v-model:selection="selectedItem"
         :value="packingList"
         dataKey="workProcId"
         paginator :rows="20"
@@ -60,9 +61,14 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
+        <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
         <Column selectionMode="multiple" headerStyle="width: 3rem" style="text-align: center;" />
-        <Column field="poNo"            header="PO NO"      :style="{ width: '120px', textAlign: 'center'}" ></Column>
-        <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
+        <Column field="poNo"            header="PO NO"      :style="{ width: '130px', textAlign: 'center'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '90px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="포장지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data)" style="text-decoration: underline; cursor: pointer;">
@@ -70,21 +76,14 @@
                 </div>
             </template>
         </Column>
-        <Column field="lotNo"       header="LOT번호"  :style="{ width: '150px', textAlign: 'center'}" />
+        <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}"
+         bodyStyle="white-space:normal; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        />
         <Column field="makeNo"      header="제조번호"  :style="{ width: '150px', textAlign: 'center'}" />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '110px', textAlign: 'center'}" />
-        <Column field="itemName"    header="품목명"    :style="{ width: '380px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
+        <Column field="itemName"    header="품목명"    :style="{ width: '390px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
         <Column field="orderQty"    header="지시수량"   :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.orderQty).toLocaleString() }}</template>
-        </Column>
-        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
-        <Column field="moveStatus"      header="이동요청"   :style="{ width: '80px', textAlign: 'center'}">
-            <template #body="slotProps">
-                {{ slotProps.data.moveStatus === 'Q' ? '요청'
-                    : slotProps.data.moveStatus === 'C' ? '완료'
-                    : slotProps.data.moveStatus === 'I' ? '진행'
-                    : '미요청' }}
-            </template>
         </Column>
         <Column field="procStatus"  header="포장상태"   :style="{ width: '80px', textAlign: 'center'}" >
             <template #body="slotProps">
@@ -95,6 +94,15 @@
                     : '작업지시' }}
             </template>
         </Column>
+        <Column field="moveStatus"      header="이동요청"   :style="{ width: '80px', textAlign: 'center'}">
+            <template #body="slotProps">
+                {{ slotProps.data.moveStatus === 'Q' ? '요청'
+                    : slotProps.data.moveStatus === 'C' ? '완료'
+                    : slotProps.data.moveStatus === 'I' ? '진행'
+                    : '미요청' }}
+            </template>
+        </Column>
+        <Column field="batchStatusName" header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
 </template>
@@ -111,6 +119,7 @@ import { onMounted, reactive, ref } from 'vue';
 import MoveReqPop from '../../common/MoveReqPop.vue';
 import PackingPop from './PackingPop.vue';
 
+const first = ref(0)
 const {vWarning} = useAlertStore()
 const selectedItem = ref([])
 const dialog = useDialog()

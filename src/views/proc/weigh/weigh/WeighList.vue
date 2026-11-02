@@ -48,6 +48,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         :value="weighList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -57,8 +58,13 @@
         tableStyle="w-full; table-layout: fixed;"
         class="my-table"
         >
+        <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
         <Column field="areaName"        header="구역"       :style="{ width: '80px', textAlign: 'center'}" ></Column>
-        <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '90px', textAlign: 'center'}" >
+        <Column field="procOrderDate"   header="칭량지시일"  :style="{ width: '100px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd, slotProps.data.procStatus)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.procOrderDate  }}
@@ -67,7 +73,9 @@
         </Column>
         <Column field="poNo"        header="PO NO"    :style="{ width: '120px', textAlign: 'center'}" ></Column>
         <Column field="makeNo"      header="제조번호"  :style="{ width: '160px', textAlign: 'center'}" />
-        <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}" />
+        <Column field="lotNo"       header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}"
+         bodyStyle="white-space:normal; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        />
         <Column field="itemCd"      header="품목코드"  :style="{ width: '80px', textAlign: 'center'}" />
         <Column field="itemName"    header="품목명"    :style="{ width: '430px', textAlign: 'left'}" bodyClass="break-words"  ></Column>
         <Column field="orderQty"    header="지시수량"   :style="{ width: '90px', textAlign: 'right'}">
@@ -98,6 +106,7 @@ import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import WeighRegPop from './WeighRegPop.vue';
 
+const first = ref(0)
 const dialog = useDialog()
 const dt = ref(null);
 const weighList = ref([])
