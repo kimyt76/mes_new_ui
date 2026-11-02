@@ -118,7 +118,7 @@
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
-import { addDay, todayKST } from '@/util/common';
+import { addDay, formatDate, todayKST } from '@/util/common';
 import DayClosePop from '@/views/proc/weigh/dayClose/DayClosePop.vue';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
@@ -167,8 +167,7 @@ const formatNumber = (value) => {
 };
 
 const srhList = async () => {
-    form.strDate = form.stdDate
-    form.endDate = form.stdDate
+    form.stdDate = formatDate(form.stdDate)
 
     const params = {
         ...form,
@@ -177,8 +176,6 @@ const srhList = async () => {
     loading.value = true
 
     try {
-        console.log('params', params)
-
         itemList.value = await ApiProc.getWeighCloseList(params)
     } catch (err) {
         handleApiError(err)
