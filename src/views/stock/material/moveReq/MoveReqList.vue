@@ -105,67 +105,24 @@
                 </template>
         </Column>
          <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
-         <Column field="moveStatusName" header="진행상태"   :style="{ width: '70px', textAlign: 'center'}" >
-            <template #body="slotProps">
-                 <!-- 등록 -->
-                <span v-if="slotProps.data.moveStatus === 'Q'" @click="openMovePop(slotProps.data.moveStockId)"
-                    style="
-                        color: #1976d2;
-                        font-weight: bold;
-                        cursor: pointer;
-                        text-decoration: underline;
-                        "
-                    >[요청]
-                </span>
-                 <!-- 진행 -->
-                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMovePop(slotProps.data.moveStockId)"
-                    style="
-                        color: #1976d2;
-                        font-weight: bold;
-                        cursor: pointer;
-                        text-decoration: underline;
-                        "
-                    >[진행]
-                </span>
-                 <!-- 완료 -->
-                <span v-if="slotProps.data.moveStatus === 'C'"
-                    style="
-                        color: #999;
-                        font-weight: bold;
-                        "
-                    >완료
+         <Column field="moveStatus" header="진행상태" style="width:70px; text-align:center">
+            <template #body="{ data }">
+                <span v-if="['C', 'R'].includes(data.confirmStatus) || data.moveStatus === 'C'">완료</span>
+                <span v-else-if="['Q', 'I'].includes(data.moveStatus)"
+                    class="status-link" @click="openMovePop(data.moveStockId)">
+                    {{ data.moveStatus === 'Q' ? '[요청]' : '[진행]' }}
                 </span>
             </template>
         </Column>
-         <Column field="confirm"        header="확인"       :style="{ width: '50px', textAlign: 'center'}" >
-            <template #body="slotProps">
-                 <!-- 요청 -->
-                <span v-if="slotProps.data.moveStatus === 'Q'"
-                    style="
-                        color: #1976d2;
-                        font-weight: bold;
-                        "
-                    > -
+
+        <Column field="confirmStatus" header="확인" style="width:50px; text-align:center">
+            <template #body="{ data }">
+                <span v-if="['W', 'N'].includes(data.confirmStatus)"
+                    class="status-link" @click="openMoveConfirmPop(data.moveStockId)">
+                    {{ data.confirmStatus === 'W' ? '-' : '[대기]' }}
                 </span>
-                 <!-- 진행 -->
-                <span v-if="slotProps.data.moveStatus === 'I'" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
-                    style="
-                        color: #1976d2;
-                        font-weight: bold;
-                        cursor: pointer;
-                        text-decoration: underline;
-                        "
-                    >[완료]
-                </span>
-                <!-- 완료 -->
-                <span v-else-if="slotProps.data.moveStatus === 'C'"
-                    style="
-                        color: #999;
-                        font-weight: bold;
-                        cursor: default;
-                        "
-                    >완료
-                </span>
+                <span v-else-if="data.confirmStatus === 'C'" style="color:#1976d2">[완료]</span>
+                <span v-else-if="data.confirmStatus === 'R'" style="color:#999">[반려]</span>
             </template>
         </Column>
     </DataTable>
@@ -352,5 +309,11 @@ const downloadExcel = () =>{
   font-size: 14px;
   text-align: center;
   font-family: monaco, Consolas;
+}
+.status-link {
+    color: #1976d2;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
 }
 </style>
