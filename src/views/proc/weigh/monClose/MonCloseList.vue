@@ -160,9 +160,6 @@ const months = ref([
 ])
 
 const selectRowClick = (row) =>{
-  console.log(row)
-  console.log(row.itemCd)
-
   dialog.open(DayClosePop, {
     props: {
       header: '월간마감 상세',
@@ -191,6 +188,10 @@ const setMonthDateRange = () => {
 
   // 월간 조회 기준일 (yyyy-MM)
   form.stdDate = `${year}-${pad2(month)}`;
+
+  form.strDate = `${year}-${pad2(month)}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  form.endDate = `${year}-${pad2(month)}-${pad2(lastDay)}`;
 };
 
 watch(() => [form.year, form.month], () => {

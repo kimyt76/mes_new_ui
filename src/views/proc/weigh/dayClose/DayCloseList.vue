@@ -133,14 +133,15 @@ const form = reactive({
   stdDate: todayKST(),
   itemName: '',
   itemCd: '',
+
+  strDate: '',
+  endDate: '',
+
   searchType:'DAY',
   itemTypeCd: 'M1'
 });
 
 const selectRowClick = (row) =>{
-  console.log(row)
-  console.log(row.itemCd)
-
   dialog.open(DayClosePop, {
     props: {
       header: '일일마감 상세',
@@ -159,6 +160,8 @@ const selectRowClick = (row) =>{
 
 const searchDateAdd = async (day) => {
   form.stdDate = addDay(form.stdDate, day);
+  form.strDate = form.stdDate
+  form.endDate = form.stdDate
   //await srhList();
 };
 
