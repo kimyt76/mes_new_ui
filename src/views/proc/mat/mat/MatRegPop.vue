@@ -388,7 +388,6 @@ const checkPrevPhaseCompleted = (startIndex, nextIndex) => {
         if (rows.length === 0) continue
 
         const hasIncomplete = rows.some(row => row.makeYn !== 'Y')
-
         // if (hasIncomplete) {
         //     vInfo(`${phase} 단계가 완료되지 않아 ${nextPhase} 단계로 이동할 수 없습니다.`)
         //     return false
