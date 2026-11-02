@@ -77,6 +77,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         v-model:selection="selectedItem"
         dataKey="moveStockId"
         :value="moveReqList"
@@ -87,7 +88,12 @@
         class="my-table"
         showGridlines
      >
-        <Column selectionMode="single" headerStyle="width: 0.5rem" style="text-align: center;"/>
+        <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
+        <Column selectionMode="single" headerStyle="width:35px; min-width:30px; text-align:center" bodyStyle="width:35px; min-width:35px; text-align:center" />
          <Column field="moveStockDateSeq" header="일자-No"    :style="{ width: '100px', textAlign: 'center' }" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data)" style="text-decoration: underline; cursor: pointer;">
@@ -95,9 +101,9 @@
                 </div>
             </template>
         </Column>
-         <Column field="srcStorageName" header="보내는창고" :style="{ width: '100px', textAlign: 'center'}" />
-         <Column field="tarStorageName" header="받는창고"   :style="{ width: '100px', textAlign: 'center'}" />
-         <Column field="itemName"       header="품목명"     :style="{ width: '300px'}" />
+         <Column field="srcStorageName" header="보내는창고" :style="{ width: '110px', textAlign: 'center'}" />
+         <Column field="tarStorageName" header="받는창고"   :style="{ width: '110px', textAlign: 'center'}" />
+         <Column field="itemName"       header="품목명"     :style="{ width: '320px'}" />
          <Column field="memo"           header="요청내용"   :style="{ width: '320px'}" />
          <Column field="qty"            header="수량"       :style="{ width: '80px', textAlign: 'right'}" >
                 <template #body="slotProps">
@@ -114,15 +120,14 @@
                 </span>
             </template>
         </Column>
-
-        <Column field="confirmStatus" header="확인" style="width:50px; text-align:center">
+        <Column field="confirmStatus" header="확인" style="width:60px; text-align:center">
             <template #body="{ data }">
                 <span v-if="['W', 'N'].includes(data.confirmStatus)"
                     class="status-link" @click="openMoveConfirmPop(data.moveStockId)">
                     {{ data.confirmStatus === 'W' ? '-' : '[대기]' }}
                 </span>
-                <span v-else-if="data.confirmStatus === 'C'" style="color:#1976d2">[완료]</span>
-                <span v-else-if="data.confirmStatus === 'R'" style="color:#999">[반려]</span>
+                <span v-else-if="data.confirmStatus === 'C'" >완료</span>
+                <span v-else-if="data.confirmStatus === 'R'" >반려</span>
             </template>
         </Column>
     </DataTable>
@@ -143,6 +148,7 @@ import MoveConfirmPop from './MoveConfirmPop.vue';
 import MoveDtlPop from './MoveDtlPop.vue';
 import MoveRegPop from './MoveRegPop.vue';
 
+const first = ref(0)
 const { vSuccess, vInfo, vWarning} = useAlertStore()
 const dialog = useDialog()
 const totalCount = computed(() => {

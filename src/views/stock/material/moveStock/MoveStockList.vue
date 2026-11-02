@@ -67,6 +67,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         v-model:selection="selectedItem"
         dataKey="moveStockId"
         :value="moveStockList"
@@ -77,6 +78,12 @@
         class="my-table"
         showGridlines
      >
+        <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
+        <Column selectionMode="single" headerStyle="width:35px; min-width:30px; text-align:center" bodyStyle="width:35px; min-width:35px; text-align:center" />
         <Column field="moveStockDateSeq" header="일자-No"    :style="{ width: '110px', textAlign: 'center' }" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.moveStockId)" style="text-decoration: underline; cursor: pointer;">
@@ -98,7 +105,7 @@
          <Column field="confirmStatus"  header="확인상태"   :style="{ width: '70px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 대기 -->
-                <span v-if="slotProps.data.confirmStatus === 'W'"
+                <span v-if="slotProps.data.confirmStatus === 'W' || slotProps.data.confirmStatus === 'N'"
                     style="
                         color: #1976d2;
                         font-weight: bold;
@@ -125,7 +132,7 @@
                 </span>
             </template>
         </Column>
-         <Column field="confirm"        header="확인"       :style="{ width: '60px', textAlign: 'center'}" >
+         <Column field="confirm"        header="확인처리"       :style="{ width: '70px', textAlign: 'center'}" >
             <template #body="slotProps">
                  <!-- 등록 -->
                 <span v-if="!['C', 'R'].includes(slotProps.data.confirmStatus)" @click="openMoveConfirmPop(slotProps.data.moveStockId)"
@@ -175,6 +182,7 @@ import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import MoveStockPop from './MoveStockPop.vue';
 
+const first = ref(0)
 const { vSuccess, vInfo, vWarning} = useAlertStore()
 const moveStockList = ref([])
 const moveStatuss = ref([])
