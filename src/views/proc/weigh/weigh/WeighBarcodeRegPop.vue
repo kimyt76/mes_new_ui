@@ -18,6 +18,7 @@
             ref="barcodeInputRef"
             class="barcode-input"
             v-model="barcode"
+            :disabled="initialLoading"
             @keyup.enter="searchByBarcode"
             autofocus
         />
@@ -133,7 +134,7 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Divider from 'primevue/divider'
 import InputText from 'primevue/inputtext'
-import { computed, inject, onMounted, ref, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue'
 import BagWeightInfoPop from '../../common/BagWeightInfoPop.vue'
 
 const {vInfo, vWarning, vSuccess} = useAlertStore()
@@ -150,6 +151,7 @@ const storageCd = ref('')
 const orderQty = ref(0)
 /** 바코드 입력 */
 const barcode = ref('')
+const initialLoading = ref(true)
 const deleteWeighItems = ref([])
 const storageList = ref([])
 /** 좌측 입력 테이블 */
@@ -173,6 +175,7 @@ const copyOrderQtyToWeighQty = (row) => {
 
 //좌측 테스트번호로 조회
 const searchByBarcode = async () => {
+    if (initialLoading.value) return
     const testNo = String(barcode.value ?? '').trim()
     if (!testNo) return
 
@@ -243,7 +246,7 @@ const openWeighQtyPopup = (row) =>{
 }
 
 watch(barcode, (newVal) => {
-    if (newVal && newVal.length === 11) {
+    if (!initialLoading.value && newVal && newVal.length === 11) {
         searchByBarcode();
     }
 });
@@ -356,10 +359,7 @@ const loadInventoryList = async (areaCd) => {
 let tmpTestNo = ref('')
 
 onMounted(async () => {
-  setTimeout(() => {
-    barcodeInputRef.value?.$el?.querySelector('input')?.focus()
-  }, 100)
-
+  try {
   const dialogData = dialogRef.value?.data || {}
   const rowData = dialogData.row || {}
   const formData = dialogData.form || {}
@@ -378,6 +378,14 @@ onMounted(async () => {
   if (!isEmpty(weighId.value)) {
     await getStockTestNoList()
   }
+  } catch (err) {
+    console.error('초기 조회 오류:', err)
+    return
+  }
+
+  initialLoading.value = false
+  await nextTick()
+  barcodeInputRef.value?.$el?.querySelector('input')?.focus()
 })
 
 const getStockTestNoList = async () =>{
