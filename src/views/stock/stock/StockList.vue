@@ -245,14 +245,24 @@ const formatNumber = (value) => {
 };
 
 const downloadExcel = () => {
-  const cols = dt.value?.columns ?? [];
+    const cols = dt.value?.columns ?? [];
 
-  if (!cols.length) {
-    console.warn('재고목록이 없습니다.');
-    return;
-  }
+    if (!cols.length) {
+        console.warn('재고목록이 없습니다.');
+        return;
+    }
 
-  exportToExcel(stockList.value, '재고 리스트', cols);
+    exportToExcel(stockList.value, '재고 리스트', cols, {
+        numberFormat: '#,##0.######',
+        columnWidths: {
+            itemCd: 18,
+            itemName: 55,
+            testNo: 18,
+            inReQty: 18,
+            totQty: 16,
+            safeStockQty: 16
+        }
+    });
 };
 
 onMounted(async () => {
