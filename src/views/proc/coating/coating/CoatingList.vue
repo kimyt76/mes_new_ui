@@ -95,14 +95,11 @@
                     : '작업지시' }}
             </template>
         </Column>
-        <Column field="moveStatus"      header="이동요청"   :style="{ width: '80px', textAlign: 'center'}">
-            <template #body="slotProps">
-                {{ slotProps.data.moveStatus === 'Q' ? '요청'
-                    : slotProps.data.moveStatus === 'C' ? '완료'
-                    : slotProps.data.moveStatus === 'I' ? '진행'
-                    : '미요청' }}
-            </template>
-        </Column>
+        <Column field="moveStatus" header="이동요청" :style="{ width: '80px', textAlign: 'center' }">
+        <template #body="slotProps">
+            {{ slotProps.data.moveStatus == null ? '미요청' : slotProps.data.moveStatus }}
+        </template>
+    </Column>
         <Column field="batchStatusName"  header="배치상태"   :style="{ width: '80px', textAlign: 'center'}" />
     </DataTable>
 </div>
@@ -178,7 +175,8 @@ const selectRowClick = (id, cd) =>{
             itemCd: cd,
         },
         onClose: (event) => {
-            srhList()
+            selectedItem.value = []
+            srhList();
         },
     })
 }
@@ -206,6 +204,8 @@ const moveReq = () =>{
         },
         data: selectedItem.value,
         onClose:(event) => {
+            selectedItem.value = []
+            srhList();
         },
     })
 }
@@ -217,6 +217,7 @@ const srhList = async () =>{
     }
     // api
     coatingList.value = await ApiProc.getProcList(params);
+    selectedItem.value = []
 }
 
 onMounted( async () => {
