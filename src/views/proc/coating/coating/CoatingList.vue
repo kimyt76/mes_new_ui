@@ -69,7 +69,7 @@
         </Column>
         <Column selectionMode="multiple" headerStyle="width: 3rem" style="text-align: center;" />
         <Column field="poNo"            header="PO NO"    :style="{ width: '130px', textAlign: 'center'}" ></Column>
-        <Column field="areaName"        header="구역"       :style="{ width: '100px', textAlign: 'right'}" ></Column>
+        <Column field="areaName"        header="구역"       :style="{ width: '100px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="코팅지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
                 <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
@@ -266,5 +266,15 @@ const downloadExcel = () =>{
   font-family: monaco, Consolas;
   padding: 8px;
 }
+/* 데이터 셀 좌우 여백 축소 */
+:deep(.my-table .p-datatable-tbody > tr > td) {
+    padding-left: 2px;
+    padding-right: 2px;
+}
 
+/* 헤더 셀 좌우 여백 축소 */
+:deep(.my-table .p-datatable-thead > tr > th) {
+    padding-left: 2px;
+    padding-right: 2px;
+}
 </style>

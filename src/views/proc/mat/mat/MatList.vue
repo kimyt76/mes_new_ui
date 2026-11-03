@@ -250,5 +250,15 @@ const downloadExcel = () =>{
   /* text-decoration: underline;
   cursor: pointer; */
 }
+/* 데이터 셀 좌우 여백 축소 */
+:deep(.my-table .p-datatable-tbody > tr > td) {
+    padding-left: 2px;
+    padding-right: 2px;
+}
 
+/* 헤더 셀 좌우 여백 축소 */
+:deep(.my-table .p-datatable-thead > tr > th) {
+    padding-left: 2px;
+    padding-right: 2px;
+}
 </style>
