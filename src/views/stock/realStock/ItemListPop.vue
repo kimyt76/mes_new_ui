@@ -94,7 +94,7 @@ onMounted( async () =>{
 })
 
 const searchList = async () =>{
-    if (  isEmpty(form.testNo) && isEmpty(form.itemName) &&  isEmpty(form.testNo) )  return vInfo('품목코드 또는 품목명 또는 시험번호 3개중에 1개를 입력하세요')
+    if (  isEmpty(form.testNo) && isEmpty(form.itemName) &&  isEmpty(form.testNo) )  return vInfo('품목코드나 품목명 또는 시험번호 3개중에 1개를 입력하세요')
 
     const params = {
         ...form
