@@ -1,4 +1,5 @@
 <template>
+    <LoadingOverlay :visible="loading" />
 <Breadcrumb :home="home" :model="items"/>
 <form @submit.prevent="srhList" class="space-y-4">
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
@@ -32,9 +33,7 @@
                 <label>창고</label>
             </FloatLabel>
 
-
-
-            <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
+            <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" :disabled="loading"/>
             </div>
         </template>
     </Toolbar>
@@ -46,6 +45,7 @@
 <div>
     <DataTable
         ref="dt"
+        v-model="first"
         :value="realStockList"
         dataKey="stockId"
         scrollHeight="700px"
@@ -53,15 +53,26 @@
         showGridlines
         class="my-table"
         >
+        <Column header="No" headerStyle="width:30px; min-width:30px; text-align:center" bodyStyle="text-align:center">
+            <template #body="slotProps">
+                {{ slotProps.index + 1 + first }}
+            </template>
+        </Column>
         <Column field="realStockDate"       header="일자"    :style="{ width: '110px', textAlign:'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data)">
+                <div style="cursor: pointer; text-decoration: underline;" @click="selectRowClick(slotProps.data)">
                     {{ slotProps.data.realStockDate }}
                 </div>
             </template>
         </Column>
         <Column field="itemTypeName"    header="구분"    :style="{ width: '110px', textAlign:'center'}" />
-        <Column field="itemName"        header="품명"    :style="{ width: '300px'}"/>
+        <Column field="itemName"        header="품명"    :style="{ width: '300px'}">
+            <template #body="slotProps">
+                <div style="cursor: pointer; text-decoration: underline;" @click="selectRowClick(slotProps.data)">
+                    {{ slotProps.data.itemName }}
+                </div>
+            </template>
+        </Column>
         <Column field="storageName"     header="창고"    :style="{ width: '120px', textAlign:'center'}" />
         <Column field="managerName"     header="담당자"  :style="{ width: '110px', textAlign:'center'}" />
         <Column field="areaName"        header="공장"    :style="{ width: '100px', textAlign:'center'}" />
@@ -105,6 +116,8 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import RealStockItemPop from './RealStockItemPop.vue';
 import RealStockPop from './RealStockPop.vue';
 
+const loading = ref(false)
+const first = ref(0)
 const dialog = useDialog();
 const areaCds = ref([]);
 const realStockList = ref([]);
@@ -128,12 +141,24 @@ const selectRowClick = (row) =>{
     stockItemPop(row.realStockMstId, row.endYn)
 }
 
-const updateComplete = async (row) =>{
-    try{
-        const res = await ApiStock.saveRealStockComplete(row.realStockMstId)
-        srhList()
-    }catch(err){
+const updateComplete = async (row) => {
+    if (loading.value) return
+
+    loading.value = true
+
+    try {
+        await ApiStock.saveRealStockComplete(row.realStockMstId)
+
+        const params = {
+            ...form
+        }
+
+        realStockList.value = await ApiStock.getRealStockList(params)
+
+    } catch (err) {
         handleApiError(err)
+    } finally {
+        loading.value = false
     }
 }
 
@@ -174,18 +199,41 @@ const stockItemPop = (id, endYn) =>{
     } )
 }
 
-const srhList = async () =>{
-    const params = {
-        ...form
-    }
+const srhList = async () => {
+    if (loading.value) return
 
-    realStockList.value = await ApiStock.getRealStockList(params)
+    loading.value = true
+
+    try {
+        const params = {
+            ...form
+        }
+
+        realStockList.value = await ApiStock.getRealStockList(params)
+
+    } catch (err) {
+        handleApiError(err)
+    } finally {
+        loading.value = false
+    }
 }
 
-onMounted( async () =>{
+onMounted(async () => {
     areaCds.value = await ApiCommon.getCodeList('area')
     allStorages.value = await ApiSystem.getStorageCodeList()
-    srhList()
+
+    loading.value = true
+
+    try {
+        realStockList.value = await ApiStock.getRealStockList({
+            ...form
+        })
+
+    } catch (err) {
+        handleApiError(err)
+    } finally {
+        loading.value = false
+    }
 })
 
 const home = ref({
