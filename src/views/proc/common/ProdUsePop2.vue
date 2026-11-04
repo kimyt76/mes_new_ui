@@ -119,6 +119,7 @@ const dialogRef = inject('dialogRef')
 const workUseList = ref([])
 const title = ref('')
 let procCd = ref('')
+const reqQty = ref(0)
 
 const calcTot = (row) => {
     const use = Number(row.useQty) || 0
@@ -153,7 +154,7 @@ const saveInfo = async () => {
 
         const summaryRow = {
             testNos: rowCount > 1 ? `${firstTestNo} 외 ${rowCount - 1}건` : firstTestNo,
-            reqQty: totalReqQty,
+            reqQty: reqQty.value,
             useQty: totalTotUseQty,
             badQty: totalBadQty,
             workBadQty: totalWorkBadQty,
@@ -227,7 +228,7 @@ const searchByBarcode = async () =>{
             testNo: res.testNo,
             itemCd: res.itemCd,
             lotNo: res.lotNo,
-            reqQty: res.qty,
+            reqQty: reqQty.value,
             useQty: 0,
             badQty: 0,
             workBadQty: 0,
@@ -250,7 +251,7 @@ const loadInventoryList = async (areaCd) => {
   }
 
   const res = await ApiStock.getStockItemHistList(params)
-console.log('res', res)
+
   storageList.value = res.storageList || []
   stockItemHistList.value = res.stockItemHistList || []
 
@@ -267,6 +268,7 @@ onMounted( async () =>{
     prodUseId.value = dialogRef.value.data.row.prodUseId
     prodInfoId.value = dialogRef.value.data.row.prodInfoId
     procCd.value = dialogRef.value.data.procCd
+    reqQty.value = dialogRef.value.data.row.reqQty
 
     title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
 

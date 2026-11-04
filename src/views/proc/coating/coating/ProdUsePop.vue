@@ -163,7 +163,7 @@ const searchByBarcode = async () =>{
             vWarning('조회 결과가 없습니다.')
             return
         }
- console.log('res', res)
+
         if (res.passState !== 'PASS' || res.testState !== 'END') {
             vWarning('현재 사용 가능한 상태가 아닙니다.')
             barcode.value = ''
