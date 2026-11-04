@@ -89,7 +89,7 @@
                 <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
                 <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
                 <Button label="제조공정기록서" @click="downloadMatProc" />
-                <Button label="제조완료" @click="complateMake" />
+                <Button v-if="form.procStatus !== '22'" label="제조완료" @click="complateMake" />
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 
                 <Button label="새로고침" @click="refresh" />
@@ -482,12 +482,30 @@ const checkVavlid = () =>{
         return false
     }
 
+    // 지시량과 투입량 총합 비교 (소수점 6자리)
+    const orderQty = matUseDataList.value.reduce(
+        (sum, row) => sum + Math.round(Number(row.orderQty || 0) * 1000000), 0
+    )
+
+    const makeQty = matUseDataList.value.reduce(
+        (sum, row) => sum + Math.round(Number(row.makeQty || 0) * 1000000), 0
+    )
+
+    if (orderQty !== makeQty) {
+        vInfo(
+            `지시량과 투입량의 합계가 일치하지 않습니다.\n` +
+            `지시량: ${formatQty(orderQty / 1000000)} kg\n` +
+            `투입량: ${formatQty(makeQty / 1000000)} kg`
+        )
+        return false
+    }
+
+
     return true
 }
 
 const saveInfo = async () => {
     if (!checkVavlid()) return
-
 
     try {
         // 투입량이 있으면 makeYn = 'Y'
