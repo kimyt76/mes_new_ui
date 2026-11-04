@@ -252,7 +252,7 @@ watchEffect( async () => {
         vInfo('부자재 및 소모품은 완제품 품목으로 호출하셔야 합니다.')
         return
       }
-      form.itemCd = 'JP'+form.useCate+form.itemCategory1+form.itemCategory2+dialogPayload.asItemCd.slice(-5)
+      form.itemCd = 'JP'+form.useCate+form.itemCategory1+form.itemCategory2+dialogPayload.asItemCd.slice(-6)
       form.itemName = typeNm(form.itemTypeCd)
     }
   }
