@@ -177,7 +177,7 @@ const dynamicColumns = ref([]);
 const stockList = ref([]);
 const form = reactive({
   type: 'ITEM',
-  itemTypeCd: '',
+  itemTypeCd: 'M1',
   areaCd: '',
   itemName: '',
   itemCd: '',
