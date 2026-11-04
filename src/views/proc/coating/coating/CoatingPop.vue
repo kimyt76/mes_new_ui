@@ -351,7 +351,7 @@ const totalProdQty = computed(() => {
 const totalProdYield = computed(() => {
     if (totalUseQty.value === 0) return 0
     return (
-        ( totalUseQty.value/workOrderInfo.orderQty) * 100
+        ( totalProdQty.value/workOrderInfo.orderQty) * 100
     ).toFixed(2)
 })
 

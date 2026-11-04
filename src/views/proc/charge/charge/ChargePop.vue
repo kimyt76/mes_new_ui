@@ -365,7 +365,7 @@ const totalProdYield = computed(() => {
     }
 
     return (
-        ( prodQty /workOrderInfo.orderQty) * 100
+        ( totalProdQty.value /workOrderInfo.orderQty) * 100
     ).toFixed(2)
 })
 /**
@@ -429,7 +429,7 @@ const selectRowClick = (row) => {
             // 팝업을 호출한 선택 행만 업데이트
             Object.assign(row, {
                 testNos: result.testNos,
-                reqQty: result.reqQty,
+                //reqQty: result.reqQty,
                 useQty: result.useQty,
                 badQty: result.badQty,
                 workBadQty: result.workBadQty,

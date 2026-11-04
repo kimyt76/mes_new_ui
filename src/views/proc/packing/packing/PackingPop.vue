@@ -364,7 +364,7 @@ const totalProdYield = computed(() => {
         return '0.00'
     }
     return (
-        ( prodQty/workOrderInfo.orderQty) * 100
+        ( totalProdQty.value/workOrderInfo.orderQty) * 100
     ).toFixed(2)
 })
 /**
@@ -422,7 +422,7 @@ const selectRowClick = (row) => {
         ,onClose: (event) =>{
             if (event?.data) {
                 row.testNos = event.data.testNos
-                row.reqQty = event.data.reqQty
+                //row.reqQty = event.data.reqQty
                 row.useQty = event.data.useQty
                 row.badQty = event.data.badQty
                 row.workBadQty = event.data.workBadQty
