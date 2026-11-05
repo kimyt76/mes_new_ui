@@ -69,6 +69,7 @@ const barcode = ref('')
 const dialogRef = inject('dialogRef')
 const workUseList = ref([])
 const title = ref('')
+const itemCd = ref('')
 
 const calcTot = (row) => {
     const use = Number(row.useQty) || 0
@@ -156,6 +157,12 @@ const searchByBarcode = async () =>{
         return
     }
 
+    if (itemCd.value !==  res.itemCd) {
+        vWarning('선택된 품목과 다른 품목입니다.')
+        barcode.value = ''
+        return
+    }
+
     try{
         console.log('barcode.value', barcode.value)
         const res = await ApiQc.getItemTestNoInfo(barcode.value)
@@ -197,6 +204,7 @@ onMounted( async () =>{
     prodUseId.value = dialogRef.value.data.row.prodUseId
     prodInfoId.value = dialogRef.value.data.row.prodInfoId
     title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
+    itemCd.value = dialogRef.value.data.row.itemCd
 
     setTimeout(() => {
         const el = barcodeInputRef.value?.$el

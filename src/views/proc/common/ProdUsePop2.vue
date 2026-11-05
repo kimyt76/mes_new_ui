@@ -113,6 +113,7 @@ const dynamicColumns = ref([]) // { field, header } 목록
 const stockItemHistList = ref([])
 const storageList = ref([])
 
+const itemCd = ref('')
 const barcodeInputRef = ref(null)
 const barcode = ref('')
 const dialogRef = inject('dialogRef')
@@ -216,6 +217,12 @@ const searchByBarcode = async () =>{
             return
         }
 
+        if(itemCd.value !== res.itemCd) {
+            vWarning('선택된 품목과 다른 품목입니다.')
+            barcode.value = ''
+            return
+        }
+
         if ( res.itemTypeCd !== 'M6' ){
             if (res.passState !== 'PASS' || res.testState !== 'END') {
                 vWarning('현재 사용 가능한 상태가 아닙니다.')
@@ -269,6 +276,7 @@ onMounted( async () =>{
     prodInfoId.value = dialogRef.value.data.row.prodInfoId
     procCd.value = dialogRef.value.data.procCd
     reqQty.value = dialogRef.value.data.row.reqQty
+    itemCd.value = dialogRef.value.data.row.itemCd
 
     title.value = '['+dialogRef.value.data.row.itemCd+'] '+ dialogRef.value.data.row.itemName
 
