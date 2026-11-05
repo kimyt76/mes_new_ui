@@ -1,4 +1,5 @@
 <template>
+<div class="move-popup-layout">
 <Card class="move-card">
   <template #content>
     <div class="grid">
@@ -104,7 +105,8 @@
     <DataTable
         :value="procList"
         class="my-table" showGridlines
-        scrollable scrollHeight="330px"
+        :tableStyle="{ width: '100%', tableLayout: 'fixed' }"
+        scrollable scrollHeight="flex"
         @row-click="selectRowClick"
         >
       <Column header="NO" style="width: 40px" :headerStyle="{ textAlign: 'center' }" :bodyStyle="{ textAlign: 'center' }">
@@ -125,7 +127,8 @@
         :value="stockList"
         class="my-table"
         showGridlines
-        scrollable scrollHeight="330px"
+        :tableStyle="{ width: '100%', tableLayout: 'fixed' }"
+        scrollable scrollHeight="flex"
         @row-dblclick="selectRowDblClick"
         >
       <Column header="NO" style="width: 40px" :headerStyle="{ textAlign: 'center' }" :bodyStyle="{ textAlign: 'center' }">
@@ -145,7 +148,7 @@
 
   <div class="table-box move-table">
     <div class="table-title">이동내역</div>
-    <DataTable :value="moveItemList" class="my-table" showGridlines scrollable scrollHeight="330px">
+    <DataTable :value="moveItemList" class="my-table" showGridlines scrollable scrollHeight="flex" :tableStyle="{ width: '100%', tableLayout: 'fixed' }">
       <Column header="NO" style="width: 40px" :headerStyle="{ textAlign: 'center' }" :bodyStyle="{ textAlign: 'center' }">
         <template #body="slotProps">
           {{ slotProps.index + 1 }}
@@ -154,9 +157,9 @@
       <Column field="testNo"    header="시험번호" style="width: 100px" />
       <Column field="itemCd"    header="품목코드" style="width: 110px" />
       <Column field="itemName"  header="품목명"  style="width: 360px" />
-      <Column field="qty"       header="이동수량" style="width: 90px; text-align: right" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }">
+      <Column field="qty"       header="이동수량" style="width: 110px; text-align: right" :bodyStyle="{ padding: '2px 4px', textAlign: 'right' }" :headerStyle="{ textAlign: 'center' }">
         <template #body="slotProps">
-            <InputNumber v-model="slotProps.data.qty" :inputStyle="{ width: '100px', textAlign: 'right' }" />
+            <InputNumber v-model="slotProps.data.qty" class="move-qty-input" :inputStyle="{ width: '100%', minWidth: '0', boxSizing: 'border-box', textAlign: 'right' }" />
         </template>
       </Column>
     </DataTable>
@@ -164,11 +167,12 @@
 </div>
 
 <div class="button-area">
-  <Button v-if="form.moveStatus === 'Q'" label="저장" severity="success" size="small" @click="saveInfo" />
-  <Button label="닫기" severity="secondary" size="small" outlined @click="closeDialog" />
+  <Button v-if="form.moveStatus === 'Q'" label="저장" severity="success"  @click="saveInfo" />
+  <Button label="닫기" severity="secondary"  outlined @click="closeDialog" />
 </div>
 
 
+</div>
 </template>
 
 <script setup>
@@ -337,6 +341,57 @@ const closeDialog = () => {
 </script>
 
 <style scoped>
+/* Dialog의 기존 높이를 사용하며 버튼 영역은 아래쪽에 유지 */
+.move-popup-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* 가운데 리스트만 남은 높이를 사용 */
+.move-popup-layout > .table-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+.move-popup-layout .table-box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.move-popup-layout :deep(.my-table) {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.move-popup-layout :deep(.my-table .p-datatable-table-container) {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto !important;
+}
+
+.move-popup-layout > .button-area {
+    flex: 0 0 auto;
+    margin-top: 6px;
+}
+
+/* 이 팝업에만 적용: Dialog 콘텐츠의 높이를 자식에 전달 */
+:global(.p-dialog:has(.move-popup-layout) .p-dialog-content) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+
 .move-card {
   width: 100%;
   min-height: 180px;
@@ -361,33 +416,85 @@ const closeDialog = () => {
   padding: 0 4px;
 }
 
+/* 팝업 안에서 세 영역이 항상 전체 너비를 나누어 사용 */
 .table-area {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 38fr) minmax(0, 22fr) minmax(0, 40fr);
+  align-items: start;
+  gap: 10px;
   width: 100%;
-  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-bottom: 12px;
 }
-
-.table-box {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+.table-box, .request-table, .stock-table, .move-table {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
-
-.request-table {
-  width: 670px;
-  flex-shrink: 0;
+:deep(.my-table) { width: 100%; min-width: 0; }
+:deep(.my-table .p-datatable-table-container) {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: auto;
 }
-
-.stock-table {
-  width: 380px;
-  flex-shrink: 0;
+/* tableLayout=fixed 와 함께 컬럼을 영역 안으로 압축 */
+:deep(.my-table .p-datatable-table) {
+  width: 100% !important;
+  table-layout: fixed !important;
 }
-
-.move-table {
-  flex: 1;
-  min-width: 650px;
+:deep(.my-table .p-datatable-thead > tr > th),
+:deep(.my-table .p-datatable-tbody > tr > td) {
+  box-sizing: border-box;
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  padding: 4px 5px;
+}
+/* 요청내역: NO / 품목코드 / 품목명 / 요청량 / 등록량 */
+:deep(.request-table .p-datatable-thead > tr > th:nth-child(1)),
+:deep(.request-table .p-datatable-tbody > tr > td:nth-child(1)) { width: 6% !important; }
+:deep(.request-table .p-datatable-thead > tr > th:nth-child(2)),
+:deep(.request-table .p-datatable-tbody > tr > td:nth-child(2)) { width: 18% !important; }
+:deep(.request-table .p-datatable-thead > tr > th:nth-child(3)),
+:deep(.request-table .p-datatable-tbody > tr > td:nth-child(3)) { width: 50% !important; }
+:deep(.request-table .p-datatable-thead > tr > th:nth-child(4)),
+:deep(.request-table .p-datatable-tbody > tr > td:nth-child(4)) { width: 13% !important; }
+:deep(.request-table .p-datatable-thead > tr > th:nth-child(5)),
+:deep(.request-table .p-datatable-tbody > tr > td:nth-child(5)) { width: 13% !important; }
+/* 창고재고: NO / 시험번호 / 입고일자 / 재고량 */
+:deep(.stock-table .p-datatable-thead > tr > th:nth-child(1)),
+:deep(.stock-table .p-datatable-tbody > tr > td:nth-child(1)) { width: 10% !important; }
+:deep(.stock-table .p-datatable-thead > tr > th:nth-child(2)),
+:deep(.stock-table .p-datatable-tbody > tr > td:nth-child(2)) { width: 33% !important; }
+:deep(.stock-table .p-datatable-thead > tr > th:nth-child(3)),
+:deep(.stock-table .p-datatable-tbody > tr > td:nth-child(3)) { width: 32% !important; }
+:deep(.stock-table .p-datatable-thead > tr > th:nth-child(4)),
+:deep(.stock-table .p-datatable-tbody > tr > td:nth-child(4)) { width: 25% !important; }
+/* 이동내역: 마지막 이동수량에 고정 비율을 확보 */
+:deep(.move-table .p-datatable-thead > tr > th:nth-child(1)),
+:deep(.move-table .p-datatable-tbody > tr > td:nth-child(1)) { width: 6% !important; }
+:deep(.move-table .p-datatable-thead > tr > th:nth-child(2)),
+:deep(.move-table .p-datatable-tbody > tr > td:nth-child(2)) { width: 17% !important; }
+:deep(.move-table .p-datatable-thead > tr > th:nth-child(3)),
+:deep(.move-table .p-datatable-tbody > tr > td:nth-child(3)) { width: 18% !important; }
+:deep(.move-table .p-datatable-thead > tr > th:nth-child(4)),
+:deep(.move-table .p-datatable-tbody > tr > td:nth-child(4)) { width: 41% !important; }
+:deep(.move-table .p-datatable-thead > tr > th:nth-child(5)),
+:deep(.move-table .p-datatable-tbody > tr > td:nth-child(5)) { width: 18% !important; }
+:deep(.move-table .move-qty-input),
+:deep(.move-table .p-inputnumber),
+:deep(.move-table .p-inputnumber-input) {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+@media (max-width: 1100px) {
+  .table-area { grid-template-columns: minmax(0, 1fr); }
 }
 
 .table-title {
@@ -400,19 +507,19 @@ const closeDialog = () => {
 }
 
 .button-area {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  min-height: 48px;
-  padding: 6px 16px;
-  margin-top: 12px;
-  background: #f8fafc;
-  border-top: 1px solid #d8e2f0;
-  border-radius: 0 0 6px 6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    min-height: 48px;
+    padding: 6px 16px;
+    margin-top: 6px;
+
+    background: #f8fafc;
+    border-top: 1px solid #d8e2f0;
+    border-radius: 0 0 6px 6px;
 }
 
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
