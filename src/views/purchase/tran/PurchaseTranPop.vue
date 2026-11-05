@@ -118,7 +118,7 @@
                     v-model="slotProps.data.inPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="3"
                     :useGrouping="true"
                     :inputStyle="{ width: '90px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -131,7 +131,7 @@
                         v-model="slotProps.data.supplyPrice"
                         class="w-full"
                         :min="0"
-                        :maxFractionDigits="0"
+                        :maxFractionDigits="3"
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', 'text-align': 'right' }"
                     />
@@ -143,7 +143,7 @@
                     v-model="slotProps.data.vatPrice"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="3"
                     :useGrouping="true"
                     :inputStyle="{ width: '90px', 'text-align': 'right' }"
                 />

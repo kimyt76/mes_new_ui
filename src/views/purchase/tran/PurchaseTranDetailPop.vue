@@ -140,7 +140,7 @@
               v-model="slotProps.data.inPrice"
               class="cell-number"
               :min="0"
-              :maxFractionDigits="2"
+              :maxFractionDigits="3"
               :useGrouping="true"
               :inputStyle="{ textAlign: 'right' }"
               @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -154,7 +154,7 @@
               v-model="slotProps.data.supplyPrice"
               class="cell-number"
               :min="0"
-              :maxFractionDigits="2"
+              :maxFractionDigits="3"
               :useGrouping="true"
               :inputStyle="{ textAlign: 'right' }"
             />
@@ -167,7 +167,7 @@
               v-model="slotProps.data.vatPrice"
               class="cell-number"
               :min="0"
-              :maxFractionDigits="2"
+              :maxFractionDigits="3"
               :useGrouping="true"
               :inputStyle="{ textAlign: 'right' }"
             />
@@ -313,9 +313,12 @@ const copyPurInfo = async () => {
   }
 
   form.purDate = newDate
+  form.purId = null
+  form.endYn = null
 
   purchaseItemList.value = purchaseItemList.value.map(o => ({
     ...o,
+    purId: '',
     purItemId: '',
     lotNo: '',
     expiryDate: null,
@@ -489,6 +492,10 @@ onMounted(async () => {
 
   Object.assign(form, res.purchaseInfo)
   purchaseItemList.value = res.purchaseItemList
+
+  console.log('res.purchaseInfo', res.purchaseInfo)
+  console.log('res.purchaseItemList', res.purchaseItemList)
+
 })
 
 const closeDialog = () => {
