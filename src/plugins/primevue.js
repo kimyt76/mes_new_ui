@@ -13,6 +13,7 @@ import Tooltip from 'primevue/tooltip'
 // 공통으로 쓸 PrimeVue 컴포넌트들 import
 // (안 쓰는 건 자유롭게 삭제해도 됩니다)
 // ─────────────────────────────
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import Avatar from 'primevue/avatar'
 import Breadcrumb from 'primevue/breadcrumb'
 import Button from 'primevue/button'
@@ -76,4 +77,5 @@ export default function registerPrimeVue(app) {
   app.component('Chip', Chip)
   app.component('Avatar', Avatar)
   app.component('Panel', Panel)
+  app.component('LoadingOverlay', LoadingOverlay)
 }
