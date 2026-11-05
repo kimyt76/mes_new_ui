@@ -157,6 +157,15 @@ const saveInfo = async () =>{
         return vWarning('시험번호가 입력되지 않은 항목이 있습니다.')
     }
 
+    const testNos = moveStockList.value.map(row => row.testNo.trim())
+    const duplicateTestNo = testNos.find((testNo, index) =>
+        testNos.indexOf(testNo) !== index
+    )
+
+    if (duplicateTestNo) {
+        return vWarning(`중복된 시험번호가 있습니다. (${duplicateTestNo})`)
+    }
+
     try{
         const param = {
             moveStockInfo: form,
