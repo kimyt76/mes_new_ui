@@ -84,7 +84,14 @@
         <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="spec"        header="규격"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
-        <Column field="prodType"    header="제품유형"   :style="{ width: '150px', 'text-align': 'center' }" />
+        <Column field="prodType"    header="유형"      :style="{ width: '100px', 'text-align': 'center' }" >
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.prodType"
+                    class="w-full"
+                />
+            </template>
+        </Column>
         <Column field="orderType"   header="수주유형"   :style="{ width: '100px', 'text-align': 'center' }" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
                 <Select
@@ -186,8 +193,8 @@
 <div class="flex gap-2 justify-end pt-3">
     <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
     <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
+    <Button label="삭제" severity="danger" @click="deleteContract" />
 </div>
-
 </template>
 
 
@@ -201,9 +208,10 @@ import { calculateVAT, formatDate } from '@/util/common';
 import ClientListPop from '@/views/order/client/ClientListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
+import { useConfirm } from 'primevue/useconfirm';
 import { computed, inject, onMounted, reactive, ref, shallowRef } from 'vue';
 
-
+const confirm = useConfirm();
 const dialog = useDialog()
 const { userId } = useAuthStore()
 const { vError, vSuccess, vWarning, vInfo } = useAlertStore()
@@ -221,6 +229,7 @@ const form = reactive({
     clientName:'',
     clientId:'',
     clientCd:'',
+    customerCd:'',
     managerName:'',
     managerId:'',
     vatType:'',
@@ -251,6 +260,29 @@ const totalAmount = computed(() => {
   // 다른 computed 속성의 값에 접근할 때도 .value를 사용합니다.
   return totalSupplyPrice.value + totalVatPrice.value;
 });
+
+const deleteContract = async () => {
+    confirm.require({
+        header: '주문서 삭제',
+        message: '선택한 주문서를 삭제하시겠습니까? 삭제 후 복구는 불가능합니다.',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: '예',
+        rejectLabel: '아니오',
+        acceptClass: 'p-button-danger',
+
+        accept: async () => {
+            try {
+                const res = await ApiOrder.deleteContract(form.contractId);
+
+                vSuccess('주문서가 삭제되었습니다.');
+                closeDialog();
+
+            } catch (error) {
+                vError('주문서 삭제 중 오류가 발생했습니다.');
+            }
+        }
+    });
+}
 
 const onChangeRow = (data) =>{
   const qty = data.qty
@@ -351,6 +383,7 @@ const openPop = (type) =>{
                 form.clientId = event.data.clientId
                 form.managerName = event.data.businessManagerName
                 form.managerId = event.data.businessManagerName
+                form.customerCd = event.data.businessNo
                 form.clientCd = event.data.businessNo
             }else if ( type === 'U') {
                 form.managerName = event.data.memberNm

@@ -121,14 +121,8 @@ export const ApiOrder = {
         },
       })
   },
-  getContractItemList : async(ids) => {
-    try{
-      const res = await API_URL.get(`/sale/getContractItemList/${ids}`)
-
-      return res.data
-    }catch(err){
-      throw err.response
-    }
+  deleteContract: async(id) => {
+    return await API_URL.get(`/contract/deleteContract/${id}`)
   },
 
   /**************************수주계획 관리******************************************************* */

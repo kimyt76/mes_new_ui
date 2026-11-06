@@ -93,7 +93,14 @@
         <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="spec"        header="규격"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
-        <Column field="prodType"    header="제품유형"   :style="{ width: '150px', 'text-align': 'center' }" />
+        <Column field="prodType"    header="유형"       :style="{ width: '100px', 'text-align': 'center' }">
+            <template #body="slotProps">
+                <InputText
+                    v-model="slotProps.data.prodType"
+                    class="w-full"
+                />
+            </template>
+        </Column>
         <Column field="orderType"   header="수주유형"   :style="{ width: '100px', 'text-align': 'center' }" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
                 <Select
@@ -246,6 +253,7 @@ const form = reactive({
     clientCd:'',
     clientName:'',
     clientId:'',
+    customerCd:'',
     managerName:'',
     managerId:'',
     paymentCondition:'',
@@ -372,7 +380,7 @@ const selectedRow = (obj) =>{
       itemCd: o.itemCd,
       itemName: o.itemName,
       spec: o.spec,
-      prodType: o.itemGrp2Name,
+      prodType: '',
       orderType: o.orderType,
       qty: o.qty,
       unitPrice: o.unitPrice,
@@ -434,6 +442,7 @@ const openPop = (type) =>{
                 form.managerName = event.data.businessManagerName
                 form.managerId = event.data.businessManagerName
                 form.clientCd = event.data.businessNo
+                form.customerCd = event.data.businessNo
             }else if ( type === 'U') {
                 form.managerName = event.data.memberNm
                 form.managerId = event.data.userId
