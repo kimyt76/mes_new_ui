@@ -72,6 +72,7 @@
 
     <DataTable
         ref="dt"
+        :loading="loading"
         :value="subMatList"
         scrollHeight="700px"
         scrollable
@@ -256,9 +257,11 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { onMounted, reactive, ref } from 'vue';
 
+const loading = ref(false);
 const dt = ref(null);
 const itemGrp1s = ref([]);
 const subMatList = ref([]);
@@ -348,8 +351,8 @@ const makeDisplayRow = (row) => ({
     inPriceText: formatAmount(row.inPrice),
 
     // 기초재고
-    basicQtyText: formatQty(row.basicQty),
-    basicAmtText: formatAmount(row.basicAmt),
+    basicQtyText: formatQty(row.baseQty),
+    basicAmtText: formatAmount(row.baseAmt),
 
     // 입고
     asQtyText: formatQty(row.asQty),
@@ -384,11 +387,19 @@ const handleDateChange = () => {};
    조회
    ========================================= */
 const srhList = async () => {
+
+    loading.value = true;
+    try {
     const params = { ...form };
 
     const data = await ApiStock.getTranLedger(params);
 
     subMatList.value = (data ?? []).map(makeDisplayRow);
+    }catch (err) {
+        handleApiError(err);
+    } finally {
+        loading.value = false;
+    }
 };
 
 /* =========================================

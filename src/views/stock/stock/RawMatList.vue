@@ -61,6 +61,7 @@
 
     <DataTable
         ref="dt"
+        :loading="loading"
         :value="rawMatList"
         scrollable
         scrollHeight="700px"
@@ -235,13 +236,14 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiStock } from '@/api/apiStock';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { onMounted, reactive, ref } from 'vue';
 
 const dt = ref(null);
 const itemGrp1s = ref([]);
 const rawMatList = ref([]);
-
+const loading = ref(false);
 const form = reactive({
     strDate: minMonth(todayKST(), 3),
     endDate: todayKST(),
@@ -328,8 +330,8 @@ const makeDisplayRow = (row) => ({
     inPriceText: formatAmount(row.inPrice),
 
     // 기초재고
-    basicQtyText: formatQty(row.basicQty),
-    basicAmtText: formatAmount(row.basicAmt),
+    basicQtyText: formatQty(row.baseQty),
+    basicAmtText: formatAmount(row.baseAmt),
 
     // 입고
     asQtyText: formatQty(row.asQty),
@@ -364,11 +366,19 @@ const handleDateChange = () => {};
    조회
    ========================================= */
 const srhList = async () => {
-    const params = { ...form };
 
-    const data = await ApiStock.getTranLedger(params);
+    loading.value = true;
+    try {
+        const params = { ...form };
 
-    rawMatList.value = (data ?? []).map(makeDisplayRow);
+        const data = await ApiStock.getTranLedger(params);
+
+        rawMatList.value = (data ?? []).map(makeDisplayRow);
+    } catch (err) {
+        handleApiError(err);
+    } finally {
+        loading.value = false;
+    }
 };
 
 /* =========================================
