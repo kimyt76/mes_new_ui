@@ -362,6 +362,7 @@ const form = reactive({
   managerId: userId,
   clientName: '',
   clientId: '',
+  customerCd: '',
   itemName: '',
   itemCd: '',
   areaCd: 'A001',
@@ -610,14 +611,17 @@ const openPop =(type) => {
         form.managerName = event.data.memberNm
         form.managerId = event.data.userId
       } else if (type === 'C') {
+        console.log('Client Pop Close', event.data)
         form.clientId = event.data.clientId
         form.clientName = event.data.clientName
+        form.customerCd = event.data.customerCd
       } else if (type === 'O') {
         form.itemCd = event.data.itemCd
         form.itemName = event.data.itemName
         form.poNo = event.data.poNo
         form.clientId = event.data.clientId
         form.clientName = event.data.clientName
+        form.customerCd = event.data.customerCd
         form.deliveryQty = event.data.qty
         form.deliveryDate = event.data.deliveryReqDate
         workOrderList.value[0].poNo = event.data.poNo
@@ -702,6 +706,7 @@ const rowsToVoPayload = () =>{
     seq: form.seq,
     areaCd: form.areaCd,
     clientId: form.clientId,
+    customerCd: form.customerCd,
     managerId: form.managerId,
     deliveryQty: form.deliveryQty,
     deliveryDate: form.deliveryDate,
