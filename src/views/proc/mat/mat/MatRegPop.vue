@@ -629,7 +629,6 @@ const complateMake = () => {
             closeDialog()
         },
     })
-
 }
 
 const formatQty = (value) => {
