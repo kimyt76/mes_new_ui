@@ -530,7 +530,7 @@ const saveInfo = async () => {
     }
 }
 
-const openLookupPopup = (type, row) => {
+const openLookupPopup = async (type, row) => {
     let title = ''
     let componentPop = ''
     let itemList = []
@@ -542,6 +542,13 @@ const openLookupPopup = (type, row) => {
         title = '투입량 입력'
         componentPop = MakeQtyPopup
     } else if (type === 'S') {
+        const res = await ApiProc.getStatusEndCheck(form.workProcId)
+
+        if ( res.batchStatus < '12') {
+            vWarning('칭량 공정이 끝나지 않았습니다.')
+            return false
+        }
+
         title = '제조 시작'
         componentPop = ProcMakeStartPop
     } else if (type === 'P') {
