@@ -198,6 +198,7 @@ const selectRowClick = (id) => {
                 //console.log('저장된 contractId:', savedContractId)
                 selectRowClick(savedContractId)
             }
+            srhList()
         }
     })
 }
