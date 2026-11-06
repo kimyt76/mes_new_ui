@@ -76,6 +76,7 @@
           :rowHeaders="false"
           :height="470"
           :afterChange="handleAfterChange"
+          :afterSelectionEnd="handleSelectionEnd"
           :afterOnCellMouseDown="handleCellClickFromHot"
           :stretchH="'none'"
         />
@@ -84,16 +85,32 @@
   </div>
 
   <div class="w-full mt-5">
-    <div class="flex items-center justify-end gap-3">
-      <Button v-if="isStarted" label="칭량시작" @click="openLookupPopup('S')" />
-      <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
-      <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
-      <Button label="공정기록서" @click="downloadProc" />
-      <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
-      <Button v-if="isComplate" label="칭량완료" @click="completeWeight" />
-      <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+    <div class="flex items-center justify-end gap-3 relative text-xl">
+
+        <!-- 선택한 품목 지시량 합계 -->
+        <div class="flex items-center gap-2 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
+            <span class="font-bold">선택 지시량 합계 :</span>
+            <span class="font-bold text-primary">
+                {{ selectedTotalQty.toLocaleString('ko-KR', {
+                    minimumFractionDigits: 5,
+                    maximumFractionDigits: 5
+                }) }} kg
+            </span>
+        </div>
+
+        <!-- 기존 버튼 -->
+        <div class="flex items-center gap-3">
+            <Button v-if="isStarted" label="칭량시작" @click="openLookupPopup('S')" />
+            <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
+            <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
+            <Button label="공정기록서" @click="downloadProc" />
+            <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
+            <Button v-if="isComplate" label="칭량완료" @click="completeWeight" />
+            <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
+        </div>
+
     </div>
-  </div>
+</div>
 </template>
 
 <script setup>
@@ -108,7 +125,7 @@ import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import TabPanel from 'primevue/tabpanel'
 import Tabs from 'primevue/tabs'
-import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import * as XLSX from 'xlsx'
 
 import { ApiQc } from '@/api/apiQc.js'
@@ -130,6 +147,53 @@ const hotTable = ref(null)
 const isStarted = ref(true)
 const isComplate = ref(false)
 const matUseDataList = ref([])
+
+// Handsontable 파란색 선택 영역 중 '지시량' 열(인덱스 6)만 합산
+// 체크박스 선택 상태 및 기존 업무 로직과는 무관
+const selectedTotalQty = ref(0)
+const ORDER_QTY_COL = 6
+
+const handleSelectionEnd = (row, column, row2, column2) => {
+    const hot = hotTable.value?.hotInstance || hotTable.value
+    const ranges = hot?.getSelectedRange?.()
+    const selectedRows = new Set()
+
+    const addRange = (r1, c1, r2, c2) => {
+        if (![r1, c1, r2, c2].every(Number.isInteger)) return
+        if (ORDER_QTY_COL < Math.min(c1, c2) || ORDER_QTY_COL > Math.max(c1, c2)) return
+        for (let r = Math.max(0, Math.min(r1, r2)); r <= Math.max(r1, r2); r++) {
+            selectedRows.add(r)
+        }
+    }
+
+    if (ranges?.length) {
+        ranges.forEach(range => addRange(range.from.row, range.from.col, range.to.row, range.to.col))
+    } else {
+        addRange(row, column, row2, column2)
+    }
+
+    // 중복 선택된 행은 한 번만 계산 (소수점 5자리)
+    const sum = [...selectedRows].reduce((total, index) => {
+        const raw = currentTabList.value[index]?.orderQty
+        return total + (Number(String(raw ?? 0).replace(/,/g, '')) || 0)
+    }, 0)
+    selectedTotalQty.value = Math.round((sum + Number.EPSILON) * 100000) / 100000
+}
+
+// BaseHotTable이 afterSelectionEnd prop을 전달하지 않는 구현도 대응:
+// 실제 Handsontable 인스턴스에 후크 직접 연결
+let hookedHot = null
+const attachSelectionHook = () => {
+    const hot = hotTable.value?.hotInstance || hotTable.value
+    if (!hot?.addHook || hot === hookedHot) return
+    if (hookedHot?.removeHook) hookedHot.removeHook('afterSelectionEnd', handleSelectionEnd)
+    hot.addHook('afterSelectionEnd', handleSelectionEnd)
+    hookedHot = hot
+}
+
+onBeforeUnmount(() => {
+    if (hookedHot?.removeHook) hookedHot.removeHook('afterSelectionEnd', handleSelectionEnd)
+})
 
 const form = reactive({
     makeNo: '', itemCd:'', itemName: '', procOrderDate: '', orderQty: 0, prodDate: '',
@@ -160,7 +224,10 @@ const ROW_POPUPS = new Set(['ITEM_CODE', 'CONTAINER_WEIGHT', 'CONTAINER_WEIGHT1'
 // 스캐너 이벤트 등록/해제
 onMounted(() => {
     window.addEventListener('keydown', handleScannerKeydown)
-    loadWeighInfo()
+    loadWeighInfo().then(async () => {
+        await nextTick()
+        attachSelectionHook()
+    })
 })
 onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleScannerKeydown)
@@ -230,6 +297,13 @@ const currentTabList = computed(() => matUseDataList.value.filter(row => {
   const appearance = String(row.appearance ?? '').trim() || SUNGSANG_EMPTY
   return tabMatches && (!selected.length || selected.includes(appearance))
 }))
+// 탭과 테이블이 초기화된 뒤 선택 이벤트 연결 (선언 순서 오류 방지)
+watch([hotTable, activeSangGubun], async () => {
+    await nextTick()
+    attachSelectionHook()
+    selectedTotalQty.value = 0
+}, { flush: 'post' })
+
 const totalMatCount = computed(() => currentTabList.value.length)
 const finishedCount = computed(() => currentTabList.value.filter(r => r.weighYn === 'Y').length)
 const allChecked = computed({
@@ -495,6 +569,7 @@ const loadWeighInfo = async () => {
     const data = await ApiProc.getWeighInfo(params)
     Object.assign(form, data.workOrderInfo || {})
     matUseDataList.value = normalizeRows(data.weightBomList || [])
+    selectedTotalQty.value = 0
     isStarted.value = data.workOrderInfo?.procStatus === '00'
     checkComplete()
 }
