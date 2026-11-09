@@ -192,12 +192,12 @@
 <div class="w-full flex justify-between mt-2">
     <!-- 왼쪽 -->
     <div class="flex gap-2">
-        <Button label="메일발송" class="p-button-secondary" @click="sendMail"/>
+        <Button label="메일발송" class="p-button-secondary" :disabled="!writeYn"  @click="sendMail"/>
         <Button label="인쇄" icon="pi pi-print"  outlined @click="printOut"></Button>
     </div>
     <!-- 오른쪽 -->
     <div class="flex gap-2">
-        <Button label="저장" class="p-button-secondary" @click="saveInfo"/>
+        <Button label="저장" class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo"/>
         <Button label="닫기" outlined @click="closeDialog"/>
     </div>
 </div>
