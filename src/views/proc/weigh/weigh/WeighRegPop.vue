@@ -100,8 +100,8 @@
 
         <!-- 기존 버튼 -->
         <div class="flex items-center gap-3">
-            <Button v-if="isStarted" label="칭량시작" @click="openLookupPopup('S')" />
-            <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
+            <Button v-if="isStarted" label="칭량시작" :disabled="!writeYn"  @click="openLookupPopup('S')" />
+            <Button v-if="!isStarted" label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo" />
             <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
             <Button label="공정기록서" @click="downloadProc" />
             <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
