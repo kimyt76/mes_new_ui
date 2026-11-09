@@ -505,6 +505,18 @@ const openLookupPopup = (type, row = null) => {
           isBarcodePopupOpen.value = false
           scanBuffer.value = ''
         }
+        if (type === 'CONTAINER_WEIGHT1') {
+             if (event?.data && hasRow && row) {
+                const params ={
+                    workProcId: form.workProcId,
+                    weighId: row.weighId,
+                    bagWeight: event?.data
+                }
+                const res = await ApiProc.updateBagWeigh(params)
+                await loadWeighInfo()
+            }
+        }
+
         if (event?.data && hasRow && row) {
           applyPopupResultToRow(type, row, event.data)
           row.totalQty = calcTotalQty(row)
