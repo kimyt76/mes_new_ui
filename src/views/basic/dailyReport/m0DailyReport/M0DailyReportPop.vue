@@ -867,8 +867,8 @@
              하단 버튼
         ========================================================== -->
         <div class="bottom-buttons">
-            <Button v-if="isBtn" label="저장" icon="pi pi-save" @click="saveInfo" />
-            <Button v-if="isBtn" label="종결" icon="pi pi-save" @click="updateEndYn" />
+            <Button v-if="isBtn" label="저장" icon="pi pi-save" :disabled="!writeYn" @click="saveInfo" />
+            <Button v-if="isBtn" label="종결" icon="pi pi-save"  :disabled="!writeYn" @click="updateEndYn" />
             <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadM0"></Button>
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>

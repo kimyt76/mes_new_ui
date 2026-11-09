@@ -38,7 +38,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" severity="success" @click="saveInfo"/>
+    <Button label="저장" severity="success"  :disabled="!writeYn" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 </template>

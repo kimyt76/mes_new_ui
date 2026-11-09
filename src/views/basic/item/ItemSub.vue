@@ -131,7 +131,7 @@
 </Card>
 <!-- Buttons -->
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장" class="p-button-secondary" @click="saveInfo()"></Button>
+    <Button label="저장" class="p-button-secondary"  :disabled="!writeYn" @click="saveInfo()"></Button>
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog"></Button>
 </div>
 </template>

@@ -167,7 +167,7 @@
 </div>
 
 <div class="button-area">
-  <Button v-if="form.moveStatus === 'Q'" label="저장" severity="success"  @click="saveInfo" />
+  <Button v-if="form.moveStatus === 'Q' || form.moveStatus === 'I'" label="저장" :disabled="!writeYn"  severity="success"  @click="saveInfo" />
   <Button label="닫기" severity="secondary"  outlined @click="closeDialog" />
 </div>
 
@@ -288,11 +288,12 @@ const saveInfo = async () =>{
         form.moveStatus = 'I'
         const params = {
             moveStockInfo : form,
+            deleteMoveReqItemIds: null,
             moveItemList : moveItemList.value
         }
 
         const res = await ApiStock.saveMoveItem(params)
-        vSuccess(res.message)
+        vSuccess("저장되었습니다.")
         closeDialog()
     }catch(err) {
         handleApiError(err)
@@ -319,7 +320,7 @@ onMounted( async () => {
         const res = await ApiStock.getMoveReqInfo(form.moveStockId)
 
         Object.assign(form, res.moveStockInfo)
-
+console.log('form.moveStatus',   form.moveStatus)
         if ( form.moveStatus === 'Q' ) {
             form.moveRegDate = todayKST()
             form.regSeq = await ApiStock.getNextRegSeq({moveRegDate: form.moveRegDate})

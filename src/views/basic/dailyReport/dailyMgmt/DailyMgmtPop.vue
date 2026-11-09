@@ -15,7 +15,7 @@
       </div>
       <div class="toolbar-right">
         <Button label="조회" icon="pi pi-search" severity="secondary" @click="srhInfo" />
-        <Button label="저장" icon="pi pi-save" @click="saveInfo" />
+        <Button label="저장" icon="pi pi-save" :disabled="!writeYn" @click="saveInfo" />
         <!-- <Button label="인쇄" icon="pi pi-print" severity="secondary" @click="printPage" /> -->
         <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadDailyMgmt"/>
       </div>
@@ -648,6 +648,8 @@ import { handleApiError } from "@/util/errorHandler";
 import { handleTableKeydown } from '@/util/tableKeyboard';
 import { computed, inject, onMounted, reactive, ref } from "vue";
 
+import { useMenuPermission } from '@/composable/useMenuPermission.js';
+const { writeYn, checkWrite } = useMenuPermission()
 const dialogRef = inject("dialogRef");
 const { vSuccess } = useAlertStore();
 const form = reactive({ dailyDate: new Date() });

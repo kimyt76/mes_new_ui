@@ -89,7 +89,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button v-if="isSaved" label="저장" severity="success" @click="saveInfo"/>
+    <Button v-if="isSaved" label="저장" severity="success"  :disabled="!writeYn" @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 
@@ -120,6 +120,7 @@ import QrCodeSimplePop from '@/views/common/QrCodeSimplePop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
+
 
 const { vSuccess, vWarning} = useAlertStore()
 const { memberNm, userId} = useAuthStore()

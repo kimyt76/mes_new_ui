@@ -77,7 +77,7 @@
 
     </div>
     <div class="flex justify-end gap-2">
-        <Button type="button" label="저장" severity="secondary" class="bg-primary-300" @click="saveInfo"></Button>
+        <Button type="button" label="저장" severity="secondary" :disabled="!writeYn"  class="bg-primary-300" @click="saveInfo"></Button>
         <Button type="button" label="닫기" outlined class="ml-2"  @click="emit('close-visible')"></Button>
     </div>
 </template>

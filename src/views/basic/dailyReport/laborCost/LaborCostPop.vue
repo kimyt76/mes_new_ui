@@ -168,12 +168,14 @@
                 v-if="isBtn"
                 label="저장"
                 icon="pi pi-save"
+                :disabled="!writeYn"
                 @click="saveInfo"
             />
             <Button
                 v-if="isBtn"
                 label="종결"
                 icon="pi pi-check"
+                :disabled="!writeYn"
                 @click="updateEndYn"
             />
             <Button

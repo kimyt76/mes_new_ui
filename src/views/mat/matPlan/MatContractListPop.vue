@@ -91,7 +91,7 @@
 
         <!-- 🔹 하단 버튼 (고정) -->
         <div class="bottom-section">
-          <Button label="선택" class="btn-use" @click="saveInfo" />
+          <Button label="선택" class="btn-use" :disabled="!writeYn"  @click="saveInfo" />
           <Button label="닫기" outlined class="ml-2" @click="emit('close')" />
         </div>
       </div>

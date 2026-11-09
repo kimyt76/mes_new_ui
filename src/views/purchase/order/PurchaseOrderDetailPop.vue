@@ -105,7 +105,13 @@
         show-gridlines
         >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column field="itemCd"    header="품목코드"  :style="{ width: '110px', textAlign:'center'}" />
+        <Column field="itemCd"    header="품목코드"  :style="{ width: '110px', textAlign:'center'}">
+            <template #body="slotProps">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell">
+                    {{ slotProps.data.itemCd }}
+                </div>
+            </template>
+        </Column>
         <Column field="itemName"  header="품목명"    :style="{ width: '350px'}" bodyClass="break-words">
             <template #body="slotProps">
                 <InputText
@@ -224,6 +230,7 @@ import UserListPop from '@/views/system/user/UserListPop.vue';
 import { InputNumber, InputText, useDialog } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 import MailSendPop from './MailSendPop.vue';
+import StockPop from './StockPop.vue';
 
 const { vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
@@ -267,6 +274,29 @@ const form = reactive({
     purOrderId: '',
     userId: userId,
 })
+
+const selectRowClick = (row) =>{
+    dialog.open(StockPop, {
+        props: {
+            header: '재고현황',
+            modal: true,
+            maximizable: false,
+            draggable: false,
+            style: {
+            overflow: 'hidden'
+            },
+            pt: {
+                root: { style: { overflow: 'hidden' } },
+                content: { style: { overflow: 'hidden' } }
+            }
+        },
+        data:{
+            row : row,
+        },
+        onClose: (event) => {
+        }
+    } )
+}
 
 const copyOrderInfo = async () =>{
     isCopy.value = true
