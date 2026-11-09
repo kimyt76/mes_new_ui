@@ -12,13 +12,13 @@
             </FloatLabel>
 
             <FloatLabel variant="on" class="w-full">
-                <InputText v-model="form.value" class="w-full" @keyup.enter="saveInfo" />
+                <InputText v-model="form.value" class="w-full" :disabled="!writeYn"  @keyup.enter="saveInfo" />
                 <label>발주구분</label>
             </FloatLabel>
         </div>
 
         <div class="button-area">
-            <Button label="저장" icon="pi pi-check" severity="secondary" size="small" @click="saveInfo" />
+            <Button label="저장" icon="pi pi-check" severity="secondary" size="small" :disabled="!writeYn" @click="saveInfo" />
             <Button label="닫기" icon="pi pi-times" severity="secondary" size="small" outlined @click="closeDialog" />
         </div>
     </div>

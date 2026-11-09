@@ -28,6 +28,7 @@
                                 @input="onTimeInput('start', $event)"
                                 @focus="$event.target.select()"
                                 @blur="onTimeBlur('start')"
+                                :disabled="!writeYn"
                                 @keydown.enter.prevent="saveInfo"
                             />
                             <InputGroupAddon
@@ -54,6 +55,7 @@
                                 @input="onTimeInput('end', $event)"
                                 @focus="$event.target.select()"
                                 @blur="onTimeBlur('end')"
+                                :disabled="!writeYn"
                                 @keydown.enter.prevent="saveInfo"
                             />
                             <InputGroupAddon
@@ -109,11 +111,13 @@
                 <Button
                     label="저장"
                     icon="pi pi-check"
+                    :disabled="!writeYn"
                     @click="saveInfo"
                 />
                 <Button
                     label="삭제"
                     severity="danger"
+                    :disabled="!writeYn"
                     @click="deleteWorkRecode"
                 />
                 <Button
