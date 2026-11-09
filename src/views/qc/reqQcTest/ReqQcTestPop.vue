@@ -255,7 +255,7 @@
   </div>
 
   <div class="popup-footer flex gap-2 mt-3">
-    <Button label="저장" class="p-button-success" @click="saveInfo"></Button>
+    <Button label="저장" class="p-button-success" :disabled="!writeYn" @click="saveInfo"></Button>
     <Button label="성적서(PDF)"  class="p-button-info"  @click="printPdf"  />
     <Button label="성적서(EXCEL)" icon="pi pi-file-excel" severity="success"  @click="downLoadExcel('C')" />
     <Button label="시험일지(EXCEL)" icon="pi pi-file-excel" severity="success"  @click="downLoadExcel('T')"/>

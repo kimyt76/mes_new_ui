@@ -47,7 +47,7 @@
             v-if="isBtn"
             label="저장"
             severity="success"
-            :disabled="loading"
+            :disabled="loading || !writeYn"
             @click="saveInfo"
         />
 
@@ -55,7 +55,7 @@
             v-if="isBtn"
             label="재고초기화"
             severity="danger"
-            :disabled="loading"
+            :disabled="loading || !writeYn"
             @click="stockInit"
         />
 
@@ -63,7 +63,7 @@
             v-if="isBtn"
             label="실사재고삭제"
             severity="danger"
-            :disabled="loading"
+            :disabled="loading || !writeYn"
             @click="deleteRealStock"
         />
 
@@ -76,7 +76,7 @@
         />
     </div>
 </template>
-
+``
 <script setup>
 import { ApiStock } from '@/api/apiStock'
 import BaseHotTable from '@/components/BaseHotTable.vue'

@@ -117,7 +117,7 @@
   </div>
   <!-- 하단 버튼 -->
   <div class="bottom-area">
-    <Button label="저장" class="p-button-secondary" @click="saveInfo" />
+    <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo" />
     <Button label="닫기" outlined @click="closeDialog" />
   </div>
 </template>
@@ -314,10 +314,6 @@ const saveInfo = async () => {
     weighList : stockItemList.value,
     deleteWeighItems: deleteWeighItems.value,
   }
-
-  console.log('totalWeighQty:', totalWeighQty.value)
-console.log('weighInfo.weighQty:', params.weighInfo.weighQty)
-console.log('weighList:', params.weighList)
 
   const params1 = {
     weighQty: totalWeighQty.value,

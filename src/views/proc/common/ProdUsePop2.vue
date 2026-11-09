@@ -93,7 +93,7 @@
 </div>
 
     <div class="usage-popup-footer flex justify-start mt-3 gap-2">
-        <Button label="저장" icon="pi pi-check" @click="saveInfo"/>
+        <Button label="저장" icon="pi pi-check" :disabled="!writeYn" @click="saveInfo"/>
         <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
 </div>

@@ -169,7 +169,7 @@
 </div>
 
 <div class="button-area">
-  <Button label="저장" severity="success" @click="saveInfo" />
+  <Button label="저장" severity="success" :disabled="!writeYn" @click="saveInfo" />
   <Button label="닫기" outlined @click="closeDialog" />
 </div>
 

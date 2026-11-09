@@ -144,12 +144,14 @@
                     label="수정"
                     outlined
                     class="ml-2"
+                    :disabled="!writeYn"
                     @click="updatePop"
                 />
                 <Button
                     v-if="isSaveBtn"
                     label="저장"
                     class="p-button-secondary"
+                    :disabled="!writeYn"
                     @click="saveInfo"
                 />
                 <Button

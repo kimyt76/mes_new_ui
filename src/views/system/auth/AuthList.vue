@@ -118,7 +118,7 @@
 
                 icon="pi pi-save"
                 :loading="saving"
-                :disabled="loadingAuth"
+                :disabled="loadingAuth || !writeYn"
 
                 @click="saveInfo"
             />

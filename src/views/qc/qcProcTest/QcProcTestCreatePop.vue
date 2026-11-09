@@ -27,7 +27,7 @@
             <span style="color: #e53935; font-weight: 600;">* 검사구분은 공정검사 생성 후에는 변경할 수 없습니다.</span>
         </div>
         <div class="flex justify-end gap-1 mt-3">
-            <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
+            <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo"></Button>
             <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
         </div>
     </template>

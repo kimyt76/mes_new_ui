@@ -85,11 +85,11 @@
 
         <div class="ml-auto mr-2">
             <div class="flex items-center justify-end gap-2">
-                <Button v-if="isStarted" label="제조시작" @click="openLookupPopup('S')" />
-                <Button v-if="!isStarted" label="저장" class="p-button-secondary" @click="saveInfo" />
+                <Button v-if="isStarted" label="제조시작" :disabled="!writeYn" @click="openLookupPopup('S')" />
+                <Button v-if="!isStarted" label="저장" class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo" />
                 <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
                 <Button label="제조공정기록서" @click="downloadMatProc" />
-                <Button v-if="form.procStatus !== '22'" label="제조완료" @click="complateMake" />
+                <Button v-if="form.procStatus !== '22'" label="제조완료" :disabled="!writeYn"  @click="complateMake" />
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 
                 <Button label="새로고침" @click="refresh" />

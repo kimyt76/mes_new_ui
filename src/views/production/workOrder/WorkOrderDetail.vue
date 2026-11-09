@@ -130,10 +130,10 @@
   </div>
 
   <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" class="p-button-secondary" :disabled="loading" @click="saveInfo" />
-    <Button label="리셋" severity="warn" :disabled="loading" @click="procReSet" />
-    <Button label="공정Clear" severity="info" @click="clearList" />
-    <Button label="작업취소" severity="danger" :disabled="loading" @click="procEntYn" />
+    <Button label="저장" class="p-button-secondary" :disabled="loading || !writeYn" @click="saveInfo" />
+    <Button label="리셋" severity="warn" :disabled="loading || !writeYn" @click="procReSet" />
+    <Button label="공정Clear" severity="info" :disabled="!writeYn"  @click="clearList" />
+    <Button label="작업취소" severity="danger" :disabled="loading || !writeYn" @click="procEntYn" />
     <Button label="닫기"   outlined class="ml-2" @click.stop="closeDialog" />
   </div>
   </div>

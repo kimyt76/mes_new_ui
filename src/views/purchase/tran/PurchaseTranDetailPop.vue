@@ -212,9 +212,9 @@
     </div>
 
     <div class="bottom-buttons">
-      <Button label="저장" class="p-button-secondary" @click="saveInfo" />
+      <Button label="저장" class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo" />
       <Button label="바코드" icon="pi pi-barcode" outlined @click="barcodePrint" />
-      <Button label="삭제" severity="danger" @click="deletePur" />
+      <Button label="삭제" severity="danger" :disabled="!writeYn" @click="deletePur" />
       <Button label="닫기" outlined @click="closeDialog" />
     </div>
 

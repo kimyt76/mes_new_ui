@@ -32,7 +32,7 @@
 </div>
 
 <div class="flex justify-end gap-2 mt-3">
-    <Button label="저장" class="p-button-secondary" @click="saveInfo"></Button>
+    <Button label="저장" class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo"></Button>
     <Button label="닫기" outlined class="mr-2" @click="closeDialog" />
 </div>
 
