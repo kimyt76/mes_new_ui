@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', {
     userId: null,
     deptNm: null,
     memberNm: null,
-
+    email: null,
     menuAuthList: [],
 
     sessionChecked: false,
@@ -44,6 +44,7 @@ export const useAuthStore = defineStore('auth', {
         this.userId = data.userId;
         this.deptNm = data.deptNm;
         this.memberNm = data.memberNm;
+        this.email = data.email;
 
       } catch (err) {
         throw err;
@@ -58,6 +59,7 @@ export const useAuthStore = defineStore('auth', {
       this.userId = null;
       this.deptNm = null;
       this.memberNm = null;
+      this.email = null;
       this.menuAuthList = [];
     },
 
@@ -70,12 +72,14 @@ export const useAuthStore = defineStore('auth', {
         this.userId = data.userId;
         this.deptNm = data.deptNm;
         this.memberNm = data.memberNm;
+        this.email = data.email;
 
       } catch {
         this.user = null;
         this.userId = null;
         this.deptNm = null;
         this.memberNm = null;
+        this.email = null;
         this.menuAuthList = [];
       } finally {
         this.sessionChecked = true;

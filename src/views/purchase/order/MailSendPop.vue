@@ -43,15 +43,19 @@
 import { ApiBase } from '@/api/apiBase';
 import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import { useAlertStore } from '@/stores/alert';
+import { useAuthStore } from '@/stores/auth';
 import { isEmpty } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { inject, onMounted, reactive } from 'vue';
 
+const {email} = useAuthStore();
 const { vWarning, vSuccess} = useAlertStore()
 const dialogRef = inject('dialogRef');
+
 const form = reactive({
     toName: '',
     to: '',
-    cc: '',
+    cc: email,
     from: 'purchase@jincostech.com',
     memo: '',
     id: dialogRef.value?.data?.purOrderId ?? '',
