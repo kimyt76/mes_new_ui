@@ -78,7 +78,12 @@
         <Column field="testNo"    header="시험번호" :style="{ width: '110px', textAlign: 'center'}" />
         <Column field="qty"       header="수량" :style="{ width: '110px', textAlign: 'right'}" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }">
             <template #body="slotProps">
-                <InputNumber v-model="slotProps.data.qty" :inputStyle="{ width: '110px', textAlign: 'right' }" class="w-full"/>
+                <InputNumber v-model="slotProps.data.qty"
+                :min="0"
+                :maxFractionDigits="6"
+                :useGrouping="true"
+                :inputStyle="{ width: '110px', textAlign: 'right' }"
+                class="w-full"/>
             </template>
        </Column>
         <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
@@ -89,7 +94,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button v-if="isSaved" label="저장" severity="success"  :disabled="!writeYn" @click="saveInfo"/>
+    <Button v-if="isSaved" label="저장" severity="success"   @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 
