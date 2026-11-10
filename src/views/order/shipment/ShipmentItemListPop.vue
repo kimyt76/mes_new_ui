@@ -46,7 +46,7 @@
             <DataTable
               v-model:selection="selectedItem"
               :value="itemList"
-              dataKey="rowId"
+              dataKey="workProcId"
               :rowsPerPageOptions="[15,30,40]"
               tableStyle="table-layout: fixed;"
               columnResizeMode="fit"
@@ -58,18 +58,18 @@
             >
               <Column selectionMode="multiple"  headerStyle="width: 2rem" style="text-align: center;"></Column>
               <Column field="poNo"              header="PONO"       :style="{ width: '130px', textAlign: 'center' }"/>
-              <Column field="itemTypeName"      header="품목구분"   :style="{ width: '80px', textAlign: 'center'}"/>
               <Column field="itemCd"            header="품목코드"   :style="{ width: '110px', textAlign: 'center'}"/>
               <Column field="itemName"          header="품목명"     :style="{ width: '260px'}"/>
               <Column field="lotNo"             header="LOT NO"    :style="{ width: '180px', textAlign: 'left'}"/>
               <Column field="makeNo"            header="제조번호"   :style="{ width: '140px', textAlign: 'center'}"/>
-              <Column field="stockQty"          header="수량"      :style="{ width: '90px', textAlign: 'right'}">
+              <Column field="testNo"            header="시험번호"   :style="{ width: '110px', textAlign: 'center'}"/>
+              <Column field="stockQty"          header="현재고"      :style="{ width: '90px', textAlign: 'right'}">
                  <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
               </Column>
-              <Column field="pallet"            header="파렛트(예상)":style="{ width: '110px', textAlign: 'right'}">
-                 <template #body="slotProps">{{ Number(slotProps.data.pallet).toLocaleString() }}</template>
+              <Column field="qty"            header="가능수량":style="{ width: '100px', textAlign: 'right'}">
+                 <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
              </Column>
-             <Column field="qcStatus"      header="품질"   :style="{ width: '80px', textAlign: 'center'}">
+             <Column field="qcStatus"      header="품질"   :style="{ width: '90px', textAlign: 'center'}">
                 <template #body="slotProps">
                     {{ slotProps.data.qcStatus === 'REQ' ? '시험대기'
                         : slotProps.data.qcStatus === 'ING' ? '시험중'
@@ -102,6 +102,14 @@ const { vInfo } = useAlertStore()
 const emit = defineEmits(['selected', 'close']);
 const loading = ref(false)
 const props = defineProps({
+    customerCd: {
+        type: String,
+        default: ''
+    },
+    clientName: {
+        type: String,
+        default: ''
+    },
     itemTypeCd: {
         type: String,
         default: ''
@@ -112,7 +120,9 @@ const selectedItem = ref([])
 const itemList = ref([])
 const itemTypeCds = ref([])
 const form = reactive({
-    itemTypeCd: '',
+    customerCd: props.customerCd,
+    clientName: props.clientName,
+    itemTypeCd: 'M0',
     poNo: '',
     itemCd:'',
     itemName:'',
@@ -143,7 +153,7 @@ const searchList = async () =>{
     }
 
     itemList.value = await ApiOrder.getWorkOrderItemList(params);
-    console.log('itemList.value',  itemList.value)
+
 }
 
 const selectedRow = () =>{
@@ -151,7 +161,8 @@ const selectedRow = () =>{
         vInfo('선택된 항목이 없습니다.');
         return;
     }
-    console.log('selectedItem.value',  selectedItem.value)
+     emit('selected', [...selectedItem.value]);
+
     selectedItem.value = []
 }
 

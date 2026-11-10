@@ -82,15 +82,15 @@
                 </div>
             </template>
         </Column>
-        <Column field="qty"             header="수량"       :style="{ width: '100px', textAlign: 'right'}">
+        <Column field="qty"                 header="수량"       :style="{ width: '100px', textAlign: 'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="lotCnt"           header="LOT"   :style="{ width: '100px', textAlign: 'right'}" />
+        <Column field="lotCnt"              header="LOT"   :style="{ width: '100px', textAlign: 'right'}" />
         <Column field="pallet"              header="파렛트"   :style="{ width: '90px', textAlign: 'center'}" />
         <Column field="deliveryLocation"    header="도착소재지"  :style="{ width: '150px', textAlign:'center'}" />
         <Column field="shipmentTypeName"    header="출고조건"  :style="{ width: '100px', textAlign:'center'}" />
-        <Column field="shipmentTime"    header="출고요청시간"  :style="{ width: '100px', textAlign:'center'}" />
-        <Column field="printYn"         header="거래명세서"  :style="{ width: '90px', textAlign:'center'}" >
+        <Column field="shipmentTime"        header="출고요청시간"  :style="{ width: '100px', textAlign:'center'}" />
+        <Column field="printYn"             header="거래명세서"  :style="{ width: '90px', textAlign:'center'}" >
              <template #body="slotProps">
                 <span
                     :class="{ 'status-editable': slotProps.data.printYn === 'N' }"
@@ -119,6 +119,7 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiOrder } from '@/api/apiOrders';
 import DateRangePicker from '@/components/DateRangePicker.vue';
+import { useAlertStore } from '@/stores/alert.js';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
@@ -126,6 +127,7 @@ import { onMounted, reactive, ref, shallowRef } from 'vue';
 import ShipmentDetailPop from './ShipmentDetailPop.vue';
 import ShipmentRegPop from './ShipmentRegPop.vue';
 
+const {vSuccess, vWarning} = useAlertStore()
 const dialog = useDialog()
 const dt = ref(null);
 const selectItems = ref([])
@@ -146,10 +148,9 @@ const form = reactive({
   clientName: '',
 })
 
-
 const deleteSelectRow = () =>{
     if (selectItems.value.length === 0) {
-        alert('삭제할 출고지시를 선택해주세요.');
+        vWarning('삭제할 출고지시를 선택해주세요.');
         return;
     }
 
@@ -162,12 +163,12 @@ const deleteSelectRow = () =>{
         const deleteShipmentIds = selectItems.value.map(item => item.shipmentId);
         ApiOrder.deleteShipment(deleteShipmentIds)
             .then(() => {
-                alert('선택한 출고지시가 삭제되었습니다.');
+                vWarning('선택한 출고지시가 삭제되었습니다.');
                 srhList(); // 삭제 후 목록 갱신
             })
             .catch(error => {
                 console.error('삭제 중 오류 발생:', error);
-                alert('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+                vWarning('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
             });
     }
 }
@@ -257,6 +258,8 @@ onMounted( async () => {
     statusTypes.value = await ApiCommon.getCodeList('status_type')
     orderTypes.value = await ApiCommon.getCodeList('order_type')
     vatTypes.value = await ApiCommon.getCodeList('vat_type')
+
+    srhList()
 })
 
 const home = ref({

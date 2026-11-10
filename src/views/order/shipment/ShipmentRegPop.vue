@@ -153,7 +153,8 @@
                         : slotProps.data.qcStatus === 'FAIL' ? '부적합'
                         : '' }}
                 </template>
-        </Column>
+            </Column>
+        <Column field="testNo"      header="시험번호"   :style="{ width: '110px', 'text-align': 'center' }" ></Column>
         <Column field="stockQty"    header="재고수량"   :style="{ width: '100px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
         </Column>
@@ -163,7 +164,7 @@
                     v-model="slotProps.data.qty"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="5"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -176,7 +177,7 @@
                     v-model="slotProps.data.pallet"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="5"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -191,7 +192,7 @@
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
+    <Button label="저장"  class="p-button-secondary"  @click="saveInfo" />
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
 </div>
 
@@ -201,6 +202,8 @@
     style="width: 100rem; height: 30rem"
   >
     <ShipmentItemListPop
+        :customerCd="form.customerCd"
+        :clientName="form.clientName"
         @selected = "selectedRow1"
         @close = "workItemDialog = false"
         />
@@ -236,7 +239,7 @@ const form = reactive({
     seq:'',
     shipmentReqDate:todayKST(),
     shipmentTime: '',
-    clientId:'',
+    customerCd:'',
     clientName:'',
     deliveryLocation:'',
     deliveryAddress:'',
@@ -263,7 +266,7 @@ const managedItems = ref([
 const saveInfo = async () =>{
 
     if (shipmentItemList.value.length === 0 ) return vWarning("출고품목을 등록하세요")
-    if (isEmpty(form.clientId) ) return vWarning("고객사를 입력하세요")
+    if (isEmpty(form.customerCd) ) return vWarning("고객사를 입력하세요")
 
     try{
         const formData = new FormData()
@@ -339,6 +342,7 @@ const selectedRow = (obj) =>{
         shipmentStatus: '',
         testNo: o.testNo,
         itemTypeCd: o.itemTypeCd,
+        workProcId: null,
         orderDist: baseSeq + index + 1,
     }));
 
@@ -367,12 +371,12 @@ const selectedRow1 = (obj) =>{
         storageCd: o.storageCd,
         stockQty: o.stockQty,
         qty: o.stockQty,
-        pallet: o.pallet,
+        pallet: '',
         shipmentStatus: '',
         testNo: o.testNo,
         itemTypeCd: o.itemTypeCd,
-        orderDist: baseSeq + index + 1,
         workProcId: o.workProcId,
+        orderDist: baseSeq + index + 1,
     }));
 
     if (shipmentItemList.value.length > 0) {
@@ -410,8 +414,9 @@ const openPop = (type) =>{
             }
         },
         onClose: (event) => {
+            console.log('event.data', event.data)
             form.clientName = event.data.clientName
-            form.clientId = event.data.clientId
+            form.customerCd = event.data.customerCd
         }
     })
 }

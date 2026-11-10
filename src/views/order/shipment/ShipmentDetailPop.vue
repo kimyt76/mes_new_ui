@@ -74,8 +74,8 @@
                            :options="shipmentYns"
                             optionLabel="codeNm"
                             optionValue="code" class="w-full"
-                            :disabled="form.shipmentYn === 'Y'"/>
-                    <label>출고확상태</label>
+                            />
+                    <label>출고확정상태</label>
                 </FloatLabel>
             </div>
             <div class="col-3">
@@ -164,7 +164,7 @@
                     v-model="slotProps.data.qty"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="5"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -177,7 +177,7 @@
                     v-model="slotProps.data.pallet"
                     class="w-full"
                     :min="0"
-                    :maxFractionDigits="0"
+                    :maxFractionDigits="5"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
@@ -192,7 +192,7 @@
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장"  class="p-button-secondary" @click="saveInfo" />
+    <Button v-if="!isShipmentYn" label="저장"  class="p-button-secondary"   @click="saveInfo" />
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
 </div>
 
@@ -222,6 +222,7 @@ import { inject, onMounted, reactive, ref } from 'vue';
 import ClientListPop from '../client/ClientListPop.vue';
 import ShipmentItemListPop from './ShipmentItemListPop.vue';
 
+const isShipmentYn = ref(false)
 const dialog = useDialog()
 const { userId } = useAuthStore()
 const { vError, vSuccess, vWarning, vInfo } = useAlertStore()
@@ -238,7 +239,7 @@ const form = reactive({
     seq:'',
     shipmentReqDate:todayKST(),
     shipmentTime: '',
-    clientId:'',
+    customerCd:'',
     clientName:'',
     deliveryLocation:'',
     deliveryAddress:'',
@@ -261,11 +262,10 @@ const managedItems = ref([
     {codeNm: '부', code: 'N'}
 ])
 
-
 const saveInfo = async () =>{
     if (shipmentItemList.value.length === 0 ) return vWarning("출고품목을 등록하세요")
-    if (isEmpty(form.clientId) ) return vWarning("고객사를 입력하세요")
-   /// if (form.shipmentYn === 'Y' ) return vWarning("출고확정 건입니다.")
+    if (isEmpty(form.customerCd) ) return vWarning("고객사를 입력하세요")
+    //if (form.shipmentYn === 'Y' ) return vWarning("출고확정 건입니다.")
 
     try{
         const formData = new FormData()
@@ -401,7 +401,7 @@ const selectedRow1 = (obj) =>{
 }
 
 const removeRow = (idx) =>{
-    const row = stockItemList.value[idx]
+    const row = shipmentItemList.value[idx]
 
     if (row.weighInvId) {
         deleteShipmentItemIds.value.push(row.shipmentItemId)
@@ -433,7 +433,7 @@ const openPop = (type) =>{
         },
         onClose: (event) => {
             form.clientName = event.data.clientName
-            form.clientId = event.data.clientId
+            form.customerCd = event.data.customerCd
         }
     })
 }
@@ -446,6 +446,8 @@ onMounted( async () =>{
 
     const res = await ApiOrder.getShipmentInfo(form.shipmentId)
     Object.assign(form, res.shipmentInfo)
+
+    isShipmentYn.value = form.shipmentYn === 'Y' ? true : false
 
     if (res.attachFileInfo !== null) {
         attachFile.value = initServerFiles(res.attachFileInfo)
