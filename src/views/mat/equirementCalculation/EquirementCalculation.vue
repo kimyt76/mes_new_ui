@@ -24,31 +24,12 @@
         :tableStyle="{ width: '100%', minWidth: '0', tableLayout: 'fixed' }"
         showGridlines
     >
-        <Column
-            selectionMode="multiple"
-            headerStyle="width: 35px"
-            style="width: 35px; text-align: center;"
-        />
-
-        <Column field="itemCd" header="품목코드"
-            :style="{ width: '105px', textAlign: 'center' }" />
-
-        <Column field="bomVer" header="BOM버전"
-            :style="{ width: '105px', textAlign: 'center' }" />
-
-        <Column field="itemName" header="품목명"
-            :style="{ width: '450px' }" />
-
-        <Column field="unit" header="단위"
-            :style="{ width: '55px', textAlign: 'center' }" />
-
-        <Column
-            field="qty"
-            header="생산량"
-            :style="{ width: '130px' }"
-            :bodyStyle="{ padding: '0', textAlign: 'right' }"
-            :headerStyle="{ padding: '0' }"
-        >
+        <Column selectionMode="multiple" headerStyle="width: 35px" style="width: 35px; text-align: center;" />
+        <Column field="itemCd" header="품목코드" :style="{ width: '105px', textAlign: 'center' }" />
+        <Column field="bomVer" header="BOM버전" :style="{ width: '105px', textAlign: 'center' }" />
+        <Column field="itemName" header="품목명" :style="{ width: '450px' }" />
+        <Column field="unit" header="단위" :style="{ width: '55px', textAlign: 'center' }" />
+        <Column field="qty" header="생산량" :style="{ width: '130px' }" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }" >
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.qty"
@@ -61,13 +42,8 @@
                 />
             </template>
         </Column>
-
-        <Column field="etc" header="비고"
-            :style="{ width: '350px', textAlign: 'left' }" />
-
-        <Column field="actions" header="-"
-            :style="{ width: '40px', textAlign: 'center' }"
-        >
+        <Column field="etc" header="비고" :style="{ width: '350px', textAlign: 'left' }" />
+        <Column field="actions" header="-" :style="{ width: '40px', textAlign: 'center' }" >
             <template #body="slotProps">
                 <i
                     class="pi pi-trash cursor-pointer"
@@ -84,6 +60,7 @@
         ref="dt"
         v-model:first="first"
         v-model:selection="selectedItem"
+        :loading="loading"
         :value="itemStockList"
         data-key="itemCd"
         class="my-table"
@@ -175,6 +152,7 @@ import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
 import { ref } from 'vue';
 
 const { vInfo, vWarning } = useAlertStore()
+const loading = ref(false)
 let rowIdSeq = 0
 const first = ref(0)
 const bomDialog = ref(false)
@@ -205,7 +183,12 @@ const bomCalculation = async () => {
         return false;
     }
 
-    itemStockList.value = await ApiMat.getItemStockList(itemBomList.value);
+    loading.value = true;
+    try {
+        itemStockList.value = await ApiMat.getItemStockList(itemBomList.value);
+    } finally {
+        loading.value = false;
+    }
 }
 
 const allClear = () => {

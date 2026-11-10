@@ -81,6 +81,7 @@
     <DataTable
         v-model:first="first"
         v-model:selection="selectedItem"
+        :loading="loading"
         :value="itemStockList"
         data-key="itemCd"
         class="my-table"
@@ -170,6 +171,7 @@ import { getItemCds } from '@/util/common';
 import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
 import { ref } from 'vue';
 
+const loading = ref(false)
 let rowIdSeq = 0
 const first = ref(0)
 const bomDialog = ref(false)
@@ -193,13 +195,17 @@ const handleSelect = (rows) => {
 
 // 품목에 대한 소요량 계산(부자재)
 const bomCalculation = async () => {
-    const params = {
-        itemCds: getItemCds(itemBomList.value),
+
+
+    loading.value = true;
+    try {
+        const params = {
+            itemCds: getItemCds(itemBomList.value),
+        }
+        itemStockList.value = await ApiMat.getItemStockList(itemBomList.value);
+    } finally {
+        loading.value = false;
     }
-
-    console.log('itemBomList', itemBomList.value)
-
-    itemStockList.value = await ApiMat.getItemStockList(itemBomList.value);
 }
 
 const allClear = () => {
