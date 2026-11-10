@@ -169,7 +169,7 @@
 </div>
 
 <div class="button-area">
-  <Button label="저장" severity="success" :disabled="!writeYn" @click="saveInfo" />
+  <Button label="저장" severity="success"  @click="saveInfo" />
   <Button label="닫기" outlined @click="closeDialog" />
 </div>
 
@@ -291,6 +291,16 @@ onMounted( async () => {
             form.moveRegDate = todayKST()
             form.regSeq = await ApiStock.getNextRegSeq({moveRegDate: form.moveRegDate})
         }
+
+        // 담당자가 지정되지 않은 경우에만 로그인 사용자 설정
+        if (!form.confirmerId) {
+            form.confirmerId = userId
+        }
+
+        if (!form.confirmerName) {
+            form.confirmerName = memberNm
+        }
+
         procList.value = res.procItemList
         moveItemList.value = res.moveItemList || []
     } catch (err) {

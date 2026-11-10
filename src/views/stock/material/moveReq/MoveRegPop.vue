@@ -167,7 +167,7 @@
 </div>
 
 <div class="button-area">
-  <Button v-if="form.moveStatus === 'Q' || form.moveStatus === 'I'" label="저장" :disabled="!writeYn"  severity="success"  @click="saveInfo" />
+  <Button v-if="form.moveStatus === 'Q' || form.moveStatus === 'I'" label="저장"   severity="success"  @click="saveInfo" />
   <Button label="닫기" severity="secondary"  outlined @click="closeDialog" />
 </div>
 
@@ -186,7 +186,7 @@ import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, watch } from 'vue';
 
 const { vWarning, vSuccess } = useAlertStore()
-const { memberNm, userId } = useAuthStore()
+const authStore = useAuthStore()
 const isInit = ref(true)
 const dialog = useDialog()
 const dialogRef = inject('dialogRef')
@@ -206,8 +206,8 @@ const form = reactive({
     //업데이트값
     moveRegDate: null,
     regSeq: null,
-    moveManagerId: userId,
-    moveManagerName: memberNm,
+    moveManagerId: authStore.userId,
+    moveManagerName: authStore.memberNm,
 
     //재고조회시 필요
     srcStorageCd: null,
@@ -320,13 +320,20 @@ onMounted( async () => {
         const res = await ApiStock.getMoveReqInfo(form.moveStockId)
 
         Object.assign(form, res.moveStockInfo)
-console.log('form.moveStatus',   form.moveStatus)
+
         if ( form.moveStatus === 'Q' ) {
             form.moveRegDate = todayKST()
             form.regSeq = await ApiStock.getNextRegSeq({moveRegDate: form.moveRegDate})
         }
-        procList.value = res.procItemList
-        moveItemList.value = res.moveItemList || []
+        // 담당자가 지정되지 않은 경우에만 로그인 사용자 설정
+        if (!form.moveManagerId) {
+            form.moveManagerId = authStore.userId
+        }
+
+        if (!form.moveManagerName) {
+            form.moveManagerName = authStore.memberNm
+        }
+
     } catch (err) {
         handleApiError(err)
     } finally {
