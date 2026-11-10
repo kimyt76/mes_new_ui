@@ -50,7 +50,7 @@
     </div>
 
     <div class="flex justify-end mt-3 gap-2">
-        <Button label="저장" icon="pi pi-check" :disabled="!writeYn" @click="saveInfo"/>
+        <Button label="저장" icon="pi pi-check"  @click="saveInfo"/>
         <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
 </template>
@@ -157,17 +157,16 @@ const searchByBarcode = async () =>{
         return
     }
 
-    if (itemCd.value !==  res.itemCd) {
-        vWarning('선택된 품목과 다른 품목입니다.')
-        barcode.value = ''
-        return
-    }
 
     try{
-        console.log('barcode.value', barcode.value)
         const res = await ApiQc.getItemTestNoInfo(barcode.value)
         if (!res) {
             vWarning('조회 결과가 없습니다.')
+            return
+        }
+        if (itemCd.value !==  res.itemCd) {
+            vWarning('선택된 품목과 다른 품목입니다.')
+            barcode.value = ''
             return
         }
 
