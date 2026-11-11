@@ -151,7 +151,7 @@ const selectRowClick = (id) =>{
 
 onMounted( async () =>{
     areaCds.value = await ApiCommon.getCodeList('AREA')
-    areaCds.value = areaCds.value.filter(i => !['A003'].includes(i.code))
+    areaCds.value = areaCds.value.filter(i => !['A009'].includes(i.code))
 })
 
 const downloadExcel = () =>{
