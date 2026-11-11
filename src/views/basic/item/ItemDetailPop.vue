@@ -95,7 +95,13 @@
                 <div class="col-3">
                     <div class="flex">
                     <FloatLabel variant="on">
-                        <InputNumber v-model="form.inPrice" class="w-full" @blur="handlePriceBlur"/>
+                        <InputNumber
+                          v-model="form.inPrice"
+                          class="w-full"
+                          :min="0"
+                          :maxFractionDigits="3"
+                          :useGrouping="true"
+                          @blur="handlePriceBlur"/>
                         <label>입고단가</label>
                     </FloatLabel>
                         <!-- 오른쪽 가운데 아이콘 -->
@@ -138,7 +144,12 @@
                 <div class="col-3">
                     <div class="flex">
                         <FloatLabel variant="on">
-                            <InputNumber v-model="form.outPrice" class="w-full" />
+                            <InputNumber
+                               v-model="form.outPrice"
+                               :min="0"
+                               :maxFractionDigits="3"
+                               :useGrouping="true"
+                               class="w-full" />
                             <label>출고단가</label>
                         </FloatLabel>
                                 <!-- 오른쪽 가운데 아이콘 -->
@@ -218,8 +229,8 @@
             </div>
             <!-- Buttons -->
             <div class="flex gap-2 justify-end pt-3">
-                <Button label="단가저장" severity="secondary"  :disabled="!writeYn" @click="savePrice"></Button>
-                <Button label="저장" class="p-button-secondary"  :disabled="!writeYn" @click="saveInfo"></Button>
+                <Button label="단가저장" severity="secondary"   @click="savePrice"></Button>
+                <Button label="저장" class="p-button-secondary"   @click="saveInfo"></Button>
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
             </div>
         </template>
