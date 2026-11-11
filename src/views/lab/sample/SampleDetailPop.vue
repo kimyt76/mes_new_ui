@@ -116,7 +116,7 @@
             </div>
             <!-- Buttons -->
             <div class="flex gap-2 justify-end pt-3">
-                <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo"></Button>
+                <Button label="저장" class="p-button-secondary"  @click="saveInfo"></Button>
                 <Button label="닫기"   outlined class="ml-2" @click="closeDialog"></Button>
             </div>
 
@@ -193,7 +193,7 @@ onMounted( async () =>{
 
     formulationCds.value = await ApiCommon.getCodeList('formulation_cd')
     areaCds.value = await ApiCommon.getCodeList('AREA')
-    areaCds.value = areaCds.value.filter(i => !['A003'].includes(i.code))
+    areaCds.value = areaCds.value.filter(i => !['A009'].includes(i.code))
     form.reqDate = todayKST()
 
     if ( !isEmpty(form.sampleId) ) {
