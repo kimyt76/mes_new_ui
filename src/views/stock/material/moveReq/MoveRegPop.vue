@@ -325,6 +325,9 @@ onMounted( async () => {
             form.moveRegDate = todayKST()
             form.regSeq = await ApiStock.getNextRegSeq({moveRegDate: form.moveRegDate})
         }
+        procList.value = res.procItemList
+        moveItemList.value = res.moveItemList || []
+
         // 담당자가 지정되지 않은 경우에만 로그인 사용자 설정
         if (!form.moveManagerId) {
             form.moveManagerId = authStore.userId
@@ -340,6 +343,7 @@ onMounted( async () => {
         isInit.value = false
     }
 })
+
 
 const closeDialog = () => {
   dialogRef.value.close();
