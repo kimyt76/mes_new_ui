@@ -130,10 +130,10 @@
   </div>
 
   <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" class="p-button-secondary" :disabled="loading || !writeYn" @click="saveInfo" />
-    <Button label="리셋" severity="warn" :disabled="loading || !writeYn" @click="procReSet" />
-    <Button label="공정Clear" severity="info" :disabled="!writeYn"  @click="clearList" />
-    <Button label="작업취소" severity="danger" :disabled="loading || !writeYn" @click="procEntYn" />
+    <Button label="저장" class="p-button-secondary" :disabled="loading" @click="saveInfo" />
+    <Button label="리셋" severity="warn" :disabled="loading" @click="procReSet" />
+    <Button label="공정Clear" severity="info"   @click="clearList" />
+    <Button label="작업취소" severity="danger" :disabled="loading" @click="procEntYn" />
     <Button label="닫기"   outlined class="ml-2" @click.stop="closeDialog" />
   </div>
   </div>
@@ -198,9 +198,11 @@ const procReSet = () => {
 
     // 작업 완료 상태 검사
     const completedRows = selectedRows.filter(row => {
+        console.log('row.proc?.[procCd]?.procStatus', row.proc?.[procCd]?.procStatus)
     const status = String(row.proc?.[procCd]?.procStatus ?? '').trim()
         return status === PROC_COMPLETE_STATUS[procCd]
     })
+
 
     if (completedRows.length > 0) {
         return vWarning('선택한 배치에 작업 완료된 공정이 있어 리셋할 수 없습니다.')
@@ -222,11 +224,12 @@ const procReSet = () => {
 
                 // DB에 저장된 공정 초기화
                 if (workProcIds.length > 0) {
-                    await ApiWorkOrder.resetWorkOrderProc({
-                        workOrderId: form.workOrderId,
-                        procCd: PROC_UI_TO_DB[procCd],
-                        workProcIds: workProcIds,
-                    })
+               const params = {
+                     workOrderId: form.workOrderId,
+                    procCd: PROC_UI_TO_DB[procCd],
+                    workProcIds: workProcIds,
+               }
+                    await ApiWorkOrder.resetWorkOrderProc(params)
                 }
 
                 // DB 처리 성공 후 화면 갱신
@@ -284,6 +287,7 @@ const procEntYn = () => {
         )
     }
 
+
     // 작업취소 확인
     confirm.require({
         header: '작업취소 확인',
@@ -301,6 +305,7 @@ const procEntYn = () => {
                 if (workProcIds.length !== selectedRows.length) {
                     return vWarning('저장되지 않은 공정이 포함되어 있습니다.')
                 }
+
                 // DB 작업취소
                 await ApiWorkOrder.cancelWorkOrderProc({
                     workOrderId: form.workOrderId,
@@ -635,7 +640,7 @@ const openPop =(type) => {
 // -----------------
 onMounted(async () => {
     areaCds.value = (await ApiCommon.getCodeList('area'))
-        .filter(i => !['A003'].includes(i.code))
+        .filter(i => !['A009'].includes(i.code))
 
     if ( isEmpty(dialogRef.value.data) ) {
         form.seq = await ApiCommon.getNextSeq('tb_work_order_mst', 'work_order_date',  form.workOrderDate)
@@ -770,43 +775,34 @@ function handleAfterChange(changes, source) {
 }
 
 const saveInfo = async () => {
-  if (loading.value) return
-  if (isEmpty(form.workOrderDate)) return vWarning('작업지시일자를 입력하세요')
-  if (isEmpty(form.areaCd)) return vWarning('구역을 입력하세요')
-  if (isEmpty(form.poNo)) return vWarning('수주품목(PO)을 선택하세요')
+    if (loading.value) return
 
-  // 기존 작업지시 수정 시에만 공정 상태 검사
-    if (!isEmpty(form.workOrderId)) {
-        const invalidProc = workOrderList.value
-            .filter(row => row.selected)
-            .some(row =>
-                PROC_KEYS.some(procCd => {
-                    const proc = row.proc?.[procCd]
+    if (isEmpty(form.workOrderDate))
+        return vWarning('작업지시일자를 입력하세요')
 
-                    // 신규 공정은 제외
-                    if (proc?.workProcId == null) return false
+    if (isEmpty(form.areaCd))
+        return vWarning('구역을 입력하세요')
 
-                    const status = String(proc.procStatus ?? '').trim()
-                    return status !== '00'
-                })
-            )
+    if (isEmpty(form.poNo))
+        return vWarning('수주품목(PO)을 선택하세요')
 
-        if (invalidProc) {
-            return vWarning('선택한 배치에 작업이 시작되었거나 완료된 공정이 있어 저장할 수 없습니다.')
-        }
+
+    // 기존 저장 기능 그대로 유지
+    loading.value = true
+
+    try {
+        const params = rowsToVoPayload()
+
+        const res = await ApiWorkOrder.saveWorkOrderInfo(params)
+
+        vSuccess("저장되었습니다.")
+        closeDialog()
+
+    } catch (err) {
+        handleApiError(err)
+    } finally {
+        loading.value = false
     }
-
-  loading.value = true
-  try {
-    const params = rowsToVoPayload()
-    const res = await ApiWorkOrder.saveWorkOrderInfo(params)
-    vSuccess(res.message)
-    closeDialog()
-  } catch (err) {
-    handleApiError(err)
-  } finally {
-    loading.value = false
-  }
 }
 
 const clearList = () => {
