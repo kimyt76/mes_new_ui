@@ -113,7 +113,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" severity="success" :disabled="!writeYn" @click="saveInfo"/>
+    <Button label="저장" severity="success"  @click="saveInfo"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 
@@ -184,7 +184,7 @@ const filteredStorages = computed(() => {
       s => ['WA004', 'WA005'].includes(s.code)
     );
   }
-  if (form.areaCd === 'A003') {
+  if (form.areaCd === 'A009') {
     return allStorages.value.filter(
       s => ['WE001', 'WE002', 'WE004'].includes(s.code)
     );
