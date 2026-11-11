@@ -184,7 +184,7 @@ const selectRowClick = (id) =>{
 
 onMounted( async () =>{
     areaCds.value = (await ApiCommon.getCodeList('area'))
-      .filter(i => !['A003'].includes(i.code))
+      .filter(i => !['A009'].includes(i.code))
 })
 
 const home = ref({
