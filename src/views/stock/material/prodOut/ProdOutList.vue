@@ -104,7 +104,7 @@ const filteredStorages = computed(() => {
       s => ['WA004', 'WA005'].includes(s.code)
     );
   }
-    if (form.areaCd === 'A003') {
+    if (form.areaCd === 'A009') {
     return allStorages.value.filter(
       s => ['WE001', 'WE002', 'WE004'].includes(s.code)
     );
