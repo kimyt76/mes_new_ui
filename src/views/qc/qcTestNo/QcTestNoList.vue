@@ -75,13 +75,7 @@
         <Column field="createDate" header="입고일" :style="{ width: '110px', textAlign: 'center'}" />
         <Column field="itemTypeCd" header="품목구분" :style="{ width: '90px', textAlign: 'center'}" />
         <Column field="itemCd" header="품목코드" :style="{ width: '150px', textAlign: 'center'}" />
-        <Column field="itemName" header="품목명" :style="{ width: '350px'}" bodyClass="break-words">
-            <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.testNo)" class="clickable-cell">
-                    {{ slotProps.data.itemName }}
-                </div>
-            </template>
-        </Column>
+        <Column field="itemName" header="품목명" :style="{ width: '350px'}"/>
         <Column field="qty" header="입고량" :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
