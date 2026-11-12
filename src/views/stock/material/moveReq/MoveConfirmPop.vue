@@ -249,8 +249,11 @@ const openPop = (type) =>{
 }
 
 const saveInfo = async () =>{
-    if ( isEmpty(form.moveManagerName) ) return vWarning('이동등록자를 입력해주세요.')
-    if ( moveItemList.value.length <= 0 ) return vWarning('이동할 자재를 선택해주세요.')
+    if ( !form.confirmStatus === 'R' ) {
+        if ( isEmpty(form.confirmerId) ) return vWarning('확인자를 선택해주세요.')
+        if ( isEmpty(form.moveManagerName) ) return vWarning('이동등록자를 입력해주세요.')
+        if ( moveItemList.value.length <= 0 ) return vWarning('이동할 자재를 선택해주세요.')
+    }
 
     try{
         form.moveStatus = 'C'
