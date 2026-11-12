@@ -14,7 +14,7 @@
           <th class="cellBorder cellHeader">지시일자</th>
           <td class="cellBorder">{{ form.procOrderDate }}</td>
           <th class="cellBorder cellHeader">지시량</th>
-          <td class="cellBorder">{{ form.orderQty }} kg</td>
+          <td class="cellBorder">{{ Number(form.orderQty || 0).toLocaleString('ko-KR') }} kg</td>
           <th class="cellBorder cellHeader">칭량일자</th>
           <td class="cellBorder">{{ form.prodDate }}</td>
           <th class="cellBorder cellHeader">칭량처</th>
@@ -100,8 +100,8 @@
 
         <!-- 기존 버튼 -->
         <div class="flex items-center gap-3">
-            <Button v-if="isStarted" label="칭량시작" :disabled="!writeYn"  @click="openLookupPopup('S')" />
-            <Button v-if="!isStarted" label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo" />
+            <Button v-if="isStarted" label="칭량시작"   @click="openLookupPopup('S')" />
+            <Button v-if="!isStarted" label="저장" class="p-button-secondary"  @click="saveInfo" />
             <Button label="바코드출력" icon="pi pi-barcode" @click="printWeighLabel"/>
             <Button label="공정기록서" @click="downloadProc" />
             <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
@@ -540,7 +540,11 @@ const applyPopupResultToRow = (type, row, data) => {
     case 'ITEM_CODE':
       row.weighQty = data.weighQty ?? row.weighQty
       row.testNoJoin = data.testNo ?? row.testNo
+
+      console.log('row.weighQty:', row.weighQty, 'row.orderQty:', row.orderQty)
       row.weighYn = Number(row.weighQty) === Number(row.orderQty) ? 'Y' : 'N'
+
+
       break
     case 'CONTAINER_WEIGHT':
       row.bagWeight = data.weight ?? row.weight
@@ -558,17 +562,30 @@ const applyPopupResultToRow = (type, row, data) => {
 }
 
 const normalizeRows = (rows) => (rows ?? []).map((r, idx) => {
+
+    const orderQty = Number(r.orderQty ?? 0)
+    const weighQty = Number(r.weighQty ?? 0)
+
+    const isEqual =
+        Math.round(orderQty * 1000000) ===
+        Math.round(weighQty * 1000000)
+
     const row = {
-      ...r,
-      orderDist: Number(r?.orderDist ?? r?.dist_order ?? idx + 1),
-      [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
-      [FIELD.WEIGH_YN]: r?.[FIELD.WEIGH_YN] ?? 'N',
-      bagWeight: r?.bagWeight ?? 0,
-      testNo: r?.testNo ?? '',
-      weighUser: r?.weighUser ?? '',
-      weighConfirmUser: r?.weighConfirmUser ?? '',
+        ...r,
+        orderDist: Number(r?.orderDist ?? r?.dist_order ?? idx + 1),
+        [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
+
+        // 지시량과 칭량량이 다르면 완료 체크 해제
+        [FIELD.WEIGH_YN]: r.weighYn === 'Y' && isEqual ? 'Y' : 'N',
+
+        bagWeight: r?.bagWeight ?? 0,
+        testNo: r?.testNo ?? '',
+        weighUser: r?.weighUser ?? '',
+        weighConfirmUser: r?.weighConfirmUser ?? '',
     }
+
     row.totalQty = calcTotalQty(row)
+
     return row
 })
 

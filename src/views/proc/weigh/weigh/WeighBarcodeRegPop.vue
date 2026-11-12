@@ -117,7 +117,7 @@
   </div>
   <!-- 하단 버튼 -->
   <div class="bottom-area">
-    <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo" />
+    <Button label="저장" class="p-button-secondary"  @click="saveInfo" />
     <Button label="닫기" outlined @click="closeDialog" />
   </div>
 </template>
@@ -296,8 +296,8 @@ const saveInfo = async () => {
     }
 
     // 2. 지시량과 칭량량 비교 (소수점 6자리 기준)
-    if (Math.round(targetQty * 1000000) !== Math.round(weighQty * 1000000)) {
-        vWarning('지시량과 칭량량이 일치하지 않습니다.')
+    if (Math.round(targetQty * 1000000) < Math.round(weighQty * 1000000)) {
+        vWarning('지시량보다 칭량량이 많습니다.')
         return
     }
 
@@ -322,6 +322,7 @@ const saveInfo = async () => {
 
   try{
     const res = await ApiProc.saveWeighList(params)
+    vSuccess('저장되었습니다.')
     deleteWeighItems.value = []
   }catch(err){
     handleApiError(err)
