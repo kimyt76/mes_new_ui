@@ -37,7 +37,7 @@
                 <label for="on_label">보낸창고</label>
             </FloatLabel>
             <FloatLabel variant="on">
-                <Select v-model="form.descStorageCd"
+                <Select v-model="form.tarStorageCd"
                    :options="allStorages"
                    optionLabel="codeNm"
                    optionValue="code"
@@ -170,7 +170,7 @@ const form = reactive({
     areaCd: null,
     moveStatus: null,
     srcStorageCd: null,
-    descStorageCd: null,
+    tarStorageCd: null,
     itemName: null,
     itemCd: null,
 })
