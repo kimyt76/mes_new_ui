@@ -13,6 +13,7 @@
                     <label>품목명</label>
                 </FloatLabel>
                 <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600"/>
+                <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
             </form>
         </div>
     </div>
@@ -40,6 +41,7 @@
         </div>
         <div class="basis-[65%] h-full overflow-auto">
             <DataTable
+                ref="dt"
                 :value="itemBomList"
                 class="my-table"
                 scrollable
@@ -59,8 +61,10 @@
 <script setup>
 import { ApiItem } from '@/api/apiItem';
 import { ApiLab } from '@/api/apiLab';
+import { exportToExcel } from '@/util/exportToExcel';
 import { onMounted, reactive, ref } from 'vue';
 
+const dt = ref(null)
 const selectRow = ref(null)
 const itemList = ref([])
 const itemBomList = ref([])
@@ -85,6 +89,20 @@ const onRowSelect = async (event) => {
 onMounted( async () =>{
     srhList()
 })
+
+const downloadExcel = () =>{
+  const cols = [
+        { props: { field: 'reItemCd', header: '소모품목코드' } },
+        { props: { field: 'reItemName', header: '소모품목명' } },
+        { props: { field: 'bomVer', header: 'BOM버전' } },
+        { props: { field: 'realContent', header: 'BOM소요량' } },
+        { props: { field: 'itemCd', header: '생산품목코드' } },
+        { props: { field: 'itemName', header: '생산품목명' } }
+    ];
+
+  exportToExcel(itemBomList.value, "bom 리스트", cols);
+}
+
 
 /**
  * title
