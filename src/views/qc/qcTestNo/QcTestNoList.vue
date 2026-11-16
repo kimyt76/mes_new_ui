@@ -290,16 +290,8 @@ const handleCopy = (event) => {
     if (!excelSelectionActive.value) return
     if (!dragStart.value || !dragEnd.value) return
 
-    // 검색 입력창 등에서 복사할 때는 기존 동작 유지
-    const active = document.activeElement
-
-    if (
-        active?.matches(
-            'input, textarea, [contenteditable="true"]'
-        )
-    ) {
-        return
-    }
+    // 테이블 셀을 선택했다면 검색창에 포커스가 남아 있어도
+    // 현재 선택된 셀을 복사한다. 검색창 클릭 시 선택은 별도로 해제된다.
 
     const table = getTableElement()
     if (!table) return
@@ -440,18 +432,17 @@ const downloadExcel = () =>{
 }
 
 onMounted( async () =>{
-    itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
-
-    // 드래그 복사 이벤트 등록
-    document.addEventListener('copy', handleCopy)
+    // API 조회 결과와 관계없이 복사 이벤트를 먼저 등록
+    document.addEventListener('copy', handleCopy, true)
     document.addEventListener('mousedown', handleDocumentMouseDown)
 
+    itemTypeCds.value = await ApiCommon.getCodeList('item_type_cd')
     srhList()
 })
 
 onUnmounted(() => {
     // 드래그 복사 이벤트 해제
-    document.removeEventListener('copy', handleCopy)
+    document.removeEventListener('copy', handleCopy, true)
     document.removeEventListener('mousedown', handleDocumentMouseDown)
     document.removeEventListener('mouseup', handleMouseUp)
 })

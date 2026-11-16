@@ -74,8 +74,7 @@
                                 label="검체채취 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -166,8 +165,8 @@
                                 label="코팅작업 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -223,7 +222,7 @@
                                 label="충전작업 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                @click="saveInfo"
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -279,8 +278,8 @@
                                 label="포장작업 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -329,8 +328,8 @@
                                 label="중량검사 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -385,8 +384,8 @@
                                 label="중량검사 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -446,8 +445,8 @@
                                 label="중량검사 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -514,8 +513,8 @@
                                 label="겔수량검사 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -575,8 +574,8 @@
                                 label="캡핑세기 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -650,8 +649,8 @@
                                 label="중량검사(에센스) 저장"
                                 icon="pi pi-save"
                                 class="bg-blue-500 text-white hover:bg-blue-600 ml-2"
-                                :disabled="!writeYn"
-                                @click="saveInfo"
+
+                                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                             />
                         </div>
                         <table>
@@ -717,7 +716,7 @@
     </div>
 
     <div class="flex justify-end gap-2 mt-4">
-        <Button label="작성완료" class="p-button-secondary" :disabled="!writeYn" @click="completeProc"></Button>
+        <Button label="작성완료" class="p-button-secondary"  @click="completeProc"></Button>
         <Button label="공정검사서(QC)" icon="pi pi-file-excel" severity="success" @click="downloadExcel" />
     </div>
 

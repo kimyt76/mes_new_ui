@@ -133,7 +133,7 @@
 <div class="table-wrapper mt-2">
     <DataTable
         :value="shipmentItemList"
-        class="my-table fixed-table"
+        class="my-table fixed-table shipment-arrow-table"
         scrollable
         scrollHeight="400px"
         show-gridlines
@@ -163,6 +163,9 @@
                 <InputNumber
                     v-model="slotProps.data.qty"
                     class="w-full"
+                    :data-arrow-col="'qty'"
+                    :data-arrow-row="slotProps.index"
+                    @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'qty')"
                     :min="0"
                     :maxFractionDigits="5"
                     :useGrouping="true"
@@ -176,6 +179,9 @@
                 <InputNumber
                     v-model="slotProps.data.pallet"
                     class="w-full"
+                    :data-arrow-col="'pallet'"
+                    :data-arrow-row="slotProps.index"
+                    @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'pallet')"
                     :min="0"
                     :maxFractionDigits="5"
                     :useGrouping="true"
@@ -192,16 +198,25 @@
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장"  class="p-button-secondary"  @click="saveInfo" />
+    <Button label="저장"  class="p-button-secondary" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
 </div>
 
 <Dialog
     v-model:visible="workItemDialog"
     header="품목 목록"
-    style="width: 100rem; height: 30rem"
+    :style="{ width: '100rem', height: '30rem' }"
+    :contentStyle="{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '0',
+        overflow: 'hidden',
+        padding: '0.5rem 1rem'
+    }"
   >
     <ShipmentItemListPop
+        class="w-full"
+        style="flex: 1 1 0; min-height: 0; min-width: 0; height: 100%; overflow: hidden;"
         :customerCd="form.customerCd"
         :clientName="form.clientName"
         @selected = "selectedRow1"
@@ -233,6 +248,36 @@ const shipmentItemList = ref([])
 const shipmentStatus = ref([])
 const shipmentTypes = ref([])
 const workItemDialog = ref(false)
+
+// 출고수량(qty), 파렛트(pallet) 입력칸에서만 방향키 이동
+const handleArrowKey = (event, rowIndex, field) => {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return
+
+    // 이동할 행/열이 없어도 InputNumber 기본 증감은 반드시 차단
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation?.()
+
+    let nextRow = rowIndex
+    let nextField = field
+
+    if (event.key === 'ArrowUp') nextRow--
+    else if (event.key === 'ArrowDown') nextRow++
+    else if (event.key === 'ArrowLeft') nextField = 'qty'
+    else if (event.key === 'ArrowRight') nextField = 'pallet'
+
+    if (nextRow < 0 || nextRow >= shipmentItemList.value.length) return
+    if (nextRow === rowIndex && nextField === field) return
+
+    const table = event.target.closest('.shipment-arrow-table')
+    const selector = `[data-arrow-col="${nextField}"][data-arrow-row="${nextRow}"] input`
+    const target = table?.querySelector(selector)
+    if (target) {
+        target.focus()
+        target.select()
+        target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+    }
+}
 
 const form = reactive({
     shipmentDate:todayKST(),
@@ -405,16 +450,33 @@ const openPop = (type) =>{
             modal: true,
             draggable: false,
             maximizable: false,
-            style: {
+             style: {
+                width: '100rem',
+                maxHeight: 'none',
                 overflow: 'hidden'
             },
+
+            contentStyle: {
+                overflow: 'hidden',
+                maxHeight: 'none'
+            },
+
             pt: {
-                root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
+                root: {
+                    style: {
+                        overflow: 'hidden',
+                        maxHeight: 'none'
+                    }
+                },
+                content: {
+                    style: {
+                        overflow: 'hidden',
+                        maxHeight: 'none'
+                    }
+                }
             }
         },
         onClose: (event) => {
-            console.log('event.data', event.data)
             form.clientName = event.data.clientName
             form.customerCd = event.data.customerCd
         }

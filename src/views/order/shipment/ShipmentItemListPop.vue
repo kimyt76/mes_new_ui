@@ -44,17 +44,17 @@
         <div class="list-section mt-3">
           <div class="list-wrapper">
             <DataTable
-              v-model:selection="selectedItem"
-              :value="itemList"
-              dataKey="workProcId"
-              :rowsPerPageOptions="[15,30,40]"
-              tableStyle="table-layout: fixed;"
-              columnResizeMode="fit"
-              class="my-table"
-              scrollable
-              scrollHeight="500px"
-              showGridlines
-              selectionMode="multiple"
+                v-model:selection="selectedItem"
+                :value="itemList"
+                :loading="loading"
+                dataKey="workProcId"
+                tableStyle="table-layout: fixed;"
+                columnResizeMode="fit"
+                class="my-table"
+                scrollable
+                scrollHeight="300px"
+                showGridlines
+                selectionMode="multiple"
             >
               <Column selectionMode="multiple"  headerStyle="width: 2rem" style="text-align: center;"></Column>
               <Column field="poNo"              header="PONO"       :style="{ width: '130px', textAlign: 'center' }"/>
@@ -148,12 +148,19 @@ const searchList = async () =>{
         form.procStatus = '52'
     }
 
-    const params = {
-        ...form
+    loading.value = true
+
+    try{
+        const params = {
+            ...form
+        }
+
+        itemList.value = await ApiOrder.getWorkOrderItemList(params);
+    }catch(e){
+        console.log('e', e)
+    }finally{
+        loading.value = false
     }
-
-    itemList.value = await ApiOrder.getWorkOrderItemList(params);
-
 }
 
 const selectedRow = () =>{
@@ -193,9 +200,36 @@ onMounted( async () =>{
   width: 100%;
 }
 /* 리스트 영역: 남은 공간 일부만 사용하도록 */
+/* 리스트 영역 높이 고정 */
 .list-section {
-  flex: 0 0 auto;
-  margin-top: 0.75rem;
+    height: 500px;
+    min-height: 0;
+    margin-top: 0.75rem;
+    overflow: hidden;
+}
+
+/* DataTable 높이를 부모에 맞춤 */
+.list-wrapper {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* DataTable 전체 높이 */
+:deep(.list-wrapper .p-datatable) {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 데이터가 많아지면 내부 스크롤 */
+:deep(.list-wrapper .p-datatable-table-container) {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
 }
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
   background-color: #BCAAA4;

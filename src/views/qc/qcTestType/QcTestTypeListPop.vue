@@ -96,11 +96,13 @@ const srhList = async () =>{
     const param = {
         ...form
     }
-    qcTestTypeMethodList.value = await ApiQc.getqcTestTypeMethodList(param)
+    qcTestTypeMethodList.value = await ApiQc.getTestTypeMethodList(param)
+
+    console.log('qcTestTypeMethodList.value', qcTestTypeMethodList.value)
 }
 
 const selectRowClick = async (row) =>{
-    const res = await ApiQc.getQcTestTypeMethod(row.data.itemCd)
+    const res = await ApiQc.getTestTypeMethod(row.data.itemCd)
     dialogRef.value.close(res)
 }
 

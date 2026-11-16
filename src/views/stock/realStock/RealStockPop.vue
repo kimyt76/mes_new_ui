@@ -42,7 +42,7 @@
     </template>
 </Card>
  <div class="flex justify-end gap-2 mt-3">
-    <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo" />
+    <Button label="저장" class="p-button-secondary" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"></Button>
 </div>
 </template>
@@ -81,10 +81,8 @@ const saveInfo = async () =>{
         ...form
     }
     const res = await ApiStock.saveRealStock(params)
-    //vSuccess("등록되었습니다.")
+    vSuccess("등록되었습니다.")
     form.realStockMstId = res.data.realStockMstId
-    // console.log('res.data.realStockMstId',  res.data.realStockMstId )
-    // console.log('form.realStockMstId',  form.realStockMstId )
 
     dialogRef.value.close({
        realStockMstId: form.realStockMstId,

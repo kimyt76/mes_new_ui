@@ -17,7 +17,7 @@
             </FloatLabel>
         </div>
         <div class="button-area">
-            <Button label="저장" icon="pi pi-check" severity="secondary" :disabled="!writeYn"  size="small" @click="saveInfo" />
+            <Button label="저장" icon="pi pi-check" severity="secondary"   size="small" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)" />
             <Button label="닫기" icon="pi pi-times" severity="secondary" size="small" outlined @click="closeDialog" />
         </div>
     </div>

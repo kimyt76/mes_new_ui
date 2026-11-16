@@ -1,336 +1,160 @@
 <template>
-
 <Breadcrumb :home="home" :model="items"/>
-
 <form @submit.prevent="srhList" class="space-y-4">
-
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full">
-
         <template #start>
-
             <div class="flex flex-wrap items-center gap-2 w-full">
-
                 <FloatLabel variant="on">
-
                     <InputText id="on_label1" v-model="form.deptNm" style="width: 250px" />
-
                     <label for="on_label1">부서</label>
-
                 </FloatLabel>
-
                 <FloatLabel variant="on">
-
                     <InputText id="on_label2" v-model="form.memberNm" style="width: 250px" />
-
                     <label for="on_label2">사용자</label>
-
                 </FloatLabel>
-
                 <Button label="검색" icon="pi pi-search" type="submit" class="bg-blue-500 text-white hover:bg-blue-600" />
-
             </div>
-
         </template>
-
     </Toolbar>
-
     <div class="auth-toolbar">
-
         <!-- 왼쪽 : 저장 -->
-
         <div class="auth-toolbar-left">
             <div v-if="selectedUser" class="selected-user-info">
-
-                선택 사용자 :
-
-                <strong>
-
-                    {{ selectedUser.deptNm }} / {{ selectedUser.memberNm }}
-
-                </strong>
-
+                선택 사용자 : <strong> {{ selectedUser.deptNm }} / {{ selectedUser.memberNm }} </strong>
             </div>
-
-
         </div>
-
         <!-- 오른쪽 : 권한복사 / 전체권한 / 선택사용자 -->
-
         <div class="auth-toolbar-right">
-            <Button
-
-                label="권한복사"
-                type="button"
-
-                icon="pi pi-copy"
-
-                severity="secondary"
-
-                @click="authCopyPop"
-
-            />
-
+            <Button label="권한복사" type="button" icon="pi pi-copy" severity="secondary" @click="authCopyPop" />
             <div class="all-check-area">
-
                 <div class="flex items-center gap-2">
-
                     <Checkbox
-
                         v-model="allReadYn"
-
                         binary
-
                         inputId="allReadYn"
-
                         :disabled="!selectedUser || !selectedGrpMenu || loadingAuth"
-
                         @change="changeAllRead"
-
                     />
-
                     <label for="allReadYn">읽기권한 전체</label>
-
                 </div>
-
                 <div class="flex items-center gap-2">
-
                     <Checkbox
-
                         v-model="allWriteYn"
-
                         binary
-
                         inputId="allWriteYn"
-
                         :disabled="!selectedUser || !selectedGrpMenu || loadingAuth"
-
                         @change="changeAllWrite"
-
                     />
-
                     <label for="allWriteYn">쓰기권한 전체</label>
-
                 </div>
                 <Button
-
-                label="저장"
-                type="button"
-
-                icon="pi pi-save"
-                :loading="saving"
-                :disabled="loadingAuth || !writeYn"
-
-                @click="saveInfo"
-            />
-
+                    label="저장"
+                    type="button"
+                    icon="pi pi-save"
+                    :disabled="loadingAuth || writeYn !== 'Y'"
+                    @click="saveGuard(saveInfo)"
+                />
             </div>
-
         </div>
-
     </div>
-
     <div class="auth-container">
-
         <!-- 사용자 정보 -->
-
         <div class="user-area">
-
             <div class="table-title">사용자</div>
-
             <DataTable
-
                 v-model:selection="selectedUser"
-
                 :value="userList"
-
                 dataKey="userId"
-
                 selectionMode="single"
-
                 scrollable
-
                 scrollHeight="650px"
-
                 showGridlines
-
                 class="my-table"
-
                 tableStyle="table-layout: fixed;"
-
                 @rowSelect="selectUser"
-
             >
-
                 <Column field="deptNm"      header="부서" :style="{ width: '160px'}"></Column>
-
                 <Column field="jobPosition" header="직급" :style="{ width: '80px', textAlign: 'center' }"></Column>
-
                 <Column field="memberNm"    header="사용자명" :style="{ width: '120px', textAlign: 'center' }" ></Column>
-
                 <template #empty>
-
                     <div class="empty-message">
-
                         조회된 사용자가 없습니다.
-
                     </div>
-
                 </template>
-
             </DataTable>
-
         </div>
-
         <!-- 2레벨 메뉴 -->
-
         <div class="group-area">
-
             <div class="table-title">그룹메뉴</div>
-
             <DataTable
-
                 v-model:selection="selectedGrpMenu"
-
                 :value="grpMenuList"
-
                 dataKey="menuId"
-
                 selectionMode="single"
-
                 scrollable
-
                 scrollHeight="650px"
-
                 showGridlines
-
                 class="my-table"
-
                 tableStyle="table-layout: fixed;"
-
                 @rowSelect="selectGrpMenu"
-
             >
-
                 <Column field="grpMenuName" header="그룹명" :style="{ width: '80px', textAlign: 'center' }"></Column>
-
                 <template #empty>
-
-                    <div class="empty-message">
-
-                        조회된 그룹메뉴가 없습니다.
-
-                    </div>
-
+                    <div class="empty-message"> 조회된 그룹메뉴가 없습니다. </div>
                 </template>
-
             </DataTable>
-
         </div>
 
         <!-- 메뉴 권한 -->
-
         <div class="menu-area">
-
             <div class="table-title">
-
                 메뉴권한
-
                 <span v-if="selectedGrpMenu">
-
                     - {{ selectedGrpMenu.grpMenuName || selectedGrpMenu.menuName }}
-
                 </span>
-
             </div>
-
             <DataTable
-
                 :value="filteredMenuList"
-
                 dataKey="menuId"
-
                 scrollable
-
                 scrollHeight="650px"
-
                 showGridlines
-
                 class="my-table"
-
                 tableStyle="table-layout: fixed;"
-
             >
-
                 <Column field="grpMenuName" header="그룹명" :style="{ width: '80px', textAlign: 'center' }"></Column>
-
                 <Column field="menuName" header="메뉴명" style="width: 260px"></Column>
-
                 <Column field="readYn" header="읽기권한" style="width: 100px">
-
                     <template #body="{ data }">
-
                         <div class="check-cell">
-
                             <Checkbox
-
                                 :modelValue="data.readYn === 'Y'"
-
                                 binary
-
                                 @update:modelValue="value => changeReadYn(data, value)"
-
-                                :disabled="!selectedUser || loadingAuth"
-
                             />
-
                         </div>
-
                     </template>
-
                 </Column>
-
                 <Column field="writeYn" header="쓰기권한" style="width: 100px">
-
                     <template #body="{ data }">
-
                         <div class="check-cell">
-
                             <Checkbox
-
                                 :modelValue="data.writeYn === 'Y'"
-
                                 binary
-
                                 @update:modelValue="value => changeWriteYn(data, value)"
-
-                                :disabled="!selectedUser || loadingAuth"
-
                             />
-
                         </div>
-
                     </template>
-
                 </Column>
-
                 <template #empty>
-
                     <div class="empty-message">
-
                         조회된 메뉴가 없습니다.
-
                     </div>
-
                 </template>
-
             </DataTable>
-
         </div>
-
     </div>
-
 </form>
-
 </template>
 
 <script setup>

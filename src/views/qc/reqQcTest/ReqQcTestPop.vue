@@ -255,7 +255,7 @@
   </div>
 
   <div class="popup-footer flex gap-2 mt-3">
-    <Button label="저장" class="p-button-success" :disabled="!writeYn" @click="saveInfo"></Button>
+    <Button label="저장" class="p-button-success" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"></Button>
     <Button label="성적서(PDF)"  class="p-button-info"  @click="printPdf"  />
     <Button label="성적서(EXCEL)" icon="pi pi-file-excel" severity="success"  @click="downLoadExcel('C')" />
     <Button label="시험일지(EXCEL)" icon="pi pi-file-excel" severity="success"  @click="downLoadExcel('T')"/>
@@ -422,6 +422,16 @@ const columns = [
 
 const onAfterChange = (changes, source) => {
     if (!changes || source === 'loadData') return
+
+    // 복사 후 붙여넣기 시 순서 재설정
+    if (source === 'CopyPaste.paste') {
+        resetOrder()
+
+        nextTick(() => {
+            const hot = hotTable.value?.hotInstance
+            hot?.render()
+        })
+    }
 }
 
 const saveInfo = async () =>{

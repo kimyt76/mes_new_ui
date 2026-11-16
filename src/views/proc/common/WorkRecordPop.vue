@@ -28,8 +28,6 @@
                                 @input="onTimeInput('start', $event)"
                                 @focus="$event.target.select()"
                                 @blur="onTimeBlur('start')"
-                                :disabled="!writeYn"
-                                @keydown.enter.prevent="saveInfo"
                             />
                             <InputGroupAddon
                                 class="time-icon-button"
@@ -55,8 +53,6 @@
                                 @input="onTimeInput('end', $event)"
                                 @focus="$event.target.select()"
                                 @blur="onTimeBlur('end')"
-                                :disabled="!writeYn"
-                                @keydown.enter.prevent="saveInfo"
                             />
                             <InputGroupAddon
                                 class="time-icon-button"
@@ -111,14 +107,12 @@
                 <Button
                     label="저장"
                     icon="pi pi-check"
-                    :disabled="!writeYn"
-                    @click="saveInfo"
+                    :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
                 />
                 <Button
                     label="삭제"
                     severity="danger"
-                    :disabled="!writeYn"
-                    @click="deleteWorkRecode"
+                    :disabled="writeYn !== 'Y'" @click="deleteWorkRecode"
                 />
                 <Button
                     label="닫기"
@@ -393,38 +387,40 @@ const setTimeValues = (startTime, endTime) => {
 
 // 저장
 const saveInfo = async () => {
-    try {
-        const startDate = toTimeDate(startTimeText.value);
-        const endDate = toTimeDate(endTimeText.value);
+    return saveGuard(async () => {
+        try {
+            const startDate = toTimeDate(startTimeText.value);
+            const endDate = toTimeDate(endTimeText.value);
 
-        if (!startDate || !endDate) {
-            vWarning('시작시간과 종료시간을 확인해 주세요.');
-            return;
+            if (!startDate || !endDate) {
+                vWarning('시작시간과 종료시간을 확인해 주세요.');
+                return;
+            }
+
+            form.workStartTime = formatHHmm(startDate);
+            form.workEndTime = formatHHmm(endDate);
+
+            const params = [{
+                workDate: form.workDate,
+                workStartTime: form.workStartTime,
+                workEndTime: form.workEndTime,
+                workerCnt: form.workerCnt,
+                useQty: form.useQty,
+                prodQty: form.prodQty,
+                itemCd: form.itemCd,
+                workProcId: form.workProcId,
+                workRecordId: form.workRecordId,
+            }];
+
+            await ApiProc.saveWorkRecordInfo(params);
+            vSuccess('저장되었습니다.');
+            dialogRef.value.close({
+                ...form,
+            });
+        } catch (err) {
+            handleApiError(err);
         }
-
-        form.workStartTime = formatHHmm(startDate);
-        form.workEndTime = formatHHmm(endDate);
-
-        const params = [{
-            workDate: form.workDate,
-            workStartTime: form.workStartTime,
-            workEndTime: form.workEndTime,
-            workerCnt: form.workerCnt,
-            useQty: form.useQty,
-            prodQty: form.prodQty,
-            itemCd: form.itemCd,
-            workProcId: form.workProcId,
-            workRecordId: form.workRecordId,
-        }];
-
-        await ApiProc.saveWorkRecordInfo(params);
-        vSuccess('저장되었습니다.');
-        dialogRef.value.close({
-            ...form,
-        });
-    } catch (err) {
-        handleApiError(err);
-    }
+    })
 };
 
 // 삭제
@@ -467,7 +463,6 @@ onMounted(async () => {
     if (form.workRecordId) {
         try {
             const res = await ApiProc.getWorkRecordInfo(form.workRecordId);
-
             Object.assign(form, res.data);
 
             setTimeValues(

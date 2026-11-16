@@ -73,7 +73,7 @@
             </div>
             <div class="col-3">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="form.shelfDate" class="w-full" showIcon inputClass="w-full" />
+                    <DatePicker v-model="form.shelfLife" class="w-full" showIcon inputClass="w-full" />
                     <label>보관기한</label>
                 </FloatLabel>
             </div>
@@ -110,7 +110,7 @@
     </template>
 </Card>
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장" class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo"></Button>
+    <Button label="저장" class="p-button-secondary"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"></Button>
     <Button label="바코드" icon="pi pi-barcode"  outlined @click="barcodePrint"></Button>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 </div>
@@ -146,7 +146,7 @@ const form  = reactive({
     makeNo: null,
     testNo: null,
     expiryDate: null,
-    shelfDate: null,
+    shelfLife: null,
     customerName: null,
     testState: null,
     passState: null,

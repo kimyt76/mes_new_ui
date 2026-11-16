@@ -1,8 +1,8 @@
 <template>
-    <Card style="width: 70rem; height: 33rem;">
+    <Card style="width: 70rem; height: 39rem;">
         <template #content>
             <!-- Row 1 -->
-            <div class="grid mb-3 mt-1">
+            <div class="grid mb-4 mt-1">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemTypeCd"
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <!-- Row 2 -->
-            <div class="grid mb-3">
+            <div class="grid mb-4">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <Select v-model="form.itemCategory1" :options="itemCategory1s"
@@ -54,7 +54,7 @@
                     </FloatLabel>
                 </div>
             </div>
-            <div class="grid mb-3">
+            <div class="grid mb-4">
                 <div class="col-6">
                     <FloatLabel variant="on">
                         <IconField iconPosition="left">
@@ -71,15 +71,14 @@
                         <label>거래유형</label>
                     </FloatLabel>
                 </div>
-                <div class="col-3">
+                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <Select v-model="form.itemGrp2" :options="itemGrp2s"
-                                optionLabel="codeNm" optionValue="code" class="w-full" />
-                        <label>제품유형</label>
+                        <InputText v-model="form.spec" class="w-full" />
+                        <label>SPEC</label>
                     </FloatLabel>
                 </div>
             </div>
-            <div class="grid mb-3">
+            <div class="grid mb-4">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.unit" class="w-full" />
@@ -88,10 +87,27 @@
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.spec" class="w-full" />
-                        <label>SPEC</label>
+                        <Select v-model="form.itemGrp2" :options="itemGrp2s"
+                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                        <label>제품유형(그룹유형1)</label>
                     </FloatLabel>
                 </div>
+                <div class="col-3">
+                    <FloatLabel variant="on">
+                        <Select v-model="form.itemGrp2" :options="itemGrp2s"
+                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                        <label>제품유형(그룹유형2)</label>
+                    </FloatLabel>
+                </div>
+                <div class="col-3">
+                    <FloatLabel variant="on">
+                        <Select v-model="form.itemGrp3" :options="itemGrp3s"
+                                optionLabel="codeNm" optionValue="code" class="w-full" />
+                        <label>제품유형(그룹유형3)</label>
+                    </FloatLabel>
+                </div>
+            </div>
+            <div class="grid mb-4">
                 <div class="col-3">
                     <div class="flex">
                     <FloatLabel variant="on">
@@ -189,8 +205,6 @@
                             </OverlayPanel>
                     </div>
                 </div>
-            </div>
-            <div class="grid mb-3">
                 <div class="col-3">
                     <FloatLabel variant="on">
                         <InputText v-model="form.expiryDate" class="w-full" />
@@ -203,6 +217,8 @@
                         <label>원료제조사</label>
                     </FloatLabel>
                 </div>
+            </div>
+            <div class="grid mb-4">
                 <div class="col-3" v-if="isItemType">
                     <FloatLabel variant="on">
                         <Select v-model="form.useCate" :options="useCates"
@@ -254,6 +270,7 @@ const { vError, vSuccess} = useAlertStore()
 const itemTypeCds = ref([])
 const itemGrp1s = ref([])
 const itemGrp2s = ref([])
+const itemGrp3s = ref([])
 const itemCategory1s = ref([])
 const itemCategory2s = ref([])
 const useCates = ref([])
@@ -274,6 +291,7 @@ const form = reactive({
     customerCd: '',
     itemGrp1: '',
     itemGrp2: '',
+    itemGrp3: '',
     useCate: '',
     inPrice: '',
     outPrice: '',
@@ -405,6 +423,7 @@ onMounted( async () =>{
     itemTypeCds.value = await ApiCommon.getCodeList('ITEM_TYPE_CD')
     itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
     itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
+    itemGrp3s.value = await ApiCommon.getCodeList('ITEM_GRP3')
     useYns.value = await ApiCommon.getCodeList('use_yn')
 
     Object.assign(form, res)

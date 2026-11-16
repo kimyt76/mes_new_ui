@@ -1,28 +1,16 @@
 
 <template>
-    <!-- 로딩 -->
-    <div
-        v-if="loading"
-        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30"
-    >
-        <ProgressSpinner
-            style="width: 50px; height: 50px"
-            strokeWidth="4"
-        />
-    </div>
-
     <div class="flex justify-start mt-3 gap-2">
         <Button
             label="품목추가"
             severity="secondary"
-            :disabled="loading || !isBtn"
+            :disabled="!isBtn"
             @click="openPop"
         />
         <Button
             label="엑셀"
             icon="pi pi-file-excel"
             severity="success"
-            :disabled="loading"
             @click="downloadExcel"
         />
     </div>
@@ -47,15 +35,13 @@
             v-if="isBtn"
             label="저장"
             severity="success"
-            :disabled="loading || !writeYn"
-            @click="saveInfo"
+           :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
         />
 
         <Button
             v-if="isBtn"
             label="재고초기화"
             severity="danger"
-            :disabled="loading || !writeYn"
             @click="stockInit"
         />
 
@@ -63,15 +49,13 @@
             v-if="isBtn"
             label="실사재고삭제"
             severity="danger"
-            :disabled="loading || !writeYn"
-            @click="deleteRealStock"
+            :disabled="writeYn !== 'Y'" @click="saveGuard(deleteRealStock)"
         />
 
         <Button
             label="닫기"
             outlined
             class="ml-2"
-            :disabled="loading"
             @click="closeDialog"
         />
     </div>
@@ -83,7 +67,6 @@ import BaseHotTable from '@/components/BaseHotTable.vue'
 import { useAlertStore } from '@/stores/alert'
 import { handleApiError } from '@/util/errorHandler.js'
 import { useDialog } from 'primevue'
-import ProgressSpinner from 'primevue/progressspinner'
 import { useConfirm } from 'primevue/useconfirm'
 import { inject, nextTick, onMounted, ref } from 'vue'
 import * as XLSX from 'xlsx'
@@ -97,7 +80,6 @@ const { vSuccess, vWarning } = useAlertStore()
 
 const stockList = ref([])
 const isBtn = ref(false)
-const loading = ref(false)
 const realStockMstId = ref(null)
 const hotTable = ref(null)
 
@@ -285,8 +267,6 @@ const stockInit = () => {
         acceptClass: 'p-button-danger',
 
         accept: async () => {
-            if (loading.value) return
-
             stockList.value = [createEmptyRow()]
             isStockInitialized.value = true
 
@@ -304,8 +284,6 @@ const stockInit = () => {
 
 // 저장
 const saveInfo = async () => {
-    if (loading.value) return
-
     const hot = hotTable.value?.hotInstance
 
     // 편집 중인 셀 확정
@@ -355,8 +333,6 @@ const saveInfo = async () => {
         return
     }
 
-    loading.value = true
-
     try {
         const params = {
             realStock: {
@@ -375,14 +351,11 @@ const saveInfo = async () => {
 
     } catch (err) {
         handleApiError(err)
-    } finally {
-        loading.value = false
     }
 }
 
 // 실사재고 전체 삭제
 const deleteRealStock = () => {
-    if (loading.value) return
 
     confirm.require({
         header: '실사재고 삭제 확인',
@@ -393,10 +366,6 @@ const deleteRealStock = () => {
         acceptClass: 'p-button-danger',
 
         accept: async () => {
-            if (loading.value) return
-
-            loading.value = true
-
             try {
                 await ApiStock.deleteRealStock(
                     realStockMstId.value
@@ -407,8 +376,6 @@ const deleteRealStock = () => {
 
             } catch (err) {
                 handleApiError(err)
-            } finally {
-                loading.value = false
             }
         }
     })
@@ -467,8 +434,6 @@ const downloadExcel = () => {
 
 // 품목 추가 팝업
 const openPop = () => {
-    if (loading.value) return
-
     dialog.open(ItemListPop, {
         props: {
             header: '재고품목 조회',
@@ -517,8 +482,6 @@ onMounted(async () => {
     isBtn.value = data?.endYn === 'N'
     realStockMstId.value = data?.realStockMstId
 
-    loading.value = true
-
     try {
         const result = await ApiStock.getRealStockItemList(
             realStockMstId.value
@@ -530,8 +493,6 @@ onMounted(async () => {
 
     } catch (err) {
         handleApiError(err)
-    } finally {
-        loading.value = false
     }
 })
 

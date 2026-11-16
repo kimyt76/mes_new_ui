@@ -34,13 +34,13 @@
                             <th class="cellBorder cellHeader">작업일자</th>
                             <td class="cellBorder">{{ workOrderInfo.prodDate }}</td>
                             <th class="cellBorder cellHeader">작업지시량</th>
-                            <td class="cellBorder">{{ workOrderInfo.orderQty }} EA</td>
+                            <td class="cellBorder">{{ Number(workOrderInfo.orderQty || 0).toLocaleString('ko-KR') }} kg</td>
                         </tr>
                         <tr>
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} Kg</td>
+                            <td class="cellBorder">{{ Number(workOrderInfo.makeQty || 0).toLocaleString('ko-KR') }} kg</td>
                             <th class="cellBorder cellHeader" rowspan="2">폭 너비(mm) 및<br />겔 Sheet 적층수</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ itemInfo.sheetSpec || 0 }}<br />
@@ -106,9 +106,13 @@
                     <Column field="matName"     :style="{ width: '220px' }"></Column>
                     <Column field="specInfo"    :style="{ width: '150px' , textAlign: 'center'}"/>
                     <Column field="exAppearance" :style="{ width: '170px' , textAlign: 'center'}"/>
-                    <Column field="reqQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
+                    <Column field="reqQty"      :style="{ width: '120px' , textAlign: 'right'}">
+                       <template #body="slotProps">{{ slotProps.data.reqQty ? Number(slotProps.data.reqQty).toLocaleString() : '' }}</template>
+                    </Column>
                     <Column field="unit"        :style="{ width: '50px', textAlign: 'center' }"/>
-                    <Column field="useQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
+                    <Column field="useQty"      :style="{ width: '120px' , textAlign: 'right'}">
+                        <template #body="slotProps">{{ slotProps.data.useQty ? Number(slotProps.data.useQty).toLocaleString() : '' }}</template>
+                    </Column>
                     <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
                     <Column field="badQty"      :style="{ width: '120px', textAlign: 'right' }"/>
                     <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
@@ -139,8 +143,16 @@
                             <Column field="workStartTime" header="작업시작시간"     :style="{ width: '140px', textAlign: 'center' }"></Column>
                             <Column field="workEndTime" header="작업종료시간"       :style="{ width: '140px', textAlign: 'center' }"></Column>
                             <Column field="workerCnt"   header="작업인원(명)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
-                            <Column field="useQty"      header="반제품사용량(kg)"   :style="{ width: '130px', textAlign: 'center' }"></Column>
-                            <Column field="prodQty"     header="코팅수량(ea)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="useQty"      header="반제품사용량(kg)"   :style="{ width: '130px', textAlign: 'center' }">
+                                <template #body="slotProps">
+                                    {{ slotProps.data.useQty? Number(slotProps.data.useQty).toLocaleString(): ''}}
+                                </template>
+                            </Column>
+                            <Column field="prodQty"     header="코팅수량(ea)"       :style="{ width: '120px', textAlign: 'center' }">
+                                <template #body="slotProps">
+                                    {{ slotProps.data.prodQty? Number(slotProps.data.prodQty).toLocaleString(): ''}}
+                                </template>
+                            </Column>
                         </DataTable>
                     </div>
                 </div>
@@ -169,11 +181,11 @@
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">총사용량</th>
-                                    <td class="cellBorder">{{ totalUseQty || 0 }} kg</td>
+                                    <td class="cellBorder">{{ totalUseQty.toLocaleString('ko-KR') || 0 }} kg</td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">생산수량</th>
-                                    <td class="cellBorder">{{ workOrderInfo.prodQty || 0 }} ea</td>
+                                    <td class="cellBorder">{{ totalProdQty.toLocaleString('ko-KR') || 0}} kg</td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">생산수율</th>
@@ -474,10 +486,10 @@ const openPop = (type) => {
         itemName: itemInfo.itemName,
         lotNo: workOrderInfo.lotNo,
         testNo: workOrderInfo.testNo,
-        qty: 0,
+        qty:  workOrderInfo.prodQty,
         printCnt: 1,
     })
-
+console.log('workOrderInfo.prodQty', workOrderInfo.prodQty);
     dialog.open(config.component, {
         props: {
             header: config.title,

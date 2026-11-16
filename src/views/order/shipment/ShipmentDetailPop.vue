@@ -160,8 +160,10 @@
         </Column>
         <Column field="qty" header="출고수량"   :style="{ width: '100px'}"  :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
+                <div @keydown.capture="(event) => handleNumberArrow(event, slotProps.index, 'qty')">
                 <InputNumber
                     v-model="slotProps.data.qty"
+                    :inputId="`shipment-edit-${slotProps.index}-qty`"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="5"
@@ -169,12 +171,15 @@
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
                 />
+                </div>
             </template>
         </Column>
         <Column field="pallet"          header="파렛트"       :style="{ width: '90px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
+                <div @keydown.capture="(event) => handleNumberArrow(event, slotProps.index, 'pallet')">
                 <InputNumber
                     v-model="slotProps.data.pallet"
+                    :inputId="`shipment-edit-${slotProps.index}-pallet`"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="5"
@@ -182,6 +187,7 @@
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
                 />
+                </div>
             </template>
         </Column>
         <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
@@ -192,14 +198,21 @@
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">
-    <Button v-if="!isShipmentYn" label="저장"  class="p-button-secondary"   @click="saveInfo" />
+    <Button v-if="!isShipmentYn" label="저장"  class="p-button-secondary"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)" />
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog" />
 </div>
 
 <Dialog
     v-model:visible="workItemDialog"
     header="품목 목록"
-    style="width: 100rem; height: 30rem"
+    :style="{ width: '100rem', height: '30rem' }"
+    :contentStyle="{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '0',
+        overflow: 'hidden',
+        padding: '0.5rem 1rem'
+    }"
   >
     <ShipmentItemListPop
         @selected = "selectedRow1"
@@ -233,6 +246,34 @@ const shipmentStatus = ref([])
 const shipmentTypes = ref([])
 const deleteShipmentItemIds = ref([])
 const workItemDialog = ref(false)
+
+// 출고수량/파렛트 입력칸에서만 방향키로 셀 이동 (숫자 증감 방지)
+const handleNumberArrow = (event, rowIndex, field) => {
+    const directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+    if (!directions.includes(event.key)) return
+
+    // PrimeVue InputNumber의 위/아래 숫자 증감 및 기본 커서 이동 차단
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation?.()
+
+    let nextRow = rowIndex
+    let nextField = field
+
+    if (event.key === 'ArrowUp') nextRow--
+    if (event.key === 'ArrowDown') nextRow++
+    if (event.key === 'ArrowLeft') nextField = 'qty'
+    if (event.key === 'ArrowRight') nextField = 'pallet'
+
+    // 이동할 셀이 없어도 방향키의 기본 숫자 증감은 차단
+    if (nextRow < 0 || nextRow >= shipmentItemList.value.length) return
+    if (nextRow === rowIndex && nextField === field) return
+
+    const input = document.getElementById(`shipment-edit-${nextRow}-${nextField}`)
+    if (!input) return
+    input.focus()
+    input.select()
+}
 
 const form = reactive({
     shipmentDate:todayKST(),
@@ -423,12 +464,30 @@ const openPop = (type) =>{
             modal: true,
             draggable: false,
             maximizable: false,
-            style: {
+             style: {
+                width: '100rem',
+                maxHeight: 'none',
                 overflow: 'hidden'
             },
+
+            contentStyle: {
+                overflow: 'hidden',
+                maxHeight: 'none'
+            },
+
             pt: {
-                root: { style: { overflow: 'hidden' } },
-                content: { style: { overflow: 'hidden' } }
+                root: {
+                    style: {
+                        overflow: 'hidden',
+                        maxHeight: 'none'
+                    }
+                },
+                content: {
+                    style: {
+                        overflow: 'hidden',
+                        maxHeight: 'none'
+                    }
+                }
             }
         },
         onClose: (event) => {

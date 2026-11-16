@@ -117,7 +117,7 @@
   </div>
   <!-- 하단 버튼 -->
   <div class="bottom-area">
-    <Button label="저장" class="p-button-secondary"  @click="saveInfo" />
+    <Button label="저장" class="p-button-secondary" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)" />
     <Button label="닫기" outlined @click="closeDialog" />
   </div>
 </template>

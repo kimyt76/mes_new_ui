@@ -506,15 +506,21 @@ const openLookupPopup = (type, row = null) => {
           scanBuffer.value = ''
         }
         if (type === 'CONTAINER_WEIGHT1') {
-             if (event?.data && hasRow && row) {
-                const params ={
-                    workProcId: form.workProcId,
-                    weighId: row.weighId,
-                    bagWeight: event?.data
-                }
-                const res = await ApiProc.updateBagWeigh(params)
-                await loadWeighInfo()
+          if (event?.data != null && hasRow && row) {
+            try {
+              const params = {
+                workProcId: form.workProcId,
+                weighId: row.weighId,
+                bagWeight: event.data
+              }
+              await ApiProc.updateBagWeigh(params)
+              await loadWeighInfo()
+            } catch (err) {
+              handleApiError(err)
             }
+          }
+          // 재조회로 목록이 교체되었으므로 이전 row 객체를 다시 수정하지 않음
+          return
         }
 
         if (event?.data && hasRow && row) {
@@ -547,10 +553,10 @@ const applyPopupResultToRow = (type, row, data) => {
 
       break
     case 'CONTAINER_WEIGHT':
-      row.bagWeight = data.weight ?? row.weight
+      row.bagWeight = data.weight ?? row.bagWeight
       break
     case 'CONTAINER_WEIGHT1':
-      row.bagWeight = data ?? row.weight
+      row.bagWeight = data ?? row.bagWeight
       break
     case 'WEIGH_USER':
       row.weigher = data.workerName ?? row.workerName
@@ -562,21 +568,13 @@ const applyPopupResultToRow = (type, row, data) => {
 }
 
 const normalizeRows = (rows) => (rows ?? []).map((r, idx) => {
-
-    const orderQty = Number(r.orderQty ?? 0)
-    const weighQty = Number(r.weighQty ?? 0)
-
-    const isEqual =
-        Math.round(orderQty * 1000000) ===
-        Math.round(weighQty * 1000000)
-
     const row = {
         ...r,
         orderDist: Number(r?.orderDist ?? r?.dist_order ?? idx + 1),
         [FIELD.SELECTED]: r?.[FIELD.SELECTED] ?? false,
 
-        // 지시량과 칭량량이 다르면 완료 체크 해제
-        [FIELD.WEIGH_YN]: r.weighYn === 'Y' && isEqual ? 'Y' : 'N',
+        // 조회 및 일반 저장 후에는 DB의 칭량완료 상태를 그대로 유지
+        [FIELD.WEIGH_YN]: r.weighYn ?? 'N',
 
         bagWeight: r?.bagWeight ?? 0,
         testNo: r?.testNo ?? '',

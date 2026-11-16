@@ -106,9 +106,9 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button label="전체삭제" severity="danger" :disabled="!writeYn" @click="deleteAll" />
-    <Button label="저장" severity="success" :disabled="!writeYn" @click="saveInfo"/>
+    <Button label="저장" severity="success" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
+    <Button label="전체삭제" severity="danger"  :disabled="writeYn !== 'Y'" @click="deleteAll" />
 </div>
 
     <Dialog
@@ -326,13 +326,15 @@ const saveInfo = async () =>{
     if ( isEmpty(form.srcStorageCd)  ) return vWarning("창고를 선택하세요!!")
     if ( isEmpty(form.tranTypeCd)  ) return vWarning("처리구분을 선택하세요!!")
 
+
+
+
     try{
         const params = {
             adjustInfo: form,
             adjustItemList: adjustItemList.value,
             deleteTranItemIds: deleteTranItemIds.value,
         }
-
         const res = await ApiStock.saveAdjust(params)
         vSuccess(res.message)
         closeDialog()

@@ -155,7 +155,7 @@
                     severity="secondary"
                     @click="passwordInit"
                 ></Button>
-                <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo"></Button>
+                <Button label="저장" class="p-button-secondary"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"></Button>
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog"></Button>
             </div>
         </template>
@@ -225,7 +225,7 @@
                 label="변경"
                 icon="pi pi-check"
                 :loading="passwordSaving"
-                @click="savePassword"
+                :disabled="writeYn !== 'Y'" @click="saveGuard(savePassword)"
             />
         </div>
     </template>

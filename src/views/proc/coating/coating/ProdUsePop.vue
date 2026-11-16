@@ -50,7 +50,7 @@
     </div>
 
     <div class="flex justify-end mt-3 gap-2">
-        <Button label="저장" icon="pi pi-check"  @click="saveInfo"/>
+        <Button label="저장" icon="pi pi-check" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
         <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
 </template>
@@ -147,7 +147,6 @@ const saveInfo = async () => {
 
 const searchByBarcode = async () =>{
     const code = barcode.value?.trim()
-
     if (code?.length !== 11) return
 
     const exists = workUseList.value.some(item => item.testNo === code)
@@ -156,7 +155,6 @@ const searchByBarcode = async () =>{
         barcode.value = ''
         return
     }
-
 
     try{
         const res = await ApiQc.getItemTestNoInfo(barcode.value)
@@ -182,7 +180,7 @@ const searchByBarcode = async () =>{
             itemCd: res.itemCd,
             lotNo: res.lotNo,
             reqQty: res.qty,
-            useQty: 0,
+            useQty: res.qty,
             badQty: 0,
             workBadQty: 0,
             totUsQty: 0,

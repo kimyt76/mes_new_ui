@@ -55,7 +55,7 @@
                         <Select v-model="form.itemGrp2"
                                 :options="itemGrp2s"
                                 optionLabel="codeNm"
-                                optionValue="code" class="w-full" />
+                                optionValue="code" class="w-223px" />
                         <label>제품유형</label>
                     </FloatLabel>
                 </div>
@@ -141,7 +141,7 @@
 </Card>
 <!-- Buttons -->
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장" class="p-button-secondary"  :disabled="!writeYn" @click="saveInfo()"></Button>
+    <Button label="저장" class="p-button-secondary" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"></Button>
     <Button label="닫기"  outlined class="ml-2" @click="closeDialog"></Button>
 </div>
 </template>

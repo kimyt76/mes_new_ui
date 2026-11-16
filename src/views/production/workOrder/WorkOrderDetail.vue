@@ -1,9 +1,6 @@
 <template>
   <div class="work-order-wrap">
     <!-- 저장 / 리셋 / 작업취소 처리 중 전체 화면 잠금 -->
-    <div v-if="loading" class="work-order-loading-overlay">
-      <ProgressSpinner strokeWidth="4" animationDuration=".8s" />
-    </div>
   <Card style="width: 125rem; height: 7rem;">
     <template #content>
       <div class="grid mb-1">
@@ -130,10 +127,10 @@
   </div>
 
   <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" class="p-button-secondary" :disabled="loading" @click="saveInfo" />
-    <Button label="리셋" severity="warn" :disabled="loading" @click="procReSet" />
-    <Button label="공정Clear" severity="info"   @click="clearList" />
-    <Button label="작업취소" severity="danger" :disabled="loading" @click="procEntYn" />
+    <Button label="저장" class="p-button-secondary" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
+    <Button label="리셋" severity="warn" :disabled="writeYn !== 'Y'" @click="procReSet" />
+    <Button label="공정Clear" severity="info"  :disabled="writeYn !== 'Y'"  @click="clearList" />
+    <Button label="작업취소" severity="danger" :disabled="writeYn !== 'Y'" @click="procEntYn" />
     <Button label="닫기"   outlined class="ml-2" @click.stop="closeDialog" />
   </div>
   </div>

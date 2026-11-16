@@ -168,15 +168,13 @@
                 v-if="isBtn"
                 label="저장"
                 icon="pi pi-save"
-                :disabled="!writeYn"
-                @click="saveInfo"
+                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
             />
             <Button
                 v-if="isBtn"
                 label="종결"
                 icon="pi pi-check"
-                :disabled="!writeYn"
-                @click="updateEndYn"
+                :disabled="writeYn !== 'Y'" @click="saveGuard(updateEndYn)"
             />
             <Button
                 label="엑셀"

@@ -93,7 +93,7 @@
 </div>
 
     <div class="usage-popup-footer flex justify-start mt-3 gap-2">
-        <Button label="저장" icon="pi pi-check" :disabled="!writeYn" @click="saveInfo"/>
+        <Button label="저장" icon="pi pi-check"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
         <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
     </div>
 </div>
@@ -230,13 +230,18 @@ const searchByBarcode = async () =>{
                 return
             }
         }
+
+        if (['M2', 'M7'].includes(res.itemTypeCd)) {
+            res.qty = 0
+        }
+
         workUseList.value.push({
             no: workUseList.value.length + 1,
             testNo: res.testNo,
             itemCd: res.itemCd,
             lotNo: res.lotNo,
             reqQty: reqQty.value,
-            useQty: 0,
+            useQty: res.qty,
             badQty: 0,
             workBadQty: 0,
             totUseQty: 0,

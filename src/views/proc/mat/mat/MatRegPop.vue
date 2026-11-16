@@ -24,7 +24,7 @@
             <th class="cellBorder cellHeader">지시일자</th>
             <td class="cellBorder">{{ form.procOrderDate }}</td>
             <th class="cellBorder cellHeader">지시량</th>
-            <td class="cellBorder">{{ form.orderQty }} kg</td>
+            <td class="cellBorder">{{ Number(form.orderQty || 0).toLocaleString('ko-KR') }} kg</td>
             <th class="cellBorder cellHeader">제조설비</th>
             <td class="cellBorder" colspan="3">{{ form.workEquipmentCd }}</td>
         </tr>
@@ -85,11 +85,11 @@
 
         <div class="ml-auto mr-2">
             <div class="flex items-center justify-end gap-2">
-                <Button v-if="isStarted" label="제조시작" :disabled="!writeYn" @click="openLookupPopup('S')" />
-                <Button v-if="!isStarted" label="저장" class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo" />
+                <Button v-if="isStarted" label="제조시작"  @click="openLookupPopup('S')" />
+                <Button v-if="!isStarted" label="저장" class="p-button-secondary"   @click="saveInfo" />
                 <Button label="바코드출력" icon="pi pi-barcode" @click="openLookupPopup('P')" />
                 <Button label="제조공정기록서" @click="downloadMatProc" />
-                <Button v-if="form.procStatus !== '22'" label="제조완료" :disabled="!writeYn"  @click="complateMake" />
+                <Button v-if="form.procStatus !== '22'" label="제조완료"   @click="complateMake" />
                 <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
 
                 <Button label="새로고침" @click="refresh" />
@@ -682,6 +682,19 @@ const bindMakeInfo = (data) => {
 
     if ( data.workOrderInfo?.batchStatus < '21') {
         isStarted.value = true
+    }
+
+    // 생산수율 값이 없을 경우 자동 계산
+    if (form.prodYield === null ||
+        form.prodYield === undefined ||
+        form.prodYield === '') {
+
+        const orderQty = Number(form.orderQty) || 0
+        const prodQty = Number(form.prodQty) || 0
+
+        form.prodYield = orderQty > 0
+            ? Math.round((prodQty / orderQty) * 10000) / 100
+            : 0
     }
 
     const batchStatus = String(data.workOrderInfo?.batchStatus ?? '')

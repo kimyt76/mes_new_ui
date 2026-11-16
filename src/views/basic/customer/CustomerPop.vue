@@ -169,7 +169,7 @@
         </div>
         <!-- Buttons -->
         <div class="flex gap-2 justify-end pt-3">
-            <Button label="저장" class="p-button-secondary" :disabled="!writeYn" @click="saveInfo"></Button>
+            <Button label="저장" class="p-button-secondary"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
         </div>
     </template>
@@ -201,6 +201,7 @@ const form = reactive({
     customerName: '',
     managerName: '',
     manaserId: '',
+    businessNo: '',
     businessType: '',
     businessItem: '',
     president: '',
@@ -225,6 +226,8 @@ const form = reactive({
 
 const saveInfo = async () =>{
     try{
+
+        form.businessNo = form.customerCd
         const params = {
         ...form
         }

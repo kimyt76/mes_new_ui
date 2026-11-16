@@ -1,3 +1,4 @@
+
 <template>
     <div class="pop-wrap">
         <LoadingOverlay :visible="loading" />
@@ -34,13 +35,13 @@
                             <th class="cellBorder cellHeader">작업일자</th>
                             <td class="cellBorder">{{ workOrderInfo.prodDate }}</td>
                             <th class="cellBorder cellHeader">작업지시량</th>
-                            <td class="cellBorder">{{ workOrderInfo.orderQty }} EA</td>
+                            <td class="cellBorder">{{ Number(workOrderInfo.orderQty || 0).toLocaleString('ko-KR') }} EA</td>
                         </tr>
                         <tr>
                             <th class="cellBorder cellHeader">제조번호</th>
                             <td class="cellBorder">{{ workOrderInfo.makeNo }}</td>
                             <th class="cellBorder cellHeader">제조량</th>
-                            <td class="cellBorder">{{ workOrderInfo.makeQty || 0 }} Kg</td>
+                            <td class="cellBorder">{{ Number(workOrderInfo.makeQty || 0).toLocaleString('ko-KR') }} Kg</td>
                             <th class="cellBorder cellHeader" rowspan="2">LOT<br />표기</th>
                             <td class="cellBorder" rowspan="2">
                                 {{ workOrderInfo.lotNo || 0 }}<br />
@@ -60,13 +61,14 @@
                             <th class="cellBorder cellHeader">작업공정도</th>
                             <td class="cellBorder" colspan="5">{{ itemInfo.workFlow }}</td>
                             <th class="cellBorder cellHeader">특이사항</th>
-                            <td class="cellBorder cursor-pointer" @click="openProcMemo" >
+                            <td class="cellBorder cursor-pointer" @click="openProcMemo">
                                 {{ workOrderInfo.memo || '' }}
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
             <!-- 2. 투입자재 정보 -->
             <div class="section-block">
                 <div class="section-label">2. 투입자재 정보</div>
@@ -84,50 +86,56 @@
                             <Column header="자재사용량" :colspan="8" />
                         </Row>
                         <Row>
-                            <Column header="시험번호"   field="testNos"      :style="{ width: '150px' }" />
-                            <Column header="재료명"     field="matName"     :style="{ width: '140px' }" />
-                            <Column header="규격"       field="specInfo"    :style="{ width: '150px' }" />
+                            <Column header="시험번호" field="testNos" :style="{ width: '150px' }" />
+                            <Column header="재료명" field="matName" :style="{ width: '140px' }" />
+                            <Column header="규격" field="specInfo" :style="{ width: '150px' }" />
                             <Column header="성상 및 특성" field="exAppearance" :style="{ width: '170px' }" />
-                            <Column header="단위포장규격" field="packingSpecValue" :style="{ width: '180px' }" :colspan="2"/>
-                            <Column header="예상소요량" field="reqQty"       :style="{ width: '120px' }" :colspan="2" />
-                            <Column header="총사용량"   field="totUseQty"   :style="{ width: '120px' }" :colspan="2" />
-                            <Column header="원불량"     field="badQty"      :style="{ width: '120px' }" :colspan="2" />
-                            <Column header="작업불량"   field="workBadQty"  :style="{ width: '120px' }" :colspan="2" />
+                            <Column header="단위포장규격" field="packingSpecValue" :style="{ width: '180px' }" :colspan="2" />
+                            <Column header="예상소요량" field="reqQty" :style="{ width: '120px' }" :colspan="2" />
+                            <Column header="총사용량" field="totUseQty" :style="{ width: '120px' }" :colspan="2" />
+                            <Column header="원불량" field="badQty" :style="{ width: '120px' }" :colspan="2" />
+                            <Column header="작업불량" field="workBadQty" :style="{ width: '120px' }" :colspan="2" />
                         </Row>
                     </ColumnGroup>
-                    <Column field="no"          :style="{ width: '50px', textAlign: 'center' }"></Column>
-                    <Column field="testNos"     :style="{ width: '150px' , textAlign: 'center'}">
+
+                    <Column field="no" :style="{ width: '50px', textAlign: 'center' }"></Column>
+                    <Column field="testNos" :style="{ width: '150px', textAlign: 'center' }">
                         <template #body="slotProps">
-                             <div
-                                 style="
-                                        width: 100%;
-                                        height: 100%;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        cursor: pointer;
-                                    "
+                            <div
+                                style="
+                                    width: 100%;
+                                    height: 100%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    cursor: pointer;
+                                "
                                 @click="selectRowClick(slotProps.data)"
-                                >
-                                {{ slotProps.data.testNos}}
+                            >
+                                {{ slotProps.data.testNos }}
                             </div>
                         </template>
                     </Column>
-                    <Column field="matName"     :style="{ width: '140px' }"></Column>
-                    <Column field="specInfo"    :style="{ width: '150px' , textAlign: 'center'}"/>
-                    <Column field="exAppearance" :style="{ width: '170px' , textAlign: 'center'}"/>
-                    <Column field="packingSpecValue" :style="{ width: '50px' , textAlign: 'center'}"/>
-                    <Column field="packingSpecUnit"  :style="{ width: '130px', textAlign: 'center' }"/>
-                    <Column field="reqQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
-                    <Column field="unit"        :style="{ width: '50px', textAlign: 'center' }"/>
-                    <Column field="useQty"      :style="{ width: '120px' , textAlign: 'right'}"/>
-                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
-                    <Column field="badQty"      :style="{ width: '120px', textAlign: 'right' }"/>
-                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
-                    <Column field="workBadQty"  :style="{ width: '120px' , textAlign: 'right'}"/>
-                    <Column field="unit"        :style="{ width: '50px' , textAlign: 'center'}"/>
+                    <Column field="matName" :style="{ width: '140px' }"></Column>
+                    <Column field="specInfo" :style="{ width: '150px', textAlign: 'center' }" />
+                    <Column field="exAppearance" :style="{ width: '170px', textAlign: 'center' }" />
+                    <Column field="packingSpecValue" :style="{ width: '50px', textAlign: 'center' }" />
+                    <Column field="packingSpecUnit" :style="{ width: '130px', textAlign: 'center' }" />
+                    <Column field="reqQty" :style="{ width: '120px', textAlign: 'right' }">
+                        <template #body="slotProps">{{ slotProps.data.reqQty ? Number(slotProps.data.reqQty).toLocaleString() : '' }}</template>
+                    </Column>
+                    <Column field="unit" :style="{ width: '50px', textAlign: 'center' }" />
+                    <Column field="useQty" :style="{ width: '120px', textAlign: 'right' }">
+                        <template #body="slotProps">{{ slotProps.data.useQty ? Number(slotProps.data.useQty).toLocaleString() : '' }}</template>
+                    </Column>
+                    <Column field="unit" :style="{ width: '50px', textAlign: 'center' }" />
+                    <Column field="badQty" :style="{ width: '120px', textAlign: 'right' }" />
+                    <Column field="unit" :style="{ width: '50px', textAlign: 'center' }" />
+                    <Column field="workBadQty" :style="{ width: '120px', textAlign: 'right' }" />
+                    <Column field="unit" :style="{ width: '50px', textAlign: 'center' }" />
                 </DataTable>
             </div>
+
             <!-- 3, 4 하단 -->
             <div class="bottom-wrap">
                 <!-- 3. 작업수행 정보 -->
@@ -135,7 +143,12 @@
                     <div class="section-header">
                         <div class="section-label">3. 작업수행 정보</div>
                         <div class="section-actions">
-                            <Button v-if="btnStatus !== '00' && btnStatus !== '52'" label="신규등록" size="small" @click="openPop('W')" />
+                            <Button
+                                v-if="btnStatus !== '00' && btnStatus !== '52'"
+                                label="신규등록"
+                                size="small"
+                                @click="openPop('W')"
+                            />
                         </div>
                     </div>
                     <div class="section-body">
@@ -146,16 +159,25 @@
                             class="my-table work-table"
                             @row-click="selectRow"
                         >
-                            <Column field="no"          header="NO"                 :style="{ width: '40px', textAlign: 'center' }"></Column>
-                            <Column field="workDate"    header="작업일자"           :style="{ width: '120px', textAlign: 'center' }"></Column>
-                            <Column field="workStartTime" header="작업시작시간"     :style="{ width: '140px', textAlign: 'center' }"></Column>
-                            <Column field="workEndTime" header="작업종료시간"       :style="{ width: '140px', textAlign: 'center' }"></Column>
-                            <Column field="workerCnt"   header="작업인원(명)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
-                            <Column field="useQty"      header="포장품사용량(ea)"   :style="{ width: '130px', textAlign: 'center' }"></Column>
-                            <Column field="prodQty"     header="포장수량(ea)"       :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="no" header="NO" :style="{ width: '40px', textAlign: 'center' }"></Column>
+                            <Column field="workDate" header="작업일자" :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="workStartTime" header="작업시작시간" :style="{ width: '140px', textAlign: 'center' }"></Column>
+                            <Column field="workEndTime" header="작업종료시간" :style="{ width: '140px', textAlign: 'center' }"></Column>
+                            <Column field="workerCnt" header="작업인원(명)" :style="{ width: '120px', textAlign: 'center' }"></Column>
+                            <Column field="useQty" header="포장품사용량(ea)" :style="{ width: '130px', textAlign: 'center' }">
+                                <template #body="slotProps">
+                                    {{ slotProps.data.useQty ? Number(slotProps.data.useQty).toLocaleString() : '' }}
+                                </template>
+                            </Column>
+                            <Column field="prodQty" header="포장수량(ea)" :style="{ width: '120px', textAlign: 'center' }">
+                                <template #body="slotProps">
+                                    {{ slotProps.data.prodQty ? Number(slotProps.data.prodQty).toLocaleString() : '' }}
+                                </template>
+                            </Column>
                         </DataTable>
                     </div>
                 </div>
+
                 <!-- 4. 종합정보 -->
                 <div class="section-box summary-section">
                     <div class="section-header">
@@ -181,11 +203,15 @@
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">총사용량</th>
-                                    <td class="cellBorder">{{ workOrderInfo.useQty || 0 }} kg</td>
+                                    <td class="cellBorder">
+                                        {{ Number(workOrderInfo.useQty ?? 0).toLocaleString('ko-KR') }} ea
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">생산수량</th>
-                                    <td class="cellBorder">{{ workOrderInfo.prodQty || 0 }} ea</td>
+                                    <td class="cellBorder">
+                                        {{ Number(workOrderInfo.prodQty ?? 0).toLocaleString('ko-KR') }} EA
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th class="cellBorder cellHeader">생산수율</th>
@@ -197,15 +223,17 @@
                 </div>
             </div>
         </div>
+
         <!-- 하단 버튼 -->
-         <div class="coating-pop-footer flex gap-2">
+        <div class="coating-pop-footer flex gap-2">
             <Button v-if="isStarted" label="작업시작" @click="openPop('S')" />
             <Button label="기록서" @click="downloadExcel" />
-            <Button label="바코드"
-              icon="pi pi-qrcode"
-              severity="secondary"
-              @click="openPop('B')" />
-
+            <Button
+                label="바코드"
+                icon="pi pi-qrcode"
+                severity="secondary"
+                @click="openPop('B')"
+            />
             <Button
                 v-if="btnStatus !== '00' && btnStatus !== '52'"
                 label="작업완료"
@@ -213,8 +241,7 @@
                 :disabled="loading"
                 @click="workComplete"
             />
-             <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
-
+            <Button label="닫기" outlined class="ml-2" @click="closeDialog" />
             <Button
                 v-if="btnStatus === '52'"
                 label="수정"
@@ -224,9 +251,10 @@
                 @click="workUpdate"
             />
         </div>
-    </div>
+        </div>
     </div>
 </template>
+
 <script setup>
 import { ApiProc } from '@/api/apiProc';
 import { useAlertStore } from '@/stores/alert';
@@ -247,19 +275,21 @@ const isStarted = ref(false)
 const isComplete = ref(false)
 const prodList = ref([])
 const workRecordList = ref([])
+
 const form = reactive({
     workProcId: '',
     workBatchId: '',
     workOrderDateSeq: '',
     areaCd: '',
-    makeNo : '',
+    makeNo: '',
     lotNo: '',
     itemName: '',
     itemCd: '',
     testNo: '',
     expiryDate: '',
-    procCd : 'PRC005'
+    procCd: 'PRC005'
 });
+
 // 작업지시정보
 const itemInfo = reactive({
     itemCd: '',
@@ -279,6 +309,7 @@ const itemInfo = reactive({
     displayYield: '',
     stdYield: '',
 });
+
 // 투입자재정보
 const createProdRow = (i = 0) => ({
     no: i + 1,
@@ -295,6 +326,7 @@ const createProdRow = (i = 0) => ({
     unit: '',
     workProcId: form.workProcId,
 });
+
 // 작업수행정보
 const createWorkRecordRow = (i = 0) => ({
     no: i + 1,
@@ -308,6 +340,7 @@ const createWorkRecordRow = (i = 0) => ({
     itemCd: form.itemCd,
     wokRecordId: '',
 });
+
 // 종합정보
 const workOrderInfo = reactive({
     totUseQty: '',
@@ -318,15 +351,15 @@ const workOrderInfo = reactive({
     memo: '',
 });
 
-const workUpdate = async () =>{
-    try{
+const workUpdate = async () => {
+    try {
         const params = {
             workProcId: form.workProcId,
             workBatchId: form.workBatchId,
         }
         const res = await ApiProc.updateProcStatus(params)
         callPackingInfo()
-    }catch(err){
+    } catch (err) {
         handleApiError(err)
     }
 }
@@ -339,6 +372,7 @@ const totalUseQty = computed(() => {
         return sum + Number(row.useQty || 0)
     }, 0)
 })
+
 /**
  * 총 생산수량
  */
@@ -347,15 +381,15 @@ const totalProdQty = computed(() => {
         return sum + Number(row.prodQty || 0)
     }, 0)
 })
+
 /**
  * 생산수율
  */
 const totalProdYield = computed(() => {
     const prodQty = Number(totalProdQty.value)
     const coatingQty = Number(workOrderInfo.coatingProdQty)
-     const orderQty = Number(workOrderInfo.orderQty)
-//console.log('prodQty', prodQty)
-//console.log('coatingQty', coatingQty)
+    const orderQty = Number(workOrderInfo.orderQty)
+
     if (
         !Number.isFinite(prodQty) ||
         !Number.isFinite(orderQty) ||
@@ -363,10 +397,12 @@ const totalProdYield = computed(() => {
     ) {
         return '0.00'
     }
+
     return (
-        ( totalProdQty.value/workOrderInfo.orderQty) * 100
+        (totalProdQty.value / workOrderInfo.orderQty) * 100
     ).toFixed(2)
 })
+
 /**
  * 리스트 값 변경 시
  * workOrderInfo 값 자동 갱신
@@ -382,17 +418,21 @@ watch(
         immediate: true
     }
 )
+
 let workRecordId = ref('')
+
 const selectRow = (row) => {
     if (btnStatus.value === '00' || btnStatus.value === '52') return
     workRecordId.value = row.data.workRecordId;
     if (!workRecordId.value) return
     openPop('W')
 }
-//투입정보
+
+// 투입정보
 const selectRowClick = (row) => {
     if (btnStatus.value === '00' || btnStatus.value === '52') return
-    if (!row.matName && !row.prodInfoId ) return
+    if (!row.matName && !row.prodInfoId) return
+
     dialog.open(ProdUsePop2, {
         props: {
             header: '사용량 입력',
@@ -412,17 +452,16 @@ const selectRowClick = (row) => {
                 minHeight: '0'
             }
         },
-        data:{
+        data: {
             row,
             areaCd: form.areaCd,
             procCd: form.procCd,
             workBatchId: form.workBatchId,
             workProcId: form.workProcId,
-        }
-        ,onClose: (event) =>{
+        },
+        onClose: (event) => {
             if (event?.data) {
                 row.testNos = event.data.testNos
-                //row.reqQty = event.data.reqQty
                 row.useQty = event.data.useQty
                 row.badQty = event.data.badQty
                 row.workBadQty = event.data.workBadQty
@@ -432,6 +471,7 @@ const selectRowClick = (row) => {
         }
     })
 }
+
 const openProcMemo = () => {
     if (!workOrderInfo.workProcId) {
         return vWarning('작업공정 정보가 없습니다.')
@@ -463,7 +503,7 @@ const popupConfig = {
     },
     B: {
         title: '바코드',
-        component: QrCodePop,  // 실제 컴포넌트로 교체
+        component: QrCodePop,
         width: '1200px',
         height: '300px'
     },
@@ -474,18 +514,21 @@ const popupConfig = {
         height: '260px'
     }
 }
+
 const openPop = (type) => {
     const config = popupConfig[type]
     if (!config?.component) return
+
     let itemList = []
     itemList.push({
         itemCd: itemInfo.itemCd,
         itemName: itemInfo.itemName,
         lotNo: workOrderInfo.lotNo,
         testNo: workOrderInfo.testNo,
-        qty: 0,
+        qty:  workOrderInfo.prodQty,
         printCnt: 1,
     })
+
     dialog.open(config.component, {
         props: {
             header: config.title,
@@ -507,22 +550,21 @@ const openPop = (type) => {
         data: {
             form,
             itemList,
-            workRecordId : workRecordId.value,
+            workRecordId: workRecordId.value,
         },
-        onClose: (event) =>{
-            if ( type === 'S' ){
-                //재조회
+        onClose: (event) => {
+            if (type === 'S') {
                 callPackingInfo()
-            } else if ( type === 'W' ){
-                //작업수행 정보
+            } else if (type === 'W') {
                 callPackingInfo()
             }
         }
     })
 };
-const confirm = useConfirm()
-const workComplete = async () =>{
 
+const confirm = useConfirm()
+
+const workComplete = async () => {
     if (loading.value) return
 
     // 작업 완료 검증
@@ -545,7 +587,7 @@ const workComplete = async () =>{
             if (loading.value) return
             loading.value = true
 
-            try{
+            try {
                 const params = {
                     procStatus: '52',
                     batchStatus: '52',
@@ -553,80 +595,118 @@ const workComplete = async () =>{
                     workBatchId: form.workBatchId,
                     procCd: form.procCd,
                 }
-                //console.log('params', params)
+
                 const res = await ApiProc.completePacking(params)
                 vSuccess('정상적으로 포장작업을 완료하였습니다!')
                 closeDialog()
-            }catch(err){
+            } catch (err) {
                 handleApiError(err)
-            }finally{
+            } finally {
                 loading.value = false
             }
         }
     });
 }
-const checkComplete = async () =>{
-    //배치 상태를을 가져와서 전 단계가 끝났는지 확인 로직
+
+const checkComplete = async () => {
+    // 배치 상태를 가져와서 전 단계가 끝났는지 확인
     const res = await ApiProc.getStatusEndCheck(form.workProcId)
 
-    if ( res.batchStatus < '42') {
+    if (res.batchStatus < '42') {
         vWarning('충전 공정이 끝나지 않았습니다.')
         return false
     }
 
-    if (workRecordList.value.length === 0 ) {
+    if (workRecordList.value.length === 0) {
         vWarning('작업수행정보가 없습니다.')
         return false
     }
 
     // 그 중 testNos 없는 것 체크
-    if ( prodList.value.filter(row => row.matName).some(row => !row.testNos) ){
+    if (prodList.value.filter(row => row.matName).some(row => !row.testNos)) {
         vWarning('미등록 작업이 있습니다.')
         return false
     }
+
     return true
 }
+
 const fillRows = (list = [], rowCount, createRow) => {
     return Array.from({ length: rowCount }, (_, i) => ({
         ...createRow(i),
         ...(list[i] || {}),
-        no: i + 1, // 번호 강제 유지
+        no: i + 1,
     }));
 };
+
 const btnStatus = ref('')
-const callPackingInfo = async () =>{
-    const params = {
-        workProcId: form.workProcId || dialogRef.value.data.workProcId,
-        procCd: form.procCd || dialogRef.value.data.procCd,
-        itemCd: form.itemCd || dialogRef.value.data.itemCd
-    };
-    const res = await ApiProc.getProcProdInfo(params);
-    Object.assign(itemInfo, res.itemInfo)
-    Object.assign(workOrderInfo, res.workOrderProcInfo)
-    prodList.value = fillRows(res.prodList, 10, createProdRow);
-    workRecordList.value = fillRows(res.workRecordList, 5, createWorkRecordRow);
-    form.areaCd = workOrderInfo.areaCd
-    form.lotNo = workOrderInfo.lotNo
-    form.workOrderDateSeq = workOrderInfo.workOrderDateSeq
-    form.makeNo = workOrderInfo.makeNo
-    form.workProcId = workOrderInfo.workProcId
-    form.workBatchId = workOrderInfo.workBatchId
-    form.itemName = itemInfo.itemName
-    form.itemCd = itemInfo.itemCd
-    btnStatus.value = String(workOrderInfo.procStatus ?? '').trim()
-    isStarted.value = btnStatus.value === '00'
-    isComplete.value = btnStatus.value === '52'
+
+/**
+ * 포장작업 정보 조회
+ * 수정: API 예외 처리 및 null 방어
+ * 기존 조회 및 데이터 설정 로직 유지
+ */
+const callPackingInfo = async () => {
+    try {
+        const params = {
+            workProcId: form.workProcId || dialogRef.value?.data?.workProcId,
+            procCd: form.procCd || dialogRef.value?.data?.procCd,
+            itemCd: form.itemCd || dialogRef.value?.data?.itemCd
+        };
+
+        const res = await ApiProc.getProcProdInfo(params);
+
+        if (!res) {
+            vWarning('포장작업 정보가 없습니다.')
+            return
+        }
+
+        Object.assign(itemInfo, res.itemInfo ?? {})
+        Object.assign(workOrderInfo, res.workOrderProcInfo ?? {})
+
+        prodList.value = fillRows(
+            res.prodList ?? [],
+            10,
+            createProdRow
+        );
+
+        workRecordList.value = fillRows(
+            res.workRecordList ?? [],
+            5,
+            createWorkRecordRow
+        );
+
+        form.areaCd = workOrderInfo.areaCd
+        form.lotNo = workOrderInfo.lotNo
+        form.workOrderDateSeq = workOrderInfo.workOrderDateSeq
+        form.makeNo = workOrderInfo.makeNo
+        form.workProcId = workOrderInfo.workProcId
+        form.workBatchId = workOrderInfo.workBatchId
+        form.itemName = itemInfo.itemName
+        form.itemCd = itemInfo.itemCd
+
+        btnStatus.value = String(workOrderInfo.procStatus ?? '').trim()
+        isStarted.value = btnStatus.value === '00'
+        isComplete.value = btnStatus.value === '52'
+
+    } catch (err) {
+        console.error('포장작업 조회 오류:', err)
+        handleApiError(err)
+    }
 }
-onMounted( () => {
+
+onMounted(() => {
     callPackingInfo()
 });
+
 // 기록서 엑셀 다운로드
-const downloadExcel = async () =>{
+const downloadExcel = async () => {
     const params = {
-        itemCd : itemInfo.itemCd,
-        procCd : 'PRC005',
-        workProcId : form.workProcId,
+        itemCd: itemInfo.itemCd,
+        procCd: 'PRC005',
+        workProcId: form.workProcId,
     }
+
     try {
         const blob = await ApiProc.downloadRecord(params)
         const url = window.URL.createObjectURL(blob)
@@ -639,10 +719,12 @@ const downloadExcel = async () =>{
         vError('엑셀 다운로드 실패')
     }
 }
+
 const closeDialog = () => {
     dialogRef.value.close();
 };
 </script>
+
 <style scoped>
 .pop-wrap {
     height: 100%;
@@ -653,6 +735,7 @@ const closeDialog = () => {
     font-size: 15px;
     background: #fff;
 }
+
 .pop-scale {
     width: 100%;
     height: 100%;
@@ -660,6 +743,7 @@ const closeDialog = () => {
     display: flex;
     flex-direction: column;
 }
+
 /* 전체 내용을 2% 축소 */
 .pop-body {
     flex: 1 1 auto;
@@ -668,15 +752,18 @@ const closeDialog = () => {
     overflow-y: auto;
     padding: 8px 12px 6px;
 }
+
 .coating-pop-footer {
     flex: 0 0 auto;
     padding: 10px 12px 12px;
     border-top: 1px solid #e5e7eb;
     background: #fff;
 }
+
 .section-block {
     margin-bottom: 10px;
 }
+
 .section-label {
     display: inline-block;
     font-size: 15px;
@@ -684,17 +771,21 @@ const closeDialog = () => {
     margin-bottom: 4px;
     color: #334155;
 }
+
 .info-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
+
 .info-table .th-col {
     width: 9%;
 }
+
 .info-table .td-col {
     width: 16%;
 }
+
 .cellBorder {
     border: 0.5px solid #cfd8e3;
     text-align: center;
@@ -703,12 +794,14 @@ const closeDialog = () => {
     word-break: break-word;
     line-height: 1.2;
 }
+
 .cellHeader {
     background-color: #8D6E63;
     color: white;
     font-weight: 700;
     height: 30px;
 }
+
 ::v-deep(.my-table .p-datatable-thead > tr > th) {
     background-color: #8D6E63;
     color: white;
@@ -717,22 +810,27 @@ const closeDialog = () => {
     font-weight: 700;
     padding: 4px 6px;
 }
+
 :deep(.material-table .p-datatable-thead > tr > th) {
     height: 30px;
 }
+
 :deep(.material-table .p-datatable-tbody > tr > td) {
     height: 30px;
     padding: 4px 6px;
     font-size: 15px;
 }
+
 :deep(.work-table .p-datatable-thead > tr > th) {
     height: 30px;
 }
+
 :deep(.work-table .p-datatable-tbody > tr > td) {
     height: 30px;
     padding: 4px 6px;
     font-size: 15px;
 }
+
 .bottom-wrap {
     display: grid;
     grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
@@ -741,45 +839,55 @@ const closeDialog = () => {
     height: auto;
     min-height: 0;
 }
+
 .section-box {
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
+
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 4px;
 }
+
 .section-body {
     display: block;
     min-height: 0;
 }
+
 .section-actions {
     display: flex;
     gap: 8px;
 }
+
 .summary-section {
     height: 100%;
 }
+
 .summary-section .section-body {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
 }
+
 .summary-table {
     width: 100%;
     height: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
+
 .summary-table .summary-col-th {
     width: 28%;
 }
+
 .summary-table .summary-col-td {
     width: 72%;
 }
+
 .summary-table th,
 .summary-table td {
     height: 32px;
@@ -789,27 +897,34 @@ const closeDialog = () => {
     vertical-align: middle;
     box-sizing: border-box;
 }
+
 .summary-table th[colspan='2'] {
     width: auto;
 }
+
 .summary-table .cellHeader {
-    width: auto !important;   /* 기존 cellHeader width 덮어쓰기 */
+    width: auto !important;
     min-width: 0 !important;
 }
+
 .summary-table tbody tr:first-child th {
     text-align: center;
 }
+
 .summary-table tbody tr:not(:first-child) th {
     text-align: center;
     white-space: nowrap;
 }
+
 .summary-table tbody tr:not(:first-child) td {
     text-align: center;
 }
+
 :deep(.coating-pop-footer .p-button) {
     padding: 0.5rem 0.9rem;
     font-size: 15px;
 }
+
 .mt-3 {
     margin-top: 0.5rem !important;
 }

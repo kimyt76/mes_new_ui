@@ -191,9 +191,9 @@
 </div>
 <!-- 🔹 하단 버튼 -->
 <div class="flex gap-2 justify-end pt-3">
-    <Button label="저장"  class="p-button-secondary" :disabled="!writeYn"  @click="saveInfo" />
+    <Button label="저장"  class="p-button-secondary"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
     <Button label="닫기"   outlined class="ml-2" @click="closeDialog" />
-    <Button label="삭제" severity="danger" @click="deleteContract" />
+    <Button label="삭제" severity="danger" :disabled="writeYn !== 'Y'" @click="saveGuard(deleteContract)" />
 </div>
 </template>
 

@@ -167,7 +167,7 @@
 </div>
 
 <div class="button-area">
-  <Button v-if="form.moveStatus === 'Q' || form.moveStatus === 'I'" label="저장"   severity="success"  @click="saveInfo" />
+  <Button v-if="form.moveStatus === 'Q' || form.moveStatus === 'I'" label="저장"   :disabled="writeYn !== 'Y' || isSaving" severity="success"  @click="saveInfo" />
   <Button label="닫기" severity="secondary"  outlined @click="closeDialog" />
 </div>
 
@@ -181,10 +181,12 @@ import { useAlertStore } from '@/stores/alert';
 import { useAuthStore } from '@/stores/auth';
 import { isEmpty, todayKST } from '@/util/common.js';
 import { handleApiError } from '@/util/errorHandler';
+import { useSaveGuard } from '@/util/saveGuard';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref, watch } from 'vue';
 
+const { saveGuard, isSaving } = useSaveGuard()
 const { vWarning, vSuccess } = useAlertStore()
 const authStore = useAuthStore()
 const isInit = ref(true)
@@ -259,7 +261,9 @@ const selectRowClick = async (row) => {
     const params = {
         itemCd: row.data.itemCd,
         storageCd: form.srcStorageCd,
-        areaCd: form.areaCd
+        areaCd: form.areaCd,
+        itemTypeCd: itemTypeCd.value,
+
     }
 
     stockList.value = await ApiStock.getMoveReqStockList(params)
