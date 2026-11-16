@@ -12,7 +12,12 @@
 </div>
 
 <!-- 상단 BOM 리스트 -->
-<div class="table-wrapper">
+<div
+    ref="bomTableWrapper"
+    class="table-wrapper"
+    @pointerdown="onBomPointerDown"
+    @pointermove="onBomPointerMove"
+>
     <DataTable
         v-model:selection="selectedItem"
         :value="itemBomList"
@@ -29,7 +34,7 @@
         <Column field="bomVer" header="BOM버전" :style="{ width: '105px', textAlign: 'center' }" />
         <Column field="itemName" header="품목명" :style="{ width: '450px' }" />
         <Column field="unit" header="단위" :style="{ width: '55px', textAlign: 'center' }" />
-        <Column field="qty" header="생산량" :style="{ width: '130px' }" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }" >
+        <Column field="qty" header="생산량" :style="{ width: '130px' }" :bodyStyle="{ padding: '0', textAlign: 'right' }" :headerStyle="{ padding: '0' }">
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.qty"
@@ -43,7 +48,7 @@
             </template>
         </Column>
         <Column field="etc" header="비고" :style="{ width: '350px', textAlign: 'left' }" />
-        <Column field="actions" header="-" :style="{ width: '40px', textAlign: 'center' }" >
+        <Column field="actions" header="-" :style="{ width: '40px', textAlign: 'center' }">
             <template #body="slotProps">
                 <i
                     class="pi pi-trash cursor-pointer"
@@ -149,7 +154,7 @@ import { ApiMat } from '@/api/apiMat';
 import { useAlertStore } from '@/stores/alert';
 import { exportToExcel } from '@/util/exportToExcel';
 import BomMultiListPop from '@/views/lab/bom/BomMultiListPop.vue';
-import { ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const { vInfo, vWarning } = useAlertStore()
 const loading = ref(false)
@@ -161,6 +166,290 @@ const itemBomList = ref([])
 const itemStockList = ref([])
 const typeCd = ref('M3')
 const dt = ref(null)
+
+// =====================================================
+// 상단 BOM 셀 드래그 선택 및 Ctrl+C 복사
+// =====================================================
+const bomTableWrapper = ref(null)
+const bomDragStart = ref(null)
+const bomDragEnd = ref(null)
+const bomDragging = ref(false)
+const bomCopyActive = ref(false)
+
+// 체크박스 및 삭제 컬럼 제외
+const bomCopyFields = [
+    'itemCd',
+    'bomVer',
+    'itemName',
+    'unit',
+    'qty',
+    'etc'
+]
+
+// 마우스 좌표에 해당하는 셀 위치 반환
+const getBomCellPosition = (event) => {
+    const wrapper = bomTableWrapper.value
+    if (!wrapper) return null
+
+    const target = document.elementFromPoint(
+        event.clientX,
+        event.clientY
+    )
+
+    const cell = target?.closest(
+        '.bom-table .p-datatable-tbody > tr > td'
+    )
+
+    if (!cell || !wrapper.contains(cell)) return null
+
+    const row = cell.parentElement
+
+    const rowIndex = Array.from(
+        row.parentElement.children
+    ).indexOf(row)
+
+    const actualColIndex = Array.from(
+        row.children
+    ).indexOf(cell)
+
+    // 첫 번째 체크박스 컬럼 제외
+    const colIndex = actualColIndex - 1
+
+    if (
+        rowIndex < 0 ||
+        colIndex < 0 ||
+        colIndex >= bomCopyFields.length
+    ) {
+        return null
+    }
+
+    return { rowIndex, colIndex }
+}
+
+// 드래그 시작
+const onBomPointerDown = (event) => {
+    if (event.button !== 0) return
+    if (event.pointerType === 'touch') return
+
+    const target = event.target
+    if (!(target instanceof Element)) return
+
+    // 기존 체크박스, 숫자 입력, 삭제 기능 유지
+    if (target.closest(
+        'input, button, textarea, .p-checkbox, .p-inputnumber, .pi-trash, [contenteditable="true"]'
+    )) {
+        return
+    }
+
+    const position = getBomCellPosition(event)
+    if (!position) return
+
+    bomDragging.value = true
+    bomCopyActive.value = true
+
+    bomDragStart.value = position
+    bomDragEnd.value = position
+
+    // 브라우저 기본 텍스트 드래그 방지
+    event.preventDefault()
+
+    updateBomDragStyle()
+}
+
+// 드래그 이동
+const onBomPointerMove = (event) => {
+    if (!bomDragging.value) return
+
+    if ((event.buttons & 1) !== 1) {
+        bomDragging.value = false
+        return
+    }
+
+    const position = getBomCellPosition(event)
+    if (!position) return
+
+    if (
+        bomDragEnd.value?.rowIndex === position.rowIndex &&
+        bomDragEnd.value?.colIndex === position.colIndex
+    ) {
+        return
+    }
+
+    bomDragEnd.value = position
+    updateBomDragStyle()
+}
+
+// 선택 범위 표시
+const updateBomDragStyle = () => {
+    const wrapper = bomTableWrapper.value
+    if (!wrapper || !bomDragStart.value || !bomDragEnd.value) return
+
+    const minRow = Math.min(
+        bomDragStart.value.rowIndex,
+        bomDragEnd.value.rowIndex
+    )
+    const maxRow = Math.max(
+        bomDragStart.value.rowIndex,
+        bomDragEnd.value.rowIndex
+    )
+    const minCol = Math.min(
+        bomDragStart.value.colIndex,
+        bomDragEnd.value.colIndex
+    )
+    const maxCol = Math.max(
+        bomDragStart.value.colIndex,
+        bomDragEnd.value.colIndex
+    )
+
+    const rows = wrapper.querySelectorAll(
+        '.bom-table .p-datatable-tbody > tr'
+    )
+
+    rows.forEach((row, rowIndex) => {
+        Array.from(row.children).forEach((cell, actualColIndex) => {
+            const colIndex = actualColIndex - 1
+
+            const selected =
+                rowIndex >= minRow &&
+                rowIndex <= maxRow &&
+                colIndex >= minCol &&
+                colIndex <= maxCol &&
+                colIndex >= 0 &&
+                colIndex < bomCopyFields.length
+
+            cell.classList.toggle('bom-cell-selected', selected)
+        })
+    })
+}
+
+// 드래그 종료
+const onBomPointerUp = () => {
+    bomDragging.value = false
+}
+
+// 선택 범위 초기화
+const clearBomDragSelection = () => {
+    bomDragging.value = false
+    bomCopyActive.value = false
+    bomDragStart.value = null
+    bomDragEnd.value = null
+
+    bomTableWrapper.value
+        ?.querySelectorAll('.bom-cell-selected')
+        .forEach(cell => {
+            cell.classList.remove('bom-cell-selected')
+        })
+}
+
+// 선택한 셀만 탭으로 구분해 복사
+const getBomCopyText = () => {
+    if (!bomDragStart.value || !bomDragEnd.value) return ''
+
+    const minRow = Math.min(
+        bomDragStart.value.rowIndex,
+        bomDragEnd.value.rowIndex
+    )
+    const maxRow = Math.max(
+        bomDragStart.value.rowIndex,
+        bomDragEnd.value.rowIndex
+    )
+    const minCol = Math.min(
+        bomDragStart.value.colIndex,
+        bomDragEnd.value.colIndex
+    )
+    const maxCol = Math.max(
+        bomDragStart.value.colIndex,
+        bomDragEnd.value.colIndex
+    )
+
+    return itemBomList.value
+        .slice(minRow, maxRow + 1)
+        .map(row =>
+            bomCopyFields
+                .slice(minCol, maxCol + 1)
+                .map(field => row[field] ?? '')
+                .join('\t')
+        )
+        .join('\n')
+}
+
+// 클립보드 복사
+const copyBomToClipboard = async (text) => {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(text)
+            return
+        } catch (err) {
+            console.warn('Clipboard API 실패:', err)
+        }
+    }
+
+    // HTTP 환경 등에서 대체 방식 사용
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.left = '-9999px'
+    textarea.style.top = '0'
+    textarea.setAttribute('readonly', '')
+
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+
+    const success = document.execCommand('copy')
+    textarea.remove()
+
+    if (!success) {
+        console.error('BOM 클립보드 복사 실패')
+    }
+}
+
+// Ctrl+C 복사
+const onBomKeyDown = (event) => {
+    if (!(event.ctrlKey || event.metaKey)) return
+    if (event.key.toLowerCase() !== 'c') return
+
+    // 입력창의 기존 복사 기능 유지
+    if (
+        event.target instanceof Element &&
+        event.target.closest(
+            'input, textarea, [contenteditable="true"]'
+        )
+    ) {
+        return
+    }
+
+    if (!bomCopyActive.value) return
+
+    const text = getBomCopyText()
+    if (!text) return
+
+    event.preventDefault()
+    copyBomToClipboard(text)
+}
+
+// 이벤트 등록
+onMounted(() => {
+    window.addEventListener('pointerup', onBomPointerUp)
+    window.addEventListener('pointercancel', onBomPointerUp)
+    window.addEventListener('keydown', onBomKeyDown)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('pointerup', onBomPointerUp)
+    window.removeEventListener('pointercancel', onBomPointerUp)
+    window.removeEventListener('keydown', onBomKeyDown)
+})
+
+// BOM 리스트 변경 시 이전 드래그 범위 제거
+watch(itemBomList, async () => {
+    await nextTick()
+    clearBomDragSelection()
+})
+
+// =====================================================
+// 기존 기능 - 변경 없음
+// =====================================================
 
 const removeRow = (index) => {
     itemBomList.value.splice(index, 1)
@@ -260,6 +549,7 @@ const downloadExcel = () => {
     height: 570px;
     min-height: 0;
     overflow: hidden;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
 }
@@ -336,5 +626,27 @@ const downloadExcel = () => {
     font-size: 14px;
     text-align: center;
     font-family: Lobo, Consolas;
+}
+
+/* =====================================================
+   추가: 상단 BOM 셀 드래그 선택 스타일
+   ===================================================== */
+
+/* 선택된 셀만 파란색 강조 */
+:deep(.bom-table .p-datatable-tbody > tr > td.bom-cell-selected) {
+    background-color: #bfdbfe !important;
+}
+
+/* 드래그 중 브라우저 텍스트 선택 방지 */
+:deep(.bom-table .p-datatable-tbody > tr > td) {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 생산량 입력창은 기존 텍스트 선택 유지 */
+:deep(.bom-table .p-inputnumber-input) {
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
 }
 </style>
