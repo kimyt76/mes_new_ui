@@ -386,41 +386,43 @@ const setTimeValues = (startTime, endTime) => {
 };
 
 // 저장
+// 저장
 const saveInfo = async () => {
-    return saveGuard(async () => {
-        try {
-            const startDate = toTimeDate(startTimeText.value);
-            const endDate = toTimeDate(endTimeText.value);
+    try {
+        const startDate = toTimeDate(startTimeText.value);
+        const endDate = toTimeDate(endTimeText.value);
 
-            if (!startDate || !endDate) {
-                vWarning('시작시간과 종료시간을 확인해 주세요.');
-                return;
-            }
-
-            form.workStartTime = formatHHmm(startDate);
-            form.workEndTime = formatHHmm(endDate);
-
-            const params = [{
-                workDate: form.workDate,
-                workStartTime: form.workStartTime,
-                workEndTime: form.workEndTime,
-                workerCnt: form.workerCnt,
-                useQty: form.useQty,
-                prodQty: form.prodQty,
-                itemCd: form.itemCd,
-                workProcId: form.workProcId,
-                workRecordId: form.workRecordId,
-            }];
-
-            await ApiProc.saveWorkRecordInfo(params);
-            vSuccess('저장되었습니다.');
-            dialogRef.value.close({
-                ...form,
-            });
-        } catch (err) {
-            handleApiError(err);
+        if (!startDate || !endDate) {
+            vWarning('시작시간과 종료시간을 확인해 주세요.');
+            return;
         }
-    })
+
+        form.workStartTime = formatHHmm(startDate);
+        form.workEndTime = formatHHmm(endDate);
+
+        const params = [{
+            workDate: form.workDate,
+            workStartTime: form.workStartTime,
+            workEndTime: form.workEndTime,
+            workerCnt: form.workerCnt,
+            useQty: form.useQty,
+            prodQty: form.prodQty,
+            itemCd: form.itemCd,
+            workProcId: form.workProcId,
+            workRecordId: form.workRecordId,
+        }];
+
+        await ApiProc.saveWorkRecordInfo(params);
+
+        vSuccess('저장되었습니다.');
+
+        dialogRef.value.close({
+            ...form,
+        });
+
+    } catch (err) {
+        handleApiError(err);
+    }
 };
 
 // 삭제
