@@ -369,6 +369,8 @@ onMounted( async () =>{
         const res = await ApiSystem.getUserInfo(dialogRef.value.data)
         Object.assign(form, res)
         isReadOnly.value = true
+    }else{
+        form.useYn = 'Y'
     }
 })
 
