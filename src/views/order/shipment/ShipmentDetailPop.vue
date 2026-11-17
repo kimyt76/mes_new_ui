@@ -444,7 +444,7 @@ const selectedRow1 = (obj) =>{
 const removeRow = (idx) =>{
     const row = shipmentItemList.value[idx]
 
-    if (row.weighInvId) {
+    if (row.shipmentItemId) {
         deleteShipmentItemIds.value.push(row.shipmentItemId)
     }
     shipmentItemList.value.splice(idx, 1)
