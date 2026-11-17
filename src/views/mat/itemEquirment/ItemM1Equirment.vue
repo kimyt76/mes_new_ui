@@ -100,7 +100,7 @@ const downloadExcel = () =>{
         { props: { field: 'itemName', header: '생산품목명' } }
     ];
 
-  exportToExcel(itemBomList.value, "bom 리스트", cols);
+  exportToExcel(itemBomList.value, "품목별소요량(원재료) 리스트", cols);
 }
 
 
