@@ -148,7 +148,7 @@ const form = reactive({
   clientName: '',
 })
 
-const deleteSelectRow = () =>{
+const deleteSelectRow = async () =>{
     if (selectItems.value.length === 0) {
         vWarning('삭제할 출고지시를 선택해주세요.');
         return;
@@ -159,17 +159,21 @@ const deleteSelectRow = () =>{
         return;
     }
 
-    if ( confirm('선택한 출고지시를 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.')) {
-        const deleteShipmentIds = selectItems.value.map(item => item.shipmentId);
-        ApiOrder.deleteShipment(deleteShipmentIds)
-            .then(() => {
-                vWarning('선택한 출고지시가 삭제되었습니다.');
-                srhList(); // 삭제 후 목록 갱신
-            })
-            .catch(error => {
-                console.error('삭제 중 오류 발생:', error);
-                vWarning('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
-            });
+    try {
+        if ( confirm('선택한 출고지시를 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.')) {
+            const deleteShipmentIds = selectItems.value.map(item => item.shipmentId);
+
+            const params = {
+                deleteShipmentIds : deleteShipmentIds
+            }
+
+            const res = await ApiOrder.deleteShipment(deleteShipmentIds);
+            vSuccess('선택한 출고지시가 삭제되었습니다.');
+            srhList(); // 삭제 후 목록 갱신
+        }
+    }catch (error) {
+        console.error('삭제 중 오류 발생:', error);
+        vWarning('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
 }
 
