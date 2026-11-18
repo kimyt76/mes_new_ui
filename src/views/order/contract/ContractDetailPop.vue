@@ -209,7 +209,7 @@ import ClientListPop from '@/views/order/client/ClientListPop.vue';
 import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
 import { useConfirm } from 'primevue/useconfirm';
-import { computed, inject, onMounted, reactive, ref, shallowRef } from 'vue';
+import { computed, inject, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 
 const confirm = useConfirm();
 const dialog = useDialog()
@@ -296,10 +296,34 @@ const onChangeRow = (data) =>{
   data.totPrice = supplyPrice + data.vatPrice;
 }
 
+watch(() => form.vatType, async (newVal) => {
+  if ( newVal === 'VRN' ){
+    itemList.value.map(o => {
+      o.vatPrice = 0
+      o.totPrice = o.supplyPrice
+    })
+  }else{
+    itemList.value.map(o => {
+      o.vatPrice = calculateVAT(o.supplyPrice)
+      o.totPrice = o.supplyPrice+o.vatPrice
+    })
+  }
+})
+
+
 const saveInfo = async () => {
     if (itemList.value.length <= 0) {
         vInfo('품목을 등록하세요')
         return
+    }
+
+    const checkOrderType = itemList.value.find(
+        row => !row.prodType || String(row.prodType).trim() === ''
+    );
+
+    if (checkOrderType) {
+        vWarning('유형을 입력하세요.');
+        return;
     }
 
     try {
