@@ -1,5 +1,15 @@
 <template>
     <div class="prod-page">
+        <!-- 로딩 화면 -->
+        <div v-if="loading" class="loading-overlay">
+            <ProgressSpinner
+                style="width: 50px; height: 50px"
+                strokeWidth="4"
+                animationDuration=".8s"
+            />
+            <div class="loading-text">데이터를 불러오는 중입니다...</div>
+        </div>
+
         <div class="page-title"> 원료 일일 입고 및 사용내역 </div>
         <!-- 1. 원료 입고 -->
         <section class="list-section">
@@ -395,7 +405,7 @@
                         <InputText v-model="data.customerName" class="cell-input text-center" />
                     </template>
                 </Column>
-                <Column field="itemName" header="품목명" style="width: 300px">
+                <Column field="itemName" header="품목명" style="width: 340px">
                     <template #body="{ data }">
                         <InputText v-model="data.itemName" class="cell-input" />
                     </template>
@@ -442,7 +452,7 @@
                         <InputText v-model="data.areaName" class="cell-input" />
                     </template>
                 </Column>
-                <Column field="etc" header="비고" style="width: 180px">
+                <Column field="etc" header="비고" style="width: 140px">
                     <template #body="{ data }">
                         <InputText v-model="data.etc" class="cell-input" />
                     </template>
@@ -516,15 +526,15 @@
                         <InputText v-model="data.customerName" class="cell-input text-center" />
                     </template>
                 </Column>
-                <Column field="itemName" header="제품명" style="width: 300px">
+                <Column field="itemName" header="제품명" style="width: 340px">
                     <template #body="{ data }">
                         <InputText v-model="data.itemName" class="cell-input" />
                     </template>
                 </Column>
-                <Column field="requiredQuantity" header="소요량" style="width: 110px">
+                <Column field="weighQty" header="소요량" style="width: 110px">
                     <template #body="{ data }">
                         <InputNumber
-                            v-model="data.requiredQuantity"
+                            v-model="data.weighQty"
                             :maxFractionDigits="3"
                             class="cell-number"
                             inputClass="text-right"
@@ -553,7 +563,7 @@
                         />
                     </template>
                 </Column>
-                <Column field="etc" header="비고" style="width: 180px">
+                <Column field="etc" header="비고" style="width: 140px">
                     <template #body="{ data }">
                         <InputText v-model="data.etc" class="cell-input" />
                     </template>
@@ -718,8 +728,9 @@ import { ApiBase } from '@/api/apiBase';
 import { useAlertStore } from '@/stores/alert';
 import { todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
-import { computed, inject, onMounted, reactive, ref } from 'vue';
+import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue';
 
+const loading = ref(true)
 const isBtn = ref(true)
 const { vSuccess, vInfo } = useAlertStore()
 const dialogRef = inject('dialogRef', null)
@@ -731,27 +742,52 @@ const form = reactive({
     dailyId:'',
 })
 
-onMounted( async () =>{
-    form.dailyId = dialogRef.value?.data?.dailyId ?? null
-    form.endYn = dialogRef.value?.data?.endYn ?? 'N'
+onMounted(async () => {
+    loading.value = true
 
-    if ( form.endYn === 'Y') {
-        isBtn.value = false
+    try {
+        form.dailyId = dialogRef.value?.data?.dailyId ?? null
+        form.endYn = dialogRef.value?.data?.endYn ?? 'N'
+
+        if (form.endYn === 'Y') {
+            isBtn.value = false
+        }
+
+        // 로딩 화면이 먼저 표시될 수 있도록 브라우저 렌더링 기회 제공
+        await nextTick()
+
+        await new Promise(resolve => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(resolve)
+            })
+        })
+
+        // 기존 API 조회
+        const res = await ApiBase.getM1DailyReportInfo(form.dailyId)
+
+        if (res.dailyReportInfo) {
+            Object.assign(form, res.dailyReportInfo)
+        }
+
+        // 기존 리스트 적용
+        inList.value = res.inList || []
+        returnList.value = res.returnList || []
+        discardList.value = res.discardList || []
+        prodList.value = res.prodList || []
+        useList.value = res.useList || []
+        ospList.value = res.ospList || []
+
+        // Vue DOM 업데이트 대기
+        await nextTick()
+
+    } catch (error) {
+        console.error('원료 일일보고서 조회 오류:', error)
+        handleApiError(error)
+
+    } finally {
+        loading.value = false
     }
-    const res = await ApiBase.getM1DailyReportInfo(form.dailyId)
-   //console.log('M1 일일보고서 정보', res)
-
-   if ( res.dailyReportInfo) {
-       Object.assign(form, res.dailyReportInfo)
-   }
-   inList.value = res.inList || []
-   returnList.value = res.returnList || []
-   discardList.value = res.discardList || []
-   prodList.value = res.prodList || []
-   useList.value = res.useList || []
-   ospList.value = res.ospList || []
 })
-
 const inList = ref([])
 const returnList = ref([])
 const discardList = ref([])
@@ -1119,10 +1155,10 @@ const calculateAmount = (row) => {
 }
 
 const calculateUseQty = (row) => {
-    const requiredQuantity = Number(row.requiredQuantity) || 0
+    const weighQty = Number(row.weighQty) || 0
     const inPrice = Number(row.inPrice) || 0
 
-    return requiredQuantity * inPrice
+    return weighQty * inPrice
 }
 
 
@@ -1173,7 +1209,7 @@ const prodTotalAmount = computed(() => {
 
 const useTotalQty = computed(() => {
     return useList.value.reduce(
-        (sum, row) => sum + (Number(row.qty) || 0), 0,
+        (sum, row) => sum + (Number(row.weighQty) || 0), 0,
     )
 })
 const useTotalAmount = computed(() => {
@@ -1445,5 +1481,25 @@ const reset = () => {
 :deep(.my-table .p-button.p-button-icon-only) {
     width: 25px;
     height: 25px;
+}
+/* 로딩 오버레이 */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.loading-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
 }
 </style>
