@@ -195,7 +195,7 @@ const saveInfo = async () => {
 
 const useCheck = () => {
   ApiSystem.useCheck(form.storageCd).then((res) => {
-    vInfo(res.message);
+    vInfo(res);
   });
 };
 
