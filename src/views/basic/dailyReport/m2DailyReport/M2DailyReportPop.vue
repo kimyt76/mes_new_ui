@@ -1,5 +1,10 @@
 <template>
     <div class="prod-page">
+        <!-- 조회 로딩 표시: 기존 기능과 무관 -->
+        <div v-if="loading" class="daily-loading-overlay" role="status" aria-live="polite">
+            <div class="daily-loading-spinner"></div>
+            <div class="daily-loading-message">데이터를 불러오는 중입니다...</div>
+        </div>
         <div class="page-title"> 부자재 일일 입고 및 사용내역 </div>
         <!-- =========================================================
              1. 당일 부자재 입고 현황
@@ -607,9 +612,10 @@ import { ApiBase } from '@/api/apiBase'
 import { useAlertStore } from '@/stores/alert'
 import { todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
-import { computed, inject, onMounted, reactive, ref, } from 'vue'
+import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue'
 
 const isBtn = ref(true)
+const loading = ref(true)
 const { vSuccess, vInfo, } = useAlertStore()
 const dialogRef = inject( 'dialogRef', null )
 const form = reactive({
@@ -640,7 +646,11 @@ const deleteUseIds = ref([])
    화면 로딩
 ========================================================= */
 onMounted(async () => {
+    loading.value = true
     try {
+        // 오버레이가 화면에 먼저 그려지도록 브라우저에 렌더링 기회를 줍니다.
+        await nextTick()
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 
         form.dailyId = dialogRef.value?.data?.dailyId ?? null
         form.endYn = dialogRef.value?.data?.endYn ?? 'N'
@@ -687,6 +697,10 @@ onMounted(async () => {
     } catch (error) {
         //console.error( '조회 중 오류 발생:', error )
         handleApiError(error)
+    } finally {
+        // 조회 결과를 Vue DOM에 반영한 뒤 로딩을 종료합니다.
+        await nextTick()
+        loading.value = false
     }
 })
 
@@ -1380,6 +1394,35 @@ const reset = () => {
 
 
 <style scoped>
+/* 조회 로딩 표시 전용 스타일 */
+.daily-loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.78);
+}
+.daily-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #d6dce2;
+    border-top-color: #456c8d;
+    border-radius: 50%;
+    animation: daily-loading-spin 0.8s linear infinite;
+}
+.daily-loading-message {
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+}
+@keyframes daily-loading-spin {
+    to { transform: rotate(360deg); }
+}
+
 .prod-page {
     width: 100%;
     padding: 4px;
