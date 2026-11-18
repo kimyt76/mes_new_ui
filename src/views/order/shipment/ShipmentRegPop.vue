@@ -313,6 +313,7 @@ const saveInfo = async () =>{
     if (shipmentItemList.value.length === 0 ) return vWarning("출고품목을 등록하세요")
     if (isEmpty(form.customerCd) ) return vWarning("고객사를 입력하세요")
     if (isEmpty(form.shipmentYn) ) return vWarning("출고여부를 선택하세요")
+    if (isEmpty(form.shipmentStatus) ) return vWarning("출고유형을 선택하세요")
 
     try{
         const formData = new FormData()

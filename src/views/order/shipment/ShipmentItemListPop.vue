@@ -60,8 +60,8 @@
               <Column field="poNo"              header="PONO"       :style="{ width: '130px', textAlign: 'center' }"/>
               <Column field="itemCd"            header="품목코드"   :style="{ width: '110px', textAlign: 'center'}"/>
               <Column field="itemName"          header="품목명"     :style="{ width: '260px'}"/>
-              <Column field="lotNo"             header="LOT NO"    :style="{ width: '180px', textAlign: 'left'}"/>
-              <Column field="makeNo"            header="제조번호"   :style="{ width: '140px', textAlign: 'center'}"/>
+              <Column field="lotNo"             header="LOT NO"    :style="{ width: '180px', textAlign: 'left'}" bodyClass="wrap-cell"/>
+              <Column field="makeNo"            header="제조번호"   :style="{ width: '140px', textAlign: 'center'}" bodyClass="wrap-cell"/>
               <Column field="testNo"            header="시험번호"   :style="{ width: '110px', textAlign: 'center'}"/>
               <Column field="stockQty"          header="현재고"      :style="{ width: '90px', textAlign: 'right'}">
                  <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
@@ -98,7 +98,7 @@ import { ApiOrder } from '@/api/apiOrders';
 import { useAlertStore } from '@/stores/alert';
 import { onMounted, reactive, ref } from 'vue';
 
-const { vInfo } = useAlertStore()
+const { vInfo, vWarning } = useAlertStore()
 const emit = defineEmits(['selected', 'close']);
 const loading = ref(false)
 const props = defineProps({
@@ -165,10 +165,21 @@ const searchList = async () =>{
 
 const selectedRow = () =>{
     if ( selectedItem.value.length === 0 ) {
-        vInfo('선택된 항목이 없습니다.');
+        vWarning('선택된 항목이 없습니다.');
         return;
     }
-     emit('selected', [...selectedItem.value]);
+
+    // 선택된 항목 중 수량이 0인 항목 검사
+    const invalidItem = selectedItem.value.find(
+        row => Number(row.qty) === 0
+    );
+
+    if (invalidItem) {
+        vWarning('수량이 0인 항목은 선택할 수 없습니다.');
+        return;
+    }
+
+    emit('selected', [...selectedItem.value]);
 
     selectedItem.value = []
 }
@@ -176,6 +187,12 @@ const selectedRow = () =>{
 onMounted( async () =>{
     itemTypeCds.value =  (await ApiCommon.getCodeList('item_type_cd'))
                            .filter(i => !['M1', 'M2', 'M7'].includes(i.code));
+
+                           // 부모창에서 전달된 값 적용
+    form.customerCd = props.customerCd || ''
+    form.clientName = props.clientName || ''
+
+    await searchList()
 })
 </script>
 
@@ -237,5 +254,13 @@ onMounted( async () =>{
   font-size: 14px;
   text-align: center;
   font-family: monaco, Consolas;
+}
+:deep(.wrap-cell) {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: center;
+    height: auto !important;
+    line-height: 1.5;
 }
 </style>

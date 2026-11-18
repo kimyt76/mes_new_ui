@@ -216,6 +216,8 @@
   >
     <ShipmentItemListPop
         @selected = "selectedRow1"
+        :customerCd="form.customerCd"
+        :clientName="form.clientName"
         @close = "workItemDialog = false"
         />
 </Dialog>
@@ -306,7 +308,8 @@ const managedItems = ref([
 const saveInfo = async () =>{
     if (shipmentItemList.value.length === 0 ) return vWarning("출고품목을 등록하세요")
     if (isEmpty(form.customerCd) ) return vWarning("고객사를 입력하세요")
-    //if (form.shipmentYn === 'Y' ) return vWarning("출고확정 건입니다.")
+    if (isEmpty(form.shipmentYn) ) return vWarning("출고확정을 선택하세요")
+    if (isEmpty(form.shipmentStatus) ) return vWarning("출고유형을 선택하세요")
 
     try{
         const formData = new FormData()
