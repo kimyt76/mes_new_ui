@@ -328,6 +328,15 @@ const saveInfo = async () =>{
         return
     }
 
+    const checkOrderType = itemList.value.find(
+        row => !row.prodType || String(row.prodType).trim() === ''
+    );
+
+    if (checkOrderType) {
+        vWarning('유형을 입력하세요.');
+        return;
+    }
+
     if (isEmpty(form.clientName)) return vWarning('고객사를 선택해주세요.')
     if (isEmpty(form.managerName)) return vWarning('담당자를 선택해주세요.')
 

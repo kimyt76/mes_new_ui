@@ -925,9 +925,7 @@ onMounted(async () => {
         if (form.endYn === 'Y') {
             isBtn.value = false
         }
-form.dailyId = 13
         const res = await ApiBase.getM0DailyReportInfo( form.dailyId )
-
         //console.log( 'M0 일일보고서 정보', res )
 
         if (res.dailyReportInfo) {
