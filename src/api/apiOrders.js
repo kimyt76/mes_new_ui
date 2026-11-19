@@ -236,6 +236,19 @@ saveOrderPlan: async(ids) => {
     }
 },
 
+    downloadShipmentRecord: async (id) => {
+        try {
+            const res = await API_URL.get(`/shipment/downloadShipmentRecord/${id}`, {
+                responseType: 'blob'
+            })
+
+            return res.data
+        } catch (err) {
+            console.error('Download error:', err)
+            throw new Error(err.response?.data || '파일 다운로드 중 오류가 발생했습니다.')
+        }
+    },
+
 
 
   /**************************판매 관리******************************************************* */

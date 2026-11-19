@@ -46,7 +46,8 @@
 <div class="flex items-center justify-end gap-2 mb-2">
     <Button label="신규" icon="pi pi-plus" severity="secondary" @click="selectRowClick('')"></Button>
     <Button label="엑셀" icon="pi pi-file-excel" severity="success" @click="downloadExcel"></Button>
-    <Button label="삭제" icon="pi pi-plus" severity="secondary" @click="deleteSelectRow"></Button>
+    <Button label="출고기록서" severity="success" @click="downloadShipmentRecord"></Button>
+    <Button label="삭제" severity="danger"  @click="deleteSelectRow"></Button>
 </div>
 <div>
     <DataTable
@@ -121,13 +122,14 @@ import { ApiOrder } from '@/api/apiOrders';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert.js';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref, shallowRef } from 'vue';
 import ShipmentDetailPop from './ShipmentDetailPop.vue';
 import ShipmentRegPop from './ShipmentRegPop.vue';
 
-const {vSuccess, vWarning} = useAlertStore()
+const {vSuccess, vWarning, vInfo} = useAlertStore()
 const dialog = useDialog()
 const dt = ref(null);
 const selectItems = ref([])
@@ -222,6 +224,38 @@ const selectRowClick = (id) => {
             }
         }
     })
+}
+
+const downloadShipmentRecord = async () =>{
+    if (selectItems.value.length === 0) {
+        vInfo('출력할 출고지시를 선택해주세요.');
+        return;
+    }
+
+    if (selectItems.value.length > 1) {
+        vInfo('1건만 출력이 가능합니다.');
+        return;
+    }
+
+    try {
+        const shipmentId = selectItems.value[0].shipmentId
+        const data = await ApiOrder.downloadShipmentRecord(shipmentId)
+
+        const blob = new Blob([data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `제품 출하검사 및 승인 기록서.xlsx`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+    } catch(err) {
+        handleApiError(err)
+    }
 }
 
 const goPrint = async (row) => {
