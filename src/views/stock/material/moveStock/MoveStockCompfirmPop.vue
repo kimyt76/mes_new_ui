@@ -97,7 +97,7 @@
     </DataTable>
 </div>
 <div class="flex justify-end gap-2 mt-2">
-    <Button label="저장" severity="success" :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"/>
+    <Button label="저장" severity="success" :disabled="writeYn !== 'Y' || isSaving" :loading="isSaving" @click="saveGuard(saveInfo)"/>
     <Button label="닫기" outlined class="ml-2" @click="closeDialog"/>
 </div>
 </template>
@@ -114,8 +114,6 @@ import UserListPop from '@/views/system/user/UserListPop.vue';
 import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
 
-import { useMenuPermission } from '@/composable/useMenuPermission.js';
-const { writeYn, checkWrite } = useMenuPermission()
 const { vSuccess, vWarning} = useAlertStore()
 const { memberNm, userId} = useAuthStore()
 const dialog = useDialog()
