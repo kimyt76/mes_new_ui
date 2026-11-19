@@ -1,94 +1,155 @@
-<template>
-<Card style="width: 34rem; height: 21rem;">
-    <template #content>
-        <div class="grid mb-2">
-            <div class="col-6">
-                <FloatLabel variant="on">
-                    <Select v-model="form.areaCd" :options="areaCds"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
-                    readonly
-                    />
-                    <label for="on_label">구역</label>
-                </FloatLabel>
-            </div>
-            <div class="col-6">
-                <FloatLabel variant="on">
-                    <InputText v-model="form.workOrderDateSeq" class="w-full" readonly  />
-                    <label>작업지시번호</label>
-                </FloatLabel>
-            </div>
-            <div class="col-6">
-                 <FloatLabel variant="on">
-                    <InputText v-model="form.makeNo" class="w-full" readonly />
-                    <label>제조번호</label>
-                </FloatLabel>
-            </div>
-            <div class="col-6">
-                 <FloatLabel variant="on">
-                    <InputText v-model="form.lotNo" class="w-full" readonly />
-                    <label>LOT번호</label>
-                </FloatLabel>
-            </div>
-            <div class="col-12">
-                 <FloatLabel variant="on">
-                    <InputText v-model="form.itemName" class="w-full" readonly />
-                    <label>품목명</label>
-                </FloatLabel>
-            </div>
-            <div class="col-12">
-                <FloatLabel variant="on">
-                    <Select v-model="form.storageCd" :options="storages"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
-                    />
-                    <label for="on_label">작업처</label>
-                </FloatLabel>
-            </div>
-            <div class="col-12">
-                <FloatLabel variant="on">
-                    <Select v-model="form.managerName" :options="workerList"
-                    optionLabel="codeNm"
-                    optionValue="code"
-                    class="w-full"
-                    />
-                    <label for="on_label">담당자</label>
-                </FloatLabel>
-            </div>
-        </div>
-        <div class="flex justify-end gap-2">
-            <Button label="작업시작" class="p-button-secondary"  :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)" />
-            <Button label="닫기" outlined class="ml-2" @click="closeDialog"></Button>
-        </div>
-    </template>
 
-</Card>
+<template>
+    <Card style="width: 34rem; height: 21rem;">
+        <template #content>
+            <div class="grid mb-2">
+                <div class="col-6">
+                    <FloatLabel variant="on">
+                        <Select
+                            v-model="form.areaCd"
+                            :options="areaCds"
+                            optionLabel="codeNm"
+                            optionValue="code"
+                            class="w-full"
+                            readonly
+                        />
+                        <label for="on_label">구역</label>
+                    </FloatLabel>
+                </div>
+
+                <div class="col-6">
+                    <FloatLabel variant="on">
+                        <InputText
+                            v-model="form.workOrderDateSeq"
+                            class="w-full"
+                            readonly
+                        />
+                        <label>작업지시번호</label>
+                    </FloatLabel>
+                </div>
+
+                <div class="col-6">
+                    <FloatLabel variant="on">
+                        <InputText
+                            v-model="form.makeNo"
+                            class="w-full"
+                            readonly
+                        />
+                        <label>제조번호</label>
+                    </FloatLabel>
+                </div>
+
+                <div class="col-6">
+                    <FloatLabel variant="on">
+                        <InputText
+                            v-model="form.lotNo"
+                            class="w-full"
+                            readonly
+                        />
+                        <label>LOT번호</label>
+                    </FloatLabel>
+                </div>
+
+                <div class="col-12">
+                    <FloatLabel variant="on">
+                        <InputText
+                            v-model="form.itemName"
+                            class="w-full"
+                            readonly
+                        />
+                        <label>품목명</label>
+                    </FloatLabel>
+                </div>
+
+                <div class="col-12">
+                    <FloatLabel variant="on">
+                        <Select
+                            v-model="form.storageCd"
+                            :options="storages"
+                            optionLabel="codeNm"
+                            optionValue="code"
+                            class="w-full"
+                        />
+                        <label for="on_label">작업처</label>
+                    </FloatLabel>
+                </div>
+
+                <div class="col-12">
+                    <FloatLabel variant="on">
+                        <Select
+                            v-model="form.managerName"
+                            :options="workerList"
+                            optionLabel="codeNm"
+                            optionValue="code"
+                            class="w-full"
+                        />
+                        <label for="on_label">담당자</label>
+                    </FloatLabel>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <Button
+                    label="작업시작"
+                    class="p-button-secondary"
+                    :disabled="writeYn !== 'Y' || isSaving"
+                    :loading="isSaving"
+                    @click="saveGuard(saveInfo)"
+                />
+
+                <Button
+                    label="닫기"
+                    outlined
+                    class="ml-2"
+                    @click="closeDialog"
+                />
+            </div>
+        </template>
+    </Card>
 </template>
 
 <script setup>
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import { ApiSystem } from '@/api/apiSystem';
+import { useConfirmGuard } from '@/composable/useConfirmGuard';
 import { useAlertStore } from '@/stores/alert';
 import { isEmpty } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
-import { useConfirm } from 'primevue';
 import { computed, inject, onMounted, reactive, ref, watch } from 'vue';
 
-const confirm = useConfirm()
-const { vSuccess, vWarning, vInfo} = useAlertStore()
-const dialogRef = inject('dialogRef')
-const areaCds = ref([])
-const workerList = ref([])
+// =====================================================
+// 1. 공통 함수
+// =====================================================
+const { confirmGuard } = useConfirmGuard();
+const { vSuccess, vWarning, vInfo } = useAlertStore();
+const dialogRef = inject('dialogRef');
+
+// isSaving, saveGuard는 main.js 전역 mixin 사용
+// 별도로 선언하지 않음
+
+// =====================================================
+// 2. 조회 데이터
+// =====================================================
+const areaCds = ref([]);
+const workerList = ref([]);
 const allStorages = ref([]);
+const equipmentCds = ref([]);
+
 const filteredStorages = computed(() => {
     if (!form.areaCd) return [];
-    return allStorages.value.filter(s => s.areaCd === form.areaCd && s.procCd === 'PRC004');
+
+    return allStorages.value.filter(
+        s => s.areaCd === form.areaCd &&
+             s.procCd === 'PRC004'
+    );
 });
+
 const storages = computed(() => filteredStorages.value);
 
+// =====================================================
+// 3. Form
+// =====================================================
 const form = reactive({
     areaCd: '',
     storageCd: '',
@@ -98,6 +159,7 @@ const form = reactive({
     itemName: '',
     managerName: '',
     managerId: '',
+    equipmentCd: null,
 
     procCd: 'PRC004',
     itemCd: '',
@@ -106,101 +168,147 @@ const form = reactive({
     workOrderId: '',
     procStatus: '41',
     batchStatus: '41',
-})
+});
 
+// =====================================================
+// 4. 충전 작업시작
+// =====================================================
 const saveInfo = async () => {
-    if ( isEmpty(form.storageCd)) return vWarning('작업처를 등록하세요')
-    if ( isEmpty(form.managerName)) return vWarning('담당자를 등록하세요')
 
-    // 2. 기존 작업 데이터 건수 조회
-     console.log('form.workProcId:', form.workProcId)
-     const params = {
-        procCd : "PRC004",
-        workProcId : form.workProcId,
-     }
-     const cntRes = await ApiProc.getProcStartCnt(params)
-     const cnt = Number(cntRes.data?.data ?? 0)
-     console.log('공정 시작 조회 cnt:', cnt)
-     // 3. 기존 데이터가 있으면 시작 차단
-     if (cnt > 0) {
-         return vWarning('이미 시작된 충전작업입니다.')
-     }
+    // 작업처 검증
+    if (isEmpty(form.storageCd)) {
+        return vWarning('작업처를 등록하세요');
+    }
 
-    confirm.require({
-        header: '충전시작확인',
-        message: '해당 작업을 시작하시겠습니까?\n내용을 다시 한 번 확인해 주세요.\n시작 후에는 취소할 수 없습니다.',
-        icon: 'pi pi-exclamation-triangle',
-        accept: async () => {
-            try {
-                const param = {
-                    areaCd: form.areaCd,
-                    procCd: form.procCd,
-                    itemCd: form.itemCd,
-                    workProcId: form.workProcId,
-                    workBatchId: form.workBatchId,
-                    storageCd: form.storageCd,
-                    managerId: form.managerName,
-                    procStatus: '41',
-                    batchStatus: '41',
-                }
-
-                const res = await ApiProc.startProcCharge(param)
-                vSuccess('충전작업이 가능합니다.')
-                closeDialog()
-            } catch (err) {
-                handleApiError(err)
-            }
-        }
-    });
-}
-
-watch(() => form.storageCd, async (newVal, oldVal) => {
-    if (newVal === oldVal) return
-    form.equipmentCd = null
-    equipmentCds.value = []
-    if (!newVal) return
+    // 담당자 검증
+    if (isEmpty(form.managerName)) {
+        return vWarning('담당자를 등록하세요');
+    }
 
     try {
-        const res = await ApiProc.getEquipmentList(newVal)
+        // =================================================
+        // 기존 작업 데이터 건수 조회
+        // =================================================
+        console.log('form.workProcId:', form.workProcId);
+
+        const params = {
+            procCd: 'PRC004',
+            workProcId: form.workProcId,
+        };
+
+        const cntRes = await ApiProc.getProcStartCnt(params);
+        const cnt = Number(cntRes.data?.data ?? 0);
+
+        console.log('공정 시작 조회 cnt:', cnt);
+
+        // 이미 시작된 작업이면 차단
+        if (cnt > 0) {
+            vWarning('이미 시작된 충전작업입니다.');
+            return;
+        }
+
+        // =================================================
+        // 공통 확인창
+        // =================================================
+        const confirmed = await confirmGuard({
+            header: '충전시작확인',
+            message:
+                '해당 작업을 시작하시겠습니까?\n' +
+                '내용을 다시 한 번 확인해 주세요.\n' +
+                '시작 후에는 취소할 수 없습니다.',
+            icon: 'pi pi-exclamation-triangle',
+        });
+
+        // 확인창 취소 시 종료
+        if (!confirmed) return;
+
+        // =================================================
+        // 충전 작업시작
+        // =================================================
+        const param = {
+            areaCd: form.areaCd,
+            procCd: form.procCd,
+            itemCd: form.itemCd,
+            workProcId: form.workProcId,
+            workBatchId: form.workBatchId,
+            storageCd: form.storageCd,
+            managerId: form.managerName,
+            procStatus: '41',
+            batchStatus: '41',
+        };
+
+        await ApiProc.startProcCharge(param);
+
+        vSuccess('충전작업이 가능합니다.');
+        closeDialog();
+
+    } catch (err) {
+        handleApiError(err);
+    }
+};
+
+// =====================================================
+// 5. 작업처 변경 시 장비 조회
+// =====================================================
+watch(() => form.storageCd, async (newVal, oldVal) => {
+
+    if (newVal === oldVal) return;
+
+    form.equipmentCd = null;
+    equipmentCds.value = [];
+
+    if (!newVal) return;
+
+    try {
+        const res = await ApiProc.getEquipmentList(newVal);
+
         equipmentCds.value = Array.isArray(res)
             ? res
             : Array.isArray(res?.data)
-            ? res.data
-            : []
+                ? res.data
+                : [];
+
     } catch (err) {
-        console.error(err)
-        equipmentCds.value = []
+        console.error(err);
+        equipmentCds.value = [];
     }
-})
-onMounted( async () =>{
-    areaCds.value = await ApiCommon.getCodeList('area')
-    const popupForm = dialogRef.value?.data?.form
+});
+
+// =====================================================
+// 6. 최초 데이터 조회
+// =====================================================
+onMounted(async () => {
+
+    areaCds.value = await ApiCommon.getCodeList('area');
+
+    const popupForm = dialogRef.value?.data?.form;
 
     if (popupForm) {
-        Object.assign(form, popupForm)
+        Object.assign(form, popupForm);
     }
-    Object.assign(form, popupForm)
-    allStorages.value = await ApiSystem.getStorageCodeList()
+
+    allStorages.value = await ApiSystem.getStorageCodeList();
 
     const params = {
         procCd: form.procCd,
-        areaCd: form.areaCd
-    }
+        areaCd: form.areaCd,
+    };
 
-    const res = await ApiProc.getWorkerList(params)
+    const res = await ApiProc.getWorkerList(params);
+
     workerList.value = res.data.map(item => ({
         codeNm: item.workerName,
-        code: item.workerName
+        code: item.workerName,
     }));
-})
+});
 
-const closeDialog = () =>{
-    dialogRef.value.close()
-}
-
-
+// =====================================================
+// 7. 팝업 닫기
+// =====================================================
+const closeDialog = () => {
+    dialogRef.value.close();
+};
 </script>
 
 <style scoped>
-
 </style>

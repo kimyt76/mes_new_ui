@@ -79,7 +79,8 @@
                 <Button
                     label="작업시작"
                     class="p-button-secondary"
-                    :disabled="writeYn !== 'Y'"
+                    :disabled="writeYn !== 'Y' || isSaving"
+                    :loading="isSaving"
                     @click="saveGuard(saveInfo)"
                 />
 
