@@ -52,7 +52,7 @@
                 columnResizeMode="fit"
                 class="my-table"
                 scrollable
-                scrollHeight="300px"
+                scrollHeight="500px"
                 showGridlines
                 selectionMode="multiple"
             >

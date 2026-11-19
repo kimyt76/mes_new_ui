@@ -205,7 +205,7 @@
 <Dialog
     v-model:visible="workItemDialog"
     header="품목 목록"
-    :style="{ width: '100rem', height: '30rem' }"
+    :style="{ width: '100rem', height: '45rem' }"
     :contentStyle="{
         display: 'flex',
         flexDirection: 'column',
