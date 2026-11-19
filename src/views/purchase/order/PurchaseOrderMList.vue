@@ -68,6 +68,7 @@
         ref="dt"
         v-model:selection="selectedItem"
         :value="purchaseOrderList"
+        :loading="loading"
         dataKey="purOrderItemId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -150,12 +151,14 @@ import { ApiPurchaseOrder } from '@/api/apiPurchaseOrder';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert.js';
 import { isEmpty, minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import PurchaseOrderDetailPop from './PurchaseOrderDetailPop.vue';
 import PurchaseOrderPop from './PurchaseOrderPop.vue';
 
+const loading = ref(false)
 const totalCount = computed(() => {
   return Array.isArray(purchaseOrderList.value) ? purchaseOrderList.value.length : 0
 })
@@ -245,11 +248,19 @@ const selectRowClick = (id, purOrderId) =>{
 }
 
 const srhList = async () =>{
-    const params = {
-        ...form
+    loading.value = true
+
+    try {
+        const params = {
+            ...form
+        }
+        // api
+        purchaseOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params);
+    }catch(err) {
+        handleApiError(err)
+    }finally{
+        loading.value = false
     }
-    // api
-    purchaseOrderList.value = await ApiPurchaseOrder.getPurchaseOrderList(params);
 }
 
 const printOut = async () => {
