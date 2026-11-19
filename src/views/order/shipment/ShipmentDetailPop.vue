@@ -131,12 +131,12 @@
         />
     </div>
 </div>
-<div class="table-wrapper mt-2">
+<div class="table-wrapper mt-2" :style="{ height: `${TABLE_BODY_HEIGHT + 40}px` }">
     <DataTable
         :value="shipmentItemList"
         class="my-table fixed-table"
         scrollable
-        scrollHeight="400px"
+        :scrollHeight="`${TABLE_BODY_HEIGHT}px`"
         show-gridlines
         >
         <Column field="poNo"        header="PONO"       :style="{ width: '120px', 'text-align': 'center' }" />
@@ -144,7 +144,7 @@
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="lotNo"       header="LOT"       :style="{ width: '170px', 'text-align': 'center' }" ></Column>
         <Column field="makeNo"      header="제조번호"   :style="{ width: '170px', 'text-align': 'center' }" ></Column>
-        <Column field="qcStatus"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" >
+        <Column field="qcStatus"    header="품질상태"       :style="{ width: '80px', 'text-align': 'center' }" >
             <template #body="slotProps">
                     {{ slotProps.data.qcStatus === 'REQ' ? '시험대기'
                         : slotProps.data.qcStatus === 'ING' ? '시험중'
@@ -236,6 +236,9 @@ import { useDialog } from 'primevue';
 import { inject, onMounted, reactive, ref } from 'vue';
 import ClientListPop from '../client/ClientListPop.vue';
 import ShipmentItemListPop from './ShipmentItemListPop.vue';
+
+// 출고품목 테이블 내용 높이(px): 저장 버튼이 가려지면 이 숫자만 줄이세요.
+const TABLE_BODY_HEIGHT = 300
 
 const isShipmentYn = ref(false)
 const dialog = useDialog()

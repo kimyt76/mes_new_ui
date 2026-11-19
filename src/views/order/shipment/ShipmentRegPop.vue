@@ -130,12 +130,12 @@
         />
     </div>
 </div>
-<div class="table-wrapper mt-2">
+<div class="table-wrapper mt-2" :style="{ height: `${TABLE_BODY_HEIGHT + 40}px` }">
     <DataTable
         :value="shipmentItemList"
         class="my-table fixed-table shipment-arrow-table"
         scrollable
-        scrollHeight="400px"
+        :scrollHeight="`${TABLE_BODY_HEIGHT}px`"
         show-gridlines
         >
         <Column field="poNo"        header="PONO"       :style="{ width: '120px', 'text-align': 'center' }" />
@@ -143,7 +143,7 @@
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
         <Column field="lotNo"       header="LOT"       :style="{ width: '170px', 'text-align': 'center' }" ></Column>
         <Column field="makeNo"      header="제조번호"   :style="{ width: '170px', 'text-align': 'center' }" ></Column>
-        <Column field="qcStatus"    header="품질"       :style="{ width: '80px', 'text-align': 'center' }" >
+        <Column field="qcStatus"    header="품질상태"       :style="{ width: '80px', 'text-align': 'center' }" >
             <template #body="slotProps">
                     {{ slotProps.data.qcStatus === 'REQ' ? '시험대기'
                         : slotProps.data.qcStatus === 'ING' ? '시험중'
@@ -155,7 +155,7 @@
                 </template>
             </Column>
         <Column field="testNo"      header="시험번호"   :style="{ width: '110px', 'text-align': 'center' }" ></Column>
-        <Column field="stockQty"    header="재고수량"   :style="{ width: '100px', textAlign:'right'}" :bodyStyle="{ padding: '0'}" >
+        <Column field="stockQty"    header="재고수량"   :style="{ width: '100px', textAlign:'right'}" :bodyStyle="{ padding: '1'}" >
             <template #body="slotProps">{{ Number(slotProps.data.stockQty).toLocaleString() }}</template>
         </Column>
         <Column field="qty" header="출고수량"   :style="{ width: '100px'}"  :bodyStyle="{ padding: '0'}">
@@ -244,6 +244,8 @@ const { userId } = useAuthStore()
 const { vError, vSuccess, vWarning, vInfo } = useAlertStore()
 const attachFile = ref([])
 const dialogRef = inject('dialogRef')
+// 테이블 내용 높이(px): 저장 버튼이 가려지면 200을 180, 160 등으로 줄여 확인하세요.
+const TABLE_BODY_HEIGHT = 300
 const shipmentItemList = ref([])
 const shipmentStatus = ref([])
 const shipmentTypes = ref([])
@@ -485,7 +487,6 @@ const openPop = (type) =>{
     })
 }
 
-
 watch(() => form.shipmentDate, async (newVal, oldVal) => {
   if ( !isEmpty(newVal)) {
     if ( oldVal !==  newVal ){
@@ -493,7 +494,6 @@ watch(() => form.shipmentDate, async (newVal, oldVal) => {
     }
   }
 })
-
 
 onMounted( async () =>{
     shipmentTypes.value = await ApiCommon.getCodeList('shipment_type')
@@ -504,9 +504,6 @@ onMounted( async () =>{
     form.shipmentDate = todayKST()
     form.seq = await ApiCommon.getNextSeq('tb_shipment_mst', 'shipment_date',  form.shipmentDate)
 })
-
-
-
 
 const closeDialog = () =>{
     dialogRef.value.close()
@@ -530,5 +527,16 @@ const closeDialog = () =>{
 }
 ::v-deep(.fixed-table table) {
     table-layout: fixed !important;
+}
+/* 출고품목 영역은 지정한 높이로 고정, 항목이 많아지면 DataTable 내부 스크롤 */
+.table-wrapper {
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.table-wrapper :deep(.p-datatable-table-container) {
+    overflow-y: auto !important;
+    overflow-x: auto;
 }
 </style>
