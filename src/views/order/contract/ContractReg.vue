@@ -161,6 +161,11 @@
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                 />
             </template>
+             <template #footer>
+                <div class="text-right font-bold">
+                    총합계 :
+                </div>
+            </template>
         </Column>
         <Column field="totPrice"        header="합계"    :style="{ width: '170px'}" >
             <template #body="slotProps">
@@ -172,6 +177,11 @@
                     :useGrouping="true"
                     :inputStyle="{ width: '150px', 'text-align': 'right' }"
                 />
+            </template>
+            <template #footer>
+                <div class="text-right font-bold">
+                     {{ totalAmount.toLocaleString('ko-KR') }} 원
+                </div>
             </template>
         </Column>
         <Column field="deliveryReqDate" header="납기요청일"  :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
@@ -282,8 +292,8 @@ const totalVatPrice = computed(() => {
 });
 // 4. 총 금액 (다른 computed 속성을 참조)
 const totalAmount = computed(() => {
-  // 다른 computed 속성의 값에 접근할 때도 .value를 사용합니다.
-  return totalSupplyPrice.value + totalVatPrice.value;
+  // 각 행의 합계(totPrice)를 모두 더한 금액
+  return itemList.value.reduce((sum, item) => sum + Number(item.totPrice || 0), 0);
 });
 
 const onChangeRow = (data) =>{
