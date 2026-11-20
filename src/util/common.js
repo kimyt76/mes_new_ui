@@ -73,6 +73,41 @@ export function firstDateDay(){
 }
 
 /**
+ * 기준 날짜에서 일수 더하기 / 빼기
+ *
+ * @param {number} days - 양수: 더하기, 음수: 빼기
+ * @param {string|Date} baseDate - 기준 날짜 (기본값: 오늘)
+ * @returns {string} yyyy-MM-dd
+ */
+export const addDays = (baseDate = null, days = 0) => {
+
+    let date
+
+    if (baseDate) {
+        if (baseDate instanceof Date) {
+            date = new Date(baseDate.getTime())
+        } else {
+            // yyyy-MM-dd 문자열 기준
+            const [year, month, day] = String(baseDate)
+                .slice(0, 10)
+                .split('-')
+                .map(Number)
+
+            date = new Date(Date.UTC(year, month - 1, day))
+        }
+    } else {
+        // 오늘 날짜 (한국 시간 기준)
+        const now = new Date()
+        date = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+    }
+
+    // UTC 기준으로 날짜 계산
+    date.setUTCDate(date.getUTCDate() + Number(days))
+
+    return date.toISOString().slice(0, 10)
+}
+
+/**
  *  KST 날짜 시간
  */
 export function todayKST () {
