@@ -85,7 +85,7 @@
 <div class="table-wrapper mt-2">
     <DataTable
         :value="itemList"
-        class="my-table fixed-table"
+        class="my-table fixed-table contract-arrow-table"
         scrollable
         scrollHeight="400px"
         show-gridlines
@@ -95,14 +95,17 @@
         <Column field="spec"        header="규격"       :style="{ width: '80px', 'text-align': 'center' }" ></Column>
         <Column field="prodType"    header="유형"       :style="{ width: '100px', 'text-align': 'center' }">
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="prodType" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'prodType')">
                 <InputText
                     v-model="slotProps.data.prodType"
                     class="w-full"
                 />
+                </div>
             </template>
         </Column>
         <Column field="orderType"   header="수주유형"   :style="{ width: '100px', 'text-align': 'center' }" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="orderType" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'orderType')">
                 <Select
                     v-model="slotProps.data.orderType"
                     :options="orderTypes"
@@ -110,10 +113,12 @@
                     optionLabel="codeNm"
                     class="w-full"
                 />
+                </div>
             </template>
         </Column>
         <Column field="qty"         header="수량"       :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
                 <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="qty" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'qty')">
                     <InputNumber
                         v-model="slotProps.data.qty"
                         class="w-full"
@@ -123,10 +128,12 @@
                         :inputStyle="{ width: '120px', 'text-align': 'right' }"
                          @update:modelValue="() => onChangeRow(slotProps.data)"
                     />
+                </div>
                 </template>
         </Column>
         <Column field="unitPrice" header="단가"    :style="{ width: '120px'}"  :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="unitPrice" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'unitPrice')">
                 <InputNumber
                     v-model="slotProps.data.unitPrice"
                     class="w-full"
@@ -136,10 +143,12 @@
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                     @update:modelValue="() => onChangeRow(slotProps.data)"
                 />
+                </div>
             </template>
         </Column>
         <Column field="supplyPrice"        header="공급가액"   :style="{ width: '140px'}"  :bodyStyle="{ padding: '0'}">
                 <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="supplyPrice" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'supplyPrice')">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
                         class="w-full"
@@ -148,10 +157,12 @@
                         :useGrouping="true"
                         :inputStyle="{ width: '120px', 'text-align': 'right' }"
                     />
+                </div>
                 </template>
         </Column>
         <Column field="vatPrice"        header="부가세"    :style="{ width: '120px'}" :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="vatPrice" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'vatPrice')">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
                     class="w-full"
@@ -160,6 +171,7 @@
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
                 />
+                </div>
             </template>
              <template #footer>
                 <div class="text-right font-bold">
@@ -169,6 +181,7 @@
         </Column>
         <Column field="totPrice"        header="합계"    :style="{ width: '170px'}" >
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="totPrice" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'totPrice')">
                 <InputNumber
                     v-model="slotProps.data.totPrice"
                     class="w-full"
@@ -177,6 +190,7 @@
                     :useGrouping="true"
                     :inputStyle="{ width: '150px', 'text-align': 'right' }"
                 />
+                </div>
             </template>
             <template #footer>
                 <div class="text-right font-bold">
@@ -186,11 +200,14 @@
         </Column>
         <Column field="deliveryReqDate" header="납기요청일"  :style="{ width: '140px'}" :bodyStyle="{ padding: '0'}" >
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="deliveryReqDate" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'deliveryReqDate')">
                 <DatePicker v-model="slotProps.data.deliveryReqDate" show-icon :inputStyle="{ width: '100px', 'text-align': 'center' }"/>
+                </div>
             </template>
         </Column>
         <Column field="statusType"  header="진행상태"   :style="{ width: '120px', textAlign:'center'}" :bodyStyle="{ padding: '0'}">
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="statusType" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'statusType')">
                 <Select
                     v-model="slotProps.data.statusType"
                     class="w-full"
@@ -198,11 +215,14 @@
                     option-label="codeNm"
                     option-value="code"
                 />
+                </div>
             </template>
         </Column>
         <Column field="etc"         header="비고"       :style="{ width: '130px'}"  >
             <template #body="slotProps">
+                <div :data-arrow-row="slotProps.index" data-arrow-col="etc" @keydown.capture="(event) => handleArrowKey(event, slotProps.index, 'etc')">
                 <InputText v-model="slotProps.data.etc" class="w-full" />
+                </div>
             </template>
         </Column>
         <Column field="actions"     header="-"    :style="{ width: '20px', textAlign:'center'}">
@@ -256,6 +276,42 @@ const orderTypes = ref([])
 const vatTypes = ref([])
 const statusTypes = ref([])
 const itemDialog = ref(false)
+
+// 리스트 입력 항목의 방향키는 숫자 증감/커서 이동 대신 셀 이동 전용
+const ARROW_FIELDS = ['prodType', 'orderType', 'qty', 'unitPrice', 'supplyPrice', 'vatPrice', 'totPrice', 'deliveryReqDate', 'statusType', 'etc']
+
+const handleArrowKey = (event, rowIndex, field) => {
+    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+    if (!keys.includes(event.key)) return
+
+    // 이동 가능한 셀이 없어도 InputNumber의 위/아래 숫자 증감을 차단
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation?.()
+
+    const colIndex = ARROW_FIELDS.indexOf(field)
+    if (colIndex < 0) return
+
+    let nextRow = rowIndex
+    let nextCol = colIndex
+    if (event.key === 'ArrowUp') nextRow--
+    if (event.key === 'ArrowDown') nextRow++
+    if (event.key === 'ArrowLeft') nextCol--
+    if (event.key === 'ArrowRight') nextCol++
+
+    if (nextRow < 0 || nextRow >= itemList.value.length) return
+    if (nextCol < 0 || nextCol >= ARROW_FIELDS.length) return
+
+    const table = event.currentTarget.closest('.contract-arrow-table')
+    const cell = table?.querySelector(`[data-arrow-row="${nextRow}"][data-arrow-col="${ARROW_FIELDS[nextCol]}"]`)
+    if (!cell) return
+
+    const target = cell.querySelector('input:not([type="hidden"]), textarea, .p-select, button')
+    if (!target) return
+    target.focus()
+    if (typeof target.select === 'function') target.select()
+    cell.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+}
 
 const form = reactive({
     contractDate: '',

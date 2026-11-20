@@ -71,7 +71,7 @@
         :value="contractList"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
-        scrollHeight="700px"
+        scrollHeight="680px"
         scrollable
         showGridlines
         tableStyle="w-full; table-layout: fixed;"

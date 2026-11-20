@@ -74,7 +74,7 @@
         @error="(msg) => console.error(msg)"
     />
 </div>
-<div class="w-full mt-2">
+<div class="w-full mt-2 contract-arrow-table" @keydown.capture="handleArrowKey">
     <DataTable
         :value="itemList"
         class="my-table"
@@ -88,6 +88,8 @@
             <template #body="slotProps">
                 <InputText
                     v-model="slotProps.data.prodType"
+                    data-arrow-col="prodType"
+                    :data-arrow-row="slotProps.index"
                     class="w-full"
                 />
             </template>
@@ -107,6 +109,8 @@
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.qty"
+                    data-arrow-col="qty"
+                    :data-arrow-row="slotProps.index"
                         class="w-full"
                         :min="0"
                         :maxFractionDigits="4"
@@ -120,6 +124,8 @@
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.unitPrice"
+                    data-arrow-col="unitPrice"
+                    :data-arrow-row="slotProps.index"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="4"
@@ -133,6 +139,8 @@
                 <template #body="slotProps">
                     <InputNumber
                         v-model="slotProps.data.supplyPrice"
+                    data-arrow-col="supplyPrice"
+                    :data-arrow-row="slotProps.index"
                         class="w-full"
                         :min="0"
                         :maxFractionDigits="4"
@@ -145,6 +153,8 @@
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.vatPrice"
+                    data-arrow-col="vatPrice"
+                    :data-arrow-row="slotProps.index"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="4"
@@ -162,6 +172,8 @@
             <template #body="slotProps">
                 <InputNumber
                     v-model="slotProps.data.totPrice"
+                    data-arrow-col="totPrice"
+                    :data-arrow-row="slotProps.index"
                     class="w-full"
                     :min="0"
                     :maxFractionDigits="4"
@@ -194,7 +206,9 @@
         </Column>
         <Column field="etc"         header="비고"       :style="{ width: '130px'}"  >
             <template #body="slotProps">
-                <InputText v-model="slotProps.data.etc" class="w-full" />
+                <InputText v-model="slotProps.data.etc"
+                    data-arrow-col="etc"
+                    :data-arrow-row="slotProps.index" class="w-full" />
             </template>
         </Column>
     </DataTable>
@@ -232,6 +246,51 @@ const itemList = ref([])
 const orderTypes = ref([])
 const vatTypes = ref([])
 const statusTypes = ref([])
+
+// 수주품목 입력칸 방향키 이동 전용 (Select / DatePicker 기존 동작 유지)
+const ARROW_FIELDS = ['prodType', 'qty', 'unitPrice', 'supplyPrice', 'vatPrice', 'totPrice', 'etc']
+
+const handleArrowKey = (event) => {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return
+
+    const current = event.target.closest('[data-arrow-col][data-arrow-row]')
+    if (!current) return // Select, DatePicker 등은 기존 키보드 동작 유지
+
+    const field = current.dataset.arrowCol
+    const row = Number(current.dataset.arrowRow)
+    const col = ARROW_FIELDS.indexOf(field)
+    if (col < 0 || !Number.isInteger(row)) return
+
+    // 이동 가능한 셀이 없어도 InputNumber의 위/아래 증감은 무조건 차단
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation?.()
+
+    let nextRow = row
+    let nextCol = col
+    if (event.key === 'ArrowUp') nextRow--
+    else if (event.key === 'ArrowDown') nextRow++
+    else if (event.key === 'ArrowLeft') nextCol--
+    else if (event.key === 'ArrowRight') nextCol++
+
+    if (nextRow < 0 || nextRow >= itemList.value.length) return
+    if (nextCol < 0 || nextCol >= ARROW_FIELDS.length) return
+
+    const table = current.closest('.contract-arrow-table')
+    const next = table?.querySelector(
+        `[data-arrow-col="${ARROW_FIELDS[nextCol]}"][data-arrow-row="${nextRow}"]`
+    )
+    if (!next) return
+
+    const target = next.matches('input, textarea')
+        ? next
+        : next.querySelector('input, textarea')
+    if (!target) return
+
+    target.focus()
+    target.select?.()
+    target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+}
 
 const form = reactive({
     contractDate: '',
