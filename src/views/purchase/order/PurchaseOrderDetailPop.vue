@@ -144,7 +144,6 @@
                 <InputNumber
                     v-model="slotProps.data.inPrice"
                     class="w-full"
-                    :min="0"
                     :maxFractionDigits="3"
                     :useGrouping="true"
                     :inputStyle="{ width: '100px', 'text-align': 'right' }"
