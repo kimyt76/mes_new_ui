@@ -5,7 +5,19 @@
             <div class="daily-loading-spinner"></div>
             <div class="daily-loading-message">데이터를 불러오는 중입니다...</div>
         </div>
-        <div class="page-title"> 부자재 일일 입고 및 사용내역 </div>
+        <div class="page-title flex align-items-center gap-3">
+            <span>부자재 일일 입고 및 사용내역</span>
+
+            <FloatLabel variant="on" class="ml-auto">
+                <DatePicker
+                    v-model="form.dailyDate"
+                    showIcon
+                    style="w-full"
+                />
+                <label>조회일자</label>
+            </FloatLabel>
+        </div>
+
         <!-- =========================================================
              1. 당일 부자재 입고 현황
         ========================================================== -->
@@ -610,7 +622,7 @@
 <script setup>
 import { ApiBase } from '@/api/apiBase'
 import { useAlertStore } from '@/stores/alert'
-import { todayKST } from '@/util/common'
+import { addDays, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue'
 
@@ -619,7 +631,7 @@ const loading = ref(true)
 const { vSuccess, vInfo, } = useAlertStore()
 const dialogRef = inject( 'dialogRef', null )
 const form = reactive({
-    dailyDate: null,
+    dailyDate: addDays(todayKST(), -1),
     itemTypeCd: 'M2',
     typeCd: 'S',
     endYn: '',
@@ -659,14 +671,19 @@ onMounted(async () => {
             isBtn.value = false
         }
 
-        const res = await ApiBase.getM2DailyReportInfo( form.dailyId )
+        // 기존 API 조회
+        const params = {
+            ...form
+        }
+
+        const res = await ApiBase.getM2DailyReportInfo(params)
         //console.log( 'M2 일일보고서 정보', res )
         if (res.dailyReportInfo) {
             Object.assign( form, res.dailyReportInfo )
         }
 
         if (!form.dailyDate) {
-            form.dailyDate = todayKST()
+             form.stdDate = addDays(todayKST(), -1)
         }
 
         inList.value = (res.inList || []).map(row => ({
@@ -1438,7 +1455,15 @@ const reset = () => {
     font-size: 20px;
     font-weight: 700;
 }
-
+.page-title {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 48px;
+    padding: 5px 12px;
+}
 .list-section {
     margin-bottom: 18px;
 }

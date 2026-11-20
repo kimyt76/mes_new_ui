@@ -10,7 +10,17 @@
             <div class="loading-text">데이터를 불러오는 중입니다...</div>
         </div>
 
-        <div class="page-title"> 원료 일일 입고 및 사용내역 </div>
+       <div class="page-title flex align-items-center gap-3">
+            <span>원료 일일 입고 및 사용내역</span>
+            <FloatLabel variant="on" class="ml-auto">
+                <DatePicker
+                    v-model="form.dailyDate"
+                    showIcon
+                    style="w-full"
+                />
+                <label>조회일자</label>
+            </FloatLabel>
+        </div>
         <!-- 1. 원료 입고 -->
         <section class="list-section">
             <div class="section-header section-blue">
@@ -726,7 +736,7 @@
 <script setup>
 import { ApiBase } from '@/api/apiBase';
 import { useAlertStore } from '@/stores/alert';
-import { todayKST } from '@/util/common';
+import { addDays, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler';
 import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue';
 
@@ -735,7 +745,7 @@ const isBtn = ref(true)
 const { vSuccess, vInfo } = useAlertStore()
 const dialogRef = inject('dialogRef', null)
 const form = reactive({
-    dailyDate: null,
+    dailyDate: addDays(todayKST(), -1),
     itemTypeCd : 'M1',
     typeCd : 'I',
     endYn: '',
@@ -763,10 +773,16 @@ onMounted(async () => {
         })
 
         // 기존 API 조회
-        const res = await ApiBase.getM1DailyReportInfo(form.dailyId)
+        const params = {
+            ...form
+        }
+        console.log('params', params)
+        const res = await ApiBase.getM1DailyReportInfo(params)
 
         if (res.dailyReportInfo) {
             Object.assign(form, res.dailyReportInfo)
+        }else{
+            form.stdDate = addDays(todayKST(), -1)
         }
 
         // 기존 리스트 적용
@@ -1326,6 +1342,15 @@ const reset = () => {
     background: #fafafa;
     font-size: 20px;
     font-weight: 700;
+}
+.page-title {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 48px;
+    padding: 5px 12px;
 }
 .list-section {
     margin-bottom: 18px;

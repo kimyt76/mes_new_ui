@@ -1,6 +1,20 @@
 <template>
     <div class="prod-page">
-        <div class="page-title"> 완제품 일일 외주 및 생산내역 </div>
+        <!-- 조회 중 로딩 표시 (Dialog 바깥에 표시) -->
+        <Teleport to="body">
+            <div v-if="loading" class="daily-loading-overlay" role="status" aria-live="polite">
+                <div class="daily-loading-spinner"></div>
+                <div class="daily-loading-message">데이터를 불러오는 중입니다...</div>
+            </div>
+        </Teleport>
+
+        <div class="page-title flex align-items-center gap-3">
+            <span>완제품 일일 외주 및 생산내역</span>
+            <FloatLabel variant="on" class="ml-auto">
+                <DatePicker v-model="form.dailyDate" showIcon />
+                <label>조회일자</label>
+            </FloatLabel>
+        </div>
         <!-- =========================================================
              1. 당일 완제품 입고 현황
         ========================================================== -->
@@ -878,15 +892,16 @@
 <script setup>
 import { ApiBase } from '@/api/apiBase'
 import { useAlertStore } from '@/stores/alert'
-import { todayKST } from '@/util/common'
+import { addDay, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
-import { computed, inject, onMounted, reactive, ref, } from 'vue'
+import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue'
 
+const loading = ref(true)
 const isBtn = ref(true)
 const { vSuccess, vInfo, } = useAlertStore()
 const dialogRef = inject( 'dialogRef', null )
 const form = reactive({
-    dailyDate: null,
+    dailyDate: addDay(todayKST(), -1),
     itemTypeCd: 'M0',
     typeCd: 'P',
     endYn: '',
@@ -917,7 +932,11 @@ const deleteShipmentIds = ref([])
    화면 로딩
 ========================================================= */
 onMounted(async () => {
+    loading.value = true
+
     try {
+        await nextTick()
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 
         form.dailyId = dialogRef.value?.data?.dailyId ?? null
         form.endYn = dialogRef.value?.data?.endYn ?? 'N'
@@ -925,13 +944,22 @@ onMounted(async () => {
         if (form.endYn === 'Y') {
             isBtn.value = false
         }
-        const res = await ApiBase.getM0DailyReportInfo( form.dailyId )
+
+
+
+        const params = {
+            ...form
+        }
+        const res = await ApiBase.getM0DailyReportInfo(params)
         //console.log( 'M0 일일보고서 정보', res )
 
         if (res.dailyReportInfo) {
             Object.assign( form, res.dailyReportInfo )
+        }else{
+            form.dailyDate = addDay(todayKST(), -1)
         }
-
+console.log('res.', res)
+console.log('res.inList', res.inList)
         inList.value = res.inList || []
         returnList.value = res.returnList || []
         discardList.value = res.discardList || []
@@ -942,6 +970,8 @@ onMounted(async () => {
     } catch (error) {
         //console.error( '조회 중 오류 발생:', error )
         handleApiError(error)
+    }finally{
+        loading.value = false
     }
 })
 
@@ -1457,6 +1487,36 @@ const reset = () => {
 
 
 <style scoped>
+/* 조회 로딩 화면 */
+.daily-loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.78);
+}
+.daily-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #d6dce2;
+    border-top-color: #456c8d;
+    border-radius: 50%;
+    animation: daily-loading-spin 0.8s linear infinite;
+}
+.daily-loading-message {
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+}
+@keyframes daily-loading-spin {
+    to { transform: rotate(360deg); }
+}
+
+
 .prod-page {
     width: 100%;
     padding: 4px;
@@ -1464,7 +1524,13 @@ const reset = () => {
 }
 
 .page-title {
-    padding: 6px 8px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 48px;
+    padding: 5px 12px;
     margin-bottom: 12px;
     border: 1px solid #cfcfcf;
     border-left: 5px solid #607d8b;
