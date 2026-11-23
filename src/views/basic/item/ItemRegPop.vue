@@ -1,5 +1,5 @@
 <template>
-    <Card style="width: 70rem; height: 28rem;">
+    <Card style="width: 70rem; height: 30rem;">
         <template #content>
             <!-- Row 1 -->
             <div class="grid mb-3">
@@ -72,6 +72,20 @@
                 </div>
                 <div class="col-3">
                     <FloatLabel variant="on">
+                        <InputText v-model="form.unit" class="w-full" />
+                        <label>단위</label>
+                    </FloatLabel>
+                </div>
+                <div class="col-3">
+                    <FloatLabel variant="on">
+                        <InputText v-model="form.spec" class="w-full" />
+                        <label>SPEC</label>
+                    </FloatLabel>
+                </div>
+            </div>
+            <div class="grid mb-3">
+                <div class="col-3">
+                    <FloatLabel variant="on">
                         <Select v-model="form.itemGrp1"
                                 :options="itemGrp1s"
                                 optionLabel="codeNm"
@@ -88,18 +102,13 @@
                         <label>제품유형</label>
                     </FloatLabel>
                 </div>
-            </div>
-            <div class="grid mb-3">
                 <div class="col-3">
                     <FloatLabel variant="on">
-                        <InputText v-model="form.unit" class="w-full" />
-                        <label>단위</label>
-                    </FloatLabel>
-                </div>
-                <div class="col-3">
-                    <FloatLabel variant="on">
-                        <InputText v-model="form.spec" class="w-full" />
-                        <label>SPEC</label>
+                        <Select v-model="form.itemGrp3"
+                                :options="itemGrp3s"
+                                optionLabel="codeNm"
+                                optionValue="code" class="w-full" />
+                        <label>그룹유형3</label>
                     </FloatLabel>
                 </div>
                 <div class="col-3">
@@ -158,6 +167,7 @@ const itemCategory1s =ref([])
 const itemCategory2s =ref([])
 const itemGrp1s = ref([])
 const itemGrp2s = ref([])
+const itemGrp3s = ref([])
 const useYns =ref([])
 
 const form = reactive({
@@ -174,6 +184,7 @@ const form = reactive({
     customerName: '',
     itemGrp1: '',
     itemGrp2: '',
+    itemGrp3: '',
     etc: '',
     useYn: 'Y',
 
@@ -257,9 +268,10 @@ const openPop = () =>{
 
 onMounted(async () =>{
     itemTypeCds.value = (await ApiCommon.getCodeList('ITEM_TYPE_CD'))
-                        .filter(i => ['M1', 'M4'].includes(i.code));
+                        .filter(i => ['M1', 'M4', 'M2','M7'].includes(i.code));
     itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
     itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
+    itemGrp3s.value = await ApiCommon.getCodeList('ITEM_GRP3')
     useYns.value = await ApiCommon.getCodeList('use_yn')
 })
 
