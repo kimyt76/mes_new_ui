@@ -81,6 +81,7 @@
         v-model:selection="selectedItem"
         dataKey="moveStockId"
         :value="moveReqList"
+        :loading="loading"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -88,7 +89,7 @@
         class="my-table"
         showGridlines
      >
-        <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
+        <Column header="No" headerStyle="width:30px; min-width:30px; text-align:center" bodyStyle="text-align:center">
             <template #body="slotProps">
                 {{ slotProps.index + 1 + first }}
             </template>
@@ -103,14 +104,14 @@
         </Column>
          <Column field="srcStorageName" header="보내는창고" :style="{ width: '110px', textAlign: 'center'}" />
          <Column field="tarStorageName" header="받는창고"   :style="{ width: '110px', textAlign: 'center'}" />
-         <Column field="itemName"       header="품목명"     :style="{ width: '320px'}" />
-         <Column field="memo"           header="요청내용"   :style="{ width: '320px'}" />
+         <Column field="itemName"       header="품목명"     :style="{ width: '340px'}" />
+         <Column field="memo"           header="요청내용"   :style="{ width: '320px' }" bodyStyle="white-space: pre-line; overflow-wrap: anywhere;" />
          <Column field="qty"            header="수량"       :style="{ width: '80px', textAlign: 'right'}" >
                 <template #body="slotProps">
                     {{ Number(slotProps.data.qty).toLocaleString() }}
                 </template>
         </Column>
-         <Column field="managerName"    header="담당자명"   :style="{ width: '70px', textAlign: 'center'}" />
+         <Column field="managerName"    header="담당자"   :style="{ width: '60px', textAlign: 'center'}" />
          <Column field="moveStatus" header="진행상태" style="width:70px; text-align:center">
             <template #body="{ data }">
                 <span v-if="['C', 'R'].includes(data.confirmStatus) || data.moveStatus === 'C'">완료</span>
@@ -120,7 +121,7 @@
                 </span>
             </template>
         </Column>
-        <Column field="confirmStatus" header="확인" style="width:60px; text-align:center">
+        <Column field="confirmStatus" header="확인" style="width:50px; text-align:center">
             <template #body="{ data }">
                 <span v-if="['W', 'N'].includes(data.confirmStatus)"
                     class="status-link" @click="openMoveConfirmPop(data.moveStockId)">
@@ -141,6 +142,7 @@ import { ApiSystem } from '@/api/apiSystem';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { addMonth, minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -148,6 +150,7 @@ import MoveConfirmPop from './MoveConfirmPop.vue';
 import MoveDtlPop from './MoveDtlPop.vue';
 import MoveRegPop from './MoveRegPop.vue';
 
+const loading = ref(false)
 const first = ref(0)
 const { vSuccess, vInfo, vWarning} = useAlertStore()
 const dialog = useDialog()
@@ -273,11 +276,19 @@ const openMoveConfirmPop =(id) =>{
 }
 
 const srhList = async () =>{
-    const params = {
-        ...form
-    }
+    loading.value = true
 
-    moveReqList.value = await ApiStock.getMoveReqList(params)
+    try{
+        const params = {
+            ...form
+        }
+
+        moveReqList.value = await ApiStock.getMoveReqList(params)
+    }catch(err){
+        handleApiError(err)
+    }finally{
+        loading.value =false
+    }
 }
 
 onMounted( async () =>{

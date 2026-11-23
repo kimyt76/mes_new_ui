@@ -71,6 +71,7 @@
         v-model:selection="selectedItem"
         dataKey="moveStockId"
         :value="moveStockList"
+        :loading="loading"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -176,12 +177,14 @@ import { ApiSystem } from '@/api/apiSystem';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert';
 import { addMonth, minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import MoveStockCompfirmPop from '@/views/stock/material/moveStock/MoveStockCompfirmPop.vue';
 import { useDialog } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import MoveStockPop from './MoveStockPop.vue';
 
+const loading = ref(false)
 const first = ref(0)
 const { vSuccess, vInfo, vWarning} = useAlertStore()
 const moveStockList = ref([])
@@ -245,15 +248,22 @@ const openMoveConfirmPop = (id) =>{
 }
 
 const srhList = async () => {
-    const params = {
-        ...form
-    }
+    loading.value = true
 
-    moveStockList.value = await ApiStock.getMoveStockList(params)
+    try{
+        const params = {
+            ...form
+        }
+
+        moveStockList.value = await ApiStock.getMoveStockList(params)
+    }catch(err){
+        handleApiError(err)
+    }finally{
+        loading.value =false
+    }
 }
 
 const handleDateChange = () =>{
-
 }
 
 onMounted(async () => {
