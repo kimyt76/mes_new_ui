@@ -169,7 +169,7 @@ const deleteSelectRow = async () =>{
                 deleteShipmentIds : deleteShipmentIds
             }
 
-            const res = await ApiOrder.deleteShipment(deleteShipmentIds);
+            const res = await ApiOrder.deleteShipment(params);
             vSuccess('선택한 출고지시가 삭제되었습니다.');
             srhList(); // 삭제 후 목록 갱신
         }
