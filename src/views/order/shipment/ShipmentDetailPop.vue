@@ -142,7 +142,17 @@
         <Column field="poNo"        header="PONO"       :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemCd"      header="품목코드"   :style="{ width: '120px', 'text-align': 'center' }" />
         <Column field="itemName"    header="품목명"     :style="{ width: '350px'}" bodyClass="break-words"></Column>
-        <Column field="lotNo"       header="LOT"       :style="{ width: '170px', 'text-align': 'center' }" ></Column>
+        <Column
+                field="lotNo"
+                header="LOT번호"
+                bodyClass="wrap-cell"
+                :style="{ width: '170px', textAlign: 'center' }"
+                bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+            >
+                <template #body="{ data }">
+                    {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+                </template>
+              </Column>
         <Column field="makeNo"      header="제조번호"   :style="{ width: '170px', 'text-align': 'center' }" ></Column>
         <Column field="qcStatus"    header="품질상태"       :style="{ width: '80px', 'text-align': 'center' }" >
             <template #body="slotProps">

@@ -173,13 +173,20 @@
             />
           </template>
         </Column>
-
-        <Column field="lotNo" header="로트번호" :style="{ width: '120px' }">
-          <template #body="slotProps">
-            <InputText v-model="slotProps.data.lotNo" class="cell-input" />
-          </template>
-        </Column>
-
+        <Column field="lotNo" header="LOT" style="width: 120px">
+                    <template #body="{ data, index }">
+                        <div @paste.prevent="handlePaste($event, 'in', index, 'lotNo')">
+                            <Textarea
+                                :modelValue="data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? ''"
+                                @update:modelValue="val => data.lotNo = val.replace(/\r?\n/g, '!!')"
+                                class="cell-input"
+                                rows="2"
+                                autoResize
+                                style="width: 100%; resize: none;"
+                            />
+                        </div>
+                    </template>
+                </Column>
         <Column field="expiryDate" header="사용기한" :style="{ width: '120px' }">
           <template #body="slotProps">
                 <DatePicker

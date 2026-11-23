@@ -50,7 +50,16 @@
         <Column field="no"      header="No" :style="{ width: '40px' }"  />
         <Column field="testNo"  header="시험번호" :style="{ width: '120px' }"  />
         <Column field="itemCd"  header="품목코드" :style="{ width: '120px' }"  />
-        <Column field="lotNo"   header="로트번호" :style="{ width: '180px' }" bodyClass="break-words"  />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '180px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="orderQty" header="지시량" :style="{ width: '100px' }" >
             <template #body="slotProps">
                 <div

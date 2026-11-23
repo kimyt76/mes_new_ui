@@ -47,7 +47,16 @@
         <Column field="no"      header="No" :style="{ width: '40px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
         <Column field="testNo"  header="시험번호" :style="{ width: '120px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
         <Column field="itemCd"  header="품목코드" :style="{ width: '120px' }" :pt="{ columnHeaderContent: 'justify-center' }" />
-        <Column field="lotNo"   header="로트번호" :style="{ width: '180px' }" bodyClass="break-words" :pt="{ columnHeaderContent: 'justify-center' }" />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '180px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="orderQty" header="지시량" :style="{ width: '100px' }" :pt="{ columnHeaderContent: 'justify-center' }">
             <template #body="{ data }">
                 <div class="text-right">{{ formatQty(data.orderQty) }}</div>

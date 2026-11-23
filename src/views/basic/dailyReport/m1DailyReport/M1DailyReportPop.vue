@@ -420,9 +420,15 @@
                         <InputText v-model="data.itemName" class="cell-input" />
                     </template>
                 </Column>
-                <Column field="lotNo" header="로트번호" style="width: 100px">
+                <Column
+                    field="lotNo"
+                    header="LOT번호"
+                    class="cell-input text-center"
+                    :style="{ width: '100px', textAlign: 'center' }"
+                    bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+                >
                     <template #body="{ data }">
-                        <InputText v-model="data.lotNo" class="cell-input text-center" />
+                        {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
                     </template>
                 </Column>
                 <Column field="qty" header="지시수량" style="width: 110px">

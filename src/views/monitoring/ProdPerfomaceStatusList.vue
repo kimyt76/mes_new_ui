@@ -62,8 +62,26 @@
     <Column field="itemCd" header="품목코드" frozen :style="{ width: '120px', textAlign:'center'}" />
     <Column field="itemName" header="품목명" frozen :style="{ width: '400px'}" bodyClass="break-words"/>
     <Column field="makeNo" header="제조번호" frozen :style="{ width: '170px', textAlign:'center'}" />
-    <Column field="lotNo" header="1차포장LOT" frozen :style="{ width: '170px', textAlign:'center'}" />
-    <Column field="lotNo2" header="2차포장LOT" frozen :style="{ width: '170px', textAlign:'center'}" />
+    <Column
+        field="lotNo"
+        header="1차포장LOT"
+        :style="{ width: '170px', textAlign: 'center' }"
+        bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+    >
+        <template #body="{ data }">
+            {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+        </template>
+    </Column>
+    <Column
+        field="lotNo2"
+        header="2차포장LOT"
+        :style="{ width: '170px', textAlign: 'center' }"
+        bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+    >
+        <template #body="{ data }">
+            {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+        </template>
+    </Column>
     <Column field="batchStatus" header="배치상태" frozen :style="{ width: '90px', textAlign:'center'}" />
     <Column field="prodQty" header="제조량" :style="{ width: '100px', textAlign:'right'}" >
       <template #body="slotProps">{{ formatNumber(slotProps.data.prodQty) }}</template>

@@ -49,8 +49,26 @@
         </Column>
         <Column field="areaCd"      header="구역"           :style="{ width: '80px', textAlign: 'center'}" ></Column>
         <Column field="storageCd"   header="작업처"         :style="{ width: '110px', textAlign: 'center'}" ></Column>
-        <Column field="lotNo"       header="1차포장(LOT)"   :style="{ width: '150px', textAlign: 'center'}" ></Column>
-        <Column field="lotNo2"      header="2차포장(LOT)"   :style="{ width: '150px', textAlign: 'center'}" ></Column>
+        <Column
+            field="lotNo"
+            header="1차포장(LOT)"
+            :style="{ width: '150px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
+        <Column
+            field="lotNo2"
+            header="2차포장(LOT)"
+            :style="{ width: '150px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="itemCd"      header="품목코드"       :style="{ width: '90px', textAlign: 'center'}" />
         <Column field="itemName"    header="품목명"         :style="{ width: '350px'}" bodyClass="break-words"  ></Column>
         <Column field="tranOutItems"    header="출고품목"       :style="{ width: '180px'}" />

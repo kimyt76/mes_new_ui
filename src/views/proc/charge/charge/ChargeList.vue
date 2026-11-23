@@ -76,9 +76,16 @@
                 </div>
             </template>
         </Column>
-        <Column field="lotNo"           header="LOT번호"  :style="{ width: '200px', textAlign: 'center'}"
-         bodyStyle="white-space:normal; overflow-wrap:anywhere; word-break:break-word; text-align:center"
-        />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '200px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="makeNo"          header="제조번호"  :style="{ width: '150px', textAlign: 'center'}" />
         <Column field="itemCd"          header="품목코드"  :style="{ width: '100px', textAlign: 'center'}" />
         <Column field="itemName"        header="품목명"    :style="{ width: '430px'}" bodyClass="break-words"  ></Column>

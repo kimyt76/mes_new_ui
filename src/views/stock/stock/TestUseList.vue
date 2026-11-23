@@ -47,7 +47,16 @@
         <Column field="itemCdM0"      header="사용품목코드"     :style="{ width: '110px', textAlign: 'center' }" />
         <Column field="itemNameM0"    header="사용품목명"       :style="{ width: '350px'}" />
         <Column field="procOrderDate" header="사용일자"         :style="{ width: '100px', textAlign: 'center' }" />
-        <Column field="lotNo"         header="Lot No."          :style="{ width: '150px'}" />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '150px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="qty"           header="사용량"           :style="{ width: '90px'}" >
             <template #body="slotProps">
                 {{ Number(slotProps.data.qty || 0).toLocaleString() }}

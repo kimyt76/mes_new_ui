@@ -128,7 +128,16 @@
         <Column field="itemCd"          header="품목코드"  :style="{ width: '100px', textAlign: 'center'}" />
         <Column field="itemName"        header="품목명"    :style="{ width: '250px'}"/>
         <Column field="makeNo"           header="제조번호"  :style="{ width: '120px'}" />
-        <Column field="lotNo"           header="로트번호"  :style="{ width: '120px'}" />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '120px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="reqQty"          header="수량"      :style="{ width: '90px', textAlign:'right'}">
                 <template #body="slotProps">{{ Number(slotProps.data.reqQty).toLocaleString() }}</template>
         </Column>

@@ -91,10 +91,17 @@
                         </div>
                     </template>
                 </Column>
-                <Column field="lotNo" header="LOT" style="width: 220px" >
+                <Column field="lotNo" header="LOT" style="width: 220px">
                     <template #body="{ data, index }">
                         <div @paste.prevent="handlePaste($event, 'in', index, 'lotNo')">
-                            <InputText v-model="data.lotNo" class="cell-input" />
+                            <Textarea
+                                :modelValue="data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? ''"
+                                @update:modelValue="val => data.lotNo = val.replace(/\r?\n/g, '!!')"
+                                class="cell-input"
+                                rows="2"
+                                autoResize
+                                style="width: 100%; resize: none;"
+                            />
                         </div>
                     </template>
                 </Column>
@@ -945,8 +952,6 @@ onMounted(async () => {
             isBtn.value = false
         }
 
-
-
         const params = {
             ...form
         }
@@ -958,8 +963,7 @@ onMounted(async () => {
         }else{
             form.dailyDate = addDay(todayKST(), -1)
         }
-console.log('res.', res)
-console.log('res.inList', res.inList)
+
         inList.value = res.inList || []
         returnList.value = res.returnList || []
         discardList.value = res.discardList || []

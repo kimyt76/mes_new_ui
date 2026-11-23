@@ -67,7 +67,16 @@
         </Column>
         <Column field="orderDist"           header="배치번호"   :style="{ width: '80px', textAlign:'center'}" />
         <Column field="makeNo"              header="제조번호"   :style="{ width: '100px', textAlign:'center'}" />
-        <Column field="lotNo"               header="로트번호"   :style="{ width: '100px', textAlign:'center'}" bodyClass="break-words"/>
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '100px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="batchStatusName"     header="배치상태"   :style="{ width: '90px', textAlign:'center'}">
             <template #body="slotProps">
                 <div @click="selectResetClick(slotProps.data)" class="clickable-cell">

@@ -15,7 +15,16 @@
         </Column>
         <Column field="procOrderDate"            header="지시일"   :style="{ width: '120px'}" />
         <Column field="makeNo"    header="제조번호"    :style="{ width: '150px'}" />
-        <Column field="lotNo"           header="LOT번호"    :style="{ width: '150px'}" />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '150px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
     </DataTable>
 </div>
 <div class="flex gap-2 justify-end pt-3">

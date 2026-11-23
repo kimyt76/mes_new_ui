@@ -79,7 +79,16 @@
         <Column field="qty" header="입고량" :style="{ width: '100px', textAlign:'right'}">
             <template #body="slotProps">{{ Number(slotProps.data.qty).toLocaleString() }}</template>
         </Column>
-        <Column field="lotNo" header="로트번호" :style="{ width: '190px'}" />
+        <Column
+            field="lotNo"
+            header="LOT번호"
+            :style="{ width: '190px', textAlign: 'center' }"
+            bodyStyle="white-space:pre-line; overflow-wrap:anywhere; word-break:break-word; text-align:center"
+        >
+            <template #body="{ data }">
+                {{ data.lotNo?.replace(/!!/g, '\n').replace(/\^/g, ' ') ?? '' }}
+            </template>
+        </Column>
         <Column field="expiryDate" header="사용기한" :style="{ width: '110px', textAlign: 'center'}" />
         <Column field="customerName" header="거래처명" :style="{ width: '250px'}" />
         <Column field="passState" header="판정상태" :style="{ width: '90px'}" />

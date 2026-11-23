@@ -1,15 +1,17 @@
 <template>
     <div class="prod-page">
+        <div v-if="loading" class="labor-loading-overlay">
+            <i class="pi pi-spin pi-spinner labor-loading-spinner"></i>
+            <span>처리 중입니다...</span>
+        </div>
         <div class="title-area">
             <div class="page-title">인 건 비 현 황 ({{ areaName }})</div>
             <div class="title-search">
                 <FloatLabel variant="on">
-                    <InputText
-                        :modelValue="todayDate"
-                        readonly
-                        style="width: 120px; text-align: center"
-                    />
-                    <label>일자</label>
+                    <FloatLabel variant="on" class="ml-auto">
+                        <DatePicker v-model="form.dailyDate" showIcon />
+                        <label>일자</label>
+                    </FloatLabel>
                 </FloatLabel>
                 <FloatLabel variant="on">
                     <Select
@@ -168,24 +170,26 @@
                 v-if="isBtn"
                 label="저장"
                 icon="pi pi-save"
-                :disabled="writeYn !== 'Y'" @click="saveGuard(saveInfo)"
+                :disabled="loading || writeYn !== 'Y'" @click="saveGuard(saveInfo)"
             />
             <Button
                 v-if="isBtn"
                 label="종결"
                 icon="pi pi-check"
-                :disabled="writeYn !== 'Y'" @click="saveGuard(updateEndYn)"
+                :disabled="loading || writeYn !== 'Y'" @click="saveGuard(updateEndYn)"
             />
             <Button
                 label="엑셀"
                 icon="pi pi-file-excel"
                 severity="success"
+                :disabled="loading"
                 @click="downloadLaborCost"
             />
             <Button
                 label="닫기"
                 outlined
                 class="ml-2"
+                :disabled="loading"
                 @click="closeDialog"
             />
         </div>
@@ -194,7 +198,7 @@
 <script setup>
 import { ApiBase } from '@/api/apiBase'
 import { ApiCommon } from '@/api/apiCommon'
-import { todayKST } from '@/util/common'
+import { addDay, todayKST } from '@/util/common'
 import { handleApiError } from '@/util/errorHandler'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -206,16 +210,16 @@ const dialogRef = inject('dialogRef', null)
 const selectedRowIndex = ref(0)
 const isBtn = ref(true)
 const isInitializing = ref(true)
+const loading = ref(false)
 const areaCds = ref([])
 const areaName = ref('')
-const todayDate = todayKST()
 const workTypeCds = ref([
     { code: 'D', codeNm: '주간' },
     { code: 'O', codeNm: '잔업' },
     { code: 'N', codeNm: '야간' },
 ])
 const form = reactive({
-    dailyDate: todayKST(),
+    dailyDate: addDay(todayKST(), -1),
     workTypeCd: 'D',
     areaCd: 'A001',
     typeCd: 'C',
@@ -462,6 +466,7 @@ const setSavedLaborCostLists = (res) => {
 }
 
 onMounted(async () => {
+    loading.value = true
     try {
         form.dailyId = dialogRef?.value?.data?.dailyId ?? null
         form.endYn = dialogRef?.value?.data?.endYn ?? 'N'
@@ -473,12 +478,17 @@ onMounted(async () => {
             ? laborRateRes
             : laborRateRes?.laborCostList || []
 
-        const res = await ApiBase.getLaborCostInfo(form.dailyId)
+        const params = {
+            ...form
+        }
+
+        const res = await ApiBase.getLaborCostInfo(form)
 
         if (res?.dailyReportInfo) {
             Object.assign(form, res.dailyReportInfo)
         }
         isBtn.value = form.endYn !== 'Y'
+
         if (!form.dailyId) {
             setNewLaborCostLists(res || {})
         } else {
@@ -489,6 +499,7 @@ onMounted(async () => {
         handleApiError(error)
     } finally {
         isInitializing.value = false
+        loading.value = false
     }
 })
 watch(
@@ -578,6 +589,8 @@ const formatNumber = (value) => {
     })
 }
 const saveInfo = async () => {
+    if (loading.value) return
+    loading.value = true
     try {
         Object.values(listMap).forEach(listRef => {
             reorderList(listRef.value)
@@ -604,9 +617,13 @@ const saveInfo = async () => {
     } catch (error) {
         console.error('저장 중 오류 발생:', error)
         handleApiError(error)
+    } finally {
+        loading.value = false
     }
 }
 const updateEndYn = async () => {
+    if (loading.value) return
+    loading.value = true
     try {
         const params = {
             dailyId: form.dailyId,
@@ -618,6 +635,8 @@ const updateEndYn = async () => {
         vSuccess('종결 처리되었습니다.')
     } catch (error) {
         handleApiError(error)
+    } finally {
+        loading.value = false
     }
 }
 const downloadLaborCost = async () => {
@@ -625,6 +644,8 @@ const downloadLaborCost = async () => {
         vInfo('저장 후 다운로드 가능합니다.')
         return
     }
+    if (loading.value) return
+    loading.value = true
     try {
         const params = {
             typeCd: form.typeCd,
@@ -650,6 +671,8 @@ const downloadLaborCost = async () => {
         window.URL.revokeObjectURL(url)
     } catch (error) {
         handleApiError(error)
+    } finally {
+        loading.value = false
     }
 }
 const closeDialog = () => {
@@ -898,10 +921,29 @@ const LaborCostTable = defineComponent({
 </script>
 <style scoped>
 .prod-page {
+    position: relative;
     width: 100%;
     min-width: 1200px;
     padding: 12px;
     background: #ffffff;
+}
+.labor-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.72);
+    font-size: 15px;
+    font-weight: 600;
+    color: #334155;
+}
+.labor-loading-spinner {
+    font-size: 36px;
+    color: #2563eb;
 }
 .title-area {
     display: flex;
