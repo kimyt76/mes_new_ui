@@ -50,6 +50,7 @@
         ref="dt"
         v-model="first"
         :value="weighList"
+        :loading="loading"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
         scrollHeight="700px"
@@ -108,11 +109,13 @@ import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import WeighRegPop from './WeighRegPop.vue';
 
+const loading = ref(false)
 const first = ref(0)
 const dialog = useDialog()
 const dt = ref(null);
@@ -167,12 +170,21 @@ const selectRowClick = (id, itemCd, procStatus) =>{
 
 // form
 const srhList = async () =>{
-    const params = {
-        ...form,
-        procStatus : form.procStatus === 'ALL' ? null : form.procStatus,
+    loading.value = true
+
+    try{
+        const params = {
+            ...form,
+            procStatus : form.procStatus === 'ALL' ? null : form.procStatus,
+        }
+        // api
+        weighList.value = await ApiProc.getProcList(params);
+    }catch(err){
+        handleApiError(err)
+    }finally{
+        loading.value =false
     }
-    // api
-    weighList.value = await ApiProc.getProcList(params);
+
 }
 
 onMounted( async () => {

@@ -140,13 +140,9 @@ getProdCompany: async(params) =>{
       throw err.response
     }
   },
-  getM1DailyReportInfo: async (id) => {
+  getM1DailyReportInfo: async (params) => {
     try {
-            const res = await API_URL.get('/dailyReport/getM1DailyReportInfo', {
-            params: {
-                dailyId: id ?? null
-                }
-            })
+        const res = await API_URL.post('/dailyReport/getM1DailyReportInfo', params)
         return res.data
     } catch (err) {
         throw err.response
@@ -167,13 +163,9 @@ getProdCompany: async(params) =>{
     }
   },
 
-  getM2DailyReportInfo: async (id) => {
+  getM2DailyReportInfo: async (params) => {
     try {
-            const res = await API_URL.get('/dailyReport/getM2DailyReportInfo', {
-            params: {
-                dailyId: id ?? null
-                }
-            })
+        const res = await API_URL.post('/dailyReport/getM2DailyReportInfo', params)
         return res.data
     } catch (err) {
         throw err.response
@@ -193,13 +185,9 @@ getProdCompany: async(params) =>{
       throw err.response
     }
   },
-  getM0DailyReportInfo: async (id) => {
+  getM0DailyReportInfo: async (params) => {
     try {
-            const res = await API_URL.get('/dailyReport/getM0DailyReportInfo', {
-            params: {
-                dailyId: id ?? null
-                }
-            })
+            const res = await API_URL.post('/dailyReport/getM0DailyReportInfo', params)
         return res.data
     } catch (err) {
         throw err.response
@@ -220,13 +208,9 @@ getProdCompany: async(params) =>{
     }
   },
 
-  getLaborCostInfo: async (id) => {
+  getLaborCostInfo: async (params) => {
     try {
-            const res = await API_URL.get('/dailyReport/getLaborCostInfo', {
-            params: {
-                dailyId: id ?? null
-                }
-            })
+        const res = await API_URL.post('/dailyReport/getLaborCostInfo',params)
         return res.data
     } catch (err) {
         throw err.response

@@ -52,6 +52,7 @@
         v-model="first"
         v-model:selection="selectedItem"
         :value="packingList"
+        :loading="loading"
         dataKey="workProcId"
         paginator :rows="20"
         :rowsPerPageOptions="[20,30,40]"
@@ -117,12 +118,14 @@ import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
 import { useAlertStore } from '@/stores/alert.js';
 import { minMonth, todayKST } from '@/util/common';
+import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 import MoveReqPop from '../../common/MoveReqPop.vue';
 import PackingPop from './PackingPop.vue';
 
+const loading = ref(false)
 const first = ref(0)
 const {vWarning} = useAlertStore()
 const selectedItem = ref([])
@@ -212,12 +215,20 @@ const moveReq = () =>{
 
 // form
 const srhList = async () =>{
-    const params = {
-        ...form
+    loading.value = true
+
+    try{
+        const params = {
+            ...form
+        }
+        // api
+        packingList.value = await ApiProc.getProcList(params);
+        selectedItem.value = []
+    }catch(err){
+        handleApiError(err)
+    }finally{
+        loading.value = false
     }
-    // api
-    packingList.value = await ApiProc.getProcList(params);
-    selectedItem.value = []
 }
 
 onMounted( async () => {
