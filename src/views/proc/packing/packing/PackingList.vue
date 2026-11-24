@@ -152,6 +152,7 @@ const handleDateChange = () =>{
 }
 
 const selectRowClick = (row) =>{
+    if (row.batchStatus < '22') return vWarning("제조작업이 완료되어야 시작할수 있습니다.")
     dialog.open(PackingPop, {
         props: {
             header: '포장지시 및 기록',

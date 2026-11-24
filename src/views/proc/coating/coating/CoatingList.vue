@@ -73,7 +73,7 @@
         <Column field="areaName"        header="구역"       :style="{ width: '100px', textAlign: 'center'}" ></Column>
         <Column field="procOrderDate"   header="코팅지시일"  :style="{ width: '110px', textAlign: 'center'}" >
             <template #body="slotProps">
-                <div @click="selectRowClick(slotProps.data.workProcId, slotProps.data.itemCd)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
+                <div @click="selectRowClick(slotProps.data)" class="clickable-cell" style="text-decoration: underline; cursor: pointer;">
                     {{ slotProps.data.procOrderDate }}
                 </div>
             </template>
@@ -150,10 +150,11 @@ const form = reactive({
 })
 
 const handleDateChange = () =>{
-
 }
 
-const selectRowClick = (id, cd) =>{
+const selectRowClick = (row) =>{
+    if (row.batchStatus < '22') return vWarning("제조작업이 완료되어야 시작할수 있습니다.")
+
    dialog.open(CoatingPop, {
         props: {
             header: '코팅지시 및 기록',
@@ -180,9 +181,9 @@ const selectRowClick = (id, cd) =>{
             }
         },
         data: {
-            workProcId: id,
+            workProcId: row.workProcId,
             procCd: form.procCd,
-            itemCd: cd,
+            itemCd: row.itemCd,
         },
         onClose: (event) => {
             selectedItem.value = []
