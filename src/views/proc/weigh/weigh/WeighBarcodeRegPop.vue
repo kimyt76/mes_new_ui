@@ -345,6 +345,8 @@ const closeDialog = () => {
   dialogRef.value?.close()
 }
 
+
+//오른쪽 재고 조회
 const loadInventoryList = async (areaCd) => {
   const params = {
     itemCd: itemCd.value,
@@ -366,32 +368,33 @@ let tmpTestNo = ref('')
 
 onMounted(async () => {
   try {
-  const dialogData = dialogRef.value?.data || {}
-  const rowData = dialogData.row || {}
-  const formData = dialogData.form || {}
-  const areaCd = formData.areaCd ?? ''
-  workProcId.value = formData.workProcId ?? ''
-  storageCd.value = formData.storageCd ?? ''
+    const dialogData = dialogRef.value?.data || {}
+    const rowData = dialogData.row || {}
+    const formData = dialogData.form || {}
+    const areaCd = formData.areaCd ?? ''
 
-  itemCd.value = rowData.itemCd ?? ''
-  itemName.value = rowData.itemName ?? ''
-  weighId.value = rowData.weighId ?? ''
-  orderQty.value = Number(rowData.orderQty ?? 0)
-  tmpTestNo.value = rowData.testNo ?? ''
+    workProcId.value = formData.workProcId ?? ''
+    storageCd.value = formData.storageCd ?? ''
+    itemCd.value = rowData.itemCd ?? ''
+    itemName.value = rowData.itemName ?? ''
+    weighId.value = rowData.weighId ?? ''
+    orderQty.value = Number(rowData.orderQty ?? 0)
 
-  await loadInventoryList(areaCd)
+    tmpTestNo.value = rowData.testNo ?? ''
 
-  if (!isEmpty(weighId.value)) {
-    await getStockTestNoList()
-  }
-  } catch (err) {
-    console.error('초기 조회 오류:', err)
-    return
-  }
+    await loadInventoryList(areaCd)
 
-  initialLoading.value = false
-  await nextTick()
-  barcodeInputRef.value?.$el?.querySelector('input')?.focus()
+    if (!isEmpty(weighId.value)) {
+        await getStockTestNoList()
+    }
+    } catch (err) {
+        console.error('초기 조회 오류:', err)
+        return
+    }
+
+    initialLoading.value = false
+    await nextTick()
+    barcodeInputRef.value?.$el?.querySelector('input')?.focus()
 })
 
 const getStockTestNoList = async () =>{
