@@ -19,7 +19,8 @@
             class="barcode-input"
             v-model="barcode"
             :disabled="initialLoading"
-            @keyup.enter="searchByBarcode"
+            @keydown.enter.stop.prevent
+            @keyup.enter.stop.prevent="searchByBarcode"
             autofocus
         />
       <Button label="초기화" class="ml-2" outlined @click="resetBarcode" />
@@ -224,6 +225,8 @@ const searchByBarcode = async () => {
     })
 
     barcode.value = ''
+    await nextTick()
+    barcodeInputRef.value?.$el?.focus()
 }
 
 const openWeighQtyPopup = (row) =>{
@@ -245,11 +248,13 @@ const openWeighQtyPopup = (row) =>{
                 isBtn: 'S'
             }
         },
-        onClose: (weight) => {
+        onClose: async (weight) => {
             if (weight !== undefined) {
                 row.weighQty = weight.data
                 onChangeRow(row)
             }
+            await nextTick()
+            barcodeInputRef.value?.$el?.focus()
         }
     })
 }
@@ -394,7 +399,7 @@ onMounted(async () => {
 
     initialLoading.value = false
     await nextTick()
-    barcodeInputRef.value?.$el?.querySelector('input')?.focus()
+    barcodeInputRef.value?.$el?.focus()
 })
 
 const getStockTestNoList = async () =>{

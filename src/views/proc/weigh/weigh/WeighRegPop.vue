@@ -40,7 +40,14 @@
       </div>
 
       <div>
-        <InputText id="barcode" v-model="form.barcode" placeholder="바코드(시험번호)" style="width: 180px" readonly/>
+        <InputText
+            id="barcode"
+            v-model="form.barcode"
+            placeholder="바코드(시험번호)"
+            style="width: 180px"
+            maxlength="11"
+            @input="handleManualBarcode"
+            />
       </div>
 
       <div>
@@ -234,7 +241,10 @@ onBeforeUnmount(() => {
 })
 
 const handleScannerKeydown = (event) => {
-  if (isBarcodePopupOpen.value || isBarcodeScanning.value) return
+  if (event.target?.closest?.('input, textarea, select')) return
+  if (isBarcodeScanning.value) return
+  if (isBarcodePopupOpen.value) return
+
   const now = Date.now()
   if (now - lastScanTime.value > SCAN_INTERVAL) scanBuffer.value = ''
   lastScanTime.value = now
@@ -250,24 +260,41 @@ const handleScannerKeydown = (event) => {
   }
 }
 
+// 시험번호 직접 입력 후 Enter
+const handleManualBarcode = async () => {
+    const barcode = String(form.barcode ?? '').trim()
+
+    // 11자리가 아니면 처리하지 않음
+    if (barcode.length !== 11) return
+
+    scanBuffer.value = ''
+
+    // 기존 바코드 스캔 처리 함수 재사용
+    await handleScannedCode(barcode)
+}
+
 const handleScannedCode = async (barcode) => {
-  if (isStarted.value) return vWarning('칭량시작 버튼을 먼저 눌러주세요.')
-  if (isBarcodeScanning.value || isBarcodePopupOpen.value) return
-  isBarcodeScanning.value = true
-  try {
-    const testNo = String(barcode ?? '').trim()
-    if (!testNo) return
-    form.barcode = testNo
-    const res = await ApiQc.getItemTestNoInfo(testNo)
-    const itemCd = String((res?.data ?? res)?.itemCd ?? '').trim()
-    if (!itemCd) return vWarning(`시험번호[${testNo}]에 해당하는 품목정보가 없습니다.`)
-    const targetRows = matUseDataList.value.filter(r => String(r.itemCd ?? '').trim() === itemCd)
-    if (!targetRows.length) return vWarning(`스캔된 품목코드[${itemCd}]가 처방 리스트에 없습니다.`)
-    // 기존과 동일하게 testNo가 비어 있는 행 우선 선택
-    const targetRow = targetRows.find(r => !String(r.testNo ?? '').trim())
-    if (!targetRow) return vWarning('해당 품목의 모든 처방이 이미 칭량 완료 상태입니다.')
-    if (targetRow.phase && sangGubunOptions.value.includes(targetRow.phase)) activeSangGubun.value = targetRow.phase
-    openLookupPopup('ITEM_CODE', targetRow)
+    if (isStarted.value) return vWarning('칭량시작 버튼을 먼저 눌러주세요.')
+    if (isBarcodeScanning.value || isBarcodePopupOpen.value) return
+    isBarcodeScanning.value = true
+
+    try {
+        const testNo = String(barcode ?? '').trim()
+        if (!testNo) return
+
+        form.barcode = testNo
+
+        const res = await ApiQc.getItemTestNoInfo(testNo)
+        const itemCd = String((res?.data ?? res)?.itemCd ?? '').trim()
+
+        if (!itemCd) return vWarning(`시험번호[${testNo}]에 해당하는 품목정보가 없습니다.`)
+        const targetRows = matUseDataList.value.filter(r => String(r.itemCd ?? '').trim() === itemCd)
+        if (!targetRows.length) return vWarning(`스캔된 품목코드[${itemCd}]가 처방 리스트에 없습니다.`)
+        // 기존과 동일하게 testNo가 비어 있는 행 우선 선택
+        const targetRow = targetRows.find(r => !String(r.testNo ?? '').trim())
+        if (!targetRow) return vWarning('해당 품목의 모든 처방이 이미 칭량 완료 상태입니다.')
+        if (targetRow.phase && sangGubunOptions.value.includes(targetRow.phase)) activeSangGubun.value = targetRow.phase
+        openLookupPopup('ITEM_CODE', targetRow)
   } catch (err) {
     handleApiError(err)
   } finally {
@@ -504,6 +531,7 @@ const openLookupPopup = (type, row = null) => {
         if (type === 'ITEM_CODE') {
           isBarcodePopupOpen.value = false
           scanBuffer.value = ''
+          form.barcode = ''
         }
         if (type === 'CONTAINER_WEIGHT1') {
           if (event?.data != null && hasRow && row) {
