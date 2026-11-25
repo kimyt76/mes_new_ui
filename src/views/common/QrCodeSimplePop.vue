@@ -12,6 +12,7 @@
                 @keydown="handleKeydown"
                 @input="handleBarcodeInput"
                 @keyup.enter="handleEnter"
+                @paste.prevent="handleBarcodePaste"
                 />
             <label for="on_label">바코드(시험번호)</label>
             </FloatLabel>
@@ -81,6 +82,32 @@ const resetScanState = () => {
     scanPasteDetected = false
 }
 
+const handleBarcodePaste = async (event) => {
+    if (isSearching.value) {
+        return
+    }
+
+    // 복사한 문자열 가져오기
+    const clipboardText = event.clipboardData?.getData('text') ?? ''
+
+    // 모든 공백, 줄바꿈, 탭 제거
+    const barcode = clipboardText.replace(/\s+/g, '')
+
+    resetScanState()
+    lastProcessedBarcode.value = ''
+
+    testNo.value = barcode
+
+    // 공백 제거 후 11자리 체크
+    if (barcode.length !== SCAN_MIN_LENGTH) {
+        await focusBarcode()
+        return vWarning('시험번호는 11자리여야 합니다.')
+    }
+
+    // 정상적인 시험번호이면 자동 조회
+    await addRow()
+}
+
 const init = async () =>{
     testNo.value = ''
     lastProcessedBarcode.value = ''
@@ -115,36 +142,39 @@ const handleKeydown = (event) =>{
     lastKeyTime = now
 }
 
-const handleBarcodeInput = (event) =>{
+const handleBarcodeInput = (event) => {
     clearTimeout(scanTimer)
-    const barcode = String(testNo.value ?? '').trim()
+
+    const barcode = String(event?.target?.value ?? testNo.value ?? '').trim()
+
     if (!barcode) {
         resetScanState()
         return
     }
+
     if (isSearching.value) {
         return
     }
-    // 스캐너가 문자열을 한 번에 입력하는 경우
-    if (event?.inputType === 'insertFromPaste') {
-        scanPasteDetected = true
+
+    // 11자리가 아니면 조회하지 않음
+    if (barcode.length !== SCAN_MIN_LENGTH) {
+        return
     }
-    // 키보드 이벤트 없이 전체 문자열이 입력되는 장치 대응
-    if (scanInputCount === 0 && barcode.length >= SCAN_MIN_LENGTH) {
-        scanPasteDetected = true
-    }
+
     scanTimer = setTimeout(() => {
         const currentBarcode = String(testNo.value ?? '').trim()
+
         if (!currentBarcode || isSearching.value) {
             return
         }
-        const elapsed = scanStartTime > 0 ? lastKeyTime - scanStartTime : 0
-        const isFastScan =
-            scanInputCount >= SCAN_MIN_LENGTH &&
-            scanFastCount >= Math.max(3, Math.floor((scanInputCount - 1) * 0.6)) &&
-            elapsed <= Math.max(500, scanInputCount * SCAN_INTERVAL)
 
-        if (currentBarcode.length === SCAN_MIN_LENGTH && (isFastScan || scanPasteDetected)) {
+        // 중복 조회 방지
+        if (lastProcessedBarcode.value === currentBarcode) {
+            return
+        }
+
+        // 입력 방식과 관계없이 11자리이면 자동 조회
+        if (currentBarcode.length === SCAN_MIN_LENGTH) {
             addRow()
         }
     }, SCAN_WAIT)
