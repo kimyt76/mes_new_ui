@@ -203,6 +203,7 @@ const searchByBarcode = async () => {
     //이미 있는 값이면 추가 안함 (중복 방지)
     const exists = stockItemList.value.some(item => item.testNo === r.testNo)
     if (exists) {
+        vWarning('중복된 시험번호입니다.')
         barcode.value = ''
         return
     }
