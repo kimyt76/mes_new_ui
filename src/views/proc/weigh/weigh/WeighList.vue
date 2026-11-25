@@ -4,6 +4,14 @@
     <Toolbar class="flex flex-wrap mt-2 mb-2 gap-1 w-full"  >
         <template #start>
             <div class="flex flex-wrap items-center gap-2 w-full">
+            <FloatLabel variant="on">
+                <Select v-model="form.selectDay" :options="selectDays"
+                   optionLabel="codeNm"
+                   optionValue="code"
+                   style="width: 120px"
+                />
+                <label for="on_label">일자</label>
+            </FloatLabel>
             <DateRangePicker
                 v-model:startDate="form.strDate"
                 v-model:endDate="form.endDate"
@@ -47,17 +55,21 @@
 </div>
 <div>
     <DataTable
-        ref="dt"
-        v-model="first"
-        :value="weighList"
-        :loading="loading"
-        paginator :rows="20"
-        :rowsPerPageOptions="[20,30,40]"
-        scrollHeight="700px"
-        scrollable
-        showGridlines
-        tableStyle="w-full; table-layout: fixed;"
-        class="my-table"
+            ref="dt"
+            v-model:first="first"
+            v-model:selection="selectedRow"
+            selectionMode="single"
+            dataKey="workProcId"
+            :value="weighList"
+            :loading="loading"
+            paginator
+            :rows="20"
+            :rowsPerPageOptions="[20,30,40]"
+            scrollHeight="700px"
+            scrollable
+            showGridlines
+            tableStyle="w-full; table-layout: fixed;"
+            class="my-table"
         >
         <Column header="No" headerStyle="width:30px; min-width:40px; text-align:center" bodyStyle="text-align:center">
             <template #body="slotProps">
@@ -108,13 +120,14 @@
 import { ApiCommon } from '@/api/apiCommon';
 import { ApiProc } from '@/api/apiProc';
 import DateRangePicker from '@/components/DateRangePicker.vue';
-import { minMonth, todayKST } from '@/util/common';
+import { addDay, minMonth, todayKST } from '@/util/common';
 import { handleApiError } from '@/util/errorHandler.js';
 import { exportToExcel } from '@/util/exportToExcel';
 import { useDialog } from 'primevue';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import WeighRegPop from './WeighRegPop.vue';
 
+const selectedRow = ref(null) // 추가
 const loading = ref(false)
 const first = ref(0)
 const dialog = useDialog()
@@ -122,10 +135,16 @@ const dt = ref(null);
 const weighList = ref([])
 const procStatuss = ref([])
 const areaCds = ref([])
+const selectDays = ref([
+    {code: 'ALL' , codeNm: '전체'},
+    {code: 'be' , codeNm: '전일'},
+    {code: 'to' , codeNm: '금일'},
+])
 const form = reactive({
   strDate: minMonth(todayKST(), 3),
   endDate: todayKST(),
   areaCd: '',
+  selectDay: '',
   makeNo: '',
   itemCd: '',
   itemName: '',
@@ -138,6 +157,17 @@ const form = reactive({
 const handleDateChange = () =>{
 
 }
+
+watch(() => form.selectDay, async () => {
+    if (form.selectDay === 'be') {
+        form.strDate = addDay(todayKST(), -1)
+        form.endDate = addDay(todayKST(), -1)
+    }else{
+        form.strDate = todayKST()
+        form.endDate = todayKST()
+    }
+  }
+);
 
 const selectRowClick = (id, itemCd, procStatus) =>{
     dialog.open(WeighRegPop, {
@@ -232,6 +262,27 @@ const downloadExcel = () =>{
   text-align: center;
   font-family: monaco, Consolas;
   padding: 8px;
+}
+
+::v-deep(.my-table .p-datatable-thead > tr > th) {
+    background-color: #BCAAA4;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    font-family: monaco, Consolas;
+    padding: 8px;
+}
+
+/* 마우스 오버 */
+:deep(.my-table .p-datatable-tbody > tr:hover > td) {
+    background-color: #f1f5f9;
+    cursor: pointer;
+}
+
+/* 선택된 행 하이라이트 */
+:deep(.my-table .p-datatable-tbody > tr.p-datatable-row-selected > td) {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
 }
 
 </style>

@@ -189,17 +189,35 @@ const handleSelectionEnd = (row, column, row2, column2) => {
 
 // BaseHotTable이 afterSelectionEnd prop을 전달하지 않는 구현도 대응:
 // 실제 Handsontable 인스턴스에 후크 직접 연결
+const highlightedRow = ref(-1)
+
+const highlightRowRenderer = (TD, row) => {
+    TD.classList.toggle('highlight-row', row === highlightedRow.value)
+}
+
 let hookedHot = null
 const attachSelectionHook = () => {
     const hot = hotTable.value?.hotInstance || hotTable.value
+
     if (!hot?.addHook || hot === hookedHot) return
-    if (hookedHot?.removeHook) hookedHot.removeHook('afterSelectionEnd', handleSelectionEnd)
+
+    if (hookedHot?.removeHook) {
+        hookedHot.removeHook('afterSelectionEnd', handleSelectionEnd)
+        hookedHot.removeHook('afterRenderer', highlightRowRenderer)
+    }
+
+    hot.addHook('afterRenderer', highlightRowRenderer)
+
     hot.addHook('afterSelectionEnd', handleSelectionEnd)
+
     hookedHot = hot
 }
 
 onBeforeUnmount(() => {
-    if (hookedHot?.removeHook) hookedHot.removeHook('afterSelectionEnd', handleSelectionEnd)
+    if (hookedHot?.removeHook) {
+        hookedHot.removeHook('afterSelectionEnd', handleSelectionEnd)
+        hookedHot.removeHook('afterRenderer', highlightRowRenderer)
+    }
 })
 
 const form = reactive({
@@ -326,9 +344,19 @@ const currentTabList = computed(() => matUseDataList.value.filter(row => {
 }))
 // 탭과 테이블이 초기화된 뒤 선택 이벤트 연결 (선언 순서 오류 방지)
 watch([hotTable, activeSangGubun], async () => {
+    highlightedRow.value = -1
     await nextTick()
     attachSelectionHook()
     selectedTotalQty.value = 0
+    const hot = hotTable.value?.hotInstance || hotTable.value
+    hot?.render?.()
+}, { flush: 'post' })
+
+watch(currentTabList, async () => {
+    highlightedRow.value = -1
+    await nextTick()
+    const hot = hotTable.value?.hotInstance || hotTable.value
+    hot?.render?.()
 }, { flush: 'post' })
 
 const totalMatCount = computed(() => currentTabList.value.length)
@@ -483,7 +511,13 @@ const handleAfterChange = (changes, source) => {
 }
 
 const handleCellClickFromHot = (event, coords) => {
-  if (isStarted.value || !coords || coords.row < 0 || coords.col < 0) return
+  if (!coords || coords.row < 0 || coords.col < 0) return
+
+  highlightedRow.value = coords.row
+  const hot = hotTable.value?.hotInstance || hotTable.value
+  hot?.render?.()
+
+  if (isStarted.value) return
   const row = currentTabList.value[coords.row]
   if (!row) return
   const prop = hotColumns.value[coords.col]?.data
@@ -727,5 +761,40 @@ td .custom-cell {
 .cellHeader,
 .cellBorder {
     width: 12.5%;
+}
+.cellBorder {
+    border: 0.5px solid #ccc;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.cellHeader {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    width: 150px;
+    height: 30px;
+}
+
+.handsontable THEAD TH {
+    background: #d9d9d9;
+    border-color: #000000;
+}
+
+:deep(.handsontable td) {
+    vertical-align: middle;
+}
+
+td .custom-cell {
+    background-color: rgb(245 245 245);
+}
+
+.cellHeader,
+.cellBorder {
+    width: 12.5%;
+}
+
+/* 선택한 행 전체 하이라이트 */
+:deep(.handsontable tbody td.highlight-row) {
+    background-color: #dbeafe !important;
 }
 </style>
