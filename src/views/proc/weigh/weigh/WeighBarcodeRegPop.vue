@@ -20,7 +20,6 @@
             v-model="barcode"
             :disabled="initialLoading"
             @keydown.enter.stop.prevent
-            @keyup.enter.stop.prevent="searchByBarcode"
             autofocus
         />
       <Button label="초기화" class="ml-2" outlined @click="resetBarcode" />
