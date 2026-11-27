@@ -241,9 +241,9 @@ watch(() => form.itemCategory1, async(newVal) => {
 })
 
 watchEffect( async () => {
-  if (form.itemCategory1 && form.itemCategory2) {
-    form.itemCd = await makeItemCd(form.itemTypeCd, form.itemCategory1, form.itemCategory2)
-  }
+    if (form.itemCategory1 && form.itemCategory2) {
+        form.itemCd = await makeItemCd(form.itemTypeCd, form.itemCategory1, form.itemCategory2)
+    }
 })
 
 const openPop = () =>{
@@ -268,7 +268,7 @@ const openPop = () =>{
 
 onMounted(async () =>{
     itemTypeCds.value = (await ApiCommon.getCodeList('ITEM_TYPE_CD'))
-                        .filter(i => ['M1', 'M4', 'M2','M7'].includes(i.code));
+                        .filter(i => ['M1', 'M4','M7'].includes(i.code));
     itemGrp1s.value = await ApiCommon.getCodeList('ITEM_GRP1')
     itemGrp2s.value = await ApiCommon.getCodeList('ITEM_GRP2')
     itemGrp3s.value = await ApiCommon.getCodeList('ITEM_GRP3')
