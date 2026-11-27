@@ -585,13 +585,24 @@ const workComplete = async () =>{
         }
     });
 }
+
 const checkComplete = async () =>{
     //배치 상태를을 가져와서 전 단계가 끝났는지 확인 로직
     const res = await ApiProc.getStatusEndCheck(form.workProcId)
 
-    if ( res.batchStatus < '32') {
-        vWarning('코팅 공정이 끝나지 않았습니다.')
-        return false
+    //if ( res.batchStatus < '32') {
+     //   vWarning('코팅 공정이 끝나지 않았습니다.')
+      //  return false
+    //}
+
+    if (!res) {
+         vWarning('공정상태 정보를 확인할 수 없습니다.')
+         return false
+    }
+
+    if (res.prevCompleteYn !== 'Y') {
+         vWarning(`${res.prevProcName} 공정이 끝나지 않았습니다.`)
+         return false
     }
 
     if (workRecordList.value.length === 0 ) {
