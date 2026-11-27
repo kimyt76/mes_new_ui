@@ -498,9 +498,14 @@ const checkComplete = () => {
 
 const handleAfterChange = (changes, source) => {
   if (!changes || source === 'loadData') return
-  for (const [rowIndex, prop] of changes) {
+  for (const [rowIndex, prop, oldValue, newValue] of changes) {
     const row = currentTabList.value[rowIndex]
     if (!row) continue
+    // 체크박스 변경값을 원본 행에 반영
+    if ([FIELD.SELECTED, FIELD.WEIGH_YN].includes(prop)) {
+      row[prop] = newValue
+      continue
+    }
     if (['weighQty', 'bagWeight'].includes(prop)) {
       row.totalQty = calcTotalQty(row)
       // 변경된 행 객체를 직접 수정하므로 필터링된 탭에서도 올바른 행에 반영
@@ -511,32 +516,73 @@ const handleAfterChange = (changes, source) => {
 }
 
 const handleCellClickFromHot = (event, coords) => {
-  if (!coords || coords.row < 0 || coords.col < 0) return
+    if (!coords || coords.row < 0 || coords.col < 0) return
 
-  highlightedRow.value = coords.row
-  const hot = hotTable.value?.hotInstance || hotTable.value
-  hot?.render?.()
+    const hot = hotTable.value?.hotInstance || hotTable.value
+    const prop = hotColumns.value[coords.col]?.data
 
-  if (isStarted.value) return
-  const row = currentTabList.value[coords.row]
-  if (!row) return
-  const prop = hotColumns.value[coords.col]?.data
-  const lookup = {
-    itemCd: 'ITEM_CODE', itemName: 'ITEM_CODE',
-    [LOOKUP_PROP.CONTAINER]: 'CONTAINER_WEIGHT',
-    [LOOKUP_PROP.WEIGHER]: 'WEIGH_USER',
-    [LOOKUP_PROP.CONFIRM]: 'CONFIRM_USER'
-  }
-  if (lookup[prop]) openLookupPopup(lookup[prop], row)
-  if (prop === 'bagWeight') {
-    const last = lastMouseDown.value
-    if (last.row === coords.row && last.col === coords.col && Date.now() - last.time < 300) {
-      openLookupPopup('CONTAINER_WEIGHT1', row)
-      lastMouseDown.value = { row: -1, col: -1, time: 0 }
-      return
+    // 행 하이라이트만 변경 (체크박스 DOM 재생성 방지)
+    if (highlightedRow.value !== coords.row) {
+        highlightedRow.value = coords.row
+
+        const root = hot?.rootElement
+        if (root) {
+            root.querySelectorAll('td.highlight-row').forEach(td => {
+                td.classList.remove('highlight-row')
+            })
+
+            for (let col = 0; col < hot.countCols(); col++) {
+                hot.getCell(coords.row, col)?.classList.add('highlight-row')
+            }
+        }
     }
-  }
-  lastMouseDown.value = { row: coords.row, col: coords.col, time: Date.now() }
+
+    // 체크박스는 Handsontable 기본 이벤트로 처리
+    if ([FIELD.SELECTED, FIELD.WEIGH_YN].includes(prop)) {
+        return
+    }
+
+    if (isStarted.value) return
+
+    const row = currentTabList.value[coords.row]
+    if (!row) return
+
+    const lookup = {
+        itemCd: 'ITEM_CODE',
+        itemName: 'ITEM_CODE',
+        [LOOKUP_PROP.CONTAINER]: 'CONTAINER_WEIGHT',
+        [LOOKUP_PROP.WEIGHER]: 'WEIGH_USER',
+        [LOOKUP_PROP.CONFIRM]: 'CONFIRM_USER'
+    }
+
+    if (lookup[prop]) {
+        openLookupPopup(lookup[prop], row)
+    }
+
+    if (prop === 'bagWeight') {
+        const last = lastMouseDown.value
+
+        if (
+            last.row === coords.row &&
+            last.col === coords.col &&
+            Date.now() - last.time < 300
+        ) {
+            openLookupPopup('CONTAINER_WEIGHT1', row)
+
+            lastMouseDown.value = {
+                row: -1,
+                col: -1,
+                time: 0
+            }
+            return
+        }
+    }
+
+    lastMouseDown.value = {
+        row: coords.row,
+        col: coords.col,
+        time: Date.now()
+    }
 }
 
 // 칭량량 + 용기무게

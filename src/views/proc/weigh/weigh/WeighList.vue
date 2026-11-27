@@ -139,6 +139,7 @@ const selectDays = ref([
     {code: 'ALL' , codeNm: '전체'},
     {code: 'be' , codeNm: '전일'},
     {code: 'to' , codeNm: '금일'},
+    {code: 'ne' , codeNm: '명일'},
 ])
 const form = reactive({
   strDate: minMonth(todayKST(), 3),
@@ -155,16 +156,18 @@ const form = reactive({
 })
 
 const handleDateChange = () =>{
-
 }
 
 watch(() => form.selectDay, async () => {
     if (form.selectDay === 'be') {
         form.strDate = addDay(todayKST(), -1)
         form.endDate = addDay(todayKST(), -1)
-    }else{
+    }else if (form.selectDay === 'to'   )   {
         form.strDate = todayKST()
         form.endDate = todayKST()
+    }else{
+        form.strDate = addDay(todayKST(), 1)
+        form.endDate = addDay(todayKST(), 1)
     }
   }
 );
